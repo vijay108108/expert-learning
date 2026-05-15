@@ -1,0 +1,41 @@
+import {
+  BadgeCheck,
+  Bot,
+  BrainCircuit,
+  BriefcaseBusiness,
+  Building2,
+  Cloud,
+  CloudCog,
+  Code2,
+  DatabaseZap,
+  GraduationCap,
+  Handshake,
+  Layers3,
+  LifeBuoy,
+  MonitorSmartphone,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from "lucide-react";
+
+export const iconMap = {
+  ai: Bot,
+  awards: BadgeCheck,
+  brain: BrainCircuit,
+  briefcase: BriefcaseBusiness,
+  building: Building2,
+  cloud: Cloud,
+  cloudCog: CloudCog,
+  code: Code2,
+  community: Users,
+  database: DatabaseZap,
+  graduation: GraduationCap,
+  guidance: Handshake,
+  layers: Layers3,
+  support: LifeBuoy,
+  devices: MonitorSmartphone,
+  shield: ShieldCheck,
+  sparkles: Sparkles,
+} as const;
+
+export type IconKey = keyof typeof iconMap;
