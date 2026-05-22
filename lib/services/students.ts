@@ -11,10 +11,13 @@ export async function upsertStudent(payload: {
     throw new Error("Supabase is not configured.");
   }
 
+  const normalizedEmail = payload.email.trim();
+  const normalizedPhone = payload.phone.trim();
+
   const { data: existing } = await supabase
     .from("students")
     .select("id")
-    .eq("email", payload.email)
+    .eq(normalizedEmail ? "email" : "phone", normalizedEmail || normalizedPhone)
     .maybeSingle();
 
   if (existing?.id) {
@@ -22,7 +25,8 @@ export async function upsertStudent(payload: {
       .from("students")
       .update({
         name: payload.name,
-        phone: payload.phone,
+        phone: normalizedPhone,
+        ...(normalizedEmail ? { email: normalizedEmail } : {}),
       })
       .eq("id", existing.id);
 
@@ -33,8 +37,8 @@ export async function upsertStudent(payload: {
     .from("students")
     .insert({
       name: payload.name,
-      email: payload.email,
-      phone: payload.phone,
+      email: normalizedEmail || null,
+      phone: normalizedPhone,
     })
     .select("id")
     .single();

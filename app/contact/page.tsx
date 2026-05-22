@@ -7,9 +7,9 @@ import { Reveal } from "@/components/ui/reveal";
 import { SectionHeading } from "@/components/ui/section-heading";
 
 export const metadata = buildMetadata({
-  title: "Contact Us | Expert Learning",
+  title: "Contact Us | GenZNext Research & Training",
   description:
-    "Contact Expert Learning for admissions, career consultation, corporate training, and program guidance.",
+    "Contact GenZNext Research & Training for admissions, career consultation, corporate training, and program guidance.",
   path: "/contact",
 });
 
@@ -33,14 +33,20 @@ export default function ContactPage() {
               {[
                 { icon: PhoneCall, label: siteConfig.phone },
                 { icon: Mail, label: siteConfig.email },
-                { icon: MapPin, label: siteConfig.address },
+                { icon: MapPin, label: siteConfig.addressLines },
               ].map((item) => (
-                <div key={item.label} className="surface-card rounded-[10px] p-4">
-                  <div className="flex items-center gap-4">
+                <div key={Array.isArray(item.label) ? item.label.join(" | ") : item.label} className="surface-card rounded-[10px] p-4">
+                  <div className="flex items-start gap-4">
                     <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue">
                       <item.icon className="h-5 w-5" />
                     </div>
-                    <div className="text-sm font-medium text-brand-text">{item.label}</div>
+                    <div className="pt-0.5 text-sm font-medium leading-6 text-brand-text">
+                      {Array.isArray(item.label) ? (
+                        item.label.map((line) => <div key={line}>{line}</div>)
+                      ) : (
+                        item.label
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -48,7 +54,11 @@ export default function ContactPage() {
           </Reveal>
           <Reveal delay={0.08}>
             <div className="surface-form p-5 sm:p-7">
-              <LeadForm includeMessage submitLabel="Get Free Career Consultation" />
+              <LeadForm
+                includeMessage
+                submitLabel="Get Free Career Consultation"
+                source="Contact Form Inquiry"
+              />
             </div>
           </Reveal>
         </div>

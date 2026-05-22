@@ -105,7 +105,7 @@ export const testimonials = [
     company: "Infosys",
     salaryHike: "48% hike",
     review:
-      "I had theory from YouTube but no production perspective. Expert Learning helped me connect Azure services to real delivery workflows and hiring expectations.",
+      "I had theory from YouTube but no production perspective. GenZNext Research & Training helped me connect Azure services to real delivery workflows and hiring expectations.",
   },
   {
     name: "Mariam George",

@@ -1,5 +1,6 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 import { env, hasFirebaseEnv } from "@/lib/env";
 
 const firebaseConfig = {
@@ -14,6 +15,7 @@ const firebaseConfig = {
 
 let firebaseApp: FirebaseApp | null = null;
 let firebaseAuth: Auth | null = null;
+let firebaseDb: Firestore | null = null;
 
 export function isFirebaseConfigured() {
   return hasFirebaseEnv;
@@ -49,4 +51,22 @@ export function getFirebaseAuth() {
   firebaseAuth = getAuth(app);
   firebaseAuth.languageCode = "en";
   return firebaseAuth;
+}
+
+export function getFirebaseDb() {
+  if (!isFirebaseConfigured()) {
+    return null;
+  }
+
+  if (firebaseDb) {
+    return firebaseDb;
+  }
+
+  const app = getFirebaseApp();
+  if (!app) {
+    return null;
+  }
+
+  firebaseDb = getFirestore(app);
+  return firebaseDb;
 }

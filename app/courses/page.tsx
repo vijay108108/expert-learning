@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { buildMetadata } from "@/lib/metadata";
-import { allCourses, courseCategories } from "@/data/courses";
+import { courseCategories, coursesByCategory } from "@/data/courses";
+import { getCategorySectionHref, getCategorySectionId } from "@/lib/course-catalog";
 import { PageHero } from "@/components/ui/page-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
@@ -7,9 +9,9 @@ import { CourseGrid } from "@/sections/shared/course-grid";
 import { CtaBand } from "@/sections/shared/cta-band";
 
 export const metadata = buildMetadata({
-  title: "All Courses | Expert Learning",
+  title: "All Courses | GenZNext Research & Training",
   description:
-    "Browse all Expert Learning programs across AWS, Azure, AI, GenAI, cloud, DevOps, and data engineering.",
+    "Browse all GenZNext Research & Training programs across AWS, Azure, AI, GenAI, cloud, DevOps, and data engineering.",
   path: "/courses",
 });
 
@@ -33,11 +35,14 @@ export default function CoursesPage() {
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {courseCategories.map((category, index) => (
               <Reveal key={category.key} delay={index * 0.05}>
-                <div className="surface-card p-5">
+                <Link
+                  href={getCategorySectionHref(category.key)}
+                  className="surface-card block p-5 transition duration-200 hover:-translate-y-1 hover:border-brand-blue/30"
+                >
                   <div className={`h-[3px] w-full rounded-t-[12px] bg-gradient-to-r ${category.gradient}`} />
                   <div className="mt-4 text-[14px] font-semibold text-brand-text">{category.title}</div>
                   <p className="mt-3 text-[12px] leading-[1.65] text-brand-muted">{category.description}</p>
-                </div>
+                </Link>
               </Reveal>
             ))}
           </div>
@@ -48,12 +53,28 @@ export default function CoursesPage() {
           <Reveal>
             <SectionHeading
               eyebrow="Catalog"
-              title="High-conviction programs for serious career acceleration"
-              description="Every course includes practical curriculum design, mentor guidance, and a modern learner experience."
+              title="Browse every training track by specialization"
+              description="Explore each category section below and compare the course cards, pricing, duration, and official syllabus links without leaving the main catalog flow."
             />
           </Reveal>
-          <div className="mt-12">
-            <CourseGrid courses={allCourses} featuredSlug="aws-solutions-architect" />
+          <div className="mt-12 space-y-16">
+            {courseCategories.map((category, index) => (
+              <section key={category.key} id={getCategorySectionId(category.key)} className="scroll-mt-28">
+                <Reveal delay={index * 0.04}>
+                  <SectionHeading
+                    eyebrow={category.title}
+                    title={`Explore ${category.title.toLowerCase()} tracks`}
+                    description={category.description}
+                  />
+                </Reveal>
+                <div className="mt-10">
+                  <CourseGrid
+                    courses={coursesByCategory[category.key]}
+                    featuredSlug={coursesByCategory[category.key][0]?.slug}
+                  />
+                </div>
+              </section>
+            ))}
           </div>
         </div>
       </section>

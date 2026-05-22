@@ -6,7 +6,7 @@ export function PartnersSection() {
   const logos = [...companyLogos, ...companyLogos];
 
   return (
-    <section className="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <SectionHeading
@@ -22,7 +22,7 @@ export function PartnersSection() {
             {logos.map((company, index) => (
               <div
                 key={`${company}-${index}`}
-                className="min-w-[170px] rounded-full border border-[#DCE9FF] bg-[#F8FBFF] px-6 py-4 text-center text-[12px] font-semibold text-[#0F172A]"
+                className="min-w-[170px] rounded-full border border-white/10 bg-white/[0.06] px-6 py-4 text-center text-[12px] font-semibold text-white"
               >
                 {company}
               </div>

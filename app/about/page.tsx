@@ -8,9 +8,9 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { CtaBand } from "@/sections/shared/cta-band";
 
 export const metadata = buildMetadata({
-  title: "About Us | Expert Learning",
+  title: "About Us | GenZNext Research & Training",
   description:
-    "Learn about Expert Learning, our mission, and how we help students and professionals build cloud and AI careers.",
+    "Learn about GenZNext Research & Training, our mission, and how we help students and professionals build cloud and AI careers.",
   path: "/about",
 });
 
@@ -18,9 +18,9 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="About Expert Learning"
+        eyebrow="About GenZNext Research & Training"
         title="An ed-tech brand built to turn ambition into technical career momentum"
-        description="Expert Learning is powered by Netseems Ventures Pvt Ltd and focused on premium, enterprise-grade learning experiences across cloud, AI, DevOps, and professional certifications."
+        description="GenZNext Research & Training is powered by Netseems Ventures Pvt Ltd and focused on premium, enterprise-grade learning experiences across cloud, AI, DevOps, and professional certifications."
       />
       <section className="px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">

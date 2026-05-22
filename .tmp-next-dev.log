@@ -1,0 +1,19 @@
+
+> expert-learning@0.1.0 dev
+> next dev
+
+⚠ Port 3000 is in use by process 17984, using available port 3001 instead.
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://10.72.35.5:3001
+- Environments: .env.local
+✓ Ready in 1697ms
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          17984
+- Dir:          E:\Expert Leaning
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 17984 /F to stop it.
+[?25h

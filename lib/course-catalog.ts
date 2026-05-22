@@ -1,7 +1,25 @@
-import { allCourses } from "@/data/courses";
+import { allCourses, type Course } from "@/data/courses";
 
 export function getCourseBySlug(slug: string) {
   return allCourses.find((course) => course.slug === slug);
+}
+
+export function getCoursesBySlugs(slugs: string[]) {
+  return slugs
+    .map((slug) => getCourseBySlug(slug))
+    .filter((course): course is Course => Boolean(course));
+}
+
+export function getCategorySectionId(category: string) {
+  return `${category}-programs`;
+}
+
+export function getCategorySectionHref(category: string) {
+  return `/courses#${getCategorySectionId(category)}`;
+}
+
+export function getCoursePath(course: Course) {
+  return getCategorySectionHref(course.category);
 }
 
 export function listCoursesForApi() {
@@ -14,8 +32,13 @@ export function listCoursesForApi() {
     level: course.level,
     price: course.price,
     highlight: course.highlight,
+    certificate: course.certificate,
     category: course.category,
     tags: course.tags,
+    officialSyllabusUrl: course.officialSyllabusUrl,
+    toolsCovered: course.toolsCovered,
+    roadmap: course.roadmap,
+    outcomes: course.outcomes,
   }));
 }
 
@@ -31,4 +54,8 @@ export function parsePriceToPaise(price: string) {
   }
 
   return Number(normalized) * 100;
+}
+
+export function formatPaiseToPrice(paise: number) {
+  return `Rs. ${Math.round(paise / 100).toLocaleString("en-IN")}`;
 }

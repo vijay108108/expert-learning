@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 
 export function PricingSection() {
   return (
-    <section className="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <SectionHeading

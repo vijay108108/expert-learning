@@ -3,14 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type { Course } from "@/data/courses";
-
-declare global {
-  interface Window {
-    Razorpay?: new (options: Record<string, unknown>) => {
-      open: () => void;
-    };
-  }
-}
+import { ensureRazorpayScript } from "@/lib/razorpay-browser";
 
 const initialState = {
   name: "",
@@ -25,20 +18,6 @@ export function EnrollmentForm({ course }: { course: Course }) {
   const router = useRouter();
 
   const amountLabel = useMemo(() => course.price, [course.price]);
-
-  async function ensureRazorpayScript() {
-    if (window.Razorpay) {
-      return true;
-    }
-
-    return new Promise<boolean>((resolve) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -78,7 +57,7 @@ export function EnrollmentForm({ course }: { course: Course }) {
         key: createPayload.keyId,
         amount: createPayload.order.amount,
         currency: createPayload.order.currency,
-        name: "Expert Learning",
+        name: "GenZNext Research & Training",
         description: course.title,
         order_id: createPayload.order.id,
         prefill: {
@@ -87,7 +66,7 @@ export function EnrollmentForm({ course }: { course: Course }) {
           contact: form.phone,
         },
         theme: {
-          color: "#2563EB",
+          color: "#F97316",
         },
         handler: async (response: Record<string, string>) => {
           const verifyResponse = await fetch("/api/payment/verify", {
@@ -175,7 +154,7 @@ export function EnrollmentForm({ course }: { course: Course }) {
         <button
           type="submit"
           disabled={pending}
-          className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-[linear-gradient(135deg,#2563EB,#3B82F6)] px-5 py-[13px] text-sm font-semibold text-white shadow-[0_12px_30px_rgba(37,99,235,0.28),0_0_18px_rgba(96,165,250,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(37,99,235,0.34),0_0_24px_rgba(96,165,250,0.16)] disabled:opacity-70"
+          className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-[linear-gradient(135deg,#F97316,#FB923C)] px-5 py-[13px] text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:opacity-70"
         >
           {pending ? "Processing..." : "Proceed to Payment"}
         </button>

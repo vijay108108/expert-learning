@@ -1,175 +1,83 @@
-import { ArrowRight, BadgeCheck, BriefcaseBusiness, Building2, Cloud, DatabaseZap, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { DemoModalTrigger } from "@/components/demo/demo-modal-trigger";
 import { ButtonLink } from "@/components/ui/button-link";
-import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { Reveal } from "@/components/ui/reveal";
-import { companyLogos, heroStats } from "@/data/site";
+import { getHeroStats } from "@/lib/hero-stats";
 
-const techPills = ["AWS", "Azure", "AI", "DevOps", "Python", "Cloud"];
+const techPills = ["AWS", "Azure", "AI", "DevOps", "Python"];
 
-export function HeroSection() {
+export async function HeroSection() {
+  const stats = await getHeroStats();
+
   return (
-    <section className="hero-home px-4 pt-16 pb-[72px] sm:px-6 lg:px-8">
-      <div className="relative mx-auto max-w-7xl">
-        <div className="pointer-events-none absolute inset-x-0 top-10 z-0 h-56 bg-[radial-gradient(circle_at_center,rgba(96,165,250,0.12),transparent_68%)] blur-3xl" />
-        <div className="grid gap-10 lg:grid-cols-[1fr_0.96fr] lg:items-center">
-          <Reveal>
-            <div className="relative z-[1]">
-              <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue-light/40 bg-brand-blue/20 px-[14px] py-1 text-[11px] font-medium text-brand-blue-light">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-blue-bright" />
-                Industrial Summer Training 2025 · Registrations Open
-              </div>
-              <h1 className="mt-5 max-w-[680px] text-[28px] font-bold leading-[1.2] text-white sm:text-[38px]">
-                Master <span className="text-brand-blue-bright">Cloud, AI &amp; DevOps</span> Skills with Industry Experts
-              </h1>
-              <p className="mt-4 max-w-[560px] text-[15px] leading-[1.75] text-white/78">
-                Get hands-on cloud and AI training programs designed for real-world careers and certifications.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-2">
-                {techPills.map((item) => (
-                  <span
-                    key={item}
-                    className="mono-tag rounded-[4px] border border-brand-blue-light/35 bg-brand-blue/20 px-[10px] py-1 text-[11px] text-brand-blue-light"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <ButtonLink href="/courses">
-                  Explore Programs
-                  <ArrowRight className="h-4 w-4" />
-                </ButtonLink>
-                <ButtonLink href="/contact" variant="secondary">
-                  Book Free Demo
-                </ButtonLink>
-              </div>
-              <div className="mt-10 flex flex-wrap gap-x-8 gap-y-4">
-                {[
-                  { value: "10K+", label: "Learners" },
-                  { value: "4.8★", label: "Rating" },
-                  { value: "96%", label: "Cert Readiness" },
-                  { value: "6 Weeks", label: "Program" },
-                ].map((item) => (
-                  <div key={item.label}>
-                    <div className="text-2xl font-bold text-white">{item.value}</div>
-                    <div className="mt-1 text-[11px] text-white/52">{item.label}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-10 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-                {companyLogos.slice(0, 6).map((company) => (
-                  <div
-                    key={company}
-                    className="rounded-[10px] border border-white/12 bg-white/6 px-4 py-3 text-center text-[12px] font-medium text-white/76"
-                  >
-                    {company}
-                  </div>
-                ))}
-              </div>
+    <section className="relative overflow-hidden bg-[#111827] px-4 py-[52px] sm:px-6 lg:px-9 lg:pt-[52px] lg:pb-[56px]">
+      <div
+        className="pointer-events-none absolute top-[-60px] right-[-60px] h-[280px] w-[280px] rounded-full bg-[rgba(249,115,22,0.06)]"
+        aria-hidden="true"
+      />
+
+      <div className="mx-auto max-w-7xl">
+        <Reveal>
+          <div className="max-w-[540px]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(249,115,22,0.18)] bg-[rgba(249,115,22,0.08)] px-3 py-1 text-[12px] text-[#FB923C]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F97316]" />
+              Shopping Cart
             </div>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <div className="relative z-[1]">
-              <div className="glass-panel-dark float-slow absolute -left-4 top-8 hidden rounded-xl p-4 text-white lg:block">
-                <div className="flex items-center gap-3">
-                  <ShieldCheck className="h-9 w-9 rounded-lg bg-white/12 p-2 text-brand-blue-light" />
-                  <div>
-                    <div className="text-sm font-semibold">Placement Support</div>
-                    <div className="text-xs text-white/65">Interview prep &amp; roadmap reviews</div>
-                  </div>
-                </div>
-              </div>
-              <div className="glass-panel-dark float-delayed absolute right-0 top-0 hidden rounded-xl p-4 text-white lg:block">
-                <div className="flex items-center gap-3">
-                  <BadgeCheck className="h-9 w-9 rounded-lg bg-white/12 p-2 text-brand-blue-bright" />
-                  <div>
-                    <div className="text-sm font-semibold">Cert Focus</div>
-                    <div className="text-xs text-white/65">Exam aligned labs and assessments</div>
-                  </div>
-                </div>
-              </div>
-              <div className="hero-panel rounded-[20px] p-5 text-white sm:p-6">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <div className="mono-meta text-[11px] uppercase tracking-[0.14em] text-brand-blue-light">
-                      Training Dashboard
-                    </div>
-                    <div className="mt-2 text-2xl font-semibold">Program performance and delivery stack</div>
-                  </div>
-                  <div className="rounded-full border border-white/18 bg-white/10 px-4 py-2 text-[11px] text-white/78">
-                    Cohort admissions open
-                  </div>
-                </div>
-                <div className="mt-6 grid gap-4 md:grid-cols-[1.08fr_0.92fr]">
-                  <div className="rounded-[16px] border border-white/12 bg-white/8 p-5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-white/78">Certification readiness</span>
-                      <span className="mono-meta text-sm font-semibold text-brand-blue-light">96%</span>
-                    </div>
-                    <div className="mt-4 h-2 rounded-full bg-white/10">
-                      <div className="h-2 w-[96%] rounded-full bg-[linear-gradient(90deg,#2563EB,#60A5FA)] shadow-[0_0_18px_rgba(96,165,250,0.18)]" />
-                    </div>
-                    <p className="mt-4 text-sm leading-6 text-white/72">
-                      Industry-led training with practical labs across AWS, Azure, DevOps, Python, cloud engineering, and AI implementation.
-                    </p>
-                    <div className="mt-5 grid grid-cols-2 gap-3">
-                      <div className="rounded-xl border border-white/10 bg-white/8 p-4">
-                        <div className="flex items-center gap-2 text-[12px] text-white/76">
-                          <Cloud className="h-4 w-4 text-brand-blue-light" />
-                          AWS Track
-                        </div>
-                        <div className="mono-meta mt-2 text-xl font-semibold">6 Weeks</div>
-                      </div>
-                      <div className="rounded-xl border border-white/10 bg-white/8 p-4">
-                        <div className="flex items-center gap-2 text-[12px] text-white/76">
-                          <DatabaseZap className="h-4 w-4 text-brand-blue-bright" />
-                          AI Labs
-                        </div>
-                        <div className="mono-meta mt-2 text-xl font-semibold">24 Projects</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="rounded-[16px] border border-white/12 bg-white/8 p-5">
-                      <div className="flex items-center gap-3">
-                        <BriefcaseBusiness className="h-10 w-10 rounded-lg bg-white/12 p-2 text-brand-blue-light" />
-                        <div>
-                          <div className="text-sm text-white/76">Career Support</div>
-                          <div className="text-xl font-semibold">24 mock interviews</div>
-                        </div>
-                      </div>
-                      <div className="mt-5 space-y-3 text-sm text-white/70">
-                        <div className="rounded-lg border border-white/10 bg-white/6 px-4 py-3">
-                          Resume and LinkedIn positioning
-                        </div>
-                        <div className="rounded-lg border border-white/10 bg-white/6 px-4 py-3">
-                          Certification roadmap review
-                        </div>
-                        <div className="rounded-lg border border-white/10 bg-white/6 px-4 py-3">
-                          Mock interview feedback
-                        </div>
-                      </div>
-                    </div>
-                    <div className="rounded-[16px] border border-white/12 bg-white/8 p-5">
-                      <div className="flex items-center gap-3">
-                        <Building2 className="h-10 w-10 rounded-lg bg-white/12 p-2 text-brand-blue-bright" />
-                        <div>
-                          <div className="text-sm text-white/76">Hiring Network</div>
-                          <div className="text-xl font-semibold">Amazon · Microsoft · IBM</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
+            <h1 className="mt-5 max-w-[500px] text-[30px] font-semibold leading-[1.28] text-[#F1F5F9]">
+              Choose the right Cloud, AI and DevOps path for your next{" "}
+              <span className="text-[#F97316]">certification</span>.
+            </h1>
+
+            <p className="mt-4 max-w-[440px] text-[14px] leading-[1.7] text-[#64748B]">
+              Explore industry-ready training programs, compare paths quickly, and move from interest to enrollment with a cleaner, faster learning experience.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {techPills.map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex items-center rounded-full border border-[rgba(249,115,22,0.28)] bg-[rgba(255,255,255,0.06)] px-[12px] py-[5px] text-[11px] text-[#E2E8F0] transition-all duration-150 ease-in-out hover:bg-[#F97316] hover:text-white"
+                >
+                  {item}
+                </span>
+              ))}
             </div>
-          </Reveal>
-        </div>
-        <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {heroStats.map((item) => (
-            <AnimatedCounter key={item.label} value={item.value} suffix={item.suffix} label={item.label} />
-          ))}
-        </div>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              <ButtonLink
+                href="/courses"
+                className="rounded-[8px] border-0 bg-[#F97316] px-[22px] py-[10px] text-[13px] font-medium text-white shadow-[0_14px_30px_rgba(249,115,22,0.18)] hover:bg-[#EA580C]"
+              >
+                Explore Courses
+                <ArrowRight className="h-4 w-4" />
+              </ButtonLink>
+
+              <DemoModalTrigger
+                variant="secondary"
+                className="rounded-[8px] border border-[rgba(255,255,255,0.12)] bg-transparent px-[22px] py-[10px] text-[13px] text-[#94A3B8] hover:border-[rgba(255,255,255,0.25)] hover:text-[#F1F5F9]"
+                source="Homepage Hero Admissions"
+                title="Talk to admissions"
+                description="Share your preferred course and we will help you pick the right learning and certification path."
+              >
+                Talk to Admissions
+              </DemoModalTrigger>
+            </div>
+
+            {stats ? (
+              <div className="mt-9 border-t border-[rgba(255,255,255,0.06)] pt-7">
+                <div className="flex flex-wrap gap-7">
+                  {stats.map((item) => (
+                    <div key={item.label}>
+                      <div className="text-[20px] font-semibold text-[#F1F5F9]">{item.value}</div>
+                      <div className="mt-1 text-[12px] text-[#475569]">{item.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </Reveal>
       </div>
     </section>
   );

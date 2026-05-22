@@ -35,3 +35,18 @@ export function verifyRazorpaySignature(payload: {
 
   return generated === payload.signature;
 }
+
+export async function getRazorpayPaymentDetails(paymentId: string) {
+  const razorpay = getRazorpayClient();
+
+  if (!razorpay) {
+    return null;
+  }
+
+  try {
+    return await razorpay.payments.fetch(paymentId);
+  } catch (error) {
+    console.error("[Razorpay] Unable to fetch payment details", { paymentId, error });
+    return null;
+  }
+}

@@ -42,7 +42,7 @@ export function ScrollProgress() {
     <div className="fixed inset-x-0 top-0 z-[70] h-1 bg-transparent">
       <div
         ref={progressRef}
-        className="h-full origin-left scale-x-0 bg-[linear-gradient(90deg,#2563EB,#3B82F6,#60A5FA)] transition-transform duration-150"
+        className="h-full origin-left scale-x-0 bg-[linear-gradient(90deg,#F97316,#FB923C,#FDBA74)] transition-transform duration-150"
       />
     </div>
   );

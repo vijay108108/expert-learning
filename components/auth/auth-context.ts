@@ -11,8 +11,13 @@ export type AuthContextValue = {
   isModalOpen: boolean;
   modalMode: AuthModalMode;
   redirectAfterAuth: string;
-  openAuthModal: (mode: AuthModalMode, redirectTo?: string) => void;
+  openAuthModal: (
+    mode: AuthModalMode,
+    redirectTo?: string,
+    onAuthenticated?: (() => void | Promise<void>) | null,
+  ) => void;
   closeAuthModal: () => void;
+  handleAuthSuccess: () => Promise<boolean>;
   signOutUser: () => Promise<void>;
 };
 

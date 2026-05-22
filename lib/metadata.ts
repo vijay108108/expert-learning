@@ -24,7 +24,7 @@ export function buildMetadata({
       "AI certification",
       "DevOps bootcamp",
       "Cloud courses India",
-      "Expert Learning",
+      "GenZNext Research & Training",
     ],
     openGraph: {
       title,

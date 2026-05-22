@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCourseBySlug, parsePriceToPaise } from "@/lib/course-catalog";
+import { getCoursesBySlugs, parsePriceToPaise } from "@/lib/course-catalog";
 import { env } from "@/lib/env";
 import { getRazorpayClient } from "@/lib/services/payments";
 import { paymentCreateSchema } from "@/lib/validations";
@@ -8,13 +8,18 @@ export async function POST(request: Request) {
   try {
     const body = paymentCreateSchema.parse(await request.json());
     const razorpay = getRazorpayClient();
-    const course = getCourseBySlug(body.courseSlug);
+    const courseSlugs = body.courseSlugs?.length ? body.courseSlugs : body.courseSlug ? [body.courseSlug] : [];
+    const courses = getCoursesBySlugs(courseSlugs);
 
-    if (!course) {
-      return NextResponse.json({ success: false, message: "Course not found." }, { status: 404 });
+    if (courses.length !== courseSlugs.length) {
+      return NextResponse.json({ success: false, message: "One or more selected courses were not found." }, { status: 404 });
     }
 
-    const amount = parsePriceToPaise(course.price);
+    const subtotalPaise = courses.reduce((sum, course) => {
+      const price = parsePriceToPaise(course.price);
+      return sum + (price || 0);
+    }, 0);
+    const amount = subtotalPaise;
 
     if (!amount || !razorpay) {
       return NextResponse.json(
@@ -26,12 +31,15 @@ export async function POST(request: Request) {
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",
-      receipt: `${body.courseSlug}-${Date.now()}`,
+      receipt: `${courseSlugs[0]?.slice(0, 18) || "cart"}-${courseSlugs.length}-${Date.now()}`.slice(0, 40),
       notes: {
         name: body.name,
         email: body.email,
         phone: body.phone,
-        courseSlug: body.courseSlug,
+        courseSlug: courseSlugs[0],
+        courseSlugs: courseSlugs.join(","),
+        gstNumber: body.gstNumber?.trim() || "",
+        companyName: body.companyName?.trim() || "",
       },
     });
 
@@ -39,7 +47,7 @@ export async function POST(request: Request) {
       success: true,
       keyId: env.nextPublicRazorpayKeyId,
       order,
-      course,
+      courses,
     });
   } catch (error) {
     return NextResponse.json(

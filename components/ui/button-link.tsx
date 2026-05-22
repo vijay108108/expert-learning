@@ -10,26 +10,28 @@ type ButtonLinkProps = {
   onClick?: () => void;
 };
 
+export type ButtonLinkVariant = NonNullable<ButtonLinkProps["variant"]>;
+
 export function buttonLinkClasses(
-  variant: NonNullable<ButtonLinkProps["variant"]> = "primary",
+  variant: ButtonLinkVariant = "primary",
   className?: string,
 ) {
   return cn(
     "inline-flex touch-manipulation items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all duration-200",
     variant === "primary" &&
-      "bg-[linear-gradient(135deg,#2563EB,#3B82F6)] text-white shadow-[0_12px_30px_rgba(37,99,235,0.28),0_0_18px_rgba(96,165,250,0.12)] hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(37,99,235,0.34),0_0_24px_rgba(96,165,250,0.16)]",
+      "bg-[linear-gradient(135deg,#F97316,#FB923C)] text-white shadow-[0_12px_30px_rgba(249,115,22,0.32),0_0_22px_rgba(251,146,60,0.14)] hover:-translate-y-0.5 hover:bg-[#EA580C] hover:shadow-[0_18px_40px_rgba(234,88,12,0.36),0_0_28px_rgba(251,146,60,0.18)]",
     variant === "secondary" &&
-      "border border-white/18 bg-white/6 text-white hover:border-white/28 hover:bg-white/10",
+      "border border-[#FB923C]/38 bg-white text-[#F97316] shadow-[0_10px_24px_rgba(249,115,22,0.08)] backdrop-blur-xl hover:-translate-y-0.5 hover:border-[#F97316] hover:bg-[#FFF7ED] hover:text-[#EA580C]",
     variant === "outline" &&
-      "border border-[#BFDBFE] bg-white text-[#2563EB] shadow-[0_8px_20px_rgba(37,99,235,0.08)] hover:-translate-y-0.5 hover:border-[#60A5FA] hover:bg-[#F0F6FF] hover:shadow-[0_14px_28px_rgba(37,99,235,0.14)]",
+      "border border-[#FB923C]/38 bg-white text-[#F97316] shadow-[0_8px_24px_rgba(249,115,22,0.08)] backdrop-blur-xl hover:-translate-y-0.5 hover:border-[#F97316] hover:bg-[#FFF7ED] hover:shadow-[0_14px_28px_rgba(249,115,22,0.16)]",
     variant === "gradient" &&
-      "bg-[linear-gradient(135deg,#2563EB,#3B82F6)] text-white shadow-[0_12px_30px_rgba(37,99,235,0.28),0_0_18px_rgba(96,165,250,0.12)] hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(37,99,235,0.34),0_0_24px_rgba(96,165,250,0.16)]",
+      "bg-[linear-gradient(135deg,#F97316,#FB923C)] text-white shadow-[0_12px_30px_rgba(249,115,22,0.32),0_0_22px_rgba(251,146,60,0.14)] hover:-translate-y-0.5 hover:bg-[#EA580C] hover:shadow-[0_18px_40px_rgba(234,88,12,0.36),0_0_28px_rgba(251,146,60,0.18)]",
     variant === "navGhost" &&
-      "border border-white/16 bg-white/6 px-4 py-2.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/28 hover:bg-white/10",
+      "border border-white/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.04))] px-4 py-2.5 text-[13px] text-white shadow-[0_12px_26px_rgba(2,8,28,0.22),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl hover:-translate-y-0.5 hover:border-[#FB923C]/44 hover:bg-white/12 hover:shadow-[0_16px_32px_rgba(249,115,22,0.14),inset_0_1px_0_rgba(255,255,255,0.08)]",
     variant === "navPrimary" &&
-      "bg-[linear-gradient(135deg,#2563EB,#3B82F6)] px-4 py-2.5 text-white shadow-[0_12px_28px_rgba(37,99,235,0.28),0_0_18px_rgba(96,165,250,0.12)] hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(37,99,235,0.34),0_0_24px_rgba(96,165,250,0.16)]",
+      "bg-[linear-gradient(135deg,#F97316,#FB923C)] px-4 py-2.5 text-[13px] text-white shadow-[0_14px_30px_rgba(249,115,22,0.32),0_0_22px_rgba(251,146,60,0.16)] hover:-translate-y-0.5 hover:bg-[#EA580C] hover:shadow-[0_20px_38px_rgba(234,88,12,0.36),0_0_28px_rgba(251,146,60,0.2)]",
     variant === "amber" &&
-      "bg-[linear-gradient(135deg,#2563EB,#3B82F6)] text-white shadow-[0_12px_30px_rgba(37,99,235,0.28),0_0_18px_rgba(96,165,250,0.12)] hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(37,99,235,0.34),0_0_24px_rgba(96,165,250,0.16)]",
+      "bg-[linear-gradient(135deg,#F97316,#FB923C)] text-white shadow-[0_12px_30px_rgba(249,115,22,0.32),0_0_22px_rgba(251,146,60,0.14)] hover:-translate-y-0.5 hover:bg-[#EA580C] hover:shadow-[0_18px_40px_rgba(234,88,12,0.36),0_0_28px_rgba(251,146,60,0.18)]",
     className,
   );
 }

@@ -5,7 +5,7 @@ import { PageHero } from "@/components/ui/page-hero";
 import { Reveal } from "@/components/ui/reveal";
 
 export const metadata = buildMetadata({
-  title: "Blog | Expert Learning",
+  title: "Blog | GenZNext Research & Training",
   description:
     "Insights, career advice, and learning strategy for cloud, AI, and DevOps professionals.",
   path: "/blog",

@@ -24,7 +24,7 @@ export function getCourseListSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Expert Learning professional certification courses",
+    name: "GenZNext Research & Training professional certification courses",
     itemListElement: allCourses.map((course, index) => ({
       "@type": "Course",
       position: index + 1,

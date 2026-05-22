@@ -1,19 +1,21 @@
+import { ProtectedRouteGuard } from "@/components/auth/protected-route-guard";
 import { DashboardPanel } from "@/components/auth/dashboard-panel";
-import { PageHero } from "@/components/ui/page-hero";
 
-export default function DashboardPage() {
+type DashboardPageProps = {
+  searchParams: Promise<{
+    payment?: string | string[];
+  }>;
+};
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const paymentCompleted = Array.isArray(resolvedSearchParams.payment)
+    ? resolvedSearchParams.payment.includes("success")
+    : resolvedSearchParams.payment === "success";
+
   return (
-    <>
-      <PageHero
-        eyebrow="Dashboard"
-        title="Track your account and enrollment journey"
-        description="Your student dashboard is ready for authentication, enrollments, profile details, and future certificate access."
-      />
-      <section className="px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <DashboardPanel />
-        </div>
-      </section>
-    </>
+    <ProtectedRouteGuard>
+      <DashboardPanel paymentCompleted={paymentCompleted} />
+    </ProtectedRouteGuard>
   );
 }

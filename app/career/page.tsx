@@ -6,7 +6,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { CtaBand } from "@/sections/shared/cta-band";
 
 export const metadata = buildMetadata({
-  title: "Career | Expert Learning",
+  title: "Career | GenZNext Research & Training",
   description:
     "Explore open roles and join the team building premium cloud and AI education experiences.",
   path: "/career",
@@ -40,7 +40,7 @@ export default function CareerPage() {
                 </div>
                 <a
                   href="mailto:careers@expertlearning.in"
-                  className="inline-flex items-center justify-center rounded-lg bg-[linear-gradient(135deg,#2563EB,#3B82F6)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(37,99,235,0.28),0_0_18px_rgba(96,165,250,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(37,99,235,0.34),0_0_24px_rgba(96,165,250,0.16)]"
+                  className="inline-flex items-center justify-center rounded-lg bg-[linear-gradient(135deg,#F97316,#FB923C)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)]"
                 >
                   Apply
                 </a>

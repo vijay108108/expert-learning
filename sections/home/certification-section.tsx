@@ -4,7 +4,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 
 export function CertificationSection() {
   return (
-    <section className="section-shell bg-[#F5F9FF] px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section className="section-shell px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <SectionHeading
@@ -18,17 +18,17 @@ export function CertificationSection() {
           {certificationPaths.map((path, index) => (
             <Reveal key={path.title} delay={index * 0.06}>
               <div className="surface-card rounded-[24px] p-6">
-                <h3 className="text-[15px] font-semibold text-[#0F172A]">{path.title}</h3>
-                <p className="mt-3 text-[13px] leading-[1.75] text-[#475569]">{path.subtitle}</p>
+                <h3 className="text-[15px] font-semibold text-white">{path.title}</h3>
+                <p className="mt-3 text-[13px] leading-[1.75] text-[#E2E8F0]">{path.subtitle}</p>
                 <div className="mt-8 space-y-4">
                   {path.steps.map((step, stepIndex) => (
                     <div key={step} className="flex items-start gap-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[12px] font-semibold text-white">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F97316] text-[12px] font-semibold text-white">
                         {stepIndex + 1}
                       </div>
-                      <div className="relative flex-1 rounded-[12px] border border-[#DCE9FF] bg-[#F8FBFF] px-4 py-3 text-[13px] font-medium text-[#0F172A]">
+                      <div className="relative flex-1 rounded-[12px] border border-white/10 bg-white/[0.06] px-4 py-3 text-[13px] font-medium text-white">
                         {stepIndex < path.steps.length - 1 && (
-                          <div className="absolute -bottom-4 left-0 hidden h-[2px] w-8 bg-[#BFDBFE] md:block" />
+                          <div className="absolute -bottom-4 left-0 hidden h-[2px] w-8 bg-[#FB923C]/40 md:block" />
                         )}
                         {step}
                       </div>

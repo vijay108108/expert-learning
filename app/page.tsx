@@ -7,7 +7,9 @@ import { LeadCaptureSection } from "@/sections/home/lead-capture-section";
 import { PartnersSection } from "@/sections/home/partners-section";
 import { PricingSection } from "@/sections/home/pricing-section";
 import { SuccessSection } from "@/sections/home/success-section";
+import { SummerTrainingSection } from "@/sections/home/summer-training-section";
 import { WhyChooseSection } from "@/sections/home/why-choose-section";
+import { RegistrationPopup } from "@/components/summer-training/registration-popup";
 import { getCourseListSchema, getFaqSchema, getOrganizationSchema } from "@/lib/schema";
 
 export default function Home() {
@@ -15,6 +17,7 @@ export default function Home() {
 
   return (
     <>
+      <RegistrationPopup />
       {schemas.map((schema, index) => (
         <script
           key={index}
@@ -23,6 +26,7 @@ export default function Home() {
         />
       ))}
       <HeroSection />
+      <SummerTrainingSection />
       <FeaturedCoursesSection />
       <WhyChooseSection />
       <JourneySection />

@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AuthContext, type AuthContextValue, type AuthModalMode } from "@/components/auth/auth-context";
 import { AuthModal } from "@/components/auth/auth-modal";
-import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase";
+import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase/firebase";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -18,6 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<AuthModalMode>("login");
   const [redirectAfterAuth, setRedirectAfterAuth] = useState("/dashboard");
+  const [pendingAuthAction, setPendingAuthAction] = useState<(() => void | Promise<void>) | null>(null);
 
   useEffect(() => {
     const auth = getFirebaseAuth();
@@ -54,15 +55,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const openAuthModal = useCallback((mode: AuthModalMode, redirectTo = "/dashboard") => {
+  const openAuthModal = useCallback((
+    mode: AuthModalMode,
+    redirectTo = "/dashboard",
+    onAuthenticated?: (() => void | Promise<void>) | null,
+  ) => {
     setModalMode(mode);
     setRedirectAfterAuth(redirectTo);
+    if (onAuthenticated !== undefined) {
+      setPendingAuthAction(() => onAuthenticated ?? null);
+    }
     setIsModalOpen(true);
   }, []);
 
   const closeAuthModal = useCallback(() => {
     setIsModalOpen(false);
+    setPendingAuthAction(null);
   }, []);
+
+  const handleAuthSuccess = useCallback(async () => {
+    if (!pendingAuthAction) {
+      return false;
+    }
+
+    const action = pendingAuthAction;
+    setPendingAuthAction(null);
+    await action();
+    return true;
+  }, [pendingAuthAction]);
 
   const signOutUser = useCallback(async () => {
     const auth = getFirebaseAuth();
@@ -85,9 +105,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       redirectAfterAuth,
       openAuthModal,
       closeAuthModal,
+      handleAuthSuccess,
       signOutUser,
     }),
-    [closeAuthModal, isAuthReady, isModalOpen, modalMode, openAuthModal, redirectAfterAuth, signOutUser, user],
+    [closeAuthModal, handleAuthSuccess, isAuthReady, isModalOpen, modalMode, openAuthModal, redirectAfterAuth, signOutUser, user],
   );
 
   return (
