@@ -11,14 +11,17 @@ import {
 import { ArrowRight, CheckCircle2, LoaderCircle, ShieldCheck, Smartphone, User2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getFirebaseAuthErrorMessage } from "@/lib/firebase/auth-errors";
-import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase/firebase";
 import {
   clearRecaptcha,
+  getFirebaseAuth,
+  getFirebaseAuthErrorMessage,
   getRecaptchaVerifier,
+  getUserProfile,
+  isFirebaseConfigured,
   recaptchaContainerId,
-} from "@/lib/firebase/phone-auth";
-import { getUserProfile, saveUserWhatsappNumber, upsertGoogleUserProfile } from "@/lib/firebase/user-profiles";
+  saveUserWhatsappNumber,
+  upsertGoogleUserProfile,
+} from "@/lib/firebase";
 import { buttonLinkClasses } from "@/components/ui/button-link";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";

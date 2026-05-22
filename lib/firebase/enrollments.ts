@@ -9,7 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase/firebase";
+import { getFirebaseDb } from "@/lib/firebase";
 import type { StoredOrderSuccess } from "@/lib/order-success";
 
 export type FirestoreEnrollment = {

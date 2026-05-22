@@ -7,18 +7,17 @@ import { useAuth } from "@/hooks/use-auth";
 import { LmsPortal } from "@/components/dashboard/lms-portal";
 import { allCourses } from "@/data/courses";
 import { getLmsProgramBySlug, lmsPrograms, type LmsLesson, type LmsProgram } from "@/data/lms-content";
-import { getMyEnrollments, type FirestoreEnrollment } from "@/lib/firebase/enrollments";
-import { isFirebaseConfigured } from "@/lib/firebase/firebase";
 import {
   getCompletedLessons,
+  getMyEnrollments,
   getLastVisitedLessons,
-  type LastVisitedLesson,
-} from "@/lib/firebase/lms-activity";
-import {
   getUserProfile,
+  isFirebaseConfigured,
   saveUserWhatsappNumber,
   type AppUserProfile,
-} from "@/lib/firebase/user-profiles";
+  type FirestoreEnrollment,
+  type LastVisitedLesson,
+} from "@/lib/firebase";
 import {
   latestOrderStorageKey,
   type StoredOrderSuccess,

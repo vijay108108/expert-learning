@@ -12,7 +12,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { getFirebaseDb } from "@/lib/firebase/firebase";
+import { getFirebaseDb } from "@/lib/firebase";
 
 export type LessonProgressState = "completed";
 

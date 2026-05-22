@@ -28,9 +28,9 @@ import {
   type LmsProgram,
 } from "@/data/lms-content";
 import { allCourses } from "@/data/courses";
-import type { FirestoreEnrollment } from "@/lib/firebase/enrollments";
 import {
   addCourseQuestion,
+  type FirestoreEnrollment,
   getCompletedLessons,
   getCourseQuestions,
   getLastVisitedLesson,
@@ -43,7 +43,7 @@ import {
   saveLessonNote,
   type LessonQuestion,
   type LmsNotification,
-} from "@/lib/firebase/lms-activity";
+} from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 
 type DashboardUserInfo = {

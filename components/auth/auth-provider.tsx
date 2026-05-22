@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AuthContext, type AuthContextValue, type AuthModalMode } from "@/components/auth/auth-context";
 import { AuthModal } from "@/components/auth/auth-modal";
-import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase/firebase";
+import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

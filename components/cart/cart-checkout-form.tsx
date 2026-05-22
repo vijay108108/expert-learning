@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 import { formatPaiseToPrice } from "@/lib/course-catalog";
-import { saveInvoiceEnrollments } from "@/lib/firebase/enrollments";
+import { saveInvoiceEnrollments } from "@/lib/firebase";
 import {
   formatCurrencyInrFromPaise,
   getInclusiveGstBreakup,

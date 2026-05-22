@@ -2,7 +2,7 @@
 
 import { type User } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { getFirebaseDb } from "@/lib/firebase/firebase";
+import { getFirebaseDb } from "@/lib/firebase";
 
 export type AppUserProfile = {
   uid: string;
