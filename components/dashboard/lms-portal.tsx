@@ -35,6 +35,7 @@ import {
   getCourseQuestions,
   getLastVisitedLesson,
   getLessonNote,
+  logFirestoreIssue,
   getUserNotifications,
   markLessonCompleted,
   markNotificationRead,
@@ -125,6 +126,15 @@ function formatDate(value: Date) {
     month: "short",
     timeZone: "Asia/Kolkata",
   }).format(value);
+}
+
+function formatEnrollmentDate(value: string) {
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  }).format(new Date(value));
 }
 
 function getWeekdaysFromSchedule(schedule: string) {
@@ -460,7 +470,7 @@ export function LmsPortal({
                 ],
           );
         } catch (error) {
-          console.error("[LMS] Unable to load activity", error);
+          logFirestoreIssue("[LMS] Unable to load activity", error);
         }
       })();
     });
@@ -693,9 +703,46 @@ export function LmsPortal({
         <div className="flex h-full flex-col">
           <div className="border-b border-[#f1f5f9] bg-[#f8fafc] px-4 py-[14px]">
             <button type="button" onClick={onResetCourseSelection} className="text-[11px] text-[#94a3b8] transition hover:text-[#475569]">
-              ← Back to Dashboard
+              ← View all courses
             </button>
           </div>
+
+          {enrollments.length > 1 ? (
+            <>
+              <div className="border-b border-[#f1f5f9] px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94a3b8]">
+                My Courses
+              </div>
+              <div className="space-y-2 border-b border-[#f1f5f9] px-4 py-3">
+                {enrollments.map((enrollment) => {
+                  const activeCourse = enrollment.courseId === selectedProgram.courseSlug;
+
+                  return (
+                    <button
+                      key={enrollment.id}
+                      type="button"
+                      onClick={() => {
+                        onSelectCourse(enrollment.courseId);
+                        setMobileSidebarOpen(false);
+                      }}
+                      className={cn(
+                        "w-full rounded-[10px] border px-3 py-2 text-left transition",
+                        activeCourse
+                          ? "border-[#fed7aa] bg-[#fff7ed]"
+                          : "border-[#e2e8f0] bg-white hover:border-[#fed7aa] hover:bg-[#fffaf5]",
+                      )}
+                    >
+                      <div className={cn("text-[12px] font-semibold", activeCourse ? "text-[#ea580c]" : "text-[#1e293b]")}>
+                        {enrollment.courseName}
+                      </div>
+                      <div className="mt-1 text-[10px] text-[#94a3b8]">
+                        Purchased on {formatEnrollmentDate(enrollment.enrolledAt)}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          ) : null}
 
           <div className="mt-3 px-4 text-[13px] font-bold text-[#1e293b]">{selectedCourse?.title}</div>
           <div className="mt-1 px-4 text-[11px] text-[#94a3b8]">

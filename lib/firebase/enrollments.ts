@@ -85,5 +85,5 @@ export async function getMyEnrollments(userId: string) {
       id: doc.id,
       ...(doc.data() as FirestoreEnrollment),
     }))
-    .sort((a, b) => new Date(b.enrolledAt).getTime() - new Date(a.enrolledAt).getTime());
+    .sort((left, right) => new Date(right.enrolledAt).getTime() - new Date(left.enrolledAt).getTime());
 }

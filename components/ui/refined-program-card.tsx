@@ -76,6 +76,7 @@ export type RefinedProgramCardProps = {
   secondaryExternal?: boolean;
   featured?: boolean;
   className?: string;
+  isEnrolled?: boolean;
 };
 
 export function RefinedProgramCard({
@@ -97,6 +98,7 @@ export function RefinedProgramCard({
   secondaryExternal = true,
   featured = false,
   className,
+  isEnrolled = false,
 }: RefinedProgramCardProps) {
   const CourseIcon = courseSlug ? courseIconMap[courseSlug] : null;
   const FallbackIcon = icon ? iconMap[icon] : null;
@@ -105,11 +107,16 @@ export function RefinedProgramCard({
   return (
     <article
       className={cn(
-        "flex h-full flex-col gap-3 rounded-[14px] border border-[#1E2D42] bg-[#111827] p-[18px] transition-[border-color] duration-200 hover:border-[#F97316]",
+        "relative flex h-full flex-col gap-3 rounded-[14px] border border-[#1E2D42] bg-[#111827] p-[18px] transition-[border-color] duration-200 hover:border-[#F97316]",
         featured && "border-[rgba(249,115,22,0.5)]",
         className,
       )}
     >
+      {isEnrolled ? (
+        <span className="absolute top-3 left-3 rounded-full border border-[rgba(16,185,129,0.3)] bg-[rgba(16,185,129,0.12)] px-[10px] py-[3px] text-[10px] font-medium text-[#34d399]">
+          ✓ Enrolled
+        </span>
+      ) : null}
       <div className="flex items-start justify-between">
         <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-[rgba(249,115,22,0.25)] bg-[rgba(249,115,22,0.1)] text-[#F97316]">
           <Icon size={18} strokeWidth={1.8} />
@@ -156,7 +163,11 @@ export function RefinedProgramCard({
           <AddToCartButton
             courseSlug={courseSlug}
             label="Purchase"
-            className="inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[8px] border-0 bg-[#F97316] px-0 py-[10px] text-[13px] font-medium text-white transition-all duration-200 hover:bg-[#EA580C]"
+            isEnrolled={isEnrolled}
+            className={cn(
+              "inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[8px] border-0 px-0 py-[10px] text-[13px] font-medium text-white transition-all duration-200",
+              isEnrolled ? "bg-[#16a34a] hover:bg-[#15803d]" : "bg-[#F97316] hover:bg-[#EA580C]",
+            )}
           />
         ) : (
           <Link

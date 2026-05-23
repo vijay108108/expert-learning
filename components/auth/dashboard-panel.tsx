@@ -13,6 +13,7 @@ import {
   getLastVisitedLessons,
   getUserProfile,
   isFirebaseConfigured,
+  logFirestoreIssue,
   saveUserWhatsappNumber,
   type AppUserProfile,
   type FirestoreEnrollment,
@@ -247,7 +248,7 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
           return;
         }
 
-        console.error("[Dashboard] Unable to load profile or progress data", error);
+        logFirestoreIssue("[Dashboard] Unable to load profile or progress data", error);
       }
     })();
 
@@ -282,7 +283,7 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
 
         setInvoiceEnrollments(buildInvoiceEnrollments(invoice));
       } catch (error) {
-        console.error("[Dashboard] Unable to restore latest invoice enrollment", error);
+        logFirestoreIssue("[Dashboard] Unable to restore latest invoice enrollment", error);
         setInvoiceEnrollments([]);
       }
     });
@@ -379,61 +380,65 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
               {dashboardCourses.map((item) => (
                 <article
                   key={item.enrollment.id}
-                  className="group rounded-[18px] border border-[#e2e8f0] bg-white p-5 transition hover:border-[#fed7aa] hover:bg-[#fffdfb] hover:shadow-[0_20px_40px_rgba(15,23,42,0.06)]"
+                  className="group rounded-[14px] border border-[#1e2d42] bg-[#111827] p-[18px] transition hover:border-[#f97316] hover:shadow-[0_20px_40px_rgba(15,23,42,0.16)]"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-[#fed7aa] bg-[#fff7ed] text-[12px] font-bold text-[#f97316]">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.12)] text-[12px] font-bold text-[#f97316]">
                       {getCourseIcon(item.enrollment.courseId)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h2 className="line-clamp-2 text-sm font-semibold text-[#1e293b]">
+                      <h2 className="line-clamp-2 text-[15px] font-semibold text-[#f1f5f9]">
                         {item.course?.title || item.enrollment.courseName}
                       </h2>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[#94a3b8]">
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[12px] text-[#475569]">
                         <span>{item.enrollment.duration}</span>
-                        <span className="h-1 w-1 rounded-full bg-[#cbd5e1]" />
+                        <span className="h-1 w-1 rounded-full bg-[#334155]" />
                         <span>{item.enrollment.level}</span>
                       </div>
                     </div>
                     {item.completed ? (
                       <Award className="h-5 w-5 shrink-0 text-[#16a34a]" />
                     ) : (
-                      <BookOpen className="h-5 w-5 shrink-0 text-[#94a3b8]" />
+                      <BookOpen className="h-5 w-5 shrink-0 text-[#475569]" />
                     )}
                   </div>
 
                   <div className="mt-5">
                     <div className="mb-2 flex items-center justify-between text-[11px]">
-                      <span className="text-[#64748b]">Progress</span>
+                      <span className="text-[#475569]">Progress</span>
                       <span className="font-semibold text-[#f97316]">
                         {item.completedCount}/{item.lessons.length} lessons
                       </span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-[#e2e8f0]">
+                    <div className="h-1 rounded-full bg-[#1e2d42]">
                       <div
-                        className="h-1.5 rounded-full bg-[linear-gradient(90deg,#f97316,#fb923c)]"
+                        className="h-full rounded-full bg-[linear-gradient(90deg,#f97316,#fb923c)]"
                         style={{ width: `${item.progressPercent}%` }}
                       />
                     </div>
                   </div>
 
-                  <div className="mt-4 rounded-[12px] border border-[#e2e8f0] bg-[#f8fafc] p-3">
-                    <div className="flex items-center gap-2 text-[11px] text-[#64748b]">
+                  <div className="mt-4 rounded-[12px] border border-[#1e2d42] bg-[#0f172a] p-3">
+                    <div className="flex items-center gap-2 text-[11px] text-[#475569]">
                       {item.completed ? <CheckCircle2 className="h-3.5 w-3.5 text-[#16a34a]" /> : <Clock3 className="h-3.5 w-3.5 text-[#f97316]" />}
                       <span>Next up</span>
                     </div>
-                    <div className="mt-1 line-clamp-1 text-[12px] font-medium text-[#475569]">
+                    <div className="mt-1 line-clamp-1 text-[12px] font-medium text-[#f1f5f9]">
                       {item.nextLessonTitle}
                     </div>
+                  </div>
+
+                  <div className="text-[11px] text-[#334155]">
+                    Enrolled: {new Date(item.enrollment.enrolledAt).toLocaleDateString("en-IN")}
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleCourseSelection(item.enrollment.courseId)}
-                    className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#f97316] px-4 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#ea580c]"
+                    className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#f97316] px-4 py-[10px] text-[13px] font-medium text-white transition hover:bg-[#ea580c]"
                   >
                     <PlayCircle className="h-4 w-4" />
-                    {item.cta}
+                    {item.progressPercent === 0 ? "Start Course →" : "Continue Learning →"}
                   </button>
                 </article>
               ))}

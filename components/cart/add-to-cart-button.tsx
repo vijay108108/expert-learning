@@ -1,6 +1,7 @@
 "use client";
 
 import { IconShoppingCart } from "@tabler/icons-react";
+import { Check } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
@@ -10,10 +11,12 @@ export function AddToCartButton({
   courseSlug,
   className,
   label = "Purchase Course",
+  isEnrolled = false,
 }: {
   courseSlug: string;
   className?: string;
   label?: string;
+  isEnrolled?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -30,6 +33,11 @@ export function AddToCartButton({
     <button
       type="button"
       onClick={() => {
+        if (isEnrolled) {
+          router.push(`/dashboard/${encodeURIComponent(courseSlug)}`);
+          return;
+        }
+
         if (!isAuthReady) {
           return;
         }
@@ -45,8 +53,8 @@ export function AddToCartButton({
       }}
       className={cn(className)}
     >
-      <IconShoppingCart size={14} />
-      {inCart ? "Purchase" : label}
+      {isEnrolled ? <Check size={14} /> : <IconShoppingCart size={14} />}
+      {isEnrolled ? "Go to Course" : inCart ? "Purchase" : label}
     </button>
   );
 }

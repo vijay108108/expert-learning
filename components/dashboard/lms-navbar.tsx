@@ -137,7 +137,7 @@ export function LmsNavbar() {
             onClick={() => router.push("/")}
             className="inline-flex items-center rounded-[7px] border border-[#334155] bg-[rgba(255,255,255,0.05)] px-3 py-1.5 text-[11px] text-[#94a3b8] transition hover:text-[#f1f5f9]"
           >
-            {"<- Exit to Website"}
+            {"← Back to Main Site"}
           </button>
         </div>
       </div>

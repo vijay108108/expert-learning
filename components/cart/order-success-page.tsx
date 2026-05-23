@@ -21,7 +21,10 @@ export function OrderSuccessPage() {
   const [invoice, setInvoice] = useState<StoredOrderSuccess | null>(null);
   const [ready, setReady] = useState(false);
   const [countdown, setCountdown] = useState(10);
-  const dashboardPath = useMemo(() => getInvoiceDashboardPath(invoice), [invoice]);
+  const dashboardPath = useMemo(
+    () => getInvoiceDashboardPath(invoice, { paymentCompleted: true }),
+    [invoice],
+  );
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {

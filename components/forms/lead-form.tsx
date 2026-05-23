@@ -11,6 +11,7 @@ type LeadFormProps = {
   initialCourse?: string;
   initialMessage?: string;
   variant?: "default" | "compact";
+  tone?: "dark" | "light";
 };
 
 const courseOptions = Array.from(
@@ -40,6 +41,7 @@ export function LeadForm({
   initialCourse = "",
   initialMessage = "",
   variant = "default",
+  tone = "dark",
 }: LeadFormProps) {
   const [form, setForm] = useState({
     ...initialState,
@@ -50,6 +52,19 @@ export function LeadForm({
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const compact = variant === "compact";
+  const lightTone = tone === "light";
+  const labelClass = lightTone
+    ? "mb-2 block text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8a6945]"
+    : "form-label";
+  const fieldClass = lightTone
+    ? "w-full rounded-[14px] border border-[#ead8c2] bg-[#fffdfa] px-4 py-3 text-[14px] text-[#1f2937] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] outline-none transition placeholder:text-[#b8a38d] focus:border-[#fb923c] focus:bg-white focus:shadow-[0_0_0_4px_rgba(249,115,22,0.12)]"
+    : "form-field";
+  const compactFieldClass = lightTone
+    ? `${fieldClass} rounded-[16px] px-4 py-3.5 text-[13px]`
+    : "rounded-xl px-4 py-3 text-[13px]";
+  const buttonClass = lightTone
+    ? "mt-5 inline-flex w-full items-center justify-center rounded-[16px] bg-[linear-gradient(135deg,#f97316,#fb923c)] px-5 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(249,115,22,0.26)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_40px_rgba(249,115,22,0.3)] disabled:cursor-not-allowed disabled:opacity-70"
+    : `inline-flex w-full items-center justify-center bg-[linear-gradient(135deg,#F97316,#FB923C)] text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:cursor-not-allowed disabled:opacity-70 ${compact ? "mt-4 rounded-2xl px-5 py-3.5" : "mt-5 rounded-lg px-5 py-[13px]"}`;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -98,12 +113,12 @@ export function LeadForm({
     <form className={className} onSubmit={handleSubmit}>
       <div className={`grid ${compact ? "gap-3 sm:grid-cols-2" : "gap-4 sm:grid-cols-2"}`}>
         <div>
-          <label className="form-label" htmlFor="lead-name">
+          <label className={labelClass} htmlFor="lead-name">
             Name
           </label>
           <input
             id="lead-name"
-            className={`form-field ${compact ? "rounded-xl px-4 py-3 text-[13px]" : ""}`}
+            className={`${fieldClass} ${compact ? compactFieldClass : ""}`}
             type="text"
             placeholder="Name"
             value={form.name}
@@ -112,28 +127,27 @@ export function LeadForm({
           />
         </div>
         <div>
-          <label className="form-label" htmlFor="lead-email">
-            Email
+          <label className={labelClass} htmlFor="lead-email">
+            Email (Optional)
           </label>
           <input
             id="lead-email"
-            className={`form-field ${compact ? "rounded-xl px-4 py-3 text-[13px]" : ""}`}
+            className={`${fieldClass} ${compact ? compactFieldClass : ""}`}
             type="email"
             placeholder="Email"
             value={form.email}
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-            required
           />
         </div>
       </div>
       <div className={`${compact ? "mt-3 grid gap-3 sm:grid-cols-2" : "mt-4 grid gap-4 sm:grid-cols-2"}`}>
         <div>
-          <label className="form-label" htmlFor="lead-phone">
+          <label className={labelClass} htmlFor="lead-phone">
             Phone
           </label>
           <input
             id="lead-phone"
-            className={`form-field ${compact ? "rounded-xl px-4 py-3 text-[13px]" : ""}`}
+            className={`${fieldClass} ${compact ? compactFieldClass : ""}`}
             type="tel"
             placeholder="Phone"
             value={form.phone}
@@ -142,12 +156,12 @@ export function LeadForm({
           />
         </div>
         <div>
-          <label className="form-label" htmlFor="lead-course">
+          <label className={labelClass} htmlFor="lead-course">
             Interested Course
           </label>
           <select
             id="lead-course"
-            className={`form-field ${compact ? "rounded-xl px-4 py-3 text-[13px]" : ""}`}
+            className={`${fieldClass} ${compact ? compactFieldClass : ""}`}
             value={form.course}
             onChange={(event) => setForm((current) => ({ ...current, course: event.target.value }))}
             required
@@ -165,12 +179,12 @@ export function LeadForm({
       </div>
       {includeMessage && (
         <div className={compact ? "mt-3" : "mt-4"}>
-          <label className="form-label" htmlFor="lead-message">
+          <label className={labelClass} htmlFor="lead-message">
             Message
           </label>
           <textarea
             id="lead-message"
-            className={`form-field resize-y ${compact ? "min-h-24 rounded-xl px-4 py-3 text-[13px]" : "min-h-32"}`}
+            className={`${fieldClass} resize-y ${compact ? `${compactFieldClass} min-h-[140px]` : "min-h-32"}`}
             placeholder="Tell us about your goal"
             value={form.message}
             onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
@@ -180,12 +194,29 @@ export function LeadForm({
       <button
         type="submit"
         disabled={pending}
-        className={`inline-flex w-full items-center justify-center bg-[linear-gradient(135deg,#F97316,#FB923C)] text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:cursor-not-allowed disabled:opacity-70 ${compact ? "mt-4 rounded-2xl px-5 py-3.5" : "mt-5 rounded-lg px-5 py-[13px]"}`}
+        className={buttonClass}
       >
         {pending ? "Submitting..." : submitLabel}
       </button>
       {feedback && (
-        <p className={`mt-3 text-sm leading-6 ${isSuccess ? "text-emerald-600" : "text-slate-600"}`}>{feedback}</p>
+        <p
+          className={`mt-3 rounded-[14px] px-4 py-3 text-sm leading-6 ${
+            isSuccess
+              ? lightTone
+                ? "border border-[#bbf7d0] bg-[#f0fdf4] text-[#166534]"
+                : "text-emerald-600"
+              : lightTone
+                ? "border border-[#fecaca] bg-[#fff1f2] text-[#b91c1c]"
+                : "text-slate-600"
+          }`}
+        >
+          {feedback}
+        </p>
+      )}
+      {lightTone && (
+        <p className="mt-3 text-[11px] leading-5 text-[#9a7c5d]">
+          Submitted enquiries are delivered to <span className="font-semibold text-[#7c4a16]">genznextofficial@gmail.com</span>.
+        </p>
       )}
     </form>
   );

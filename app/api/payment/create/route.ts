@@ -50,9 +50,34 @@ export async function POST(request: Request) {
       courses,
     });
   } catch (error) {
+    const statusCode =
+      error && typeof error === "object" && "statusCode" in error && typeof error.statusCode === "number"
+        ? error.statusCode
+        : 400;
+    const razorpayDescription =
+      error &&
+      typeof error === "object" &&
+      "error" in error &&
+      error.error &&
+      typeof error.error === "object" &&
+      "description" in error.error &&
+      typeof error.error.description === "string"
+        ? error.error.description
+        : "";
+    const message =
+      statusCode === 401
+        ? "Razorpay authentication failed. Check NEXT_PUBLIC_RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET."
+        : razorpayDescription || (error instanceof Error ? error.message : "Unable to create payment order.");
+
+    console.error("[Payment Create] order creation failed", {
+      statusCode,
+      razorpayDescription,
+      error,
+    });
+
     return NextResponse.json(
-      { success: false, message: error instanceof Error ? error.message : "Unable to create payment order." },
-      { status: 400 },
+      { success: false, message },
+      { status: statusCode >= 400 && statusCode < 600 ? statusCode : 400 },
     );
   }
 }

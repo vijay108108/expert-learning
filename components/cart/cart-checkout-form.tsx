@@ -9,6 +9,7 @@ import { useCart } from "@/hooks/use-cart";
 import { formatPaiseToPrice } from "@/lib/course-catalog";
 import {
   getUserProfile,
+  logFirestoreIssue,
   saveInvoiceEnrollments,
   saveUserWhatsappNumber,
   type AppUserProfile,
@@ -116,7 +117,7 @@ export function CartCheckoutForm() {
         }));
       } catch (error) {
         if (active) {
-          console.error("[Checkout] Unable to load user profile", error);
+          logFirestoreIssue("[Checkout] Unable to load user profile", error);
         }
       }
     })();
@@ -247,17 +248,21 @@ export function CartCheckoutForm() {
               return;
             }
 
+            const dashboardPath = getInvoiceDashboardPath(verifyPayload.invoice, {
+              paymentCompleted: true,
+            });
+
             void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
-              console.error("[Checkout] Unable to save phone number after payment", error);
+              logFirestoreIssue("[Checkout] Unable to save phone number after payment", error);
             });
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             clearCart();
             window.localStorage.removeItem("cart");
             window.localStorage.setItem("cart", JSON.stringify([]));
             void saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
-              console.error("[Checkout] Enrollment sync failed after verified payment", error);
+              logFirestoreIssue("[Checkout] Enrollment sync failed after verified payment", error);
             });
-            router.replace(getInvoiceDashboardPath(verifyPayload.invoice));
+            router.replace(dashboardPath);
           } catch (error) {
             setMessage(error instanceof Error ? error.message : "Unable to complete enrollment after payment.");
           }

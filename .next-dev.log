@@ -6,10 +6,65 @@
 - Local:         http://localhost:3000
 - Network:       http://192.168.1.28:3000
 - Environments: .env.local
-✓ Ready in 2.4s
+✓ Ready in 1595ms
 
-○ Compiling / ...
- GET / 200 in 9.3s (next.js: 2.5s, application-code: 6.8s)
- GET / 200 in 31.2s (next.js: 21.5s, application-code: 9.6s)
- GET / 200 in 31.2s (next.js: 22.2s, application-code: 9.0s)
+ GET / 200 in 7.1s (next.js: 2.2s, application-code: 4.9s)
+ GET / 200 in 2.7s (next.js: 23ms, application-code: 2.7s)
+ GET / 200 in 127ms (next.js: 16ms, application-code: 112ms)
+ GET / 200 in 409ms (next.js: 71ms, application-code: 338ms)
+ GET /courses/aws 200 in 2.5s (next.js: 2.3s, generate-params: 2.1s, application-code: 284ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+○ Compiling /cart ...
+ GET /cart 200 in 4.6s (next.js: 4.5s, application-code: 102ms)
+ GET /checkout 200 in 211ms (next.js: 64ms, application-code: 147ms)
+[browser] [2026-05-23T05:53:59.407Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T05:54:00.240Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+○ Compiling /api/payment/create ...
+[browser] [2026-05-23T05:54:05.227Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T05:54:05.612Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T05:54:06.991Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+ POST /api/payment/create 400 in 8.4s (next.js: 8.1s, application-code: 285ms)
+[browser] [2026-05-23T05:54:09.652Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T05:54:12.538Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T05:54:21.176Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [Checkout] Unable to load user profile FirebaseError: Failed to get document because the client is offline.
+FirebaseError: Failed to get document because the client is offline. (file://E:/Expert Leaning/.next/dev/static/chunks/_0r44v0r._.js:279:37)
+○ Compiling /courses ...
+ GET /courses 200 in 4.0s (next.js: 3.4s, application-code: 631ms)
+ POST /api/payment/create 400 in 315ms (next.js: 38ms, application-code: 277ms)
+ POST /api/payment/create 400 in 206ms (next.js: 6ms, application-code: 200ms)
+ GET /courses 200 in 1427ms (next.js: 678ms, application-code: 749ms)
+ GET /courses 200 in 3.8s (next.js: 16ms, application-code: 3.8s)
+ GET /courses 200 in 1364ms (next.js: 13ms, application-code: 1351ms)
+ GET /cart 200 in 165ms (next.js: 57ms, application-code: 108ms)
+ GET /courses/aws 200 in 651ms (next.js: 88ms, generate-params: 16ms, application-code: 563ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+ GET /checkout 200 in 146ms (next.js: 39ms, application-code: 107ms)
+[browser] [2026-05-23T06:06:02.712Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T06:06:03.299Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T06:06:03.999Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[Payment Create] order creation failed {
+  statusCode: 401,
+  razorpayDescription: 'Authentication failed',
+  error: {
+    statusCode: 401,
+    error: { description: 'Authentication failed', code: 'BAD_REQUEST_ERROR' }
+  }
+}
+ POST /api/payment/create 401 in 415ms (next.js: 236ms, application-code: 179ms)
+[browser] [2026-05-23T06:06:05.812Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T06:06:07.126Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T06:06:09.524Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T06:06:14.037Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [2026-05-23T06:06:17.792Z]  @firebase/firestore: Firestore (12.13.0): Database '(default)' not found. Please check your project configuration. (file://E:/Expert Leaning/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
+[browser] [Checkout] Unable to load user profile FirebaseError: Failed to get document because the client is offline.
+FirebaseError: Failed to get document because the client is offline. (file://E:/Expert Leaning/.next/dev/static/chunks/_0r44v0r._.js:279:37)
+ GET /courses 200 in 350ms (next.js: 9ms, application-code: 341ms)
+ GET /courses 200 in 29ms (next.js: 9ms, application-code: 20ms)
+ GET /courses 200 in 407ms (next.js: 17ms, application-code: 390ms)
+✓ Compiled in 6s
+ GET /courses 200 in 6.4s (next.js: 1784ms, application-code: 4.6s)
+ GET /courses 200 in 770ms (next.js: 64ms, application-code: 707ms)
+ GET /courses 200 in 3.8s (next.js: 62ms, application-code: 3.8s)
+ GET /courses 200 in 758ms (next.js: 414ms, application-code: 344ms)
 [?25h

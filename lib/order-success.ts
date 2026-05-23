@@ -34,9 +34,15 @@ export function formatCurrencyInrFromPaise(amountPaise: number) {
   return `₹${Math.round(amountPaise / 100).toLocaleString("en-IN")}`;
 }
 
-export function getInvoiceDashboardPath(invoice: Pick<StoredOrderSuccess, "courses"> | null | undefined) {
+export function getInvoiceDashboardPath(
+  invoice: Pick<StoredOrderSuccess, "courses"> | null | undefined,
+  options?: {
+    paymentCompleted?: boolean;
+  },
+) {
   const firstCourseSlug = invoice?.courses[0]?.slug;
-  return firstCourseSlug ? `/dashboard/${encodeURIComponent(firstCourseSlug)}` : "/dashboard";
+  const basePath = firstCourseSlug ? `/dashboard/${encodeURIComponent(firstCourseSlug)}` : "/dashboard";
+  return options?.paymentCompleted ? `${basePath}?payment=success` : basePath;
 }
 
 export function getInclusiveGstBreakup(totalPaise: number, gstInvoiceEnabled: boolean) {

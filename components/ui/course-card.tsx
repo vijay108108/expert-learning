@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowUpRight, Clock3, ExternalLink, Star } from "lucide-react";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { iconMap } from "@/lib/icon-map";
@@ -30,11 +32,13 @@ export function CourseCard({
   featured = false,
   variant = "default",
   badgeOverride,
+  isEnrolled = false,
 }: {
   course: Course;
   featured?: boolean;
   variant?: "default" | "refined";
   badgeOverride?: { label: string; tone: "green" | "orange" | "blue" | "purple" };
+  isEnrolled?: boolean;
 }) {
   const Icon = iconMap[course.icon];
   const style = categoryStyles[course.category];
@@ -102,6 +106,7 @@ export function CourseCard({
         badgeTone={badgeOverride?.tone || badgeConfig.tone}
         secondaryHref={course.officialSyllabusUrl}
         featured={featured}
+        isEnrolled={isEnrolled}
       />
     );
   }
@@ -115,6 +120,11 @@ export function CourseCard({
       )}
     >
       <div className={cn("absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r", style.bar)} />
+      {isEnrolled ? (
+        <span className="absolute top-4 left-4 z-[1] rounded-full border border-[rgba(16,185,129,0.3)] bg-[rgba(16,185,129,0.12)] px-[10px] py-[3px] text-[10px] font-medium text-[#34d399]">
+          ✓ Enrolled
+        </span>
+      ) : null}
       <div className="flex items-start justify-between gap-4 pt-2">
         <div className={cn("inline-flex h-9 w-9 items-center justify-center rounded-lg", style.icon)}>
           <Icon className="h-5 w-5" />
@@ -164,7 +174,14 @@ export function CourseCard({
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <AddToCartButton
           courseSlug={course.slug}
-          className={buttonLinkClasses("primary", "w-full px-4 py-2.5 text-[12px] sm:w-auto")}
+          isEnrolled={isEnrolled}
+          className={buttonLinkClasses(
+            isEnrolled ? "secondary" : "primary",
+            cn(
+              "w-full px-4 py-2.5 text-[12px] sm:w-auto",
+              isEnrolled && "border-[#16a34a]/40 bg-[#16a34a] text-white hover:border-[#15803d] hover:bg-[#15803d] hover:text-white",
+            ),
+          )}
         />
         <div className="flex items-center gap-3 self-stretch sm:self-auto">
           <a
