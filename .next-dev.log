@@ -1,0 +1,15 @@
+
+> expert-learning@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.28:3000
+- Environments: .env.local
+✓ Ready in 2.4s
+
+○ Compiling / ...
+ GET / 200 in 9.3s (next.js: 2.5s, application-code: 6.8s)
+ GET / 200 in 31.2s (next.js: 21.5s, application-code: 9.6s)
+ GET / 200 in 31.2s (next.js: 22.2s, application-code: 9.0s)
+[?25h

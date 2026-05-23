@@ -1,13 +1,77 @@
+"use client";
+
 import Link from "next/link";
-import { BriefcaseBusiness, Camera, Mail, MapPin, Phone, PlayCircle } from "lucide-react";
+import type { ComponentProps } from "react";
+import {
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
 import { Brand } from "@/components/layout/brand";
 import { courseFooterLinks, quickLinks, socialLinks } from "@/data/site";
 import { siteConfig } from "@/lib/site-config";
+import { cn } from "@/lib/utils";
+
+function FacebookIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
+
+function InstagramIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37a4 4 0 1 1-2.74-2.74A4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
+}
+
+function LinkedInIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect x="2" y="9" width="4" height="12" rx="1" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  );
+}
 
 const socialIcons = {
-  LinkedIn: BriefcaseBusiness,
-  Instagram: Camera,
-  YouTube: PlayCircle,
+  instagram: InstagramIcon,
+  facebook: FacebookIcon,
+  linkedin: LinkedInIcon,
+  mail: Mail,
 };
 
 export function Footer() {
@@ -69,15 +133,18 @@ export function Footer() {
           </div>
           <div className="mt-6 flex items-center gap-[10px]">
             {socialLinks.map((item) => {
-              const Icon = socialIcons[item.label as keyof typeof socialIcons];
+              const Icon = socialIcons[item.icon as keyof typeof socialIcons];
 
               return (
                 <a
                   key={item.label}
                   href={item.href}
                   target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] border border-white/12 bg-white/6 text-[#CBD5E1] shadow-[0_10px_24px_rgba(2,8,28,0.16)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[rgba(249,115,22,0.34)] hover:bg-[rgba(249,115,22,0.12)] hover:text-[#F97316]"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "inline-flex h-10 w-10 items-center justify-center rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] text-[#64748b] shadow-[0_10px_24px_rgba(2,8,28,0.16)] transition-all duration-200 hover:-translate-y-0.5",
+                    item.hoverClass,
+                  )}
                   aria-label={item.label}
                 >
                   {Icon ? <Icon className="h-[18px] w-[18px]" /> : item.label}

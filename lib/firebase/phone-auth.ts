@@ -1,32 +1,54 @@
 "use client";
 
 import { type Auth, RecaptchaVerifier } from "firebase/auth";
+import { env } from "@/lib/env";
 
 export const recaptchaContainerId = "recaptcha-container";
 
 let recaptchaVerifierInstance: RecaptchaVerifier | null = null;
 
-function getRecaptchaContainer() {
+export function isLocalPhoneAuthHost() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+}
+
+export function isPhoneAuthTestingEnabled() {
+  return env.nextPublicFirebasePhoneAuthTestMode;
+}
+
+export function preparePhoneAuth(auth: Auth) {
+  auth.settings.appVerificationDisabledForTesting =
+    isLocalPhoneAuthHost() && isPhoneAuthTestingEnabled();
+}
+
+function resolveRecaptchaContainer(container?: string | HTMLElement | null) {
   if (typeof window === "undefined") {
     throw new Error("reCAPTCHA can only be initialized in the browser.");
   }
 
-  const container = document.getElementById(recaptchaContainerId);
-  if (!container) {
+  if (container instanceof HTMLElement) {
+    return container;
+  }
+
+  const resolvedContainer = document.getElementById(container || recaptchaContainerId);
+  if (!resolvedContainer) {
     throw new Error("reCAPTCHA container was not found in the OTP component.");
   }
 
-  return container;
+  return resolvedContainer;
 }
 
-export function getRecaptchaVerifier(auth: Auth): RecaptchaVerifier {
+export function getRecaptchaVerifier(auth: Auth, container?: string | HTMLElement): RecaptchaVerifier {
   if (recaptchaVerifierInstance) {
     return recaptchaVerifierInstance;
   }
 
-  getRecaptchaContainer();
+  const resolvedContainer = resolveRecaptchaContainer(container);
 
-  recaptchaVerifierInstance = new RecaptchaVerifier(auth, recaptchaContainerId, {
+  recaptchaVerifierInstance = new RecaptchaVerifier(auth, resolvedContainer, {
     size: "invisible",
     callback: () => {
       console.log("[Firebase Phone Auth] reCAPTCHA solved");
@@ -40,7 +62,7 @@ export function getRecaptchaVerifier(auth: Auth): RecaptchaVerifier {
   return recaptchaVerifierInstance;
 }
 
-export function clearRecaptcha(): void {
+export function clearRecaptcha(container?: string | HTMLElement | null): void {
   if (recaptchaVerifierInstance) {
     try {
       recaptchaVerifierInstance.clear();
@@ -51,9 +73,12 @@ export function clearRecaptcha(): void {
   }
 
   if (typeof window !== "undefined") {
-    const container = document.getElementById(recaptchaContainerId);
-    if (container) {
-      container.innerHTML = "";
+    const resolvedContainer = container
+      ? resolveRecaptchaContainer(container)
+      : document.getElementById(recaptchaContainerId);
+
+    if (resolvedContainer) {
+      resolvedContainer.innerHTML = "";
     }
   }
 }

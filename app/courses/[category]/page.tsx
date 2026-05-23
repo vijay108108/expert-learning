@@ -50,40 +50,9 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const courses = coursesByCategory[category as CourseCategoryKey];
   const refinedCategories = new Set(["aws", "azure", "ai", "devops"]);
-  const featuredSlug =
-    category === "azure"
-      ? "azure-solutions-architect"
-      : category === "ai"
-        ? "generative-ai"
-      : refinedCategories.has(category)
-        ? courses.find((course) => course.highlight.toLowerCase().includes("popular"))?.slug || courses[0]?.slug
-        : courses[0]?.slug;
-  const badgeOverridesByCategory: Record<string, Record<string, { label: string; tone: "green" | "orange" | "blue" | "purple" }>> = {
-    aws: {
-      "aws-cloud-practitioner": { label: "Best for beginners", tone: "green" },
-      "aws-solutions-architect": { label: "Most popular", tone: "orange" },
-      "aws-devops-engineer": { label: "For professionals", tone: "blue" },
-      "aws-sysops-administrator": { label: "Ops focused", tone: "purple" },
-    },
-    azure: {
-      "azure-administrator": { label: "Best for beginners", tone: "green" },
-      "azure-security-engineer": { label: "Microsoft focused", tone: "blue" },
-      "azure-devops-engineer": { label: "For professionals", tone: "purple" },
-      "azure-solutions-architect": { label: "Most popular", tone: "orange" },
-    },
-    ai: {
-      "ai-machine-learning-fundamentals": { label: "Best for beginners", tone: "green" },
-      "generative-ai": { label: "Most popular", tone: "orange" },
-      "mlops-ai-deployment": { label: "For professionals", tone: "blue" },
-      "ai-data-science-analytics": { label: "Data focused", tone: "purple" },
-    },
-    devops: {
-      "devops-fundamentals": { label: "Best for beginners", tone: "green" },
-      "docker-kubernetes": { label: "Most popular", tone: "orange" },
-      "ci-cd-pipeline-engineering": { label: "For professionals", tone: "blue" },
-      "devops-monitoring-security": { label: "Monitoring focused", tone: "purple" },
-    },
-  };
+  const featuredSlug = refinedCategories.has(category)
+    ? courses.find((course) => course.tagLabel.toLowerCase().includes("popular"))?.slug || courses[0]?.slug
+    : courses[0]?.slug;
 
   return (
     <>
@@ -127,7 +96,6 @@ export default async function CategoryPage({ params }: PageProps) {
               courses={courses}
               featuredSlug={featuredSlug}
               variant={refinedCategories.has(category) ? "refined" : "default"}
-              badgeOverrides={badgeOverridesByCategory[category]}
             />
           </div>
         </div>

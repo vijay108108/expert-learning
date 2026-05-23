@@ -32,20 +32,28 @@ const badgeToneClasses: Record<BadgeTone, string> = {
 
 const courseIconMap = {
   "aws-cloud-practitioner": IconCloud,
+  "aws-data-engineer": IconChartDots,
   "aws-solutions-architect": IconTopologyStar,
   "aws-devops-engineer": IconSettingsAutomation,
   "aws-sysops-administrator": IconServer2,
   "azure-administrator": IconServer,
+  "azure-fundamentals": IconCloud,
+  "azure-ai-engineer": IconBrain,
   "azure-security-engineer": IconShieldLock,
   "azure-devops-engineer": IconGitMerge,
   "azure-solutions-architect": IconTopologyStar,
   "devops-fundamentals": IconGitBranch,
   "docker-kubernetes": IconContainer,
+  terraform: IconTopologyStar,
   "ci-cd-pipeline-engineering": IconArrowsShuffle,
+  "jenkins-github-actions": IconGitBranch,
   "devops-monitoring-security": IconActivity,
   "ai-machine-learning-fundamentals": IconBrain,
   "generative-ai": IconSparkles,
+  "prompt-engineering": IconSparkles,
+  "ai-for-business": IconChartDots,
   "mlops-ai-deployment": IconSettingsAutomation,
+  "openai-llm-engineering": IconSparkles,
   "ai-data-science-analytics": IconChartDots,
 } as const;
 
@@ -58,6 +66,7 @@ export type RefinedProgramCardProps = {
   duration: string;
   level: string;
   price: string;
+  originalPrice?: string;
   tags: string[];
   badgeLabel: string;
   badgeTone: BadgeTone;
@@ -78,6 +87,7 @@ export function RefinedProgramCard({
   duration,
   level,
   price,
+  originalPrice,
   tags,
   badgeLabel,
   badgeTone,
@@ -132,8 +142,11 @@ export function RefinedProgramCard({
 
       <div className="flex items-center justify-between">
         <div>
-          <div className="mb-[3px] text-[10px] uppercase tracking-[0.06em] text-[#475569]">Program Fee</div>
-          <div className="mono-meta text-[18px] font-semibold text-[#F97316]">{price}</div>
+          <div className="inline-flex items-center rounded-full border border-[rgba(16,185,129,0.2)] bg-[rgba(16,185,129,0.1)] px-2 py-[2px] text-[10px] text-[#34D399]">
+            🏷 Launch Offer
+          </div>
+          {originalPrice ? <div className="mono-meta mt-2 text-[12px] text-[#475569] line-through">{originalPrice}</div> : null}
+          <div className="mono-meta mt-1 text-[18px] font-semibold text-[#F97316]">{price}</div>
         </div>
         <div className="text-[11px] text-[#334155]">{duration}</div>
       </div>

@@ -1,12 +1,9 @@
 /* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
-import { AppShellEnhancements } from "@/components/app-shell-enhancements";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { DemoModalRoot } from "@/components/demo/demo-modal-root";
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
-import { MobileStickyCta } from "@/components/layout/mobile-sticky-cta";
+import { AppChrome } from "@/components/layout/app-chrome";
 import { buildMetadata } from "@/lib/metadata";
 import "./globals.css";
 
@@ -34,12 +31,8 @@ export default function RootLayout({
       <body className="min-h-full bg-background text-foreground">
         <AuthProvider>
           <CartProvider>
-            <div className="relative flex min-h-screen flex-col overflow-x-clip">
-              <AppShellEnhancements />
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <MobileStickyCta />
+            <div className="relative min-h-screen overflow-x-clip">
+              <AppChrome>{children}</AppChrome>
               <DemoModalRoot />
             </div>
           </CartProvider>

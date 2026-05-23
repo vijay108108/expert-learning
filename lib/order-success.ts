@@ -31,7 +31,12 @@ export type StoredOrderSuccess = {
 };
 
 export function formatCurrencyInrFromPaise(amountPaise: number) {
-  return `Rs. ${Math.round(amountPaise / 100).toLocaleString("en-IN")}`;
+  return `₹${Math.round(amountPaise / 100).toLocaleString("en-IN")}`;
+}
+
+export function getInvoiceDashboardPath(invoice: Pick<StoredOrderSuccess, "courses"> | null | undefined) {
+  const firstCourseSlug = invoice?.courses[0]?.slug;
+  return firstCourseSlug ? `/dashboard/${encodeURIComponent(firstCourseSlug)}` : "/dashboard";
 }
 
 export function getInclusiveGstBreakup(totalPaise: number, gstInvoiceEnabled: boolean) {

@@ -1,3 +1,5 @@
+"use client";
+
 import { ButtonLink } from "@/components/ui/button-link";
 
 export function MobileStickyCta() {

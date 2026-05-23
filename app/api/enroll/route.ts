@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getCourseBySlug, parsePriceToPaise } from "@/lib/course-catalog";
+import { formatPaiseToPrice, getCourseBySlug, parsePriceToPaise } from "@/lib/course-catalog";
 import { captureServerEvent } from "@/lib/services/analytics";
+import { sendEnrollmentEmail } from "@/lib/services/email";
 import { upsertStudent } from "@/lib/services/students";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { enrollmentSchema } from "@/lib/validations";
@@ -42,9 +43,19 @@ export async function POST(request: Request) {
       throw new Error("Unable to create enrollment.");
     }
 
-    await captureServerEvent(body.email, "manual_enrollment_created", {
-      courseSlug: body.courseSlug,
-    });
+    await Promise.allSettled([
+      sendEnrollmentEmail({
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        courseTitle: course?.title || body.courseSlug,
+        paymentId: body.paymentId || "-",
+        amountLabel: amount ? formatPaiseToPrice(amount) : "-",
+      }),
+      captureServerEvent(body.email, "manual_enrollment_created", {
+        courseSlug: body.courseSlug,
+      }),
+    ]);
 
     return NextResponse.json({ success: true, enrollment: data });
   } catch (error) {

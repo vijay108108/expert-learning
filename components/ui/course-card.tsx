@@ -38,10 +38,17 @@ export function CourseCard({
 }) {
   const Icon = iconMap[course.icon];
   const style = categoryStyles[course.category];
-  const popular = course.highlight.toLowerCase().includes("popular");
+  const popular = course.tagTone === "orange";
   const isRefined = variant === "refined";
 
   const badgeConfig = (() => {
+    if (course.tagLabel) {
+      return {
+        label: course.tagLabel,
+        tone: course.tagTone,
+      };
+    }
+
     const highlight = course.highlight.toLowerCase();
 
     if (highlight.includes("beginner") || highlight.includes("it beginners")) {
@@ -88,7 +95,9 @@ export function CourseCard({
         duration={course.duration}
         level={course.level}
         price={course.price}
+        originalPrice={course.originalPrice}
         tags={course.tags}
+        icon={course.icon}
         badgeLabel={badgeOverride?.label || badgeConfig.label}
         badgeTone={badgeOverride?.tone || badgeConfig.tone}
         secondaryHref={course.officialSyllabusUrl}
@@ -144,8 +153,11 @@ export function CourseCard({
       </div>
       <div className="mt-6 flex items-end justify-between gap-4 border-t border-white/10 pt-4">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.05em] text-[#E2E8F0]">Program Fee</div>
-          <div className="mono-meta mt-1 text-[14px] font-bold text-[#FDBA74]">{course.price}</div>
+          <div className="inline-flex items-center rounded-full border border-[rgba(16,185,129,0.2)] bg-[rgba(16,185,129,0.1)] px-2 py-[2px] text-[10px] text-[#34d399]">
+            🏷 Launch Offer
+          </div>
+          <div className="mono-meta mt-2 text-[12px] text-[#475569] line-through">{course.originalPrice}</div>
+          <div className="mono-meta mt-1 text-[18px] font-semibold text-[#f97316]">{course.price}</div>
         </div>
         <div className="mono-meta text-[11px] text-[#E2E8F0]">{course.duration}</div>
       </div>

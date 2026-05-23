@@ -34,7 +34,7 @@ const megaMenuCards = [
     description: "Certification pathways for cloud foundations, architecture, operations, and DevOps delivery.",
     href: "/courses/aws",
     category: "aws",
-    badge: "4 Programs",
+    badge: "5 Programs",
     accent: {
       hover: "hover:border-[rgba(249,115,22,0.3)] hover:bg-[rgba(249,115,22,0.04)]",
       icon: "border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.12)] text-[#F97316]",
@@ -47,7 +47,7 @@ const megaMenuCards = [
     description: "Microsoft-aligned certification tracks across administration, security, DevOps, and architecture.",
     href: "/courses/azure",
     category: "azure",
-    badge: "4 Programs",
+    badge: "5 Programs",
     accent: {
       hover: "hover:border-[rgba(59,130,246,0.3)] hover:bg-[rgba(59,130,246,0.04)]",
       icon: "border-[rgba(59,130,246,0.2)] bg-[rgba(59,130,246,0.12)] text-[#60A5FA]",
@@ -384,7 +384,7 @@ export function Header() {
               <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_220px] gap-4">
                 <div className="grid grid-cols-2 gap-2">
                   {megaMenuCards.map((item) => {
-                    const courses = coursesByCategory[item.category].slice(0, 4);
+                    const courses = coursesByCategory[item.category];
 
                     return (
                       <button

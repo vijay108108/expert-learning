@@ -132,7 +132,7 @@ export function FloatingCart() {
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-sm text-[#CBD5E1]">Total Amount</span>
                     <span className={cn("mono-meta text-[18px] font-semibold", courses.length ? "text-[#FDBA74]" : "text-white/60")}>
-                      {courses.length ? totalLabel : "Rs. 0"}
+                      {courses.length ? totalLabel : "₹0"}
                     </span>
                   </div>
                 </div>

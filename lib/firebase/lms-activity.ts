@@ -135,9 +135,8 @@ export async function getLessonNote(userId: string, lessonId: string) {
     return "";
   }
 
-  const snapshot = await getDocs(collection(db, "enrollments", userId, "notes"));
-  const noteDoc = snapshot.docs.find((item) => item.id === lessonId);
-  return String(noteDoc?.data().text || "");
+  const snapshot = await getDoc(doc(db, "enrollments", userId, "notes", lessonId));
+  return String(snapshot.data()?.text || "");
 }
 
 export async function saveLessonNote(userId: string, lessonId: string, text: string) {

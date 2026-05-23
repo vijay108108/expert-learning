@@ -6,16 +6,20 @@ import {
   Building2,
   Cloud,
   CloudCog,
+  Cpu,
   Code2,
   DatabaseZap,
+  GitBranch,
   GraduationCap,
   Handshake,
   Layers3,
   LifeBuoy,
+  MessageSquareText,
   MonitorSmartphone,
   ShieldCheck,
   Sparkles,
   Users,
+  Workflow,
 } from "lucide-react";
 
 export const iconMap = {
@@ -28,14 +32,18 @@ export const iconMap = {
   cloudCog: CloudCog,
   code: Code2,
   community: Users,
+  cpu: Cpu,
   database: DatabaseZap,
   graduation: GraduationCap,
+  gitBranch: GitBranch,
   guidance: Handshake,
   layers: Layers3,
+  message: MessageSquareText,
   support: LifeBuoy,
   devices: MonitorSmartphone,
   shield: ShieldCheck,
   sparkles: Sparkles,
+  topology: Workflow,
 } as const;
 
 export type IconKey = keyof typeof iconMap;

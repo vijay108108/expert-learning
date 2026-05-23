@@ -8,6 +8,7 @@ import { Brand } from "@/components/layout/brand";
 import {
   formatCurrencyInrFromPaise,
   formatInvoiceDate,
+  getInvoiceDashboardPath,
   latestOrderStorageKey,
   type StoredOrderSuccess,
 } from "@/lib/order-success";
@@ -20,6 +21,7 @@ export function OrderSuccessPage() {
   const [invoice, setInvoice] = useState<StoredOrderSuccess | null>(null);
   const [ready, setReady] = useState(false);
   const [countdown, setCountdown] = useState(10);
+  const dashboardPath = useMemo(() => getInvoiceDashboardPath(invoice), [invoice]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -56,7 +58,7 @@ export function OrderSuccessPage() {
     }
 
     const timeout = window.setTimeout(() => {
-      router.replace("/dashboard");
+      router.replace(dashboardPath);
     }, 10000);
 
     const interval = window.setInterval(() => {
@@ -67,7 +69,7 @@ export function OrderSuccessPage() {
       window.clearTimeout(timeout);
       window.clearInterval(interval);
     };
-  }, [invoice, router]);
+  }, [dashboardPath, invoice, router]);
 
   const totalLines = useMemo(() => invoice?.courses.length || 0, [invoice]);
   const purchasedCourseLabel = useMemo(() => {
@@ -102,10 +104,10 @@ export function OrderSuccessPage() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href="/dashboard"
+              href={dashboardPath}
               className="inline-flex rounded-[8px] bg-[#F97316] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#EA580C]"
             >
-              Go to Dashboard
+              Open LMS Portal
             </Link>
             <Link
               href="/courses"
@@ -275,10 +277,10 @@ export function OrderSuccessPage() {
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/dashboard"
+              href={dashboardPath}
               className="inline-flex rounded-[8px] bg-[#F97316] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#EA580C]"
             >
-              Go to Dashboard
+              Open LMS Portal
             </Link>
             <Link
               href="/courses"
@@ -287,7 +289,7 @@ export function OrderSuccessPage() {
               Explore More Courses
             </Link>
           </div>
-          <div className="text-[12px] text-[#475569]">Redirecting to Dashboard in {countdown}s...</div>
+          <div className="text-[12px] text-[#475569]">Redirecting to LMS Portal in {countdown}s...</div>
         </div>
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[12px] text-[#475569]">

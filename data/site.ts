@@ -139,7 +139,7 @@ export const certificationPaths = [
 export const pricingPlans = [
   {
     name: "Starter",
-    price: "Rs. 12,999",
+    price: "₹12,999",
     description: "For learners building baseline skills and certification readiness.",
     recommended: false,
     features: [
@@ -151,7 +151,7 @@ export const pricingPlans = [
   },
   {
     name: "Professional",
-    price: "Rs. 24,999",
+    price: "₹24,999",
     description: "For professionals who want projects, mentorship, and interview outcomes.",
     recommended: true,
     features: [
@@ -214,9 +214,30 @@ export const quickLinks = [
 export const courseFooterLinks = navCourseLinks;
 
 export const socialLinks = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/expert-learning" },
-  { label: "Instagram", href: "https://www.instagram.com/expertlearning" },
-  { label: "YouTube", href: "https://www.youtube.com/@expertlearning" },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/genznextofficial/",
+    icon: "instagram",
+    hoverClass: "hover:border-[rgba(225,48,108,0.34)] hover:bg-[rgba(225,48,108,0.12)] hover:text-[#e1306c]",
+  },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61590060611725",
+    icon: "facebook",
+    hoverClass: "hover:border-[rgba(24,119,242,0.34)] hover:bg-[rgba(24,119,242,0.12)] hover:text-[#1877f2]",
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/adarsh-vishwakarma-184ab0410/",
+    icon: "linkedin",
+    hoverClass: "hover:border-[rgba(0,119,181,0.34)] hover:bg-[rgba(0,119,181,0.12)] hover:text-[#0077b5]",
+  },
+  {
+    label: "Email",
+    href: "mailto:genznextofficial@gmail.com",
+    icon: "mail",
+    hoverClass: "hover:border-[rgba(249,115,22,0.34)] hover:bg-[rgba(249,115,22,0.12)] hover:text-[#f97316]",
+  },
 ];
 
 export const blogHighlights = [

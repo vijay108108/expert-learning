@@ -30,8 +30,13 @@ export function listCoursesForApi() {
     rating: course.rating,
     duration: course.duration,
     level: course.level,
+    priceValue: course.priceValue,
+    originalPriceValue: course.originalPriceValue,
     price: course.price,
+    originalPrice: course.originalPrice,
     highlight: course.highlight,
+    tagLabel: course.tagLabel,
+    tagTone: course.tagTone,
     certificate: course.certificate,
     category: course.category,
     tags: course.tags,
@@ -57,5 +62,5 @@ export function parsePriceToPaise(price: string) {
 }
 
 export function formatPaiseToPrice(paise: number) {
-  return `Rs. ${Math.round(paise / 100).toLocaleString("en-IN")}`;
+  return `₹${Math.round(paise / 100).toLocaleString("en-IN")}`;
 }

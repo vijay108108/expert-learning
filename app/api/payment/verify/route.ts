@@ -48,9 +48,11 @@ export async function POST(request: Request) {
       sendEnrollmentEmail({
         name: body.name,
         email: body.email,
+        phone: body.phone,
         courseTitles: courses.map((course) => course.title),
         paymentId: body.razorpay_payment_id,
         amountLabel: formatPaiseToPrice(totalPaidPaise),
+        enrolledAt: paidAtIso,
       }),
       sendWhatsAppNotification({
         phone: body.phone,

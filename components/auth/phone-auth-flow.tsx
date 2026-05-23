@@ -18,6 +18,9 @@ import {
   getRecaptchaVerifier,
   getUserProfile,
   isFirebaseConfigured,
+  isLocalPhoneAuthHost,
+  isPhoneAuthTestingEnabled,
+  preparePhoneAuth,
   recaptchaContainerId,
   saveUserWhatsappNumber,
   upsertGoogleUserProfile,
@@ -75,6 +78,7 @@ export function PhoneAuthFlow({
   const { openAuthModal, user } = useAuth();
   const confirmationResultRef = useRef<ConfirmationResult | null>(null);
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
+  const recaptchaHostRef = useRef<HTMLDivElement | null>(null);
   const otpInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const sendOtpLockRef = useRef(false);
   const autoVerifyRef = useRef<string | null>(null);
@@ -134,8 +138,10 @@ export function PhoneAuthFlow({
   }, [rateLimitSeconds]);
 
   useEffect(() => {
+    const recaptchaHost = recaptchaHostRef.current;
+
     return () => {
-      clearRecaptcha();
+      clearRecaptcha(recaptchaHost);
       recaptchaVerifierRef.current = null;
     };
   }, []);
@@ -151,6 +157,22 @@ export function PhoneAuthFlow({
       hostname: typeof window !== "undefined" ? window.location.hostname : undefined,
     });
   }, [formattedPhone, mode, step]);
+
+  const createRecaptchaMountPoint = useCallback(() => {
+    const host = recaptchaHostRef.current;
+
+    if (!host) {
+      throw new Error("reCAPTCHA container was not found in the OTP component.");
+    }
+
+    host.innerHTML = "";
+
+    const mountPoint = document.createElement("div");
+    mountPoint.id = `${recaptchaContainerId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    host.appendChild(mountPoint);
+
+    return mountPoint;
+  }, []);
 
   function validatePhone() {
     const digits = normalizePhone(phone);
@@ -168,7 +190,7 @@ export function PhoneAuthFlow({
 
   const finishAuthSuccess = useCallback(async (message = "Login successful!") => {
     setSuccessMessage(message);
-    clearRecaptcha();
+    clearRecaptcha(recaptchaHostRef.current);
     recaptchaVerifierRef.current = null;
 
     window.setTimeout(async () => {
@@ -220,10 +242,20 @@ export function PhoneAuthFlow({
         throw new Error("Firebase auth is not available.");
       }
 
-      clearRecaptcha();
-      recaptchaVerifierRef.current = null;
+      if (isLocalPhoneAuthHost() && !isPhoneAuthTestingEnabled()) {
+        setFeedback(
+          "Real Firebase phone OTP is not supported on localhost. Use Google sign-in, deploy to a real domain, or enable Firebase test phone auth for local development.",
+        );
+        return;
+      }
 
-      const verifier = getRecaptchaVerifier(auth);
+      preparePhoneAuth(auth);
+
+      clearRecaptcha(recaptchaHostRef.current);
+      recaptchaVerifierRef.current = null;
+      const recaptchaMountPoint = createRecaptchaMountPoint();
+
+      const verifier = getRecaptchaVerifier(auth, recaptchaMountPoint);
       recaptchaVerifierRef.current = verifier;
 
       confirmationResultRef.current = await signInWithPhoneNumber(auth, formattedPhone, verifier);
@@ -243,13 +275,17 @@ export function PhoneAuthFlow({
         setRateLimitSeconds(60);
       }
 
-      clearRecaptcha();
+      clearRecaptcha(recaptchaHostRef.current);
       recaptchaVerifierRef.current = null;
 
       if (code === "auth/invalid-phone-number") {
         setFeedback("Invalid phone number. Use +91XXXXXXXXXX format");
       } else if (code === "auth/too-many-requests") {
         setFeedback("Too many attempts. Please try again later.");
+      } else if (code === "auth/invalid-app-credential" && isLocalPhoneAuthHost()) {
+        setFeedback(
+          "Firebase rejected this OTP request on localhost. Use Google sign-in, deploy to a real domain, or switch on Firebase test phone auth for local testing.",
+        );
       } else {
         setFeedback(getFirebaseAuthErrorMessage(error));
       }
@@ -362,7 +398,7 @@ export function PhoneAuthFlow({
     setOtp(Array.from({ length: otpLength }, () => ""));
     confirmationResultRef.current = null;
     googleUserIdRef.current = null;
-    clearRecaptcha();
+    clearRecaptcha(recaptchaHostRef.current);
     recaptchaVerifierRef.current = null;
     autoVerifyRef.current = null;
     setGooglePhone("");
@@ -855,7 +891,7 @@ export function PhoneAuthFlow({
       </div>
       <div
         id={recaptchaContainerId}
-        aria-hidden="true"
+        ref={recaptchaHostRef}
         className="pointer-events-none h-px w-px overflow-hidden opacity-0"
       />
     </div>

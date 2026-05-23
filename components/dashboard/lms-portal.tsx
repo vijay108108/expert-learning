@@ -405,6 +405,11 @@ export function LmsPortal({
   const isLiveToday = activeLesson?.type === "live" && isToday(activeLesson.scheduledAt);
   const certificateId = getCertificateId(userInfo.uid, selectedProgram.courseSlug);
   const notificationCount = notifications.filter((item) => !item.read).length;
+  const completedModuleCount = moduleStates.filter((state) => state === "completed").length;
+  const moduleProgressPercent = modules.length ? Math.round((completedModuleCount / modules.length) * 100) : 0;
+  const moduleProgressLabel = allModulesCompleted
+    ? `${modules.length} of ${modules.length} modules`
+    : `${Math.min(completedModuleCount + 1, modules.length)} of ${modules.length} modules`;
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -681,60 +686,73 @@ export function LmsPortal({
     return (
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-[240px] border-r-[0.5px] border-[rgba(255,255,255,0.07)] bg-[#0d1117] transition-transform md:static md:translate-x-0",
+          "fixed inset-x-0 top-[52px] bottom-0 left-0 z-40 w-[260px] border-r border-[#e2e8f0] bg-white transition-transform md:static md:inset-auto md:w-[260px] md:translate-x-0",
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="flex h-full flex-col">
-          <div className="px-4 py-3">
-            <button type="button" onClick={onResetCourseSelection} className="text-[11px] text-[#475569] transition hover:text-[#94a3b8]">
+          <div className="border-b border-[#f1f5f9] bg-[#f8fafc] px-4 py-[14px]">
+            <button type="button" onClick={onResetCourseSelection} className="text-[11px] text-[#94a3b8] transition hover:text-[#475569]">
               ← Back to Dashboard
             </button>
           </div>
 
-          <div className="border-b-[0.5px] border-[rgba(255,255,255,0.06)] px-4 py-3 text-[12px] font-semibold text-[#f1f5f9]">
-            {selectedCourse?.title}
+          <div className="mt-3 px-4 text-[13px] font-bold text-[#1e293b]">{selectedCourse?.title}</div>
+          <div className="mt-1 px-4 text-[11px] text-[#94a3b8]">
+            {selectedCourse?.duration || firstEnrollment?.duration || "12 Weeks"} · {selectedCourse?.level || firstEnrollment?.level || "Intermediate"}
           </div>
 
-          <div className="border-b-[0.5px] border-[rgba(255,255,255,0.06)] px-4 py-4">
+          <div className="border-b border-[#f1f5f9] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94a3b8]">
+            Progress Summary
+          </div>
+
+          <div className="border-b border-[#f1f5f9] px-4 py-4">
             <div className="flex items-center justify-between text-[11px]">
-              <span className="text-[#475569]">Overall Progress</span>
-              <span className="text-[#f97316]">
-                {completedCount}/{totalLessons} lessons
-              </span>
+              <span className="text-[#64748b]">Progress</span>
+              <span className="font-medium text-[#f97316]">{moduleProgressLabel}</span>
             </div>
-            <div className="mt-2 h-1 rounded-full bg-[#1e2d42]">
-              <div className="h-1 rounded-full bg-[#f97316]" style={{ width: `${progressPercent}%` }} />
+            <div className="mt-2 h-[5px] rounded-full bg-[#e2e8f0]">
+              <div
+                className="h-[5px] rounded-full bg-[linear-gradient(90deg,#f97316,#fb923c)]"
+                style={{ width: `${moduleProgressPercent || progressPercent}%` }}
+              />
             </div>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto py-2">
+          <div className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94a3b8]">
+            Course Modules
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto pb-2">
             {modules.map((module, moduleIndex) => {
               const moduleState = moduleStates[moduleIndex] || "locked";
               const expanded = expandedModuleIds.has(module.id);
               const activeModule = activeLesson?.moduleId === module.id;
 
               return (
-                <div key={module.id}>
+                <div key={module.id} className="border-b border-[#f1f5f9]">
                   <button
                     type="button"
                     onClick={() => toggleModule(module.id)}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-left"
+                    className={cn(
+                      "flex w-full items-center gap-2 px-4 py-[10px] text-left transition hover:bg-[#f8fafc]",
+                      (expanded || activeModule) && "bg-[#f8fafc]",
+                    )}
                   >
                     <span
                       className={cn(
                         "flex h-[22px] w-[22px] items-center justify-center rounded-[6px] text-[10px] font-semibold",
-                        moduleState === "completed" && "bg-[rgba(16,185,129,0.15)] text-[#34d399]",
-                        moduleState === "active" && "bg-[rgba(249,115,22,0.15)] text-[#f97316]",
-                        moduleState === "locked" && "bg-[rgba(255,255,255,0.04)] text-[#334155]",
+                        moduleState === "completed" && "bg-[#dcfce7] text-[#16a34a]",
+                        moduleState === "active" && "border border-[#fed7aa] bg-[#fff7ed] text-[#ea580c]",
+                        moduleState === "locked" && "bg-[#f1f5f9] text-[#94a3b8]",
                       )}
                     >
                       {moduleState === "completed" ? "✓" : moduleState === "locked" ? "🔒" : moduleIndex + 1}
                     </span>
-                    <span className={cn("min-w-0 flex-1 text-[12px]", activeModule ? "text-[#f1f5f9]" : "text-[#64748b]")}>
+                    <span className={cn("min-w-0 flex-1 text-[12px] font-medium", activeModule ? "text-[#1e293b]" : "text-[#475569]")}>
                       {module.title}
                     </span>
-                    <ChevronDown className={cn("h-3.5 w-3.5 text-[#334155] transition", expanded && "rotate-180")} />
+                    <ChevronDown className={cn("h-3.5 w-3.5 text-[#94a3b8] transition", expanded && "rotate-180")} />
                   </button>
 
                   {expanded ? (
@@ -750,22 +768,23 @@ export function LmsPortal({
                             type="button"
                             onClick={() => selectLesson(lesson, moduleState)}
                             className={cn(
-                              "flex w-full items-start gap-2 rounded-[6px] px-2 py-1.5 text-left transition",
-                              active && "bg-[rgba(249,115,22,0.08)]",
-                              !active && !locked && "hover:bg-[rgba(255,255,255,0.04)]",
+                              "flex w-full items-start gap-2 rounded-[7px] border px-[10px] py-[6px] text-left transition",
+                              active && "border-[#fed7aa] bg-[#fff7ed]",
+                              !active && "border-transparent",
+                              !active && !locked && "hover:bg-[#f1f5f9]",
                             )}
                           >
-                            <span className={cn("mt-0.5 text-[11px]", active ? "text-[#f97316]" : "text-[#334155]")}>
+                            <span className={cn("mt-0.5 text-[11px]", active ? "text-[#f97316]" : "text-[#cbd5e1]")}>
                               {getLessonIcon(lesson.type)}
                             </span>
                             <span className="min-w-0 flex-1">
-                              <span className={cn("block text-[11px]", active ? "text-[#fb923c]" : "text-[#475569]")}>
+                              <span className={cn("block text-[11px]", active ? "font-medium text-[#ea580c]" : "text-[#64748b]")}>
                                 {lesson.title}
                               </span>
-                              <span className="mt-0.5 block text-[10px] text-[#334155]">{lesson.duration}</span>
+                              <span className="mt-0.5 block text-[10px] text-[#94a3b8]">{lesson.duration}</span>
                             </span>
                             {complete ? (
-                              <span className="mt-0.5 flex h-[14px] w-[14px] items-center justify-center rounded-full border-[0.5px] border-[rgba(16,185,129,0.3)] bg-[rgba(16,185,129,0.15)] text-[9px] text-[#34d399]">
+                              <span className="mt-0.5 flex h-[14px] w-[14px] items-center justify-center rounded-full border border-[#bbf7d0] bg-[#dcfce7] text-[9px] text-[#16a34a]">
                                 ✓
                               </span>
                             ) : null}
@@ -789,9 +808,9 @@ export function LmsPortal({
     }
 
     return (
-      <div className="relative h-[280px] bg-black">
+      <div className="relative h-[260px] bg-[#0f172a]">
         {isLiveToday ? (
-          <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-2 rounded-[4px] bg-[#ef4444] px-2 py-[3px] text-[10px] font-semibold text-white">
+          <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-2 rounded-[6px] bg-[#ef4444] px-2.5 py-[4px] text-[10px] font-semibold text-white">
             <span className="h-1.5 w-1.5 animate-[pulse_1.4s_ease-in-out_infinite] rounded-full bg-white" />
             LIVE CLASS TODAY 7PM
           </div>
@@ -799,7 +818,7 @@ export function LmsPortal({
 
         {isLiveToday ? (
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="text-[11px] text-[#64748b]">Starts in:</div>
+            <div className="text-[11px] text-[rgba(255,255,255,0.6)]">Starts in:</div>
             <div className="mt-2 text-[20px] font-bold text-[#f97316]">{countdown}</div>
             <Link
               href={selectedProgram.liveClassUrl}
@@ -819,18 +838,18 @@ export function LmsPortal({
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
-            <div className="absolute right-0 bottom-0 left-0 flex items-center gap-3 bg-[rgba(0,0,0,0.82)] px-4 py-3 text-[11px] text-[#64748b]">
+            <div className="absolute right-0 bottom-0 left-0 flex items-center gap-3 bg-[rgba(0,0,0,0.82)] px-4 py-3 text-[11px] text-[rgba(255,255,255,0.6)]">
               <button type="button" className="text-[#f1f5f9]">
                 <Play className="h-4 w-4" />
               </button>
-              <button type="button" className="text-[#64748b]">
+              <button type="button" className="text-[rgba(255,255,255,0.6)]">
                 <Pause className="h-4 w-4" />
               </button>
-              <div className="h-1 flex-1 rounded-full bg-[#1e2d42]">
+              <div className="h-1 flex-1 rounded-full bg-[rgba(255,255,255,0.12)]">
                 <div className="h-1 w-1/3 rounded-full bg-[#f97316]" />
               </div>
               <span>03:21 / {activeLesson.duration}</span>
-              <select className="rounded bg-[#111827] px-2 py-1 text-[#f1f5f9] outline-none">
+              <select className="rounded bg-[rgba(255,255,255,0.08)] px-2 py-1 text-[#f1f5f9] outline-none">
                 {["0.75x", "1x", "1.25x", "1.5x", "2x"].map((speed) => (
                   <option key={speed}>{speed}</option>
                 ))}
@@ -842,8 +861,8 @@ export function LmsPortal({
           </>
         ) : (
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <Video className="h-10 w-10 text-[#334155]" />
-            <div className="mt-3 text-[13px] text-[#475569]">Recording will appear after live class</div>
+            <Video className="h-10 w-10 text-[#475569]" />
+            <div className="mt-3 text-[13px] text-[#cbd5e1]">Recording will appear after live class</div>
           </div>
         )}
       </div>
@@ -865,8 +884,8 @@ export function LmsPortal({
     return (
       <div className="space-y-4">
         <div>
-          <h2 className="text-[14px] font-semibold text-[#f1f5f9]">{activeLesson.title}</h2>
-          <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-[#475569]">
+          <h2 className="text-[16px] font-bold text-[#1e293b]">{activeLesson.title}</h2>
+          <div className="mt-2 flex flex-wrap gap-4 text-[12px] text-[#64748b]">
             <span>{activeLesson.duration}</span>
             <span>Module {activeLesson.moduleIndex + 1}</span>
             <span>{selectedCourse?.level}</span>
@@ -874,16 +893,16 @@ export function LmsPortal({
           </div>
         </div>
 
-        <div className="rounded-[10px] border-[0.5px] border-[#1e2d42] bg-[#111827] p-[14px]">
-          <div className="mb-3 text-[12px] font-semibold text-[#f1f5f9]">This Session Covers</div>
+        <div className="rounded-[10px] border border-[#e2e8f0] bg-white p-[14px]">
+          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#94a3b8]">This Session Covers</div>
           <div className="space-y-3">
             {coverageItems.map((item) => (
               <div key={item.badge} className="flex items-center gap-3">
-                <div className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[rgba(255,255,255,0.04)] text-[13px]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[#f8fafc] text-[13px] text-[#64748b]">
                   {item.icon}
                 </div>
-                <div className="min-w-0 flex-1 text-[12px] text-[#94a3b8]">{item.text}</div>
-                <span className={cn("rounded-full px-2 py-1 text-[10px]", item.color)}>{item.badge}</span>
+                <div className="min-w-0 flex-1 text-[12px] text-[#475569]">{item.text}</div>
+                <span className={cn("rounded-full border px-2 py-1 text-[10px]", item.color)}>{item.badge}</span>
               </div>
             ))}
           </div>
@@ -903,7 +922,7 @@ export function LmsPortal({
           <a
             key={resource.name}
             href={resource.url}
-            className="flex items-center gap-3 rounded-[10px] border-[0.5px] border-[rgba(255,255,255,0.07)] bg-[#111827] p-4 transition hover:border-[rgba(249,115,22,0.3)]"
+            className="flex items-center gap-3 rounded-[10px] border border-[#e2e8f0] bg-white p-4 transition hover:border-[#fed7aa]"
           >
             <FileText
               className={cn(
@@ -914,8 +933,8 @@ export function LmsPortal({
               )}
             />
             <div className="min-w-0 flex-1">
-              <div className="text-[13px] text-[#f1f5f9]">{resource.name}</div>
-              <div className="mt-1 text-[11px] text-[#334155]">{resource.size}</div>
+              <div className="text-[13px] text-[#1e293b]">{resource.name}</div>
+              <div className="mt-1 text-[11px] text-[#94a3b8]">{resource.size}</div>
             </div>
             <span className="inline-flex items-center gap-1 text-[12px] text-[#f97316]">
               <Download className="h-4 w-4" />
@@ -938,9 +957,9 @@ export function LmsPortal({
             setNoteSaved(false);
           }}
           placeholder="Write your notes for this lesson..."
-          className="min-h-[220px] w-full resize-y rounded-[8px] border-[0.5px] border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] p-3 text-[13px] text-[#f1f5f9] outline-none placeholder:text-[#334155]"
+          className="min-h-[220px] w-full resize-y rounded-[8px] border border-[#e2e8f0] bg-white p-3 text-[13px] text-[#1e293b] outline-none placeholder:text-[#94a3b8]"
         />
-        {noteSaved ? <div className="mt-2 text-[11px] text-[#34d399]">Notes auto-saved</div> : null}
+        {noteSaved ? <div className="mt-2 text-[11px] text-[#16a34a]">Notes auto-saved</div> : null}
       </div>
     );
   }
@@ -953,7 +972,7 @@ export function LmsPortal({
             value={questionText}
             onChange={(event) => setQuestionText(event.target.value)}
             placeholder="Ask your mentor a question..."
-            className="min-w-0 flex-1 rounded-[8px] border-[0.5px] border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] px-3 py-2.5 text-[13px] text-[#f1f5f9] outline-none placeholder:text-[#334155]"
+            className="min-w-0 flex-1 rounded-[8px] border border-[#e2e8f0] bg-white px-3 py-2.5 text-[13px] text-[#1e293b] outline-none placeholder:text-[#94a3b8]"
           />
           <button
             type="button"
@@ -966,20 +985,20 @@ export function LmsPortal({
 
         {questions.length ? (
           questions.map((question) => (
-            <div key={question.id} className="rounded-[10px] border-[0.5px] border-[#1e2d42] bg-[#111827] p-4">
+            <div key={question.id} className="rounded-[10px] border border-[#e2e8f0] bg-white p-4">
               <div className="flex gap-3">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(139,92,246,0.15)] text-[11px] font-bold text-[#a78bfa]">
                   {userInfo.name.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[13px] text-[#f1f5f9]">{question.question}</div>
-                  <div className="mt-1 text-[10px] text-[#334155]">{question.createdAt || "Just now"}</div>
+                  <div className="text-[13px] text-[#1e293b]">{question.question}</div>
+                  <div className="mt-1 text-[10px] text-[#94a3b8]">{question.createdAt || "Just now"}</div>
                   {question.answer ? (
-                    <div className="mt-3 rounded-[8px] bg-[rgba(16,185,129,0.08)] p-3 text-[12px] text-[#94a3b8]">
+                    <div className="mt-3 rounded-[8px] bg-[#dcfce7] p-3 text-[12px] text-[#166534]">
                       {question.answer}
                     </div>
                   ) : (
-                    <span className="mt-3 inline-flex rounded-full bg-[rgba(249,115,22,0.15)] px-3 py-1 text-[10px] text-[#f97316]">
+                    <span className="mt-3 inline-flex rounded-full border border-[#fed7aa] bg-[#fff7ed] px-3 py-1 text-[10px] text-[#f97316]">
                       Awaiting mentor response
                     </span>
                   )}
@@ -988,7 +1007,7 @@ export function LmsPortal({
             </div>
           ))
         ) : (
-          <div className="rounded-[10px] border-[0.5px] border-[#1e2d42] bg-[#111827] p-5 text-[12px] text-[#64748b]">
+          <div className="rounded-[10px] border border-[#e2e8f0] bg-white p-5 text-[12px] text-[#64748b]">
             No questions yet for this lesson.
           </div>
         )}
@@ -1002,17 +1021,17 @@ export function LmsPortal({
     }
 
     return (
-      <div className="rounded-[10px] border-[0.5px] border-[#1e2d42] bg-[#111827] p-5">
-        <div className="text-[14px] font-semibold text-[#f1f5f9]">Assignment</div>
+      <div className="rounded-[10px] border border-[#e2e8f0] bg-white p-5">
+        <div className="text-[14px] font-semibold text-[#1e293b]">Assignment</div>
         <p className="mt-3 text-[12px] leading-6 text-[#64748b]">{activeLesson.assignment.description}</p>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <InfoTile label="Deadline" value={formatDate(activeLesson.assignment.deadline)} />
           <InfoTile label="Status" value={activeLesson.assignment.status} />
           <InfoTile label="Score" value={activeLesson.assignment.score || "Pending"} />
         </div>
-        <div className="mt-5 rounded-[8px] border-[0.5px] border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] p-4">
+        <div className="mt-5 rounded-[8px] border border-[#e2e8f0] bg-[#f8fafc] p-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="text-[12px] text-[#475569]">Upload your file or add a text submission from this area.</div>
+            <div className="text-[12px] text-[#64748b]">Upload your file or add a text submission from this area.</div>
             <button type="button" className="inline-flex items-center gap-2 rounded-[8px] bg-[#f97316] px-4 py-2 text-[12px] font-semibold text-white">
               <Upload className="h-4 w-4" />
               Submit Assignment
@@ -1026,9 +1045,9 @@ export function LmsPortal({
   function renderTabContent() {
     if (allModulesCompleted) {
       return (
-        <div className="rounded-[12px] border-[0.5px] border-[#1e2d42] bg-[#111827] p-6">
+        <div className="rounded-[12px] border border-[#e2e8f0] bg-white p-6">
           <div className="text-[12px] uppercase tracking-[0.08em] text-[#f97316]">Certificate Ready</div>
-          <div className="mt-2 text-[24px] font-semibold text-[#f1f5f9]">{selectedCourse?.certificate}</div>
+          <div className="mt-2 text-[24px] font-semibold text-[#1e293b]">{selectedCourse?.certificate}</div>
           <div className="mt-3 text-[13px] text-[#64748b]">
             {userInfo.name} completed {selectedCourse?.title}. Certificate ID: {certificateId}
           </div>
@@ -1043,7 +1062,7 @@ export function LmsPortal({
             <Link
               href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://expertlearning.in")}`}
               target="_blank"
-              className="rounded-[8px] border-[0.5px] border-[rgba(249,115,22,0.3)] bg-[rgba(249,115,22,0.08)] px-5 py-2.5 text-[13px] font-semibold text-[#f97316]"
+              className="rounded-[8px] border border-[#fed7aa] bg-[#fff7ed] px-5 py-2.5 text-[13px] font-semibold text-[#f97316]"
             >
               Share on LinkedIn
             </Link>
@@ -1072,7 +1091,7 @@ export function LmsPortal({
   }
 
   return (
-    <div className="grid h-screen overflow-hidden bg-[#0d1117] text-[#f1f5f9] md:grid-cols-[240px_minmax(0,1fr)]">
+    <div className="grid h-full min-h-0 overflow-hidden bg-[#f8fafc] text-[#1e293b] md:grid-cols-[260px_minmax(0,1fr)]">
       {mobileSidebarOpen ? (
         <button
           type="button"
@@ -1083,13 +1102,13 @@ export function LmsPortal({
       ) : null}
       {renderLessonSidebar()}
 
-      <main className="flex min-w-0 flex-col bg-[#0d1117]">
-        <div className="flex items-center justify-between border-b-[0.5px] border-[rgba(255,255,255,0.07)] bg-[#0d1117] px-5 py-2.5">
+      <main className="flex min-w-0 flex-col bg-[#f8fafc]">
+        <div className="flex items-center justify-between border-b border-[#e2e8f0] bg-white px-5 py-[10px]">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              className="flex h-7 w-7 items-center justify-center rounded-[6px] text-[#64748b] md:hidden"
+              className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e2e8f0] bg-[#f1f5f9] text-[#64748b] md:hidden"
               aria-label="Open course menu"
             >
               <Menu className="h-4 w-4" />
@@ -1097,7 +1116,7 @@ export function LmsPortal({
             <button
               type="button"
               onClick={() => navigateLesson("prev")}
-              className="flex h-7 w-7 items-center justify-center rounded-[6px] border-[0.5px] border-[rgba(255,255,255,0.07)] text-[#64748b]"
+              className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e2e8f0] bg-[#f1f5f9] text-[#64748b]"
               aria-label="Previous lesson"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -1105,13 +1124,13 @@ export function LmsPortal({
             <button
               type="button"
               onClick={() => navigateLesson("next")}
-              className="flex h-7 w-7 items-center justify-center rounded-[6px] border-[0.5px] border-[rgba(255,255,255,0.07)] text-[#64748b]"
+              className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e2e8f0] bg-[#f1f5f9] text-[#64748b]"
               aria-label="Next lesson"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
             <div className="truncate text-[11px]">
-              <span className="text-[#334155]">Module {currentModuleIndex + 1}</span>
+              <span className="text-[#94a3b8]">Module {currentModuleIndex + 1}</span>
               <span className="px-2 text-[#334155]">→</span>
               <span className="text-[#475569]">{activeLesson?.title}</span>
             </div>
@@ -1128,7 +1147,7 @@ export function LmsPortal({
                     void handleNotificationClick(firstUnread);
                   }
                 }}
-                className="flex h-8 w-8 items-center justify-center rounded-[8px] border-[0.5px] border-[rgba(255,255,255,0.07)] text-[#64748b]"
+                className="flex h-8 w-8 items-center justify-center rounded-[6px] border border-[#e2e8f0] bg-white text-[#64748b]"
               >
                 <Bell className="h-4 w-4" />
               </button>
@@ -1144,7 +1163,7 @@ export function LmsPortal({
                 setNotesOpen((current) => !current);
                 setActiveTab("notes");
               }}
-              className="hidden items-center gap-2 rounded-[8px] border-[0.5px] border-[rgba(255,255,255,0.07)] px-3 py-2 text-[12px] text-[#64748b] sm:inline-flex"
+              className="hidden items-center gap-2 rounded-[6px] border border-[#e2e8f0] bg-white px-3 py-[5px] text-[11px] text-[#64748b] sm:inline-flex"
             >
               <NotebookPen className="h-4 w-4" />
               Notes
@@ -1153,7 +1172,7 @@ export function LmsPortal({
               type="button"
               onClick={() => void bookmarkCurrentLesson()}
               className={cn(
-                "hidden items-center gap-2 rounded-[8px] border-[0.5px] border-[rgba(255,255,255,0.07)] px-3 py-2 text-[12px] sm:inline-flex",
+                "hidden items-center gap-2 rounded-[6px] border border-[#e2e8f0] bg-white px-3 py-[5px] text-[11px] sm:inline-flex",
                 bookmarked ? "text-[#f97316]" : "text-[#64748b]",
               )}
             >
@@ -1164,7 +1183,7 @@ export function LmsPortal({
               type="button"
               onClick={() => void completeCurrentLesson()}
               disabled={activeLessonCompleted || currentModuleState === "locked"}
-              className="inline-flex items-center gap-2 rounded-[8px] bg-[#f97316] px-4 py-2 text-[12px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-[6px] border border-[#f97316] bg-[#f97316] px-4 py-[5px] text-[11px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               Mark Complete
               <Check className="h-4 w-4" />
@@ -1175,15 +1194,15 @@ export function LmsPortal({
         <div className="min-h-0 flex-1 overflow-y-auto">
           {renderVideoArea()}
 
-          <div className="sticky top-0 z-10 flex overflow-x-auto border-b-[0.5px] border-[rgba(255,255,255,0.07)] bg-[#0d1117]">
+          <div className="sticky top-0 z-10 flex overflow-x-auto border-b border-[#e2e8f0] bg-white">
             {(Object.keys(tabLabels) as PlayerTab[]).map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "shrink-0 border-b-2 px-5 py-3 text-[12px]",
-                  activeTab === tab ? "border-[#f97316] text-[#f97316]" : "border-transparent text-[#475569]",
+                  "shrink-0 border-b-2 px-4 py-[10px] text-[12px] transition hover:text-[#475569]",
+                  activeTab === tab ? "border-[#f97316] font-medium text-[#f97316]" : "border-transparent text-[#64748b]",
                 )}
               >
                 {tabLabels[tab]}
@@ -1191,12 +1210,12 @@ export function LmsPortal({
             ))}
           </div>
 
-          <div className={cn("grid gap-5 p-5", notesOpen && "lg:grid-cols-[minmax(0,1fr)_320px]")}>
+          <div className={cn("grid gap-5 bg-[#f8fafc] p-5", notesOpen && "lg:grid-cols-[minmax(0,1fr)_320px]")}>
             <div>{renderTabContent()}</div>
             {notesOpen ? (
-              <div className="rounded-[10px] border-[0.5px] border-[#1e2d42] bg-[#111827] p-4">
+              <div className="rounded-[10px] border border-[#e2e8f0] bg-white p-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <div className="text-[13px] font-semibold text-[#f1f5f9]">Lesson Notes</div>
+                  <div className="text-[13px] font-semibold text-[#1e293b]">Lesson Notes</div>
                   <button type="button" onClick={() => setNotesOpen(false)} className="text-[#64748b]" aria-label="Close notes">
                     <X className="h-4 w-4" />
                   </button>
@@ -1209,7 +1228,7 @@ export function LmsPortal({
       </main>
 
       {toast ? (
-        <div className="fixed right-5 bottom-5 rounded-[10px] border-[0.5px] border-[rgba(16,185,129,0.3)] bg-[#111827] px-4 py-3 text-[13px] text-[#34d399] shadow-2xl">
+        <div className="fixed right-5 bottom-5 rounded-[10px] border border-[#bbf7d0] bg-white px-4 py-3 text-[13px] text-[#16a34a] shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
           {toast}
         </div>
       ) : null}
@@ -1219,9 +1238,9 @@ export function LmsPortal({
 
 function InfoTile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[8px] border-[0.5px] border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] p-3">
-      <div className="text-[10px] uppercase tracking-[0.08em] text-[#334155]">{label}</div>
-      <div className="mt-1 text-[12px] text-[#f1f5f9]">{value}</div>
+    <div className="rounded-[8px] border border-[#e2e8f0] bg-[#f8fafc] p-3">
+      <div className="text-[10px] uppercase tracking-[0.08em] text-[#94a3b8]">{label}</div>
+      <div className="mt-1 text-[12px] text-[#1e293b]">{value}</div>
     </div>
   );
 }

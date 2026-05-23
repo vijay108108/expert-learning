@@ -3,13 +3,19 @@
 import { CheckCircle2, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 import { formatPaiseToPrice } from "@/lib/course-catalog";
-import { saveInvoiceEnrollments } from "@/lib/firebase";
+import {
+  getUserProfile,
+  saveInvoiceEnrollments,
+  saveUserWhatsappNumber,
+  type AppUserProfile,
+} from "@/lib/firebase";
 import {
   formatCurrencyInrFromPaise,
+  getInvoiceDashboardPath,
   getInclusiveGstBreakup,
   latestOrderStorageKey,
   type StoredOrderSuccess,
@@ -19,6 +25,7 @@ import { ensureRazorpayScript } from "@/lib/razorpay-browser";
 const gstPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 
 type CheckoutFormState = {
+  phone: string;
   email: string;
   addGstDetails: boolean;
   gstNumber: string;
@@ -26,11 +33,31 @@ type CheckoutFormState = {
 };
 
 const initialState: CheckoutFormState = {
+  phone: "",
   email: "",
   addGstDetails: false,
   gstNumber: "",
   companyName: "",
 };
+
+function normalizePhone(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function formatPhoneForProfile(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  const digits = normalizePhone(trimmed);
+
+  if (!digits) {
+    return "";
+  }
+
+  return trimmed.startsWith("+") ? `+${digits}` : digits;
+}
 
 export function CartCheckoutForm() {
   const checkoutFormId = "cart-checkout-form";
@@ -38,10 +65,11 @@ export function CartCheckoutForm() {
   const { user, isAuthReady, openAuthModal } = useAuth();
   const { clearCart, courses, hydrated, totalPaise } = useCart();
   const [form, setForm] = useState<CheckoutFormState>(initialState);
+  const [profile, setProfile] = useState<AppUserProfile | null>(null);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const accountName = user?.displayName?.trim() || "GenZNext Learner";
-  const accountPhone = user?.phoneNumber?.trim() || "";
+  const accountName = user?.displayName?.trim() || profile?.name?.trim() || "GenZNext Learner";
+  const accountPhone = form.phone.trim();
   const normalizedGstNumber = form.gstNumber.trim().toUpperCase();
   const gstNumberEntered = normalizedGstNumber.length > 0;
   const isGstNumberValid = gstPattern.test(normalizedGstNumber);
@@ -51,6 +79,53 @@ export function CartCheckoutForm() {
     [gstInvoiceEnabled, totalPaise],
   );
   const showGstInvoiceNote = gstInvoiceEnabled && Boolean(form.companyName.trim());
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    let active = true;
+    const authPhone = user.phoneNumber?.trim() || "";
+    const authEmail = user.email?.trim() || "";
+    const frame = window.requestAnimationFrame(() => {
+      if (!active) {
+        return;
+      }
+
+      setForm((current) => ({
+        ...current,
+        phone: current.phone || authPhone,
+        email: current.email || authEmail,
+      }));
+    });
+
+    void (async () => {
+      try {
+        const nextProfile = await getUserProfile(user.uid);
+
+        if (!active) {
+          return;
+        }
+
+        setProfile(nextProfile);
+        setForm((current) => ({
+          ...current,
+          phone: current.phone || nextProfile?.phone?.trim() || authPhone,
+          email: current.email || nextProfile?.email?.trim() || authEmail,
+        }));
+      } catch (error) {
+        if (active) {
+          console.error("[Checkout] Unable to load user profile", error);
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+      window.cancelAnimationFrame(frame);
+    };
+  }, [user]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -71,8 +146,16 @@ export function CartCheckoutForm() {
       return;
     }
 
-    if (!accountName.trim() || !accountPhone.trim()) {
-      setMessage("Your account details are incomplete. Please sign in again and retry.");
+    const paymentPhone = normalizePhone(accountPhone);
+    const profilePhone = formatPhoneForProfile(accountPhone);
+
+    if (!accountName.trim()) {
+      setMessage("Your account name is missing. Please sign in again and retry.");
+      return;
+    }
+
+    if (paymentPhone.length < 8 || paymentPhone.length > 14) {
+      setMessage("Enter a valid mobile number to continue.");
       return;
     }
 
@@ -94,7 +177,7 @@ export function CartCheckoutForm() {
       const payload = {
         name: accountName.trim(),
         email: form.email.trim(),
-        phone: accountPhone.trim(),
+        phone: paymentPhone,
         courseSlugs: courses.map((course) => course.slug),
         gstNumber: form.addGstDetails ? normalizedGstNumber : "",
         companyName: form.addGstDetails ? form.companyName.trim() : "",
@@ -164,12 +247,17 @@ export function CartCheckoutForm() {
               return;
             }
 
-            await saveInvoiceEnrollments(user, verifyPayload.invoice);
+            void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
+              console.error("[Checkout] Unable to save phone number after payment", error);
+            });
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             clearCart();
             window.localStorage.removeItem("cart");
             window.localStorage.setItem("cart", JSON.stringify([]));
-            router.replace("/dashboard");
+            void saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
+              console.error("[Checkout] Enrollment sync failed after verified payment", error);
+            });
+            router.replace(getInvoiceDashboardPath(verifyPayload.invoice));
           } catch (error) {
             setMessage(error instanceof Error ? error.message : "Unable to complete enrollment after payment.");
           }
@@ -250,10 +338,16 @@ export function CartCheckoutForm() {
             <label className="mb-2 block text-[12px] font-medium uppercase tracking-[0.08em] text-[#64748B]">
               Phone
             </label>
-              <input
+            <input
               value={accountPhone}
-              readOnly
-              className="w-full rounded-[10px] border border-[rgba(16,185,129,0.2)] bg-[rgba(16,185,129,0.03)] px-4 py-3 text-[14px] text-[#94A3B8] outline-none"
+              onChange={(event) => {
+                setForm((current) => ({ ...current, phone: event.target.value }));
+                setMessage(null);
+              }}
+              placeholder="+91 mobile number"
+              autoComplete="tel"
+              inputMode="tel"
+              className="w-full rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-[14px] text-[#F1F5F9] outline-none transition placeholder:text-[#334155] focus:border-[rgba(249,115,22,0.35)] focus:bg-[rgba(249,115,22,0.03)]"
             />
           </div>
 

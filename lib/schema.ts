@@ -13,9 +13,9 @@ export function getOrganizationSchema() {
     email: siteConfig.email,
     telephone: siteConfig.phone,
     sameAs: [
-      "https://www.linkedin.com/company/expert-learning",
-      "https://www.instagram.com/expertlearning",
-      "https://www.youtube.com/@expertlearning",
+      "https://www.instagram.com/genznextofficial/",
+      "https://www.facebook.com/profile.php?id=61590060611725",
+      "https://www.linkedin.com/in/adarsh-vishwakarma-184ab0410/",
     ],
   };
 }

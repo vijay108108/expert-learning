@@ -57,7 +57,7 @@ export default function ContactPage() {
               <LeadForm
                 includeMessage
                 submitLabel="Get Free Career Consultation"
-                source="Contact Form Inquiry"
+                source="Admissions Inquiry"
               />
             </div>
           </Reveal>
