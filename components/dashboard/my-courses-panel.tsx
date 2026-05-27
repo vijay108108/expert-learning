@@ -42,6 +42,15 @@ function formatStatus(value?: string | null) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+function formatEnrollmentDate(value: string) {
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  }).format(new Date(value));
+}
+
 function buildInvoiceFallbackCourses(invoice: StoredOrderSuccess) {
   return invoice.courses.map((courseLine) => {
     const catalogCourse = getCourseBySlug(courseLine.slug);
@@ -351,6 +360,10 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                     <BookOpen className="h-4 w-4" />
                   </button>
                 </div>
+
+                <div className="mt-3 text-[11px] text-[#7C8CA8]">
+                  Enrolled on {formatEnrollmentDate(course.enrolledAt)}
+                </div>
               </article>
             ))}
           </section>
@@ -375,7 +388,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
         {selectedSyllabusCourse ? (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reducedMotion ? 0.1 : 0.16 }}
             className="fixed inset-0 z-[220] flex items-center justify-center bg-[rgba(2,6,23,0.72)] px-4 py-6 backdrop-blur-[4px]"

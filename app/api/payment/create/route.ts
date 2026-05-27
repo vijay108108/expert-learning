@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCoursesBySlugs, parsePriceToPaise } from "@/lib/course-catalog";
+import { getMyEnrollments } from "@/lib/firebase";
 import { env } from "@/lib/env";
 import { getRazorpayClient } from "@/lib/services/payments";
 import { paymentCreateSchema } from "@/lib/validations";
@@ -13,6 +14,24 @@ export async function POST(request: Request) {
 
     if (courses.length !== courseSlugs.length) {
       return NextResponse.json({ success: false, message: "One or more selected courses were not found." }, { status: 404 });
+    }
+
+    if (body.userId) {
+      const enrolledCourseIds = new Set((await getMyEnrollments(body.userId)).map((enrollment) => enrollment.courseId));
+      const duplicateCourses = courses.filter((course) => enrolledCourseIds.has(course.slug));
+
+      if (duplicateCourses.length > 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              duplicateCourses.length === 1
+                ? "You are already enrolled in this course."
+                : "One or more selected courses are already enrolled in your account.",
+          },
+          { status: 409 },
+        );
+      }
     }
 
     const subtotalPaise = courses.reduce((sum, course) => {

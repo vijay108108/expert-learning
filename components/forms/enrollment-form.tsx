@@ -80,7 +80,7 @@ export function EnrollmentForm({
     }
 
     if (!user) {
-      openAuthModal("login", `/enroll/${encodeURIComponent(course.slug)}`);
+      openAuthModal("login", `/checkout/${encodeURIComponent(course.slug)}`);
       return;
     }
 
@@ -95,6 +95,7 @@ export function EnrollmentForm({
         },
         body: JSON.stringify({
           ...form,
+          userId: user.uid,
           courseSlug: course.slug,
         }),
       });

@@ -1,6 +1,5 @@
 import { ShieldCheck } from "lucide-react";
-import { EnrollmentForm } from "@/components/forms/enrollment-form";
-import { ButtonLink } from "@/components/ui/button-link";
+import { CourseEnrollmentAction } from "@/components/enroll/course-enrollment-action";
 import { Reveal } from "@/components/ui/reveal";
 import type { Course } from "@/data/courses";
 
@@ -104,12 +103,14 @@ export function AzureSummerTrainingPage({ course }: { course: Course }) {
                 </div>
 
                 <div className="mt-4 flex flex-col items-stretch gap-2">
-                  <ButtonLink
-                    href="#payment-form"
-                    className="min-h-[48px] w-full justify-center rounded-[14px] bg-[linear-gradient(135deg,#F97316,#EA580C)] shadow-[0_16px_34px_rgba(249,115,22,0.22),0_0_20px_rgba(249,115,22,0.12)] hover:shadow-[0_20px_42px_rgba(249,115,22,0.28),0_0_24px_rgba(249,115,22,0.16)]"
-                  >
-                    Enroll Now
-                  </ButtonLink>
+                  <CourseEnrollmentAction
+                    courseSlug={course.slug}
+                    checkoutButtonClassName="rounded-[14px]"
+                    enrolledButtonClassName="rounded-[14px]"
+                    helperClassName="text-[#B8C4DA]"
+                    checkoutHelperText="Proceed to dedicated checkout to complete your enrollment securely."
+                    enrolledHelperText="This course is already active in your dashboard. Continue learning from there."
+                  />
                   <a
                     href={course.officialSyllabusUrl}
                     target="_blank"
@@ -122,20 +123,6 @@ export function AzureSummerTrainingPage({ course }: { course: Course }) {
               </aside>
             </Reveal>
           </div>
-        </div>
-      </section>
-
-      <section id="registration-form" className="px-4 pb-14 sm:px-6 sm:pb-16 lg:px-8 lg:pb-20">
-        <div className="mx-auto max-w-4xl">
-          <Reveal delay={0.08}>
-            <EnrollmentForm
-              course={course}
-              sectionId="payment-form"
-              eyebrow="Purchase"
-              heading="Secure your Azure Administrator seat"
-              submitLabel="Enroll Now"
-            />
-          </Reveal>
         </div>
       </section>
     </>

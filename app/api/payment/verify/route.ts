@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { formatPaiseToPrice, getCoursesBySlugs, parsePriceToPaise } from "@/lib/course-catalog";
 import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
-import { saveEnrollmentRecord } from "@/lib/firebase";
+import { getMyEnrollments, saveEnrollmentRecord } from "@/lib/firebase";
 import { captureServerEvent } from "@/lib/services/analytics";
 import { sendEnrollmentEmail } from "@/lib/services/email";
 import { getRazorpayPaymentDetails, verifyRazorpaySignature } from "@/lib/services/payments";
@@ -16,6 +16,22 @@ export async function POST(request: Request) {
 
     if (courses.length !== courseSlugs.length) {
       return NextResponse.json({ success: false, message: "One or more selected courses were not found." }, { status: 404 });
+    }
+
+    const enrolledCourseIds = new Set((await getMyEnrollments(body.userId)).map((enrollment) => enrollment.courseId));
+    const duplicateCourses = courses.filter((course) => enrolledCourseIds.has(course.slug));
+
+    if (duplicateCourses.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            duplicateCourses.length === 1
+              ? "You are already enrolled in this course."
+              : "One or more selected courses are already enrolled in your account.",
+        },
+        { status: 409 },
+      );
     }
 
     const signatureValid = verifyRazorpaySignature({

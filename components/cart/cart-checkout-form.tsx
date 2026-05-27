@@ -182,6 +182,7 @@ export function CartCheckoutForm() {
 
     try {
       const payload = {
+        userId: user.uid,
         name: accountName.trim(),
         email: form.email.trim(),
         phone: paymentPhone,
@@ -239,7 +240,6 @@ export function CartCheckoutForm() {
               },
               body: JSON.stringify({
                 ...response,
-                userId: user.uid,
                 ...payload,
               }),
             });
