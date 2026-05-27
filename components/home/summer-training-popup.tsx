@@ -27,7 +27,8 @@ export function SummerTrainingPopup() {
     }
 
     if (!user) {
-      openAuthModal("login", enrollRoute);
+      handleClose();
+      openAuthModal("signup", enrollRoute);
       return;
     }
 
