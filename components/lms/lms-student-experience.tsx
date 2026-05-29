@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { getCourseBySlug } from "@/lib/course-catalog";
 import {
   getMyEnrollments,
   listLessonsByCourse,
@@ -17,6 +18,8 @@ import {
   type FirestoreProgress,
   type FirestoreResource,
 } from "@/lib/firebase";
+import { readEnrolledCourses } from "@/lib/my-learning";
+import { getCourseSlugByCourseId } from "@/lib/offering-catalog";
 
 type CourseBundle = {
   enrollment: FirestoreEnrollment & { id: string };
@@ -41,6 +44,61 @@ function isLessonLocked(lesson: FirestoreLesson & { id: string }, enrollmentExis
   return !completedIds.has(lesson.id);
 }
 
+function buildLocalEnrollment(userId: string, courseSlug: string) {
+  const normalizedCourseSlug = getCourseSlugByCourseId(courseSlug);
+  const localCourse = readEnrolledCourses().find(
+    (course) => getCourseSlugByCourseId(course.courseSlug) === normalizedCourseSlug,
+  );
+
+  if (!localCourse) {
+    return null;
+  }
+
+  const catalogCourse = getCourseBySlug(normalizedCourseSlug);
+
+  return {
+    id: `local-${normalizedCourseSlug}`,
+    userId,
+    userName: "GenZNext Learner",
+    userPhone: "",
+    userEmail: "",
+    courseId: normalizedCourseSlug,
+    courseName: catalogCourse?.title || localCourse.title,
+    amountPaid: 0,
+    razorpayOrderId: "",
+    razorpayPaymentId: "",
+    invoiceNumber: "",
+    enrolledAt: localCourse.enrolledAt,
+    status: "active" as const,
+    duration: catalogCourse?.duration || localCourse.duration,
+    level: catalogCourse?.level || localCourse.level,
+  } satisfies FirestoreEnrollment & { id: string };
+}
+
+function mergeRemoteAndLocalEnrollments(userId: string, enrollments: Array<FirestoreEnrollment & { id: string }>) {
+  const enrollmentMap = new Map(
+    enrollments.map((enrollment) => [getCourseSlugByCourseId(enrollment.courseId), enrollment]),
+  );
+
+  for (const localCourse of readEnrolledCourses()) {
+    const localEnrollment = buildLocalEnrollment(userId, localCourse.courseSlug);
+    if (localEnrollment && !enrollmentMap.has(localEnrollment.courseId)) {
+      enrollmentMap.set(localEnrollment.courseId, localEnrollment);
+    }
+  }
+
+  return Array.from(enrollmentMap.values());
+}
+
+async function loadAccessibleEnrollments(userId: string, context: string) {
+  try {
+    return mergeRemoteAndLocalEnrollments(userId, await getMyEnrollments(userId));
+  } catch (error) {
+    logFirestoreIssue(context, error);
+    return mergeRemoteAndLocalEnrollments(userId, []);
+  }
+}
+
 export function LmsMyLearningClient() {
   const { user, isAuthReady } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -62,7 +120,10 @@ export function LmsMyLearningClient() {
       setLoading(true);
       setError(null);
       try {
-        const enrollments = await getMyEnrollments(user.uid);
+        const enrollments = await loadAccessibleEnrollments(
+          user.uid,
+          "[LMS My Learning] Remote enrollment lookup failed; using verified local purchases",
+        );
         const bundles = await Promise.all(
           enrollments.map(async (enrollment) => {
             const [modules, lessons, resources, progressRows] = await Promise.all([
@@ -179,13 +240,14 @@ export function LmsCourseDetailClient({ courseId }: { courseId: string }) {
 
       try {
         const [enrollments, modules, lessons, resources, progressRows] = await Promise.all([
-          getMyEnrollments(user.uid),
+          loadAccessibleEnrollments(user.uid, "[LMS Course Detail] Remote enrollment lookup failed; using verified local purchases"),
           listModulesByCourse(courseId),
           listLessonsByCourse(courseId),
           listResourcesByCourse(courseId),
           listUserProgress(user.uid, courseId),
         ]);
-        const enrollment = enrollments.find((item) => item.courseId === courseId);
+        const enrollment = enrollments.find((item) => getCourseSlugByCourseId(item.courseId) === getCourseSlugByCourseId(courseId))
+          || buildLocalEnrollment(user.uid, courseId);
         if (!enrollment) {
           if (!cancelled) {
             setError("You are not enrolled in this course.");
@@ -334,11 +396,12 @@ export function LmsPlayerClient({ courseSlug, lessonId }: { courseSlug: string; 
       setError(null);
       try {
         const [enrollments, rawLessons, progress] = await Promise.all([
-          getMyEnrollments(user.uid),
+          loadAccessibleEnrollments(user.uid, "[LMS Player] Remote enrollment lookup failed; using verified local purchases"),
           listLessonsByCourse(courseSlug),
           listUserProgress(user.uid, courseSlug),
         ]);
-        const owned = enrollments.find((item) => item.courseId === courseSlug);
+        const owned = enrollments.find((item) => getCourseSlugByCourseId(item.courseId) === getCourseSlugByCourseId(courseSlug))
+          || buildLocalEnrollment(user.uid, courseSlug);
         if (!owned) {
           if (!cancelled) {
             setError("You are not enrolled in this course.");

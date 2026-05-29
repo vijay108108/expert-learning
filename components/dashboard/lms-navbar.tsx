@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
-import { DashboardMenu } from "@/components/layout/dashboard-menu";
 import { allCourses } from "@/data/courses";
-import { cn } from "@/lib/utils";
 
 function getRouteCourseSlug(pathname: string) {
   if (pathname === "/dashboard/courses" || pathname === "/dashboard/profile") {
@@ -103,7 +101,6 @@ export function LmsNavbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <DashboardMenu buttonClassName={cn("h-12 rounded-[14px] px-4 text-[13px]")} />
           <button
             type="button"
             onClick={() => router.push("/")}

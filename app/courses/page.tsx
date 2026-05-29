@@ -46,7 +46,7 @@ export default function CoursesPage() {
   return (
     <section className="bg-[#F8FAFC] text-[#6B7280]">
       <div className="bg-[#F8FAFC]">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+        <div className="mx-auto w-full max-w-[1400px] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
           <div className="rounded-3xl border border-[#E5E7EB] bg-[#FFFFFF] px-6 py-8 shadow-sm sm:px-8">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#111827]">GenZNext Course Catalog</p>
             <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-[#111827] sm:text-4xl">
@@ -75,7 +75,7 @@ export default function CoursesPage() {
       </div>
 
       <div className="sticky top-[74px] z-10 border-y border-[#E5E7EB] bg-[#F8FAFC]">
-        <div className="mx-auto grid max-w-7xl gap-3 px-4 py-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+        <div className="mx-auto grid w-full max-w-[1400px] gap-3 px-4 py-4 sm:px-6 lg:grid-cols-4 lg:px-8">
           <label className="relative block lg:col-span-2">
             <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
             <input
@@ -122,7 +122,7 @@ export default function CoursesPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1400px] px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center justify-between gap-3">
           <p className="text-sm text-[#6B7280]">
             Showing <span className="font-semibold text-[#111827]">{filteredCourses.length}</span> programs
@@ -130,7 +130,7 @@ export default function CoursesPage() {
           <p className="hidden text-xs text-[#9CA3AF] sm:block">Certification tracks · Live mentorship · LMS access</p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {filteredCourses.map((course) => (
             <CourseCatalogCard key={course.slug} course={course} />
           ))}

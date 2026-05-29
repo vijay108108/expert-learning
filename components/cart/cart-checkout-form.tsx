@@ -278,15 +278,21 @@ export function CartCheckoutForm() {
               paymentCompleted: true,
             });
 
-            if (verifyPayload.clientSyncRequired) {
-              await saveInvoiceEnrollments(user, verifyPayload.invoice);
-            }
+            window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
+            syncMyLearningFromInvoice(verifyPayload.invoice);
+
+            await saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
+              logFirestoreIssue(
+                verifyPayload.clientSyncRequired
+                  ? "[Checkout] Client enrollment recovery failed after verified payment"
+                  : "[Checkout] Client enrollment confirmation sync failed after verified payment",
+                error,
+              );
+            });
 
             void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
               logFirestoreIssue("[Checkout] Unable to save phone number after payment", error);
             });
-            window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
-            syncMyLearningFromInvoice(verifyPayload.invoice);
             clearCart();
             window.localStorage.removeItem("cart");
             window.localStorage.setItem("cart", JSON.stringify([]));

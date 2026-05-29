@@ -11,6 +11,7 @@ import { MobileStickyCta } from "@/components/layout/mobile-sticky-cta";
 
 function isLmsRoute(pathname: string) {
   return (
+    pathname.startsWith("/lms") ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/learn") ||
     pathname.startsWith("/portal") ||

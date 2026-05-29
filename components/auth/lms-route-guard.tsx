@@ -4,6 +4,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyEnrollments, logFirestoreIssue } from "@/lib/firebase";
+import { readEnrolledCourses } from "@/lib/my-learning";
+import { getCourseSlugByCourseId } from "@/lib/offering-catalog";
 
 function extractCourseSlug(pathname: string, selectedCourse: string | null) {
   if (pathname.startsWith("/lms/course/")) {
@@ -16,6 +18,15 @@ function extractCourseSlug(pathname: string, selectedCourse: string | null) {
   }
 
   return "";
+}
+
+function hasLocalVerifiedPurchase(targetCourseSlug: string) {
+  const localCourseSlugs = readEnrolledCourses().map((course) => getCourseSlugByCourseId(course.courseSlug));
+  const normalizedTargetCourseSlug = getCourseSlugByCourseId(targetCourseSlug);
+
+  return normalizedTargetCourseSlug
+    ? localCourseSlugs.includes(normalizedTargetCourseSlug)
+    : localCourseSlugs.length > 0;
 }
 
 export function LmsRouteGuard({ children }: { children: React.ReactNode }) {
@@ -60,11 +71,12 @@ export function LmsRouteGuard({ children }: { children: React.ReactNode }) {
         }
 
         const allowed = targetCourseSlug
-          ? enrollments.some((item) => item.courseId === targetCourseSlug)
+          ? enrollments.some((item) => getCourseSlugByCourseId(item.courseId) === getCourseSlugByCourseId(targetCourseSlug))
           : enrollments.length > 0;
+        const allowedWithLocalFallback = allowed || hasLocalVerifiedPurchase(targetCourseSlug);
 
-        setResult({ key: guardKey, allowed });
-        if (!allowed) {
+        setResult({ key: guardKey, allowed: allowedWithLocalFallback });
+        if (!allowedWithLocalFallback) {
           router.replace("/dashboard/courses");
         }
       } catch (error) {
@@ -73,8 +85,11 @@ export function LmsRouteGuard({ children }: { children: React.ReactNode }) {
         }
 
         logFirestoreIssue("[LMS Guard] Enrollment verification failed", error);
-        setResult({ key: guardKey, allowed: false });
-        router.replace("/dashboard/courses");
+        const allowedWithLocalFallback = hasLocalVerifiedPurchase(targetCourseSlug);
+        setResult({ key: guardKey, allowed: allowedWithLocalFallback });
+        if (!allowedWithLocalFallback) {
+          router.replace("/dashboard/courses");
+        }
       }
     })();
 

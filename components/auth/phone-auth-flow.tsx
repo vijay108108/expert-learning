@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  type Auth,
   type ConfirmationResult,
   EmailAuthProvider,
   fetchSignInMethodsForEmail,
@@ -42,6 +43,7 @@ import {
   isFirebaseConfigured,
   isLocalPhoneAuthHost,
   isPhoneAuthTestingEnabled,
+  normalizePhoneForAuth,
   preparePhoneAuth,
   recaptchaContainerId,
   saveUserWhatsappNumber,
@@ -78,6 +80,63 @@ type PhoneAuthFlowProps = {
 
 function normalizePhone(phone: string) {
   return phone.replace(/\D/g, "");
+}
+
+function formatPhoneForOtp(phone: string, countryCode: string) {
+  const trimmed = phone.trim();
+  const digits = normalizePhone(trimmed);
+
+  if (countryCode === "+91") {
+    return `+${normalizePhoneForAuth(trimmed)}`;
+  }
+
+  if (trimmed.startsWith("+")) {
+    return `+${digits}`;
+  }
+
+  return `${countryCode}${digits}`;
+}
+
+function getLegacyPhoneAuthCandidates(phone: string) {
+  const digits = normalizePhone(phone);
+  const normalized = normalizePhoneForAuth(phone);
+  const candidates = [normalized];
+
+  if (digits.length === 10) {
+    candidates.push(digits);
+  }
+
+  if (digits.length === 12 && digits.startsWith("91")) {
+    candidates.push(digits.slice(2));
+  }
+
+  return Array.from(new Set(candidates.filter(Boolean)));
+}
+
+function getFakeEmail(rawPhone: string) {
+  const normalizedPhone = normalizePhoneForAuth(rawPhone);
+  return `${normalizedPhone}@genznext.app`;
+}
+
+function getFakeEmailCandidates(rawPhone: string) {
+  return getLegacyPhoneAuthCandidates(rawPhone).map((candidate) => `${candidate}@genznext.app`);
+}
+
+async function findExistingAuthEmail(auth: Auth, rawPhone: string, label: "Signup" | "Login" | "Forgot Password") {
+  const normalizedPhone = normalizePhoneForAuth(rawPhone);
+  const primaryEmail = getFakeEmail(rawPhone);
+  const candidateEmails = getFakeEmailCandidates(rawPhone);
+
+  console.info(`${label} Email:`, primaryEmail, { normalizedPhone, candidateEmails });
+
+  for (const candidateEmail of candidateEmails) {
+    const methods = await fetchSignInMethodsForEmail(auth, candidateEmail);
+    if (methods.length > 0) {
+      return { email: candidateEmail, methods };
+    }
+  }
+
+  return { email: primaryEmail, methods: [] as string[] };
 }
 
 function maskPhoneNumber(value: string) {
@@ -152,9 +211,9 @@ export function PhoneAuthFlow({
   const firebaseReady = isFirebaseConfigured();
   const otpCode = otp.join("");
   const isModal = variant === "modal";
-  const formattedPhone = useMemo(() => `${countryCode}${normalizePhone(phone)}`, [countryCode, phone]);
+  const formattedPhone = useMemo(() => formatPhoneForOtp(phone, countryCode), [countryCode, phone]);
   const maskedPhone = useMemo(() => maskPhoneNumber(formattedPhone), [formattedPhone]);
-  const normalizedPhone = useMemo(() => normalizePhone(phone), [phone]);
+  const normalizedPhone = useMemo(() => normalizePhoneForAuth(phone), [phone]);
   const formattedGooglePhone = useMemo(() => {
     const raw = googlePhone.trim();
     if (!raw) {
@@ -355,15 +414,11 @@ export function PhoneAuthFlow({
   }
 
   function validateIndianPhone() {
-    if (normalizedPhone.length !== 10) {
+    if (!/^91\d{10}$/.test(normalizedPhone)) {
       return "Enter a valid 10-digit mobile number.";
     }
 
     return null;
-  }
-
-  function getFakeEmail(rawPhone: string) {
-    return `${normalizePhone(rawPhone)}@genznext.app`;
   }
 
   const finishAuthSuccess = useCallback(async (message = "Login successful!") => {
@@ -696,8 +751,9 @@ export function PhoneAuthFlow({
       if (auth.currentUser) {
         await signOut(auth);
       }
-      const fakeEmail = getFakeEmail(normalizedPhone);
-      const methods = await fetchSignInMethodsForEmail(auth, fakeEmail);
+      const normalizedLoginPhone = normalizePhoneForAuth(phone);
+      const { email: fakeEmail, methods } = await findExistingAuthEmail(auth, normalizedLoginPhone, "Login");
+      console.info("Login Email:", fakeEmail, { normalizedPhone: normalizedLoginPhone });
       if (!methods.includes("password")) {
         setFeedback("No account found. Please sign up.");
         return;
@@ -806,16 +862,19 @@ export function PhoneAuthFlow({
     setSuccessMessage(null);
 
     try {
-      const existingMethods = await fetchSignInMethodsForEmail(auth, getFakeEmail(normalizedPhone));
-      if (existingMethods.length > 0) {
+      const normalizedSignupPhone = normalizePhoneForAuth(phone);
+      const existingAuthEmail = await findExistingAuthEmail(auth, normalizedSignupPhone, "Signup");
+      if (existingAuthEmail.methods.length > 0) {
         setFeedback("This mobile number is already registered.");
         setShowSignupGoToLogin(true);
         return;
       }
 
       const verified = await confirmationResult.confirm(otpCode);
-      const verifiedPhone = normalizePhone(verified.user.phoneNumber || formattedPhone);
-      const credential = EmailAuthProvider.credential(getFakeEmail(verifiedPhone), signupPassword);
+      const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
+      const signupEmail = getFakeEmail(verifiedPhone);
+      console.info("Signup Email:", signupEmail, { verifiedPhone, normalizedInputPhone: normalizedSignupPhone });
+      const credential = EmailAuthProvider.credential(signupEmail, signupPassword);
       const linked = await linkWithCredential(verified.user, credential);
       await updateProfile(linked.user, {
         displayName: fullName.trim(),
@@ -870,12 +929,13 @@ export function PhoneAuthFlow({
       return;
     }
 
-    const fakeEmail = getFakeEmail(normalizedPhone);
     setPending(true);
     clearAllFeedback();
 
     try {
-      const methods = await fetchSignInMethodsForEmail(auth, fakeEmail);
+      const normalizedForgotPhone = normalizePhoneForAuth(phone);
+      const { email: fakeEmail, methods } = await findExistingAuthEmail(auth, normalizedForgotPhone, "Forgot Password");
+      console.info("Forgot Password Email:", fakeEmail, { normalizedPhone: normalizedForgotPhone });
       if (!methods.includes("password")) {
         setFeedback("No account found with this number. Please sign up first.");
         return;
@@ -968,7 +1028,7 @@ export function PhoneAuthFlow({
       return;
     }
 
-    const resetAttemptAt = Date.now();
+    const resetAttemptAt = new Date().getTime();
     if (resetAttemptAt - passwordResetThrottleRef.current < 1200) {
       setFeedback("Please wait a moment before trying again.");
       return;
@@ -999,7 +1059,7 @@ export function PhoneAuthFlow({
         await signOut(auth);
       }
 
-      const latestPhone = normalizePhone(resetUser.phoneNumber || phone);
+      const latestPhone = normalizePhoneForAuth(resetUser.phoneNumber || phone);
       setPhone(latestPhone);
       setLoginPassword("");
       clearResetState();

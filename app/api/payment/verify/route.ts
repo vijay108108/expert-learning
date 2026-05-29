@@ -3,8 +3,6 @@ import { formatPaiseToPrice } from "@/lib/course-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
 import {
-  findExistingEnrollmentCourseIds,
-  isFirestorePermissionError,
   logFirestoreIssue,
   saveEnrollmentRecord,
 } from "@/lib/firebase";
@@ -27,30 +25,6 @@ export async function POST(request: Request) {
 
     const enrolledCourseSlugs = offerings.flatMap((offering) => offering.courseSlugs);
     const uniqueEnrolledCourseSlugs = Array.from(new Set(enrolledCourseSlugs));
-
-    try {
-      const duplicateCourses = await findExistingEnrollmentCourseIds(body.userId, uniqueEnrolledCourseSlugs);
-
-      if (duplicateCourses.length > 0) {
-        return NextResponse.json(
-          {
-            success: false,
-            message:
-              duplicateCourses.length === 1
-                ? "You are already enrolled in this course."
-                : "One or more selected courses are already enrolled in your account.",
-          },
-          { status: 409 },
-        );
-      }
-    } catch (error) {
-      if (!isFirestorePermissionError(error)) {
-        throw error;
-      }
-
-      clientSyncRequired = true;
-      logFirestoreIssue("[Payment Verify] Skipping server enrollment lookup", error);
-    }
 
     const signatureValid = verifyRazorpaySignature({
       orderId: body.razorpay_order_id,
@@ -111,12 +85,8 @@ export async function POST(request: Request) {
         }),
       );
     } catch (error) {
-      if (!isFirestorePermissionError(error)) {
-        throw error;
-      }
-
       clientSyncRequired = true;
-      logFirestoreIssue("[Payment Verify] Deferring enrollment save to client session", error);
+      logFirestoreIssue("[Payment Verify] Server enrollment save failed after verified payment; client sync required", error);
     }
 
     await Promise.allSettled([

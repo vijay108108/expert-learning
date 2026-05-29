@@ -178,12 +178,17 @@ export function EnrollmentForm({
               paymentCompleted: true,
             });
 
-            if (verifyPayload.clientSyncRequired) {
-              await saveInvoiceEnrollments(user, verifyPayload.invoice);
-            }
-
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             syncMyLearningFromInvoice(verifyPayload.invoice);
+
+            await saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
+              logFirestoreIssue(
+                verifyPayload.clientSyncRequired
+                  ? "[Enrollment] Client enrollment recovery failed after verified payment"
+                  : "[Enrollment] Client enrollment confirmation sync failed after verified payment",
+                error,
+              );
+            });
 
             void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
               logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
