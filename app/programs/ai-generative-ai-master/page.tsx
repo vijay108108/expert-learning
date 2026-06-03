@@ -1,211 +1,436 @@
-import Link from "next/link";
-import { ArrowRight, Briefcase, Code2, Cpu, FolderKanban, GraduationCap, Sparkles } from "lucide-react";
-import { CourseEnrollmentAction } from "@/components/enroll/course-enrollment-action";
-import { ProgramEnrollmentCta } from "@/components/enroll/program-enrollment-cta";
+import { Award, Bot, Briefcase, Clock3, Code2, Cpu, FolderKanban, GraduationCap, Layers, Sparkles, Terminal, Users2, Zap } from "lucide-react";
+import { ProgramPageLayout, type ProgramPageData } from "@/components/programs/program-page-layout";
 import { buildMetadata } from "@/lib/metadata";
-import { getCheckoutOfferingBySlug, getDisplayPriceByCourseSlug } from "@/lib/offering-catalog";
-
-const learningTracks = [
-  {
-    title: "AI Foundations & Python",
-    level: "Beginner",
-    courseSlug: "applied-ai-foundations",
-    href: "/checkout/applied-ai-foundations",
-    includes: ["Python for AI", "Data handling", "ML basics", "AI workflow fundamentals"],
-  },
-  {
-    title: "Prompt Engineering & Generative AI",
-    level: "Intermediate",
-    courseSlug: "prompt-engineering",
-    href: "/checkout/prompt-engineering",
-    includes: ["Prompt engineering", "OpenAI APIs", "LLM basics", "AI tools workflow"],
-  },
-  {
-    title: "RAG Systems & Vector Databases",
-    level: "Advanced",
-    courseSlug: "rag-applications-vector-databases",
-    href: "/checkout/rag-applications-vector-databases",
-    includes: ["LangChain", "Pinecone", "ChromaDB", "Retrieval systems", "Production AI pipelines"],
-  },
-  {
-    title: "AI Agents & LLM Deployment",
-    level: "Professional",
-    courseSlug: "agentic-ai-engineering",
-    href: "/checkout/agentic-ai-engineering",
-    includes: ["AI agents", "Autonomous workflows", "Multi-agent systems", "Deployment", "Scaling AI applications"],
-  },
-] as const;
-
-const curriculumModules = [
-  "Module 1 - Python & AI Basics",
-  "Module 2 - Machine Learning Foundations",
-  "Module 3 - Prompt Engineering",
-  "Module 4 - Generative AI & LLMs",
-  "Module 5 - RAG Applications",
-  "Module 6 - AI Agents",
-  "Module 7 - Production Deployment",
-  "Module 8 - Real-world AI Projects",
-] as const;
-
-const projects = [
-  "AI Chatbot",
-  "PDF AI Assistant",
-  "RAG Search Engine",
-  "AI Resume Analyzer",
-  "AI Automation Agent",
-  "Voice AI Assistant",
-  "AI Content Generator",
-] as const;
-
-const technologies = [
-  "OpenAI",
-  "LangChain",
-  "Pinecone",
-  "ChromaDB",
-  "Python",
-  "FastAPI",
-  "Hugging Face",
-  "Docker",
-  "Vector Databases",
-] as const;
-
-const careerOutcomes = [
-  "AI Engineer",
-  "Prompt Engineer",
-  "Generative AI Developer",
-  "LLM Application Developer",
-  "AI Automation Engineer",
-] as const;
 
 export const metadata = buildMetadata({
   title: "Master AI & Generative AI Program | GenZNext Research & Training",
-  description:
-    "Premium AI learning track covering foundations, prompt engineering, generative AI, RAG systems, AI agents, and production deployment.",
+  description: "20-week AI engineering program: Python for AI, Prompt Engineering, LangChain, Generative AI, RAG Systems, AI Agents & cloud deployment. 12+ real projects, live mentorship.",
   path: "/programs/ai-generative-ai-master",
 });
 
+const data: ProgramPageData = {
+  badge: "AI & Generative AI Track",
+  badgeColor: "border-[#C7D2FE] bg-[#EEF2FF] text-[#4338CA]",
+  tagline: "Become a Job-Ready AI Engineer",
+  title: "Master AI & Generative AI Program",
+  description:
+    "A 20-week, mentor-led AI engineering program that takes you from Python basics to building production-grade GenAI applications, RAG pipelines and autonomous AI agents. No prior AI experience needed — just curiosity and commitment.",
+  chips: ["Live Instructor-Led", "Python for AI", "LangChain & LlamaIndex", "RAG & Vector DBs", "AI Agents", "LMS Access", "Placement Support"],
+  stats: [
+    { icon: Clock3,       label: "20 Weeks" },
+    { icon: Layers,       label: "4 Phases" },
+    { icon: FolderKanban, label: "12+ Projects" },
+    { icon: Users2,       label: "Live Mentorship" },
+  ],
+  price:         "Rs. 24,999",
+  originalPrice: "Rs. 54,999",
+  priceLabel:    "54% off — All 4 phases + bonus tracks",
+  enrollSlug:    "ai-generative-ai-master-program",
+  enrollFeatures: [
+    { icon: Clock3,       text: "20 Weeks (5 Months)" },
+    { icon: GraduationCap,text: "Beginner to Advanced" },
+    { icon: FolderKanban, text: "12+ Real-World AI Projects" },
+    { icon: Cpu,          text: "OpenAI, LangChain, LlamaIndex" },
+    { icon: Sparkles,     text: "RAG + AI Agents included" },
+    { icon: Users2,       text: "Live Sessions + LMS Access for Life" },
+  ],
+  roadmap: ["Python & AI Foundations", "Prompt Engineering & LLMs", "Generative AI & RAG", "AI Agents & Deployment"],
+
+  phases: [
+    {
+      label: "Phase 1",
+      title: "Python & AI Foundations",
+      duration: "4 Weeks",
+      color: "bg-[#EEF2FF] text-[#4338CA] border-[#C7D2FE]",
+      icon: Code2,
+      objective:
+        "Build the Python and data science foundations required for AI engineering. Learn how to work with data, train basic ML models, and understand how AI pipelines are structured before touching LLMs.",
+      modules: [
+        {
+          title: "Python for AI Engineering",
+          week: "Week 1",
+          topics: [
+            "Python syntax: variables, lists, dicts, sets, tuples",
+            "Functions, closures, decorators and generators",
+            "NumPy: arrays, broadcasting, vectorised operations",
+            "Pandas: DataFrames, filtering, groupby, merge, pivot",
+            "Matplotlib & Seaborn: charts, subplots, heatmaps",
+            "File I/O: CSV, JSON, parquet, API responses",
+            "Virtual environments and pip dependency management",
+            "Jupyter notebooks and Google Colab setup",
+          ],
+          tools: ["Python 3.11", "NumPy", "Pandas", "Matplotlib", "Jupyter", "VS Code"],
+          lab: "Build a data analysis pipeline processing 50,000 rows of real e-commerce data — clean, enrich, visualise and export insights",
+          labOutcome: "A reproducible Jupyter notebook with 10 business insights and charts ready for a data science portfolio",
+        },
+        {
+          title: "Machine Learning Foundations",
+          week: "Week 2",
+          topics: [
+            "Supervised vs unsupervised vs reinforcement learning",
+            "Regression: linear, polynomial, ridge, lasso",
+            "Classification: logistic regression, decision trees, random forest",
+            "Feature engineering: encoding, scaling, selection",
+            "Train/test split, cross-validation, hyperparameter tuning",
+            "scikit-learn Pipelines: preprocessing + model in one object",
+            "Model evaluation: accuracy, F1, ROC-AUC, confusion matrix",
+            "Overfitting, underfitting, bias-variance tradeoff",
+          ],
+          tools: ["scikit-learn", "XGBoost", "Pandas", "Matplotlib"],
+          lab: "Build and evaluate a customer churn prediction model — feature engineering, model selection, tuning and a web demo",
+          labOutcome: "Deployed churn model achieving >85% accuracy with explainability via SHAP values",
+        },
+        {
+          title: "Neural Networks & Deep Learning",
+          week: "Week 3–4",
+          topics: [
+            "Perceptrons, layers, activation functions (ReLU, sigmoid, softmax, GELU)",
+            "Forward propagation and backpropagation (chain rule intuition)",
+            "Loss functions: MSE, cross-entropy, BCE",
+            "Optimisers: SGD, Adam, AdamW — learning rate schedulers",
+            "Batch normalisation, dropout, weight decay",
+            "TensorFlow/Keras: Sequential and Functional API",
+            "CNNs: convolutional layers, pooling, ResNet architecture",
+            "Transfer learning: fine-tune ImageNet models",
+            "GPU training setup: CUDA, Google Colab T4/A100",
+          ],
+          tools: ["TensorFlow", "Keras", "PyTorch", "Google Colab", "Weights & Biases"],
+          lab: "Train an image classification model on a real dataset — fine-tune ResNet50 to 92%+ accuracy and deploy as a REST API",
+          labOutcome: "A served image classifier with <200ms inference time, documented model card, and W&B experiment tracking",
+        },
+      ],
+      capstone: {
+        title: "Phase 1 Capstone — AI Data Pipeline",
+        deliverables: [
+          "Automated data ingestion + cleaning pipeline",
+          "EDA notebook with 15+ visualisations",
+          "Trained ML classification model (>85% accuracy)",
+          "Model served as FastAPI endpoint",
+          "GitHub repo with README and Docker setup",
+        ],
+      },
+    },
+    {
+      label: "Phase 2",
+      title: "Prompt Engineering & LLMs",
+      duration: "4 Weeks",
+      color: "bg-[#F0FDF4] text-[#166534] border-[#BBF7D0]",
+      icon: Sparkles,
+      objective:
+        "Master the art and science of working with Large Language Models. Learn how to engineer prompts, consume LLM APIs, and build AI-powered applications using OpenAI, Claude, and Azure OpenAI — skills hiring for in 2025.",
+      modules: [
+        {
+          title: "LLM Architecture & API Consumption",
+          week: "Week 5",
+          topics: [
+            "Transformer architecture: attention, self-attention, multi-head attention (conceptual)",
+            "GPT-5.5, Claude Opus 4.8, Gemini 3 Pro, DeepSeek V4 Pro, Llama 4 — capability comparison (May 2026)",
+            "OpenAI API: chat completions, streaming, vision, function calling",
+            "Azure OpenAI Service: deployment, API version management",
+            "Token economics: counting tokens, context windows, cost optimisation",
+            "Temperature, top-p, frequency/presence penalty — when to tune each",
+            "JSON mode, structured outputs and response_format",
+            "Rate limiting, retry logic and error handling in production",
+          ],
+          tools: ["OpenAI API", "Azure OpenAI", "Python openai SDK", "tiktoken"],
+          lab: "Build an AI Q&A bot with streaming responses, token cost tracking and automatic retry on rate limits",
+          labOutcome: "Production-quality LLM wrapper with cost dashboard showing spend per session",
+        },
+        {
+          title: "Prompt Engineering Techniques",
+          week: "Week 6",
+          topics: [
+            "Zero-shot, one-shot and few-shot prompting",
+            "Chain-of-thought (CoT): standard and zero-shot CoT",
+            "Tree-of-Thought (ToT) for multi-step reasoning",
+            "ReAct prompting: Reasoning + Acting pattern",
+            "Role prompting and system message design for consistent personas",
+            "Structured output generation: JSON, XML, markdown tables",
+            "Prompt templating with Jinja2 and f-strings",
+            "Prompt versioning, evaluation and A/B testing strategies",
+          ],
+          tools: ["OpenAI Playground", "LangSmith", "PromptLayer"],
+          lab: "Engineer a prompt system for a document summarisation service — measure quality with ROUGE scores and human eval",
+          labOutcome: "A/B tested prompt system with documented evaluation showing 40% quality improvement over baseline",
+        },
+        {
+          title: "LangChain Fundamentals",
+          week: "Week 7–8",
+          topics: [
+            "LangChain architecture: Chains, Runnables (LCEL), Components",
+            "PromptTemplate, ChatPromptTemplate, MessagesPlaceholder",
+            "Output parsers: PydanticOutputParser, StructuredOutputParser",
+            "Document loaders: PDF, CSV, web, Notion, Google Drive",
+            "Text splitters: RecursiveCharacterTextSplitter, semantic chunking",
+            "Memory: ConversationBufferMemory, SummaryMemory, EntityMemory",
+            "Sequential chains and branching with RunnableBranch",
+            "LangSmith: tracing, evaluation, dataset management",
+          ],
+          tools: ["LangChain", "LangSmith", "PyPDF", "BeautifulSoup"],
+          lab: "Build a multi-turn document Q&A application with conversation memory and LangSmith tracing for debugging",
+          labOutcome: "A conversational document assistant that remembers context across 10+ turns with full trace visibility",
+        },
+      ],
+      capstone: {
+        title: "Phase 2 Capstone — AI Customer Support System",
+        deliverables: [
+          "Multi-turn conversational bot with memory",
+          "Custom system prompt with role and constraint engineering",
+          "Structured JSON output parsing with validation",
+          "FastAPI REST endpoint with Swagger docs",
+          "LangSmith tracing dashboard for all conversations",
+        ],
+      },
+    },
+    {
+      label: "Phase 3",
+      title: "Generative AI & RAG Systems",
+      duration: "6 Weeks",
+      color: "bg-[#FFF7ED] text-[#9A3412] border-[#FED7AA]",
+      icon: Bot,
+      objective:
+        "Build production-grade Retrieval Augmented Generation (RAG) systems. Master vector databases, embedding models, advanced retrieval strategies and evaluation frameworks used by top AI engineering teams.",
+      modules: [
+        {
+          title: "Vector Databases & Embeddings",
+          week: "Week 9",
+          topics: [
+            "What are embeddings — semantic meaning in vector space",
+            "OpenAI text-embedding-3-small/large, Cohere embed-v3, BGE, E5",
+            "Cosine similarity, dot product and L2 distance for nearest-neighbour search",
+            "Pinecone: namespaces, metadata filtering, sparse-dense hybrid search",
+            "ChromaDB: local vector store, persistence, collection management",
+            "Qdrant: payload filtering, on-disk storage, batch upsert",
+            "Weaviate: GraphQL interface, hybrid BM25+dense search",
+            "FAISS: flat, IVFFlat, HNSW index types — performance tradeoffs",
+          ],
+          tools: ["Pinecone", "ChromaDB", "Qdrant", "FAISS", "OpenAI Embeddings"],
+          lab: "Build a semantic search engine over 10,000+ Stack Overflow answers — compare retrieval quality across 4 vector databases",
+          labOutcome: "Semantic search with <200ms p99 latency, MRR@10 metric tracking, and comparison dashboard",
+        },
+        {
+          title: "RAG Pipeline Architecture",
+          week: "Week 10–11",
+          topics: [
+            "Naive RAG vs Advanced RAG vs Modular RAG — evolution and tradeoffs",
+            "Document indexing pipeline: load → split → embed → store",
+            "Chunking strategies: fixed-size, recursive, semantic, parent-child",
+            "Hybrid search: BM25 + dense embeddings weighted combination",
+            "Re-ranking: Cohere Rerank, cross-encoder models, ColBERT",
+            "Context window management: lost-in-the-middle problem solutions",
+            "Query transformation: HyDE, step-back prompting, multi-query",
+            "Citation and source attribution in generated answers",
+            "Hallucination detection and grounding techniques",
+          ],
+          tools: ["LangChain", "LlamaIndex", "Cohere Rerank", "BM25Okapi"],
+          lab: "Build a production RAG system over a 500-page technical manual — implement hybrid search, re-ranking and citation extraction",
+          labOutcome: "RAG system with source-cited answers, faithfulness >0.85 and context relevance >0.80 measured by RAGAS",
+        },
+        {
+          title: "LlamaIndex & Advanced RAG",
+          week: "Week 12",
+          topics: [
+            "LlamaIndex vs LangChain — architecture comparison and when to use each",
+            "VectorStoreIndex, SummaryIndex, KnowledgeGraphIndex",
+            "Query engines: VectorStoreQueryEngine, RouterQueryEngine",
+            "Sub-question decomposition for complex multi-hop questions",
+            "Recursive retrieval and parent-document retrieval",
+            "RAGAS evaluation: faithfulness, context recall, answer correctness",
+            "Streaming RAG responses with async generators",
+            "Multi-modal RAG: images + text in a single pipeline",
+          ],
+          tools: ["LlamaIndex", "RAGAS", "OpenAI GPT-5.5", "Weaviate"],
+          lab: "Build an advanced multi-document research assistant with RAGAS evaluation and a Streamlit dashboard showing live metrics",
+          labOutcome: "Multi-document RAG with automatic quality regression alerts when faithfulness drops below threshold",
+        },
+        {
+          title: "Multimodal AI & Image Generation",
+          week: "Week 13",
+          topics: [
+            "GPT-5.5 vision: image analysis, OCR, chart reading",
+            "Claude Opus 4.8 vision capabilities and use cases",
+            "DALL-E 3 and Stable Diffusion XL for image generation",
+            "Whisper API for speech-to-text (multilingual, timestamps)",
+            "TTS-1 and TTS-1-HD for natural text-to-speech",
+            "Building multimodal pipelines: audio → text → image → text",
+            "Invoice and document extraction with vision models",
+            "Cost and quality tradeoffs in multimodal applications",
+          ],
+          tools: ["GPT-5.5", "DALL-E 3", "Whisper", "OpenAI TTS", "Streamlit"],
+          lab: "Build a multimodal AI assistant that extracts data from invoice images, validates figures and exports to CSV automatically",
+          labOutcome: "Invoice processor with >95% field extraction accuracy on real-world documents",
+        },
+      ],
+      capstone: {
+        title: "Phase 3 Capstone — Enterprise Knowledge Base",
+        deliverables: [
+          "Vector database with 10,000+ indexed documents",
+          "Hybrid search with BM25 + dense + re-ranking",
+          "Source-cited Q&A with RAGAS evaluation dashboard",
+          "Multi-modal support (PDF + images)",
+          "FastAPI backend + React frontend deployed on cloud",
+        ],
+      },
+    },
+    {
+      label: "Phase 4",
+      title: "AI Agents & Production Deployment",
+      duration: "6 Weeks",
+      color: "bg-[#F0F9FF] text-[#0C4A6E] border-[#BAE6FD]",
+      icon: Cpu,
+      objective:
+        "Build autonomous AI agents and deploy production-grade AI applications. Learn multi-agent orchestration, tool use, and how to monitor and maintain AI systems in production — the skills that differentiate senior AI engineers.",
+      modules: [
+        {
+          title: "AI Agents & Tool Use",
+          week: "Week 14–15",
+          topics: [
+            "What are AI agents — the ReAct (Reason + Act) framework",
+            "Function calling: tool definitions, parameter schemas, required/optional",
+            "Parallel function calling and multi-step tool use",
+            "Building custom tools: web search, calculator, database, file system",
+            "LangChain AgentExecutor and the new LangGraph framework",
+            "Agent memory: short-term (conversation), long-term (vector store)",
+            "Planning: task decomposition, sub-task generation",
+            "Agent evaluation: task success rate, tool efficiency, cost per task",
+          ],
+          tools: ["LangChain Agents", "LangGraph", "OpenAI Function Calling", "Tavily Search"],
+          lab: "Build an AI research agent that browses 10 websites, extracts information, deduplicates and writes a structured 2-page report",
+          labOutcome: "Autonomous research agent completing tasks 10× faster than manual browsing with citation accuracy >90%",
+        },
+        {
+          title: "Multi-Agent Systems",
+          week: "Week 16",
+          topics: [
+            "Multi-agent orchestration: why single agents fail at complex tasks",
+            "CrewAI: agents, tasks, tools, crews and processes (sequential/hierarchical)",
+            "AutoGen: conversable agents, GroupChat, human-in-the-loop",
+            "Agent roles: planner, executor, critic, memory manager",
+            "Communication patterns: broadcast, round-robin, directed",
+            "Guardrails: input validation, output filtering, safety checks",
+            "Debugging multi-agent pipelines with LangSmith traces",
+            "Evaluating multi-agent quality and cost efficiency",
+          ],
+          tools: ["CrewAI", "AutoGen", "LangSmith", "LangGraph"],
+          lab: "Build a 3-agent content system (researcher + writer + editor) that produces a 1,000-word SEO article from a single keyword",
+          labOutcome: "Multi-agent content pipeline producing publish-ready articles in under 3 minutes",
+        },
+        {
+          title: "Production AI Deployment",
+          week: "Week 17–18",
+          topics: [
+            "FastAPI for AI APIs: async endpoints, dependency injection, middleware",
+            "Pydantic v2: strict validation, custom validators, serialisation",
+            "Docker containerisation for AI apps: GPU support, model caching",
+            "Environment management: secrets, API keys, .env files",
+            "Rate limiting and cost control: per-user token quotas",
+            "Background task processing with Celery and Redis",
+            "Deploying to Azure App Service, AWS Lambda, and Google Cloud Run",
+            "GitHub Actions CI/CD for AI application deployment",
+          ],
+          tools: ["FastAPI", "Docker", "Celery", "Redis", "GitHub Actions", "Azure App Service"],
+          lab: "Containerise and deploy a RAG application to Azure — with CI/CD pipeline, health checks and auto-scaling",
+          labOutcome: "Live AI application URL with CI/CD: every git push auto-deploys to production in under 4 minutes",
+        },
+        {
+          title: "AI Monitoring, Evaluation & LangSmith",
+          week: "Week 19–20",
+          topics: [
+            "LLM observability: why traditional monitoring is not enough",
+            "LangSmith: project setup, trace collection, run filtering",
+            "LangSmith Evaluation: dataset creation, evaluators (correctness, toxicity)",
+            "A/B testing prompts: statistical significance, sample size calculation",
+            "Cost tracking: per-model, per-user, per-feature dashboards",
+            "Latency monitoring: p50/p95/p99, timeout budgets",
+            "Guardrails AI: input/output validation, sensitive data masking",
+            "AI application logging best practices for compliance and debugging",
+          ],
+          tools: ["LangSmith", "Guardrails AI", "OpenTelemetry", "Grafana", "Prometheus"],
+          lab: "Set up full LangSmith observability + Grafana dashboards for a production RAG app — detect and fix a performance regression",
+          labOutcome: "Operational AI monitoring: automated alerts when quality drops, with runbook to investigate and fix",
+        },
+      ],
+      capstone: {
+        title: "Final Capstone — Production AI SaaS Application",
+        deliverables: [
+          "Multi-agent AI workflow (3+ agents: planner + executor + reviewer)",
+          "Production RAG + agent combined system",
+          "Dockerised FastAPI backend with authentication",
+          "CI/CD deployed on Azure or AWS",
+          "LangSmith monitoring with cost and quality dashboards",
+          "GitHub portfolio-ready repository with README, demo video",
+        ],
+      },
+    },
+  ],
+
+  bonusTracks: [
+    {
+      icon: Terminal,
+      title: "SQL & Data Engineering Basics",
+      topics: ["PostgreSQL fundamentals", "Joins, CTEs and window functions", "SQLAlchemy ORM", "Data modelling for AI apps", "ETL pipeline concepts"],
+    },
+    {
+      icon: Sparkles,
+      title: "AI Product & UX Design",
+      topics: ["Building AI product specs", "Prompt UX patterns", "Evaluating LLM quality", "AI product roadmapping", "Responsible AI principles"],
+    },
+    {
+      icon: Bot,
+      title: "Interview Preparation",
+      topics: ["100+ AI engineering interview questions", "System design for LLM apps", "LLM evaluation scenarios", "Mock technical interviews + feedback", "Resume and GitHub portfolio review"],
+    },
+  ],
+
+  projects: [
+    { title: "AI Customer Support Bot",        desc: "Multi-turn conversational bot using GPT-5.5 with memory, custom system prompt and LangSmith tracing" },
+    { title: "PDF Intelligence Platform",      desc: "RAG-powered Q&A over PDF documents — hybrid search, re-ranking, source citations and RAGAS evaluation" },
+    { title: "AI Research Agent",             desc: "Autonomous ReAct agent that browses the web, deduplicates findings and writes structured research reports" },
+    { title: "Semantic Search Engine",        desc: "Vector-based search over 10,000+ documents — OpenAI embeddings + Pinecone with BM25 hybrid retrieval" },
+    { title: "AI Resume Analyser",            desc: "GPT-5.5 Vision parses resumes, scores candidates against job descriptions and generates interview questions" },
+    { title: "Multi-Agent Content System",    desc: "CrewAI 3-agent pipeline: researcher → writer → editor producing SEO-optimised content in 3 minutes" },
+    { title: "Voice AI Assistant",            desc: "Whisper speech-to-text → GPT-5.5 reasoning → TTS-1 speech synthesis — fully conversational voice bot" },
+    { title: "Enterprise Knowledge Base",     desc: "Company document RAG with Entra ID access control, department routing, and RAGAS quality monitoring" },
+    { title: "AI Invoice Processor",          desc: "GPT-5.5 Vision extracts fields from scanned invoices with >95% accuracy and auto-exports to Google Sheets" },
+    { title: "LLM Cost & Quality Dashboard",  desc: "Real-time LangSmith + Grafana dashboard: cost per session, latency, faithfulness scores, A/B test results" },
+    { title: "AI Code Review Bot",            desc: "GitHub Actions workflow: AI reviews every PR — suggests improvements, detects bugs, posts inline comments" },
+    { title: "Deployed AI SaaS Application",  desc: "Full-stack FastAPI + React app containerised with Docker, deployed to Azure, with CI/CD and monitoring" },
+  ],
+
+  technologies: [
+    "Python 3.11", "OpenAI GPT-5.5", "Claude Opus 4.8", "Gemini 3 Pro", "DeepSeek V4", "LangChain", "LlamaIndex",
+    "LangSmith", "Pinecone", "ChromaDB", "Qdrant", "FAISS", "FastAPI", "Docker",
+    "Hugging Face", "CrewAI", "AutoGen", "LangGraph", "RAGAS", "Azure OpenAI",
+    "Whisper", "DALL-E 3", "Guardrails AI", "Redis", "GitHub Actions",
+  ],
+
+  certifications: [
+    { code: "OpenAI Developer",   title: "OpenAI API Developer Certification (prep)", emoji: "🤖" },
+    { code: "Google Cloud AI",    title: "Professional ML Engineer (prep)",            emoji: "🧠" },
+    { code: "AWS CLF-C02",       title: "AWS Cloud Practitioner (optional add-on)",   emoji: "☁️" },
+  ],
+
+  careerTiers: [
+    { level: "Entry-Level (0–1 yr) · ₹4–8 LPA",    roles: ["Junior AI Engineer", "Prompt Engineer", "AI Application Developer", "ML Operations Analyst"],               color: "border-[#BFDBFE] bg-[#EFF6FF]" },
+    { level: "Mid-Level (1–3 yr) · ₹10–18 LPA",    roles: ["AI Engineer", "Generative AI Developer", "LLM Application Engineer", "AI Solutions Architect"],             color: "border-[#BBF7D0] bg-[#F0FDF4]" },
+    { level: "Advanced (3+ yr) · ₹20–40 LPA",      roles: ["AI Platform Engineer", "Head of AI Engineering", "AI Product Lead", "GenAI Consultant"],                    color: "border-[#FED7AA] bg-[#FFF7ED]" },
+  ],
+
+  idealFor: [
+    { icon: GraduationCap, title: "Students & Fresh Graduates", desc: "Enter the fastest-growing tech field with 12 real AI projects. No prior ML or AI experience needed.", color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
+    { icon: Briefcase,     title: "Software Developers",        desc: "Add LLM, RAG and AI agent skills on top of your existing programming background. Commands a 40–60% salary jump.", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
+    { icon: Users2,        title: "Business & Product Professionals", desc: "Understand how to build, evaluate and deploy AI products. Bridge the gap between business needs and AI engineering.", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
+  ],
+
+  faqs: [
+    { q: "Do I need programming experience to join?", a: "Basic Python knowledge helps but is not required. Week 1 covers Python from scratch. If you can write a for-loop in any language, you'll be fine." },
+    { q: "Which AI models and APIs will I use?", a: "Primarily OpenAI (GPT-5.5, embeddings, DALL-E 3, Whisper) and Azure OpenAI. We also cover Claude Opus 4.8, Gemini 3 Pro, DeepSeek V4 and open-source models (Llama 4, Mistral 3) for cost-effective alternatives." },
+    { q: "How much will API costs be during the program?", a: "Estimated ₹800–1,500 over 5 months using OpenAI credits. We teach cost-optimisation from week 1 so you always know what you're spending. OpenAI's $5 free credit covers the first 2 weeks." },
+    { q: "What makes this different from a YouTube course or Udemy?", a: "Live mentor sessions, real project reviews, doubt-clearing sessions, mock interviews, portfolio guidance and placement support. YouTube teaches you to watch; we teach you to build and get hired." },
+    { q: "Can I take this alongside a full-time job?", a: "Yes — weekend batches are available. Plan for 15–18 hours/week: 3h live sessions + 5h self-paced LMS + 7h labs. Many of our learners are working professionals." },
+  ],
+};
+
 export default function AiGenerativeAiMasterProgramPage() {
-  const bundle = getCheckoutOfferingBySlug("ai-generative-ai-master-program");
-  return (
-    <main className="bg-white">
-      <section className="bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_100%)] px-4 pb-10 pt-12 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.36fr)_minmax(320px,0.64fr)]">
-          <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-8">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4338CA]">
-              <Sparkles className="h-3.5 w-3.5" />
-              AI & Generative AI Track
-            </span>
-            <h1 className="mt-4 text-4xl font-extrabold tracking-[-0.03em] text-[#0F172A] sm:text-5xl">Master AI & Generative AI Program</h1>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-[#475569]">
-              Build industry-ready AI products with modern LLM engineering, RAG architectures, autonomous agents, and production deployment workflows through mentor-led learning and project implementation.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-2.5">
-              {["Real-world AI Engineering", "Live Mentorship", "AI Project Support", "LMS Access", "Career Guidance"].map((badge) => (
-                <span key={badge} className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-1 text-xs font-medium text-[#334155]">
-                  {badge}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <aside className="lg:sticky lg:top-24">
-            <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-6 shadow-[0_18px_42px_rgba(15,23,42,0.10)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">Program Enrollment</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-[-0.03em] text-[#111827]">{bundle?.price || "Rs. 29,999"}</h2>
-              <p className="mt-1 text-sm text-[#94A3B8] line-through">{bundle?.originalPrice || "Rs. 59,999"}</p>
-              <p className="mt-3 text-sm font-semibold text-[#4338CA]">Industry Ready AI Track</p>
-              <div className="mt-5 grid gap-3 text-sm text-[#475569]">
-                <p className="flex items-center gap-2"><GraduationCap className="h-4 w-4 text-[#4F46E5]" />32 Weeks</p>
-                <p className="flex items-center gap-2"><FolderKanban className="h-4 w-4 text-[#4F46E5]" />15+ Real-World Projects</p>
-                <p className="flex items-center gap-2"><Cpu className="h-4 w-4 text-[#4F46E5]" />Beginner to Advanced</p>
-              </div>
-              <div className="mt-6 space-y-3">
-                <ProgramEnrollmentCta courseSlug="ai-generative-ai-master-program" />
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-7xl">
-          <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Learning Tracks</h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {learningTracks.map((track) => (
-              <article key={track.title} className="rounded-[20px] border border-[#E2E8F0] bg-white p-5 shadow-[0_10px_26px_rgba(15,23,42,0.06)]">
-                <h3 className="text-base font-semibold text-[#0F172A]">{track.title}</h3>
-                <p className="mt-1 text-sm text-[#475569]">{track.level}</p>
-                <ul className="mt-3 space-y-1.5 text-xs text-[#475569]">
-                  {track.includes.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-[#4F46E5]" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-xl font-bold text-[#111827]">{getDisplayPriceByCourseSlug(track.courseSlug)?.price || "Rs. 0"}</p>
-                <div className="mt-4">
-                  <CourseEnrollmentAction
-                    courseSlug={track.courseSlug}
-                    checkoutHref={track.href}
-                    checkoutLabel="Enroll"
-                    checkoutHelperText=""
-                    enrolledHelperText=""
-                    checkoutButtonClassName="rounded-xl px-4 py-2.5 text-sm"
-                    enrolledButtonClassName="rounded-xl px-4 py-2.5 text-sm"
-                    helperClassName="hidden"
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Curriculum</h2>
-            <div className="mt-5 space-y-3">
-              {curriculumModules.map((module) => (
-                <details key={module} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <summary className="cursor-pointer list-none text-sm font-semibold text-[#0F172A]">{module}</summary>
-                </details>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Projects</h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {projects.map((project) => (
-                <article key={project} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <p className="text-sm font-semibold text-[#0F172A]">{project}</p>
-                </article>
-              ))}
-            </div>
-            <h3 className="mt-8 text-xl font-bold tracking-[-0.01em] text-[#0F172A]">Tools & Technologies</h3>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {technologies.map((tool) => (
-                <span key={tool} className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-medium text-[#334155] shadow-[0_4px_10px_rgba(15,23,42,0.04)]">
-                  <Code2 className="h-3.5 w-3.5 text-[#4F46E5]" />
-                  {tool}
-                </span>
-              ))}
-            </div>
-            <h3 className="mt-8 text-xl font-bold tracking-[-0.01em] text-[#0F172A]">Career Outcomes</h3>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {careerOutcomes.map((role) => (
-                <article key={role} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <p className="flex items-center gap-2 text-sm font-semibold text-[#0F172A]">
-                    <Briefcase className="h-4 w-4 text-[#4F46E5]" />
-                    {role}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+  return <ProgramPageLayout data={data} />;
 }

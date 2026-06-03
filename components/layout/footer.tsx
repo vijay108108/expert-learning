@@ -2,29 +2,50 @@
 
 import Link from "next/link";
 import type { ComponentProps } from "react";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { ArrowRight, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Brand } from "@/components/layout/brand";
 import { socialLinks } from "@/data/site";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
-const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "Programs", href: "/courses" },
-  { label: "LMS Portal", href: "/lms" },
-  { label: "Enterprise", href: "/corporate-training" },
-  { label: "Contact", href: "/contact" },
+/* ── Nav columns ─────────────────────────────────────────── */
+const columns = [
+  {
+    heading: "Programs",
+    links: [
+      { label: "MS Cloud & AI DevOps", href: "/programs/microsoft-cloud-ai-devops-master" },
+      { label: "AI & Generative AI",   href: "/programs/ai-generative-ai-master" },
+      { label: "AWS Cloud Master",     href: "/programs/aws-cloud-master" },
+      { label: "Microsoft Cloud",      href: "/programs/microsoft-cloud-master" },
+      { label: "DevOps Master",        href: "/programs/devops-master" },
+      { label: "All Programs →",       href: "/programs" },
+    ],
+  },
+  {
+    heading: "Courses",
+    links: [
+      { label: "All Courses",        href: "/courses" },
+      { label: "AWS Certifications", href: "/aws" },
+      { label: "Azure Certifications",href: "/azure" },
+      { label: "AI & GenAI",        href: "/ai" },
+      { label: "DevSecOps",         href: "/devsecops" },
+      { label: "Agentic AI",        href: "/agentic-ai" },
+    ],
+  },
+  {
+    heading: "Company",
+    links: [
+      { label: "About Us",           href: "/about" },
+      { label: "Contact",            href: "/contact" },
+      { label: "Corporate Training", href: "/corporate-training" },
+      { label: "Summer Training",    href: "/summer-training" },
+      { label: "Careers",            href: "/career" },
+      { label: "Blog",               href: "/blog" },
+    ],
+  },
 ];
 
-const trackLinks = [
-  { label: "AI", href: "/ai" },
-  { label: "Generative AI", href: "/genai" },
-  { label: "Agentic AI", href: "/agentic-ai" },
-  { label: "DevSecOps", href: "/devsecops" },
-  { label: "AWS Certifications", href: "/aws" },
-  { label: "Azure Certifications", href: "/azure" },
-];
-
+/* ── Social icons ─────────────────────────────────────────── */
 function FacebookIcon(props: ComponentProps<"svg">) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
@@ -53,95 +74,146 @@ function LinkedInIcon(props: ComponentProps<"svg">) {
   );
 }
 
-const socialIcons = {
+const socialIcons: Record<string, React.ElementType> = {
   instagram: InstagramIcon,
-  facebook: FacebookIcon,
-  linkedin: LinkedInIcon,
-  mail: Mail,
+  facebook:  FacebookIcon,
+  linkedin:  LinkedInIcon,
+  mail:      Mail,
 };
 
+/* ── Component ───────────────────────────────────────────── */
 export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpace?: boolean }) {
+  const year = new Date().getFullYear();
+
   return (
-    <footer
-      className={cn(
-        "border-t border-[#E5E7EB] bg-white text-[#6B7280]",
-        reserveMobileCtaSpace && "pb-24 md:pb-0",
-      )}
-    >
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:px-8">
+    <footer className={cn("bg-[#0F172A] text-[#94A3B8]", reserveMobileCtaSpace && "pb-24 md:pb-0")}>
+
+      {/* ── CTA band ── */}
+      <div className="border-b border-[#1E293B] px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#818CF8]">Ready to start?</p>
+            <p className="mt-1 text-xl font-bold text-white">Join 6,000+ learners building cloud careers</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/programs"
+              className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA]"
+            >
+              Explore Programs <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a
+              href={`https://wa.me/${siteConfig.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#334155] bg-[#1E293B] px-5 py-2.5 text-sm font-semibold text-[#4ADE80] transition hover:border-[#4ADE80]/30 hover:bg-[#172117]"
+            >
+              <MessageCircle className="h-4 w-4" /> WhatsApp Us
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main columns ── */}
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1.2fr] lg:gap-8 lg:px-8">
+
+        {/* Brand + description */}
         <div>
           <Brand mode="footer" />
-          <p className="mt-4 max-w-xs text-sm leading-7 text-[#6B7280]">
-            Premium online training for AI, Generative AI, Agentic AI, DevSecOps, AWS and Azure certification pathways.
+          <p className="mt-4 max-w-[240px] text-[13px] leading-6 text-[#64748B]">
+            From zero to job-ready — mentor-led Cloud, AI & DevOps programs built for the next generation of tech professionals.
           </p>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#111827]">Quick Links</p>
-          <div className="mt-4 space-y-2">
-            {quickLinks.map((item) => (
-              <Link key={item.href} href={item.href} className="block text-sm text-[#6B7280] transition hover:text-[#111827]">
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#111827]">Learning Tracks</p>
-          <div className="mt-4 space-y-2">
-            {trackLinks.map((item) => (
-              <Link key={item.href} href={item.href} className="block text-sm text-[#6B7280] transition hover:text-[#111827]">
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#111827]">Contact</p>
-          <div className="mt-4 space-y-3 text-sm">
-            <div className="flex gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 text-[#2563EB]" />
-              <div className="text-[#6B7280]">
-                {siteConfig.addressLines.map((line) => (
-                  <p key={line}>{line}</p>
-                ))}
-              </div>
-            </div>
-            <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 text-[#6B7280] hover:text-[#111827]">
-              <Phone className="h-4 w-4 text-[#2563EB]" />
-              {siteConfig.phone}
-            </a>
-            <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 text-[#6B7280] hover:text-[#111827]">
-              <Mail className="h-4 w-4 text-[#2563EB]" />
-              {siteConfig.email}
-            </a>
-          </div>
           <div className="mt-5 flex items-center gap-2">
             {socialLinks.map((item) => {
-              const Icon = socialIcons[item.icon as keyof typeof socialIcons];
+              const Icon = socialIcons[item.icon];
               return (
                 <a
                   key={item.label}
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={cn(
-                    "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] text-[#4F46E5] transition hover:-translate-y-0.5",
-                    item.hoverClass,
-                  )}
                   aria-label={item.label}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#1E293B] bg-[#1E293B] text-[#64748B] transition hover:border-[#4F46E5] hover:bg-[linear-gradient(135deg,#9333EA,#4F46E5)] hover:text-white"
                 >
-                  {Icon ? <Icon className="h-4 w-4" /> : item.label}
+                  {Icon ? <Icon className="h-4 w-4" /> : item.label.slice(0, 1)}
                 </a>
               );
             })}
           </div>
         </div>
+
+        {/* Nav columns */}
+        {columns.map((col) => (
+          <div key={col.heading}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#E2E8F0]">{col.heading}</p>
+            <ul className="mt-4 space-y-2.5">
+              {col.links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-[13px] text-[#64748B] transition hover:text-[#E2E8F0]"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+
+        {/* Contact */}
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#E2E8F0]">Contact</p>
+          <ul className="mt-4 space-y-3">
+            <li>
+              <a
+                href={`tel:${siteConfig.phone}`}
+                className="flex items-center gap-2.5 text-[13px] text-[#64748B] transition hover:text-[#E2E8F0]"
+              >
+                <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#1E293B]">
+                  <Phone className="h-3.5 w-3.5 text-[#4F46E5]" />
+                </span>
+                {siteConfig.phone}
+              </a>
+            </li>
+            <li>
+              <a
+                href={`mailto:${siteConfig.email}`}
+                className="flex items-start gap-2.5 text-[13px] text-[#64748B] transition hover:text-[#E2E8F0]"
+              >
+                <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#1E293B]">
+                  <Mail className="h-3.5 w-3.5 text-[#4F46E5]" />
+                </span>
+                {siteConfig.email}
+              </a>
+            </li>
+            <li>
+              <div className="flex items-start gap-2.5 text-[13px] text-[#64748B]">
+                <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#1E293B]">
+                  <MapPin className="h-3.5 w-3.5 text-[#4F46E5]" />
+                </span>
+                <span>
+                  {siteConfig.addressLines.map((line) => (
+                    <span key={line} className="block">{line}</span>
+                  ))}
+                </span>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div className="border-t border-[#E5E7EB] px-4 py-4 text-center text-xs text-[#6B7280] sm:px-6 lg:px-8">
-        (c) 2026 {siteConfig.name}. All rights reserved.
+
+      {/* ── Bottom bar ── */}
+      <div className="border-t border-[#1E293B] px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 text-[11.5px] text-[#475569]">
+          <p>© {year} <span className="text-[#64748B]">{siteConfig.name}</span>. All rights reserved.</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/about"   className="transition hover:text-[#94A3B8]">About</Link>
+            <Link href="/contact" className="transition hover:text-[#94A3B8]">Contact</Link>
+            <Link href="/courses" className="transition hover:text-[#94A3B8]">Courses</Link>
+            <Link href="/programs" className="transition hover:text-[#94A3B8]">Programs</Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

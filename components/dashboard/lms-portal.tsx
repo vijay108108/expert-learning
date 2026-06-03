@@ -390,6 +390,8 @@ export function LmsPortal({
   const [noteText, setNoteText] = useState("");
   const [noteDirty, setNoteDirty] = useState(false);
   const [noteSaved, setNoteSaved] = useState(false);
+  const [noteSaving, setNoteSaving] = useState(false);
+  const [noteError, setNoteError] = useState<string | null>(null);
   const [questions, setQuestions] = useState<LessonQuestion[]>([]);
   const [questionText, setQuestionText] = useState("");
   const [notifications, setNotifications] = useState<LmsNotification[]>([]);
@@ -546,17 +548,26 @@ export function LmsPortal({
     }
 
     let active = true;
+    const localKey = `lms-note-${userInfo.uid}-${activeLesson.id}`;
     const frame = window.requestAnimationFrame(() => {
       void (async () => {
-        const nextNote = await getLessonNote(userInfo.uid, activeLesson.id);
-
-        if (!active) {
-          return;
+        /* Try Firestore first, fall back to localStorage */
+        let nextNote = "";
+        try {
+          nextNote = await getLessonNote(userInfo.uid, activeLesson.id);
+        } catch {
+          /* Firestore failed — try localStorage */
+          nextNote = window.localStorage.getItem(localKey) || "";
         }
-
+        /* If Firestore returned empty but localStorage has content, use localStorage */
+        if (!nextNote) {
+          nextNote = window.localStorage.getItem(localKey) || "";
+        }
+        if (!active) return;
         setNoteText(nextNote);
         setNoteDirty(false);
         setNoteSaved(false);
+        setNoteError(null);
       })();
     });
 
@@ -567,16 +578,28 @@ export function LmsPortal({
   }, [activeLesson, userInfo.uid]);
 
   useEffect(() => {
-    if (!activeLesson || !noteDirty) {
-      return;
-    }
+    if (!activeLesson || !noteDirty) return;
 
-    const timeout = window.setTimeout(() => {
-      void saveLessonNote(userInfo.uid, activeLesson.id, noteText).then(() => {
+    const localKey = `lms-note-${userInfo.uid}-${activeLesson.id}`;
+
+    /* Save to localStorage immediately (always works, survives offline) */
+    try { window.localStorage.setItem(localKey, noteText); } catch { /* ignore */ }
+
+    /* Debounce Firestore save by 1.2s */
+    const timeout = window.setTimeout(async () => {
+      setNoteSaving(true);
+      setNoteError(null);
+      try {
+        await saveLessonNote(userInfo.uid, activeLesson.id, noteText);
         setNoteSaved(true);
         setNoteDirty(false);
-      });
-    }, 1000);
+      } catch {
+        /* Firestore failed — note is still in localStorage */
+        setNoteError("Could not sync to cloud. Note saved locally — will retry.");
+      } finally {
+        setNoteSaving(false);
+      }
+    }, 1200);
 
     return () => window.clearTimeout(timeout);
   }, [activeLesson, noteDirty, noteText, userInfo.uid]);
@@ -994,19 +1017,87 @@ export function LmsPortal({
   }
 
   function renderNotesTab() {
+    const localKey = `lms-note-${userInfo.uid}-${activeLesson?.id}`;
+
+    async function handleManualSave() {
+      if (!activeLesson) return;
+      /* Always save to localStorage first */
+      try { window.localStorage.setItem(localKey, noteText); } catch { /* ignore */ }
+      setNoteSaving(true);
+      setNoteError(null);
+      try {
+        await saveLessonNote(userInfo.uid, activeLesson.id, noteText);
+        setNoteSaved(true);
+        setNoteDirty(false);
+      } catch {
+        setNoteError("Cloud sync failed. Your note is saved locally on this device.");
+      } finally {
+        setNoteSaving(false);
+      }
+    }
+
     return (
-      <div>
+      <div className="space-y-3">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-[11px] text-[#64748B]">
+            Notes are saved per lesson. They stay when you return.
+          </p>
+          <button
+            type="button"
+            onClick={handleManualSave}
+            disabled={noteSaving || (!noteDirty && noteSaved)}
+            className={cn(
+              "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition",
+              noteSaved && !noteDirty
+                ? "border border-[#BBF7D0] bg-[#F0FDF4] text-[#16A34A]"
+                : noteSaving
+                  ? "border border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B]"
+                  : "border border-[#C7D2FE] bg-[#EEF2FF] text-[#4F46E5] hover:bg-[#E0E7FF]",
+            )}
+          >
+            {noteSaving ? (
+              <><NotebookPen className="h-3.5 w-3.5 animate-pulse" />Saving…</>
+            ) : noteSaved && !noteDirty ? (
+              <><Check className="h-3.5 w-3.5" />Saved</>
+            ) : (
+              <><NotebookPen className="h-3.5 w-3.5" />Save Note</>
+            )}
+          </button>
+        </div>
+
+        {/* Textarea */}
         <textarea
           value={noteText}
           onChange={(event) => {
             setNoteText(event.target.value);
             setNoteDirty(true);
             setNoteSaved(false);
+            setNoteError(null);
           }}
-          placeholder="Write your notes for this lesson..."
-          className="min-h-[220px] w-full resize-y rounded-[8px] border border-[#e2e8f0] bg-white p-3 text-[13px] text-[#1e293b] outline-none placeholder:text-[#94a3b8]"
+          placeholder="Write your notes for this lesson… (auto-saved as you type)"
+          className="min-h-[260px] w-full resize-y rounded-xl border border-[#E2E8F0] bg-white p-4 text-[13px] leading-6 text-[#1E293B] outline-none placeholder:text-[#94A3B8] focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
         />
-        {noteSaved ? <div className="mt-2 text-[11px] text-[#16a34a]">Notes auto-saved</div> : null}
+
+        {/* Status */}
+        <div className="flex items-center justify-between text-[11px]">
+          {noteSaving && (
+            <span className="text-[#64748B]">⟳ Syncing to cloud…</span>
+          )}
+          {noteSaved && !noteDirty && !noteSaving && (
+            <span className="text-[#16A34A]">✓ Saved to your account</span>
+          )}
+          {noteDirty && !noteSaving && (
+            <span className="text-[#F59E0B]">● Unsaved changes</span>
+          )}
+          {noteError && (
+            <span className="text-[#EF4444]">{noteError}</span>
+          )}
+          {!noteDirty && !noteSaved && !noteSaving && !noteError && (
+            <span className="text-[#94A3B8]">Start typing to add notes…</span>
+          )}
+          <span className="text-[#CBD5E1]">{noteText.length} chars</span>
+        </div>
       </div>
     );
   }

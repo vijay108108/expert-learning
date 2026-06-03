@@ -1,189 +1,365 @@
-import Link from "next/link";
-import { ArrowRight, Briefcase, Clock3, FolderKanban, GraduationCap, Sparkles } from "lucide-react";
-import { CourseEnrollmentAction } from "@/components/enroll/course-enrollment-action";
-import { ProgramEnrollmentCta } from "@/components/enroll/program-enrollment-cta";
+import { Award, Briefcase, Clock3, Code2, FolderKanban, GraduationCap, Layers, Server, Shield, Sparkles, Users2 } from "lucide-react";
+import { ProgramPageLayout, type ProgramPageData } from "@/components/programs/program-page-layout";
 import { buildMetadata } from "@/lib/metadata";
-import { getCheckoutOfferingBySlug, getDisplayPriceByCourseSlug } from "@/lib/offering-catalog";
-
-const certificationTracks = [
-  {
-    code: "CLF-C02",
-    title: "AWS Cloud Practitioner",
-    level: "Beginner",
-    courseSlug: "aws-cloud-practitioner",
-    duration: "4 Weeks",
-    includes: ["Cloud basics", "AWS core services", "Billing & pricing", "Beginner projects"],
-    href: "/checkout/aws-cloud-practitioner",
-  },
-  {
-    code: "SAA-C03",
-    title: "AWS Solutions Architect Associate",
-    level: "Intermediate",
-    courseSlug: "aws-solutions-architect",
-    duration: "8 Weeks",
-    includes: ["EC2", "VPC", "IAM", "Storage", "Architecture labs"],
-    href: "/checkout/aws-solutions-architect",
-  },
-  {
-    code: "DVA-C02",
-    title: "AWS Developer Associate",
-    level: "Developer",
-    courseSlug: "aws-developer-associate",
-    duration: "6 Weeks",
-    includes: ["Lambda", "API Gateway", "DynamoDB", "CI/CD", "Serverless projects"],
-    href: "/checkout/aws-developer-associate",
-  },
-  {
-    code: "SOA-C02",
-    title: "AWS SysOps Administrator",
-    level: "Advanced",
-    courseSlug: "aws-devops-engineer",
-    duration: "6 Weeks",
-    includes: ["Monitoring", "Automation", "Scaling", "Infrastructure operations"],
-    href: "/checkout/aws-devops-engineer",
-  },
-] as const;
-
-const curriculumModules = [
-  "Module 1 - AWS Fundamentals",
-  "Module 2 - AWS Architecture",
-  "Module 3 - Serverless Development",
-  "Module 4 - SysOps & Monitoring",
-  "Module 5 - Real-world AWS Projects",
-] as const;
-
-const projectHighlights = [
-  "AWS Web Hosting",
-  "Serverless API",
-  "Cloud Monitoring Dashboard",
-  "CI/CD Deployment Pipeline",
-  "Secure VPC Architecture",
-] as const;
-
-const careerRoles = ["AWS Cloud Engineer", "Solutions Architect", "DevOps Engineer", "Cloud Administrator"] as const;
 
 export const metadata = buildMetadata({
   title: "AWS Cloud Master Program | GenZNext Research & Training",
   description:
-    "Complete AWS cloud learning path with CLF-C02, SAA-C03, DVA-C02, and SOA-C02, including mentorship, projects, LMS access, and certification preparation.",
+    "20-week AWS Cloud program: CLF-C02, SAA-C03, DVA-C02 & SOA-C03 certification prep with live mentorship, 12+ real-world projects, and placement support.",
   path: "/programs/aws-cloud-master",
 });
 
+const data: ProgramPageData = {
+  badge: "AWS Cloud Track",
+  badgeColor: "border-[#FEF08A] bg-[#FEFCE8] text-[#854D0E]",
+  tagline: "Become a Job-Ready AWS Cloud Engineer",
+  title: "AWS Cloud Master Program",
+  description:
+    "A 20-week, mentor-led program covering all 4 associate-level AWS certifications — Cloud Practitioner, Solutions Architect, Developer and SysOps — with live labs, real enterprise projects, and placement support.",
+  chips: ["Live Instructor-Led", "CLF-C02 Prep", "SAA-C03 Prep", "DVA-C02 Prep", "SOA-C03 Prep", "12+ Projects", "LMS Access"],
+  stats: [
+    { icon: Clock3, label: "20 Weeks" },
+    { icon: Award, label: "4 Certifications" },
+    { icon: FolderKanban, label: "12+ Projects" },
+    { icon: Users2, label: "Live Mentorship" },
+  ],
+  price: "Rs. 21,999",
+  originalPrice: "Rs. 49,999",
+  priceLabel: "56% off — All 4 AWS certification tracks included",
+  enrollSlug: "aws-cloud-master-program",
+  enrollFeatures: [
+    { icon: Clock3, text: "20 Weeks (5 Months)" },
+    { icon: GraduationCap, text: "Beginner to Advanced" },
+    { icon: FolderKanban, text: "12+ Real-World AWS Projects" },
+    { icon: Award, text: "CLF + SAA + DVA + SOA Prep" },
+    { icon: Shield, text: "Security & Architecture labs" },
+    { icon: Users2, text: "Live Sessions + LMS Access" },
+  ],
+  roadmap: ["CLF-C02 Cloud Practitioner", "SAA-C03 Solutions Architect", "DVA-C02 Developer Associate", "SOA-C03 SysOps Administrator"],
+  phases: [
+    {
+      label: "Phase 1",
+      title: "CLF-C02 — AWS Cloud Practitioner",
+      duration: "4 Weeks",
+      cert: "CLF-C02",
+      color: "bg-[#FEFCE8] text-[#854D0E] border-[#FEF08A]",
+      icon: Sparkles,
+      objective: "Build a solid foundation in AWS cloud concepts, core services, security principles and the AWS billing model. Perfect starting point for anyone new to cloud computing.",
+      modules: [
+        {
+          title: "Module 1 — Cloud Computing & AWS Fundamentals",
+          topics: [
+            "What is cloud computing — IaaS, PaaS, SaaS",
+            "Benefits of cloud vs on-premise",
+            "AWS global infrastructure: Regions, AZs, Edge locations",
+            "AWS Management Console, CLI & SDK overview",
+            "AWS Shared Responsibility Model",
+            "AWS Well-Architected Framework — 6 pillars",
+          ],
+          lab: "Create AWS Free Tier account, explore IAM, launch first EC2 instance",
+        },
+        {
+          title: "Module 2 — Core AWS Services Overview",
+          topics: [
+            "Compute: EC2, Lambda, ECS, Fargate",
+            "Storage: S3, EBS, EFS, Glacier",
+            "Database: RDS, DynamoDB, ElastiCache, Redshift",
+            "Networking: VPC, Route 53, CloudFront, Direct Connect",
+            "Security: IAM, KMS, Secrets Manager, WAF",
+            "Management: CloudWatch, CloudTrail, Config",
+          ],
+          lab: "Deploy a static website on S3 with CloudFront CDN and custom domain",
+        },
+        {
+          title: "Module 3 — AWS Pricing, Billing & Support",
+          topics: [
+            "AWS pricing models: On-Demand, Reserved, Spot, Savings Plans",
+            "AWS Free Tier — what's included",
+            "AWS Cost Explorer & Budgets",
+            "AWS Trusted Advisor",
+            "AWS Support plans — Developer, Business, Enterprise",
+            "Total Cost of Ownership (TCO) calculations",
+          ],
+          lab: "Set up billing alerts, cost budgets and explore Trusted Advisor recommendations",
+        },
+      ],
+      capstone: {
+        title: "CLF-C02 Practice Exam Sprint",
+        deliverables: [
+          "Static website hosted on S3 + CloudFront",
+          "IAM users, groups, roles, and policies configured",
+          "AWS Budget alerts and cost monitoring dashboard",
+          "350+ practice questions completed with 80%+ score",
+        ],
+      },
+    },
+    {
+      label: "Phase 2",
+      title: "SAA-C03 — Solutions Architect Associate",
+      duration: "8 Weeks",
+      cert: "SAA-C03",
+      color: "bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]",
+      icon: Layers,
+      objective: "The most sought-after AWS certification. Learn how to architect resilient, scalable, cost-optimised cloud solutions across all major AWS service families.",
+      modules: [
+        {
+          title: "Module 1 — IAM, Security & Identity",
+          topics: [
+            "IAM users, groups, roles and policies (JSON)",
+            "IAM permission boundaries & service control policies",
+            "AWS Organizations & multi-account strategy",
+            "AWS SSO & Identity Federation (SAML, OIDC)",
+            "MFA, password policies, access keys best practices",
+            "AWS STS — temporary credentials",
+          ],
+          lab: "Implement least-privilege IAM for a 3-tier web application",
+        },
+        {
+          title: "Module 2 — EC2, Auto Scaling & Load Balancing",
+          topics: [
+            "EC2 instance types & purchasing options",
+            "AMIs, launch templates & instance profiles",
+            "Elastic Load Balancing: ALB, NLB, CLB",
+            "Auto Scaling Groups — scaling policies & health checks",
+            "EC2 Placement Groups (cluster, spread, partition)",
+            "EC2 Hibernate, Stop & Terminate lifecycle",
+          ],
+          lab: "Deploy a highly available, auto-scaling web application with ALB",
+        },
+        {
+          title: "Module 3 — VPC & Advanced Networking",
+          topics: [
+            "VPC design: CIDR, subnets, route tables",
+            "Internet Gateway, NAT Gateway, NAT Instance",
+            "Security Groups vs NACLs — stateful vs stateless",
+            "VPC Peering, Transit Gateway, VPN & Direct Connect",
+            "VPC Endpoints (Gateway & Interface)",
+            "AWS PrivateLink & cross-account connectivity",
+          ],
+          lab: "Design and build a multi-tier VPC with public/private subnets and NAT",
+        },
+        {
+          title: "Module 4 — Storage: S3, EBS & EFS",
+          topics: [
+            "S3 storage classes and lifecycle policies",
+            "S3 versioning, replication (CRR, SRR) & object lock",
+            "S3 encryption: SSE-S3, SSE-KMS, SSE-C, client-side",
+            "S3 presigned URLs, access points & bucket policies",
+            "EBS volume types: gp3, io2, st1, sc1",
+            "EFS — NFS shared storage across AZs",
+          ],
+          lab: "Implement S3 data lake with lifecycle management, replication and encryption",
+        },
+        {
+          title: "Module 5 — Databases: RDS, Aurora & DynamoDB",
+          topics: [
+            "RDS engines: MySQL, PostgreSQL, Oracle, SQL Server",
+            "RDS Multi-AZ vs Read Replicas",
+            "Aurora Serverless and Global Database",
+            "DynamoDB — partition keys, GSIs, LSIs",
+            "DynamoDB Streams, DAX caching, TTL",
+            "ElastiCache Redis & Memcached patterns",
+          ],
+          lab: "Build a multi-AZ RDS setup with read replicas and failover testing",
+        },
+        {
+          title: "Module 6 — High Availability & Disaster Recovery",
+          topics: [
+            "HA patterns: Multi-AZ, Multi-Region",
+            "RPO & RTO — Backup, Pilot Light, Warm Standby, Active-Active",
+            "Route 53 routing policies: latency, failover, weighted, geolocation",
+            "CloudFront: origins, behaviours, caching & signed URLs",
+            "AWS Global Accelerator",
+            "Elastic Disaster Recovery (DRS)",
+          ],
+          lab: "Implement multi-region failover with Route 53 health checks and CloudFront",
+        },
+        {
+          title: "Module 7 — Serverless, Queues & Events",
+          topics: [
+            "Lambda: triggers, layers, environment variables, VPC access",
+            "API Gateway: REST, HTTP & WebSocket APIs",
+            "SQS: standard vs FIFO queues, DLQ, visibility timeout",
+            "SNS: topics, subscriptions, message filtering",
+            "EventBridge: rules, event buses, scheduling",
+            "Step Functions: state machines & workflows",
+          ],
+          lab: "Build a serverless image processing pipeline with S3, Lambda, SQS & SNS",
+        },
+        {
+          title: "Module 8 — Infrastructure as Code & Monitoring",
+          topics: [
+            "CloudFormation: templates, stacks & change sets",
+            "AWS CDK basics",
+            "CloudWatch Metrics, Alarms & Dashboards",
+            "CloudWatch Logs & Logs Insights",
+            "AWS X-Ray for distributed tracing",
+            "AWS Config & Security Hub",
+          ],
+          lab: "Deploy full 3-tier infrastructure via CloudFormation with CloudWatch monitoring",
+        },
+      ],
+      capstone: {
+        title: "SAA-C03 Capstone — Resilient AWS Architecture",
+        deliverables: [
+          "Multi-AZ VPC with public/private subnet tiers",
+          "Auto Scaling EC2 with ALB and Route 53",
+          "RDS Multi-AZ with automated backups",
+          "S3 data layer with lifecycle and encryption",
+          "CloudWatch alarms and SNS notifications",
+          "CloudFormation IaC template for full stack",
+        ],
+      },
+    },
+    {
+      label: "Phase 3",
+      title: "DVA-C02 — Developer Associate",
+      duration: "4 Weeks",
+      cert: "DVA-C02",
+      color: "bg-[#F0FDF4] text-[#166534] border-[#BBF7D0]",
+      icon: Code2,
+      objective: "Master AWS serverless development, CI/CD automation and developer tools. Build scalable, event-driven applications using Lambda, API Gateway, DynamoDB and AWS developer services.",
+      modules: [
+        {
+          title: "Module 1 — Serverless Development Deep Dive",
+          topics: [
+            "Lambda advanced: layers, cold starts, concurrency limits",
+            "Lambda destinations & async invocation",
+            "API Gateway: stages, throttling, custom domain",
+            "DynamoDB SDK: query, scan, batch operations",
+            "DynamoDB Streams & trigger-based processing",
+            "AppSync & GraphQL APIs on AWS",
+          ],
+          lab: "Build a serverless REST API with Lambda + API Gateway + DynamoDB",
+        },
+        {
+          title: "Module 2 — CI/CD with AWS Developer Tools",
+          topics: [
+            "CodeCommit: Git repository management",
+            "CodeBuild: build specifications, environment variables",
+            "CodeDeploy: in-place, blue/green deployments",
+            "CodePipeline: end-to-end release pipeline",
+            "CodeArtifact: private package repository",
+            "AWS SAM (Serverless Application Model)",
+          ],
+          lab: "Build a full CodePipeline: commit → build → test → deploy to Lambda",
+        },
+        {
+          title: "Module 3 — AWS SDK, Caching & Developer Patterns",
+          topics: [
+            "AWS SDK (Python boto3 & Node.js): best practices",
+            "ElastiCache Redis: caching patterns (cache-aside, write-through)",
+            "Parameter Store vs Secrets Manager",
+            "Cognito: user pools, identity pools, JWT tokens",
+            "SQS FIFO + Lambda consumer patterns",
+            "AWS X-Ray SDK instrumentation",
+          ],
+          lab: "Implement Cognito auth + Redis caching in a full serverless application",
+        },
+      ],
+      capstone: {
+        title: "DVA-C02 Capstone — Serverless CI/CD Application",
+        deliverables: [
+          "Serverless backend: Lambda + API Gateway + DynamoDB",
+          "Cognito authentication flow",
+          "Redis caching layer for performance",
+          "Full CodePipeline with automated testing",
+          "SAM template for deployment",
+        ],
+      },
+    },
+    {
+      label: "Phase 4",
+      title: "SOA-C03 — SysOps Administrator",
+      duration: "4 Weeks",
+      cert: "SOA-C03",
+      color: "bg-[#FFF7ED] text-[#9A3412] border-[#FED7AA]",
+      icon: Server,
+      objective: "Learn how to operate, monitor, and maintain AWS infrastructure at scale. Master CloudWatch, Systems Manager, automation, cost optimisation, and incident response.",
+      modules: [
+        {
+          title: "Module 1 — Monitoring, Logging & Alerting",
+          topics: [
+            "CloudWatch Metrics: custom metrics & namespaces",
+            "CloudWatch Logs: agents, filters, retention policies",
+            "CloudWatch Alarms: composite alarms, anomaly detection",
+            "CloudWatch Dashboards: cross-account monitoring",
+            "CloudTrail: management events, S3 data events, insights",
+            "AWS Config: rules, conformance packs, remediation",
+          ],
+          lab: "Build an operations monitoring dashboard with 20+ alarms and CloudTrail audit",
+        },
+        {
+          title: "Module 2 — AWS Systems Manager",
+          topics: [
+            "SSM Session Manager — secure shell without bastion",
+            "SSM Patch Manager — automated patching",
+            "SSM Run Command — remote execution at scale",
+            "SSM Automation — runbooks & workflows",
+            "SSM Parameter Store — configuration management",
+            "OpsCenter — operational issues tracking",
+          ],
+          lab: "Automate EC2 fleet patching and configuration using Systems Manager runbooks",
+        },
+        {
+          title: "Module 3 — Cost Optimisation & Reliability",
+          topics: [
+            "AWS Cost Explorer: cost trends, rightsizing recommendations",
+            "Compute Optimizer: EC2 and Lambda sizing",
+            "AWS Budgets: cost and usage alerts",
+            "Reserved Instances & Savings Plans strategy",
+            "Auto Scaling policies: target tracking, step, scheduled",
+            "AWS Fault Injection Simulator (chaos engineering)",
+          ],
+          lab: "Identify and implement 30%+ cost savings using Compute Optimizer and Savings Plans",
+        },
+      ],
+      capstone: {
+        title: "SOA-C03 Final Project — AWS Operations Dashboard",
+        deliverables: [
+          "Comprehensive CloudWatch monitoring with 30+ metrics",
+          "Automated incident response using SSM Automation",
+          "Cost optimisation report with implemented savings",
+          "Security compliance report via AWS Config",
+          "Full operational runbook documentation",
+        ],
+      },
+    },
+  ],
+  projects: [
+    { title: "Static Website on S3 + CloudFront", desc: "Host a responsive website on S3 with CloudFront CDN, custom domain via Route 53 and HTTPS via ACM" },
+    { title: "3-Tier AWS Web Application", desc: "Auto-scaling EC2 + ALB + RDS Multi-AZ + ElastiCache — full HA architecture via CloudFormation" },
+    { title: "Serverless REST API", desc: "Lambda + API Gateway + DynamoDB + Cognito auth. Deployed via SAM with CI/CD pipeline" },
+    { title: "Multi-Region DR Setup", desc: "Pilot Light DR across two AWS regions with Route 53 failover and RDS cross-region read replica" },
+    { title: "Serverless Image Processing Pipeline", desc: "S3 trigger → Lambda → Rekognition for auto-tagging → results stored in DynamoDB" },
+    { title: "CI/CD Pipeline with CodePipeline", desc: "Full CodeCommit → CodeBuild → CodeDeploy pipeline with blue/green deployment to EC2" },
+    { title: "Data Lake Architecture", desc: "S3 + Glue + Athena + QuickSight for a complete serverless analytics platform" },
+    { title: "Container App on ECS Fargate", desc: "Docker application on ECS Fargate with ALB, auto-scaling, and ECR image registry" },
+    { title: "AWS Security Hardening Project", desc: "Audit account with Security Hub, fix misconfigurations, implement GuardDuty and AWS Config rules" },
+    { title: "Microservices with SQS/SNS", desc: "Event-driven microservices using SQS FIFO queues, SNS fan-out, and Lambda consumers" },
+    { title: "Cost Optimisation Audit", desc: "Real AWS account cost analysis using Cost Explorer + Compute Optimizer → 30%+ savings achieved" },
+    { title: "Operations Monitoring Platform", desc: "CloudWatch dashboards + Systems Manager runbooks + automated patching for a production fleet" },
+  ],
+  technologies: ["AWS EC2", "S3", "RDS", "Lambda", "VPC", "CloudFormation", "ECS Fargate", "DynamoDB", "CloudWatch", "CodePipeline", "Route 53", "CloudFront", "IAM", "Systems Manager", "Terraform"],
+  certifications: [
+    { code: "CLF-C02", title: "AWS Certified Cloud Practitioner", emoji: "☁️" },
+    { code: "SAA-C03", title: "AWS Solutions Architect Associate", emoji: "🏗️" },
+    { code: "DVA-C02", title: "AWS Developer Associate", emoji: "💻" },
+    { code: "SOA-C03", title: "AWS SysOps Administrator Associate", emoji: "⚙️" },
+    { code: "AIP-C01", title: "AWS Certified Generative AI Developer – Professional (new 2026)", emoji: "🤖" },
+  ],
+  careerTiers: [
+    { level: "Entry-Level (0–1 yr)", roles: ["AWS Cloud Support Engineer", "Junior Cloud Administrator", "Cloud Operations Analyst", "AWS Practitioner"], color: "border-[#BFDBFE] bg-[#EFF6FF]" },
+    { level: "Mid-Level (1–3 yr)", roles: ["AWS Solutions Architect", "Cloud Engineer", "DevOps Engineer (AWS)", "Cloud Developer"], color: "border-[#BBF7D0] bg-[#F0FDF4]" },
+    { level: "Advanced (3+ yr)", roles: ["AWS Principal Architect", "Cloud Platform Lead", "Site Reliability Engineer", "Cloud Security Architect"], color: "border-[#FED7AA] bg-[#FFF7ED]" },
+  ],
+  idealFor: [
+    { icon: GraduationCap, title: "Students & Freshers", desc: "Get all 4 AWS associate certifications and 12 real projects in 5 months. Land your first cloud job with a verified skillset.", color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
+    { icon: Briefcase, title: "IT & Software Professionals", desc: "Add AWS cloud skills to your existing IT career. Transition into cloud engineering or architecture with proven certifications.", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
+    { icon: Users2, title: "Developers & SysAdmins", desc: "Migrate your on-premise skills to AWS. Learn the cloud equivalents of the infrastructure and development tools you already know.", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
+  ],
+};
+
 export default function AwsCloudMasterProgramPage() {
-  const bundle = getCheckoutOfferingBySlug("aws-cloud-master-program");
-  return (
-    <main className="bg-white">
-      <section className="bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_100%)] px-4 pb-10 pt-12 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.36fr)_minmax(320px,0.64fr)]">
-          <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-8">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4338CA]">
-              <Sparkles className="h-3.5 w-3.5" />
-              AWS Cloud Track
-            </span>
-            <h1 className="mt-4 text-4xl font-extrabold tracking-[-0.03em] text-[#0F172A] sm:text-5xl">AWS Cloud Master Program</h1>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-[#475569]">
-              Cloud Practitioner to Solutions Architect, built for real-world AWS engineering with live mentorship, certification preparation, internship-ready project work, LMS access, and guided cloud implementation.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-2.5">
-              {["Live Mentorship", "Certification Preparation", "Internship/Project Support", "LMS Access", "Cloud Engineering Practice"].map((badge) => (
-                <span key={badge} className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-1 text-xs font-medium text-[#334155]">
-                  {badge}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <aside className="lg:sticky lg:top-24">
-            <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-6 shadow-[0_18px_42px_rgba(15,23,42,0.10)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">Bundle Pricing</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-[-0.03em] text-[#111827]">{bundle?.price || "Rs. 24,999"}</h2>
-              <p className="mt-1 text-sm text-[#94A3B8] line-through">{bundle?.originalPrice || "Rs. 49,999"}</p>
-              <p className="mt-3 text-sm font-semibold text-[#4338CA]">Most Popular</p>
-              <div className="mt-5 grid gap-3 text-sm text-[#475569]">
-                <p className="flex items-center gap-2"><Clock3 className="h-4 w-4 text-[#4F46E5]" />24 Weeks</p>
-                <p className="flex items-center gap-2"><GraduationCap className="h-4 w-4 text-[#4F46E5]" />Beginner to Advanced</p>
-                <p className="flex items-center gap-2"><FolderKanban className="h-4 w-4 text-[#4F46E5]" />12+ Real-World Projects</p>
-              </div>
-              <div className="mt-6 space-y-3">
-                <ProgramEnrollmentCta courseSlug="aws-cloud-master-program" />
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-7xl">
-          <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Individual AWS Certifications</h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {certificationTracks.map((track) => (
-              <article key={track.code} className="rounded-[20px] border border-[#E2E8F0] bg-white p-5 shadow-[0_10px_26px_rgba(15,23,42,0.06)]">
-                <span className="inline-flex rounded-full border border-[#DBEAFE] bg-[#EEF2FF] px-2.5 py-1 text-[11px] font-semibold text-[#4338CA]">{track.code}</span>
-                <h3 className="mt-3 text-base font-semibold text-[#0F172A]">{track.title}</h3>
-                <p className="mt-1 text-sm text-[#475569]">{track.level}</p>
-                <p className="mt-1 text-xs text-[#64748B]">{track.duration}</p>
-                <ul className="mt-3 space-y-1.5 text-xs text-[#475569]">
-                  {track.includes.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-[#4F46E5]" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-xl font-bold text-[#111827]">{getDisplayPriceByCourseSlug(track.courseSlug)?.price || "Rs. 0"}</p>
-                <div className="mt-4">
-                  <CourseEnrollmentAction
-                    courseSlug={track.courseSlug}
-                    checkoutHref={track.href}
-                    checkoutLabel="Enroll"
-                    checkoutHelperText=""
-                    enrolledHelperText=""
-                    checkoutButtonClassName="rounded-xl px-4 py-2.5 text-sm"
-                    enrolledButtonClassName="rounded-xl px-4 py-2.5 text-sm"
-                    helperClassName="hidden"
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Curriculum</h2>
-            <div className="mt-5 space-y-3">
-              {curriculumModules.map((module) => (
-                <details key={module} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <summary className="cursor-pointer list-none text-sm font-semibold text-[#0F172A]">{module}</summary>
-                </details>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Projects</h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {projectHighlights.map((project) => (
-                <article key={project} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <p className="text-sm font-semibold text-[#0F172A]">{project}</p>
-                </article>
-              ))}
-            </div>
-            <h3 className="mt-8 text-xl font-bold tracking-[-0.01em] text-[#0F172A]">Career Outcomes</h3>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {careerRoles.map((role) => (
-                <article key={role} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <p className="flex items-center gap-2 text-sm font-semibold text-[#0F172A]">
-                    <Briefcase className="h-4 w-4 text-[#4F46E5]" />
-                    {role}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+  return <ProgramPageLayout data={data} />;
 }

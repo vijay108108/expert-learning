@@ -1,10 +1,9 @@
 "use client";
 
-import { CheckCircle2, Download, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Download, Printer, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { Brand } from "@/components/layout/brand";
 import {
   formatCurrencyInrFromPaise,
   formatInvoiceDate,
@@ -14,84 +13,65 @@ import {
 } from "@/lib/order-success";
 import { siteConfig } from "@/lib/site-config";
 
-export function OrderSuccessPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const orderId = searchParams.get("orderId");
-  const [invoice, setInvoice] = useState<StoredOrderSuccess | null>(null);
-  const [ready, setReady] = useState(false);
-  const [countdown, setCountdown] = useState(10);
-  const dashboardPath = useMemo(
-    () => getInvoiceDashboardPath(invoice, { paymentCompleted: true }),
-    [invoice],
+/* ── Seller block ── */
+const SELLER = {
+  legalName:  "NETSEEMS VENTURES PRIVATE LIMITED",
+  brand:      "GenZNext Research & Training",
+  address:    "A19, Om Bungalow, Sai Jyot Park",
+  city:       "Rahatani, Pune, Maharashtra – 411017",
+  phone:      "+91 8421056291",
+  email:      "genznextofficial@gmail.com",
+  gstin:      "27AAHCN4778J1ZU",
+  pan:        "AAHCN4778J",
+  state:      "Maharashtra (27)",
+  website:    "expertlearning.in",
+};
+
+/* ── Helpers ── */
+function InvoiceLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#64748B]">{children}</p>
   );
+}
+function InvoiceVal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <p className={`mt-0.5 text-[12.5px] text-[#E2E8F0] ${className}`}>{children}</p>;
+}
+
+export function OrderSuccessPage() {
+  const router      = useRouter();
+  const searchParams = useSearchParams();
+  const orderId     = searchParams.get("orderId");
+  const [invoice, setInvoice] = useState<StoredOrderSuccess | null>(null);
+  const [ready, setReady]     = useState(false);
+  const [countdown, setCountdown] = useState(12);
+
+  const dashboardPath = useMemo(() => getInvoiceDashboardPath(invoice, { paymentCompleted: true }), [invoice]);
+  const showTaxInvoice = Boolean(invoice?.gstInvoiceEnabled && invoice?.customer.gstNumber);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       try {
         const raw = window.localStorage.getItem(latestOrderStorageKey);
-
-        if (!raw) {
-          setInvoice(null);
-          return;
-        }
-
+        if (!raw) { setInvoice(null); return; }
         const parsed = JSON.parse(raw) as StoredOrderSuccess;
-
-        if (orderId && parsed.orderId !== orderId) {
-          setInvoice(null);
-          return;
-        }
-
+        if (orderId && parsed.orderId !== orderId) { setInvoice(null); return; }
         setInvoice(parsed);
-      } catch (error) {
-        console.error("[Order Success] Unable to load invoice", error);
-        setInvoice(null);
-      } finally {
-        setReady(true);
-      }
+      } catch { setInvoice(null); } finally { setReady(true); }
     });
-
     return () => window.cancelAnimationFrame(frame);
   }, [orderId]);
 
   useEffect(() => {
-    if (!invoice) {
-      return;
-    }
-
-    const timeout = window.setTimeout(() => {
-      router.replace(dashboardPath);
-    }, 10000);
-
-    const interval = window.setInterval(() => {
-      setCountdown((current) => (current > 0 ? current - 1 : 0));
-    }, 1000);
-
-    return () => {
-      window.clearTimeout(timeout);
-      window.clearInterval(interval);
-    };
+    if (!invoice) return;
+    const timeout  = window.setTimeout(() => router.replace(dashboardPath), 12000);
+    const interval = window.setInterval(() => setCountdown((c) => (c > 0 ? c - 1 : 0)), 1000);
+    return () => { window.clearTimeout(timeout); window.clearInterval(interval); };
   }, [dashboardPath, invoice, router]);
-
-  const totalLines = useMemo(() => invoice?.courses.length || 0, [invoice]);
-  const purchasedCourseLabel = useMemo(() => {
-    if (!invoice) {
-      return "";
-    }
-
-    return invoice.courses.length === 1
-      ? invoice.courses[0]?.title || "Selected course"
-      : `${invoice.courses.length} purchased courses`;
-  }, [invoice]);
-  const showTaxInvoice = Boolean(invoice?.gstInvoiceEnabled && invoice?.customer.gstNumber);
 
   if (!ready) {
     return (
-      <section className="px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl rounded-[18px] border border-[#1E2D42] bg-[#111827] p-6 text-sm text-[#94A3B8]">
-          Loading your invoice...
-        </div>
+      <section className="flex min-h-[50vh] items-center justify-center px-4">
+        <p className="text-[#64748B]">Loading invoice…</p>
       </section>
     );
   }
@@ -99,207 +79,249 @@ export function OrderSuccessPage() {
   if (!invoice) {
     return (
       <section className="px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl rounded-[18px] border border-[#1E2D42] bg-[#111827] p-6 sm:p-8">
-          <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#4F46E5]">Order Success</div>
-          <h1 className="mt-2 text-[28px] font-bold text-white">Invoice not available</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#CBD5E1]">
-            We could not load the latest invoice details on this device. If your payment was completed, your enrollment is still safe.
+        <div className="mx-auto max-w-3xl rounded-2xl border border-[#1E2D42] bg-[#111827] p-8 text-center">
+          <h1 className="text-2xl font-bold text-white">Invoice not found</h1>
+          <p className="mt-2 text-sm text-[#94A3B8]">
+            Payment was completed but invoice could not be loaded. Your enrollment is safe.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href={dashboardPath}
-              className="inline-flex rounded-[8px] bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA]"
-            >
-              Open LMS Portal
-            </Link>
-            <Link
-              href="/courses"
-              className="inline-flex rounded-[8px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.08)] px-4 py-2.5 text-sm font-medium text-[#4F46E5] transition hover:bg-[rgba(249,115,22,0.12)]"
-            >
-              Explore More Courses
-            </Link>
-          </div>
+          <Link href={dashboardPath} className="mt-6 inline-flex rounded-xl bg-[#4F46E5] px-5 py-2.5 text-sm font-semibold text-white">
+            Go to Dashboard
+          </Link>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl rounded-[22px] border border-[#1E2D42] bg-[#111827] p-5 shadow-[0_24px_60px_rgba(2,8,28,0.3)] sm:p-7 print:shadow-none">
-        <div className="flex flex-col gap-4 border-b border-[#1A2537] pb-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-4">
-            <Brand />
+    <section className="bg-[#060B14] px-4 py-10 sm:px-6 lg:px-8 print:bg-white print:py-0">
+      <div className="mx-auto max-w-4xl">
+
+        {/* ── Success banner (hidden on print) ── */}
+        <div className="mb-6 flex items-center justify-between print:hidden">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#34D399]/15 text-[#34D399]">
+              <CheckCircle2 className="h-5 w-5" />
+            </div>
             <div>
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(16,185,129,0.18)] bg-[rgba(16,185,129,0.08)] text-[#34D399] shadow-[0_0_24px_rgba(52,211,153,0.12)]">
-                <CheckCircle2 className="h-6 w-6" />
-              </div>
-              <h1 className="mt-4 text-[28px] font-bold text-white">Payment Successful! 🎉</h1>
-              <p className="mt-2 text-sm leading-6 text-[#64748B]">
-                {purchasedCourseLabel} · {formatCurrencyInrFromPaise(invoice.totalPaidPaise)}
-              </p>
+              <p className="font-bold text-white">Payment Successful 🎉</p>
+              <p className="text-[12px] text-[#64748B]">Redirecting to dashboard in {countdown}s</p>
             </div>
           </div>
-          <div className="flex flex-col items-start gap-3 sm:items-end">
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="inline-flex items-center gap-2 rounded-[8px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.1)] px-[14px] py-2 text-sm font-medium text-[#4F46E5] transition hover:bg-[rgba(249,115,22,0.14)] print:hidden"
-            >
-              <Download className="h-4 w-4" />
-              Download PDF
+          <div className="flex gap-2">
+            <button onClick={() => window.print()}
+              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[12px] text-[#94A3B8] hover:text-white">
+              <Printer className="h-3.5 w-3.5" /> Print / PDF
             </button>
-            <div className="text-left sm:text-right">
-              <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#64748B]">
-                {showTaxInvoice ? "Tax Invoice" : "Invoice"}
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════
+            INVOICE DOCUMENT
+        ══════════════════════════════════════════ */}
+        <div
+          id="invoice"
+          className="rounded-[20px] border border-[#1E2D42] bg-[#0D1117] shadow-[0_24px_60px_rgba(0,0,0,0.4)] print:rounded-none print:border-none print:shadow-none print:bg-white"
+        >
+          {/* ── Header ── */}
+          <div className="border-b border-[#1E2D42] px-7 py-6 print:border-[#E2E8F0]">
+            <div className="flex items-start justify-between gap-6">
+              {/* Seller */}
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-[#4F46E5] print:text-[#4F46E5]">
+                  {SELLER.brand}
+                </p>
+                <p className="mt-1 text-[15px] font-bold text-white print:text-[#0F172A]">{SELLER.legalName}</p>
+                <p className="mt-1 text-[12px] text-[#64748B] print:text-[#475569]">{SELLER.address}</p>
+                <p className="text-[12px] text-[#64748B] print:text-[#475569]">{SELLER.city}</p>
+                <p className="text-[12px] text-[#64748B] print:text-[#475569]">
+                  GSTIN: <span className="font-mono font-semibold text-[#94A3B8] print:text-[#334155]">{SELLER.gstin}</span>
+                  {" | "}PAN: <span className="font-mono font-semibold text-[#94A3B8] print:text-[#334155]">{SELLER.pan}</span>
+                </p>
+                <p className="text-[12px] text-[#64748B] print:text-[#475569]">State: {SELLER.state}</p>
               </div>
-              <div className="mt-1 text-[20px] font-semibold text-[#F1F5F9]">{invoice.invoiceNumber}</div>
-              <div className="mt-1 text-[12px] text-[#475569]">{formatInvoiceDate(invoice.paidAtIso)}</div>
-              {showTaxInvoice ? (
-                <div className="mt-2 text-[11px] text-[#475569]">
-                  {siteConfig.company} GST: {siteConfig.gstNumber}
+
+              {/* Invoice meta */}
+              <div className="shrink-0 text-right">
+                <p className="text-[22px] font-extrabold tracking-tight text-white print:text-[#0F172A]">
+                  {showTaxInvoice ? "TAX INVOICE" : "INVOICE"}
+                </p>
+                <p className="mt-1 font-mono text-[15px] font-semibold text-[#818CF8] print:text-[#4F46E5]">
+                  {invoice.invoiceNumber}
+                </p>
+                <p className="mt-1 text-[12px] text-[#64748B] print:text-[#475569]">
+                  {formatInvoiceDate(invoice.paidAtIso)}
+                </p>
+                <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#34D399]/10 px-3 py-1 text-[11px] font-bold text-[#34D399] print:bg-[#F0FDF4] print:text-[#16A34A]">
+                  <CheckCircle2 className="h-3 w-3" /> PAID
                 </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-[16px] border border-[rgba(16,185,129,0.12)] bg-[rgba(16,185,129,0.04)] p-5">
-          <div className="text-[13px] font-semibold text-[#F1F5F9]">What happens next:</div>
-          <div className="mt-3 space-y-2 text-sm text-[#CBD5E1]">
-            <div>✓ You&apos;ll receive WhatsApp/SMS confirmation</div>
-            <div>✓ Batch joining link sent within 24 hours</div>
-            <div>✓ Classes start as per batch schedule</div>
-            <div>✓ Access materials from your Dashboard</div>
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="rounded-[16px] border border-[#1E2D42] bg-[rgba(255,255,255,0.02)] p-4">
-            <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#64748B]">Billed To</div>
-            <div className="mt-3 space-y-1.5 text-sm text-[#CBD5E1]">
-              <div>{invoice.customer.name}</div>
-              <div>{invoice.customer.phone}</div>
-              {invoice.customer.email ? <div>{invoice.customer.email}</div> : null}
-              {invoice.customer.companyName ? <div>{invoice.customer.companyName}</div> : null}
-              {invoice.customer.gstNumber ? <div>GST Number: {invoice.customer.gstNumber}</div> : null}
+              </div>
             </div>
           </div>
 
-          <div className="rounded-[16px] border border-[#1E2D42] bg-[rgba(255,255,255,0.02)] p-4">
-            <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#64748B]">Payment</div>
-            <div className="mt-3 space-y-1.5 text-sm text-[#CBD5E1]">
-              <div>Razorpay Order ID: {invoice.orderId}</div>
-              <div>Payment ID: {invoice.paymentId}</div>
-              <div>Method: {invoice.paymentMethod}</div>
-              <div>Date &amp; Time: {formatInvoiceDate(invoice.paidAtIso)}</div>
+          {/* ── Billed To + Payment ── */}
+          <div className="grid gap-5 border-b border-[#1E2D42] px-7 py-5 sm:grid-cols-2 print:border-[#E2E8F0]">
+            {/* Billed to */}
+            <div>
+              <InvoiceLabel>Billed To</InvoiceLabel>
+              <InvoiceVal className="font-semibold text-white print:text-[#0F172A]">
+                {invoice.customer.name}
+              </InvoiceVal>
+              <InvoiceVal>{invoice.customer.phone}</InvoiceVal>
+              {invoice.customer.email   && <InvoiceVal>{invoice.customer.email}</InvoiceVal>}
+              {invoice.customer.companyName && (
+                <InvoiceVal className="font-semibold print:text-[#334155]">
+                  {invoice.customer.companyName}
+                </InvoiceVal>
+              )}
+              {invoice.customer.gstNumber && (
+                <InvoiceVal>
+                  GSTIN: <span className="font-mono text-[#818CF8] print:text-[#4F46E5]">{invoice.customer.gstNumber}</span>
+                </InvoiceVal>
+              )}
+            </div>
+
+            {/* Payment details */}
+            <div>
+              <InvoiceLabel>Payment Details</InvoiceLabel>
+              <div className="mt-1 space-y-1">
+                {[
+                  ["Razorpay Order", invoice.orderId],
+                  ["Payment ID",     invoice.paymentId],
+                  ["Method",         invoice.paymentMethod],
+                  ["Date",           formatInvoiceDate(invoice.paidAtIso)],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex flex-wrap justify-between gap-2">
+                    <span className="text-[11px] text-[#475569] print:text-[#64748B]">{k}</span>
+                    <span className="font-mono text-[11px] text-[#94A3B8] print:text-[#334155]">{v}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="mt-6 overflow-hidden rounded-[16px] border border-[#1E2D42]">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-[rgba(255,255,255,0.03)] text-left">
-                <th className="px-4 py-3 text-[11px] font-medium uppercase tracking-[0.08em] text-[#64748B]">Course</th>
-                <th className="px-4 py-3 text-[11px] font-medium uppercase tracking-[0.08em] text-[#64748B]">Duration</th>
-                <th className="px-4 py-3 text-[11px] font-medium uppercase tracking-[0.08em] text-[#64748B]">Level</th>
-                <th className="px-4 py-3 text-right text-[11px] font-medium uppercase tracking-[0.08em] text-[#64748B]">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoice.courses.map((course) => (
-                <tr key={course.slug} className="border-t border-[#1A2537]">
-                  <td className="px-4 py-3 text-sm text-[#F1F5F9]">{course.title}</td>
-                  <td className="px-4 py-3 text-sm text-[#CBD5E1]">{course.duration}</td>
-                  <td className="px-4 py-3 text-sm text-[#CBD5E1]">{course.level}</td>
-                  <td className="px-4 py-3 text-right text-sm font-medium text-[#CBD5E1]">
-                    {formatCurrencyInrFromPaise(course.amountPaise)}
-                  </td>
+          {/* ── Line items ── */}
+          <div className="px-7 py-5">
+            <table className="w-full border-collapse text-[13px]">
+              <thead>
+                <tr className="border-b border-[#1E2D42] print:border-[#E2E8F0]">
+                  <th className="pb-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-[#475569]">Description</th>
+                  <th className="pb-2.5 text-center text-[10px] font-bold uppercase tracking-wider text-[#475569]">Duration</th>
+                  <th className="pb-2.5 text-center text-[10px] font-bold uppercase tracking-wider text-[#475569]">Level</th>
+                  <th className="pb-2.5 text-center text-[10px] font-bold uppercase tracking-wider text-[#475569]">SAC</th>
+                  <th className="pb-2.5 text-right text-[10px] font-bold uppercase tracking-wider text-[#475569]">Amount</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {invoice.courses.map((course, i) => {
+                  const base = showTaxInvoice
+                    ? Math.round(course.amountPaise / 1.18)
+                    : course.amountPaise;
+                  return (
+                    <tr key={course.slug} className={`border-b border-[#0F172A]/60 print:border-[#F1F5F9] ${i % 2 === 0 ? "" : "bg-white/[0.01] print:bg-[#F8FAFC]"}`}>
+                      <td className="py-3 text-[#E2E8F0] print:text-[#0F172A]">
+                        <p className="font-semibold">{course.title}</p>
+                        <p className="text-[11px] text-[#475569]">{SELLER.brand} — Online Training Program</p>
+                      </td>
+                      <td className="py-3 text-center text-[#94A3B8] print:text-[#475569]">{course.duration}</td>
+                      <td className="py-3 text-center text-[#94A3B8] print:text-[#475569]">{course.level}</td>
+                      <td className="py-3 text-center font-mono text-[11px] text-[#475569]">998313</td>
+                      <td className="py-3 text-right font-semibold text-[#E2E8F0] print:text-[#0F172A]">
+                        {formatCurrencyInrFromPaise(base)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-        <div className="mt-6 flex justify-end">
-          <div className="w-full max-w-[320px] space-y-2 rounded-[16px] border border-[#1E2D42] bg-[rgba(255,255,255,0.02)] p-4">
-            {invoice.gstInvoiceEnabled ? (
-              <>
-                <div className="flex items-center justify-between text-sm text-[#CBD5E1]">
-                  <span>Base Amount</span>
-                  <span>{formatCurrencyInrFromPaise(invoice.baseAmountPaise)}</span>
+          {/* ── Totals ── */}
+          <div className="flex justify-end border-t border-[#1E2D42] px-7 py-5 print:border-[#E2E8F0]">
+            <div className="w-full max-w-[280px] space-y-2">
+              {showTaxInvoice ? (
+                <>
+                  <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
+                    <span>Subtotal (excl. GST)</span>
+                    <span>{formatCurrencyInrFromPaise(invoice.baseAmountPaise)}</span>
+                  </div>
+                  <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
+                    <span>CGST @ 9%</span>
+                    <span>{formatCurrencyInrFromPaise(Math.round(invoice.gstPaise / 2))}</span>
+                  </div>
+                  <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
+                    <span>SGST @ 9%</span>
+                    <span>{formatCurrencyInrFromPaise(Math.round(invoice.gstPaise / 2))}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
+                    <span>Course Amount</span>
+                    <span>{formatCurrencyInrFromPaise(invoice.subtotalPaise)}</span>
+                  </div>
+                  <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
+                    <span>GST (18% incl.)</span>
+                    <span>{formatCurrencyInrFromPaise(Math.round(invoice.subtotalPaise - invoice.subtotalPaise / 1.18))}</span>
+                  </div>
+                </>
+              )}
+              <div className="flex justify-between text-[13px] text-[#34D399] print:text-[#16A34A]">
+                <span>Platform Fee</span>
+                <span>₹0 (Included)</span>
+              </div>
+              <div className="border-t border-[#1E2D42] pt-3 print:border-[#E2E8F0]">
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] font-bold text-white print:text-[#0F172A]">Total Paid</span>
+                  <span className="text-[18px] font-extrabold text-[#818CF8] print:text-[#4F46E5]">
+                    {formatCurrencyInrFromPaise(invoice.totalPaidPaise)}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between text-sm text-[#CBD5E1]">
-                  <span>GST (18%)</span>
-                  <span>{formatCurrencyInrFromPaise(invoice.gstPaise)}</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center justify-between text-sm text-[#CBD5E1]">
-                  <span>Course Amount</span>
-                  <span>{formatCurrencyInrFromPaise(invoice.subtotalPaise)}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm text-[#CBD5E1]">
-                  <span>GST</span>
-                  <span>Included</span>
-                </div>
-              </>
-            )}
-            <div className="flex items-center justify-between text-sm text-[#CBD5E1]">
-              <span>Platform Fee</span>
-              <span className="text-[#34D399]">{invoice.platformFeeLabel}</span>
+                {showTaxInvoice && (
+                  <p className="mt-1 text-right text-[10px] text-[#475569]">
+                    Inclusive of GST — SAC Code 998313
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="border-t border-[#1A2537] pt-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[15px] font-semibold text-[#F1F5F9]">Total Paid</span>
-                <span className="text-[18px] font-semibold text-[#4F46E5]">
-                  {formatCurrencyInrFromPaise(invoice.totalPaidPaise)}
-                </span>
+          </div>
+
+          {/* ── Declaration / Footer ── */}
+          <div className="border-t border-[#1E2D42] px-7 py-5 print:border-[#E2E8F0]">
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <div className="max-w-sm text-[11px] leading-5 text-[#475569]">
+                <p className="font-semibold text-[#64748B] print:text-[#334155]">Terms & Declaration</p>
+                <p className="mt-1">This is a computer-generated invoice and does not require a signature. Subject to Pune jurisdiction. All disputes subject to Pune courts only.</p>
+                <p className="mt-1">SAC Code 998313 — Online educational support services.</p>
+                {showTaxInvoice && (
+                  <p className="mt-1">We declare that this invoice shows the actual price of the services described and all particulars are true and correct.</p>
+                )}
+              </div>
+              <div className="text-right text-[11px] text-[#475569]">
+                <p className="font-semibold text-[#64748B] print:text-[#334155]">For {SELLER.legalName}</p>
+                <p className="mt-4 text-[10px]">Authorised Signatory</p>
+                <p className="mt-1 font-semibold text-[#94A3B8] print:text-[#334155]">{SELLER.brand}</p>
+                <p className="mt-2 text-[#475569]">{SELLER.phone} · {SELLER.email}</p>
+                <p className="text-[#475569]">{SELLER.website}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {showTaxInvoice && invoice.customer.companyName && invoice.customer.gstNumber ? (
-          <div className="mt-4 flex justify-end">
-            <div className="w-full max-w-[320px] rounded-[8px] border border-[rgba(16,185,129,0.15)] bg-[rgba(16,185,129,0.06)] px-3 py-2.5 text-[11px] text-[#34D399]">
-              GST invoice generated for {invoice.customer.companyName} · {invoice.customer.gstNumber}
-            </div>
-          </div>
-        ) : null}
-
-        <div className="mt-6 rounded-[10px] border border-[rgba(249,115,22,0.1)] bg-[rgba(249,115,22,0.04)] p-4 text-sm leading-6 text-[#CBD5E1]">
-          <div className="font-medium text-[#F1F5F9]">🎓 You&apos;re enrolled!</div>
-          <p className="mt-2">
-            Check WhatsApp/SMS for batch joining link · Classes start within 48 hours · Access your course from Dashboard
-          </p>
-        </div>
-
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        {/* ── Actions (print hidden) ── */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={dashboardPath}
-              className="inline-flex rounded-[8px] bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA]"
-            >
+            <Link href={dashboardPath}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#4F46E5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA]">
               Open LMS Portal
             </Link>
-            <Link
-              href="/courses"
-              className="inline-flex rounded-[8px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.08)] px-4 py-2.5 text-sm font-medium text-[#4F46E5] transition hover:bg-[rgba(249,115,22,0.12)]"
-            >
-              Explore More Courses
+            <Link href="/courses"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-[#94A3B8] transition hover:text-white">
+              Browse More Courses
             </Link>
           </div>
-          <div className="text-[12px] text-[#475569]">Redirecting to LMS Portal in {countdown}s...</div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[12px] text-[#475569]">
-          <div>{totalLines} enrollment line{totalLines === 1 ? "" : "s"} confirmed</div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-[12px] text-[#475569]">
             <ShieldCheck className="h-3.5 w-3.5 text-[#34D399]" />
-            Payment verified and stored successfully
+            Payment verified · {countdown}s to dashboard
           </div>
         </div>
       </div>

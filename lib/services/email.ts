@@ -109,29 +109,7 @@ async function sendEmailOrThrow(payload: EmailDispatchPayload) {
   const transporter = getGmailTransporter();
   const providerPreference = payload.providerPreference || "auto";
 
-  console.info("[Email] attempting email send", {
-    context: payload.context,
-    to: payload.to,
-    subject: payload.subject,
-    provider:
-      providerPreference === "gmail"
-        ? transporter
-          ? "gmail"
-          : resend
-            ? "resend"
-            : "none"
-        : providerPreference === "resend"
-          ? resend
-            ? "resend"
-            : transporter
-              ? "gmail"
-              : "none"
-          : resend
-            ? "resend"
-            : transporter
-              ? "gmail"
-              : "none",
-  });
+  /* Email provider selection logged in server logs only */
 
   const shouldTryGmailFirst = providerPreference === "gmail";
   const shouldTryResendFirst = providerPreference !== "gmail";

@@ -18,7 +18,7 @@ export type FirestoreLesson = {
   title: string;
   description: string;
   order: number;
-  lessonType: "youtube" | "official-doc" | "pdf" | "notes" | "assignment" | "certification-guide";
+  lessonType: "youtube" | "live" | "pdf" | "lab" | "quiz" | "notes" | "assignment" | "official-doc" | "certification-guide";
   url?: string;
   duration?: string;
   locked: boolean;

@@ -172,19 +172,42 @@ export function LmsMyLearningClient() {
   }, [isAuthReady, user]);
 
   if (!isAuthReady || loading) {
-    return <section className="bg-[#F8FAFC] px-4 py-8 text-[#0F172A]">Loading your learning dashboard...</section>;
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center bg-[#F8FAFC] px-4">
+        <div className="inline-flex items-center gap-3 rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4 text-sm text-[#475569] shadow-sm">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#4F46E5] border-t-transparent" />
+          Loading your learning dashboard…
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <section className="bg-[#F8FAFC] px-4 py-8 text-rose-600">{error}</section>;
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center bg-[#F8FAFC] px-4">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-sm text-rose-700 shadow-sm">
+          <p className="font-semibold">Unable to load your courses</p>
+          <p className="mt-1 text-[12px]">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   if (!rows.length) {
     return (
-      <section className="bg-[#F8FAFC] px-4 py-8 text-[#0F172A]">
-        <div className="mx-auto max-w-5xl rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
-          <h1 className="text-2xl font-semibold">My Learning</h1>
-          <p className="mt-2 text-sm text-[#475569]">No active enrollments found yet. Enroll in a course to unlock LMS access.</p>
+      <section className="flex min-h-[50vh] items-center justify-center bg-[#F8FAFC] px-4">
+        <div className="mx-auto max-w-md rounded-2xl border border-dashed border-[#CBD5E1] bg-white p-10 text-center shadow-sm">
+          <p className="text-3xl">📚</p>
+          <h1 className="mt-4 text-xl font-bold text-[#0F172A]">No active enrollments yet</h1>
+          <p className="mt-2 text-sm text-[#475569]">Enroll in a course or program to unlock LMS access, lessons, and progress tracking.</p>
+          <div className="mt-5 flex justify-center gap-3">
+            <Link href="/courses" className="rounded-xl bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4338CA]">
+              Browse Courses
+            </Link>
+            <Link href="/programs" className="rounded-xl border border-[#E2E8F0] bg-white px-4 py-2 text-sm font-semibold text-[#0F172A] transition hover:bg-[#F8FAFC]">
+              View Programs
+            </Link>
+          </div>
         </div>
       </section>
     );

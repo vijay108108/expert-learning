@@ -1,244 +1,444 @@
-import Link from "next/link";
-import { ArrowRight, Briefcase, Code2, FolderKanban, GraduationCap, ServerCog, Sparkles } from "lucide-react";
-import { CourseEnrollmentAction } from "@/components/enroll/course-enrollment-action";
-import { ProgramEnrollmentCta } from "@/components/enroll/program-enrollment-cta";
+import { Award, Bot, Briefcase, Clock3, Code2, FolderKanban, GraduationCap, Layers, Server, Shield, Terminal, Users2, Zap } from "lucide-react";
+import { ProgramPageLayout, type ProgramPageData } from "@/components/programs/program-page-layout";
 import { buildMetadata } from "@/lib/metadata";
-import { getCheckoutOfferingBySlug, getDisplayPriceByCourseSlug } from "@/lib/offering-catalog";
-
-const learningTracks = [
-  {
-    title: "Linux, Git & Networking Fundamentals",
-    level: "Beginner",
-    courseSlug: "devsecops-foundation",
-    href: "/checkout/devsecops-foundation",
-    includes: [
-      "Linux commands",
-      "Networking basics",
-      "SSH",
-      "Git & GitHub workflows",
-      "DevOps foundations",
-    ],
-  },
-  {
-    title: "Docker & Containerization",
-    level: "Intermediate",
-    courseSlug: "docker-kubernetes",
-    href: "/checkout/docker-kubernetes",
-    includes: [
-      "Docker containers",
-      "Docker Compose",
-      "Image management",
-      "Container deployment",
-      "Real-world labs",
-    ],
-  },
-  {
-    title: "Kubernetes & CI/CD Automation",
-    level: "Advanced",
-    courseSlug: "ci-cd-pipeline-engineering",
-    href: "/checkout/ci-cd-pipeline-engineering",
-    includes: [
-      "Kubernetes",
-      "Jenkins",
-      "CI/CD pipelines",
-      "Helm",
-      "GitHub Actions",
-      "Production deployments",
-    ],
-  },
-  {
-    title: "Terraform & Cloud DevOps Engineering",
-    level: "Professional",
-    courseSlug: "aws-devops-engineer",
-    href: "/checkout/aws-devops-engineer",
-    includes: [
-      "Infrastructure as Code",
-      "Terraform",
-      "AWS DevOps",
-      "Monitoring",
-      "Scaling infrastructure",
-      "Automation projects",
-    ],
-  },
-] as const;
-
-const curriculumModules = [
-  "Module 1 - Linux & Networking",
-  "Module 2 - Git & Version Control",
-  "Module 3 - Docker & Containers",
-  "Module 4 - Kubernetes Orchestration",
-  "Module 5 - Jenkins CI/CD",
-  "Module 6 - Terraform & IaC",
-  "Module 7 - Monitoring & Logging",
-  "Module 8 - Production DevOps Projects",
-] as const;
-
-const projects = [
-  "CI/CD Deployment Pipeline",
-  "Kubernetes Cluster Setup",
-  "Dockerized Web App",
-  "Infrastructure Automation",
-  "Monitoring Dashboard",
-  "Production Cloud Deployment",
-] as const;
-
-const technologies = [
-  "Docker",
-  "Kubernetes",
-  "Jenkins",
-  "Terraform",
-  "GitHub Actions",
-  "Linux",
-  "AWS",
-  "Nginx",
-  "Grafana",
-  "Prometheus",
-] as const;
-
-const careerOutcomes = [
-  "DevOps Engineer",
-  "Site Reliability Engineer",
-  "Cloud DevOps Engineer",
-  "Platform Engineer",
-  "Automation Engineer",
-] as const;
 
 export const metadata = buildMetadata({
   title: "DevOps Master Program | GenZNext Research & Training",
   description:
-    "End-to-end DevOps learning track covering CI/CD, Docker, Kubernetes, Terraform, cloud deployment, and production automation.",
+    "20-week DevOps engineering program: Linux, Docker, Kubernetes, CI/CD, Terraform, and cloud automation. 15+ projects, live mentorship, and placement support.",
   path: "/programs/devops-master",
 });
 
+const data: ProgramPageData = {
+  badge: "DevOps & Automation Track",
+  badgeColor: "border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]",
+  tagline: "Become a Job-Ready DevOps / Platform Engineer",
+  title: "DevOps Master Program",
+  description:
+    "A 20-week, hands-on DevOps engineering program covering Linux, Git, Docker, Kubernetes, CI/CD, Terraform, monitoring and cloud automation — with 15+ real production projects and live mentor sessions.",
+  chips: ["Live Instructor-Led", "Linux & Git", "Docker & Kubernetes", "CI/CD Pipelines", "Terraform IaC", "Cloud DevOps", "Placement Support"],
+  stats: [
+    { icon: Clock3, label: "20 Weeks" },
+    { icon: Layers, label: "6 Phases" },
+    { icon: FolderKanban, label: "15+ Projects" },
+    { icon: Users2, label: "Live Mentorship" },
+  ],
+  price: "Rs. 24,999",
+  originalPrice: "Rs. 54,999",
+  priceLabel: "54% off — Full DevOps engineering stack included",
+  enrollSlug: "devops-master-program",
+  enrollFeatures: [
+    { icon: Clock3, text: "20 Weeks (5 Months)" },
+    { icon: GraduationCap, text: "Beginner to Advanced" },
+    { icon: FolderKanban, text: "15+ Real Production Projects" },
+    { icon: Zap, text: "CI/CD + Kubernetes + Terraform" },
+    { icon: Shield, text: "DevSecOps Security Basics" },
+    { icon: Users2, text: "Live Sessions + LMS Access" },
+  ],
+  roadmap: ["Linux & Git", "Docker & Containers", "Kubernetes & Orchestration", "CI/CD Pipelines", "Terraform & IaC", "Monitoring & SRE"],
+  phases: [
+    {
+      label: "Phase 1",
+      title: "Linux, Git & Networking Foundations",
+      duration: "3 Weeks",
+      color: "bg-[#F0FDF4] text-[#166534] border-[#BBF7D0]",
+      icon: Terminal,
+      objective: "Master the Linux command line, shell scripting, networking fundamentals and Git workflows — the non-negotiable foundation every DevOps engineer must have.",
+      modules: [
+        {
+          title: "Module 1 — Linux Administration",
+          topics: [
+            "Linux filesystem hierarchy and navigation",
+            "User management: users, groups, sudo, PAM",
+            "File permissions: chmod, chown, ACLs",
+            "Process management: ps, top, kill, systemd, journalctl",
+            "Package management: apt, yum/dnf, snap",
+            "Cron jobs and task scheduling",
+          ],
+          lab: "Automate user provisioning and log rotation using shell scripts on Ubuntu",
+        },
+        {
+          title: "Module 2 — Shell Scripting & Automation",
+          topics: [
+            "Bash scripting: variables, loops, conditionals, functions",
+            "Text processing: grep, sed, awk, cut, sort",
+            "Input/output redirection and pipes",
+            "Script debugging: set -x, error handling, exit codes",
+            "Python scripting for sysadmin tasks",
+            "Automating repetitive operations",
+          ],
+          lab: "Write a production-grade deployment script with logging, error handling and notifications",
+        },
+        {
+          title: "Module 3 — Networking & Git Fundamentals",
+          topics: [
+            "TCP/IP, DNS, HTTP/HTTPS, SSH protocol",
+            "Network tools: netstat, ss, curl, ping, traceroute, nmap",
+            "SSH: key-based auth, config files, tunnels, jump hosts",
+            "Git internals: commits, trees, objects",
+            "Branching strategies: GitFlow, trunk-based development",
+            "Pull requests, code review and merge strategies",
+          ],
+          lab: "Set up SSH key-based authentication and implement a complete GitFlow workflow",
+        },
+      ],
+      capstone: {
+        title: "Phase 1 Project — Linux Server Automation",
+        deliverables: [
+          "Automated server setup script (LAMP stack)",
+          "Log monitoring and alerting script",
+          "Git repository with team workflow configured",
+          "SSH hardening and security baseline script",
+        ],
+      },
+    },
+    {
+      label: "Phase 2",
+      title: "Docker & Containerisation",
+      duration: "3 Weeks",
+      color: "bg-[#EFF6FF] text-[#1E40AF] border-[#BFDBFE]",
+      icon: Server,
+      objective: "Learn how to containerise applications using Docker, build production-ready images, manage multi-container applications with Docker Compose, and push to container registries.",
+      modules: [
+        {
+          title: "Module 1 — Docker Fundamentals",
+          topics: [
+            "Containers vs VMs — architecture deep dive",
+            "Docker Engine v29.3.1 (May 2026): daemon, CLI, BuildKit, Wasm runtime support",
+            "Docker images: layers, Union File System, caching",
+            "Docker Hub: pull, push, tags, private registries",
+            "Container lifecycle: create, run, stop, remove",
+            "Docker networking: bridge, host, overlay, none",
+          ],
+          lab: "Containerise a Python Flask and Node.js application from scratch",
+        },
+        {
+          title: "Module 2 — Dockerfile & Best Practices",
+          topics: [
+            "Dockerfile syntax: FROM, RUN, COPY, ADD, CMD, ENTRYPOINT",
+            "Multi-stage builds for optimised production images",
+            "Layer caching strategies for faster builds",
+            "Non-root user, HEALTHCHECK, .dockerignore",
+            "Image vulnerability scanning: Trivy, Docker Scout",
+            "Docker image size optimisation techniques",
+          ],
+          lab: "Build a production-optimised Docker image: multi-stage, non-root, health checks",
+        },
+        {
+          title: "Module 3 — Docker Compose & Registries",
+          topics: [
+            "Docker Compose: services, volumes, networks, depends_on",
+            "Environment variables and .env files",
+            "Docker Compose profiles for dev/staging/prod",
+            "Azure Container Registry (ACR) and Amazon ECR",
+            "Docker volumes: named volumes vs bind mounts",
+            "Docker secrets and config management",
+          ],
+          lab: "Deploy a full-stack app (React + Node + PostgreSQL + Redis) with Docker Compose",
+        },
+      ],
+      capstone: {
+        title: "Phase 2 Project — Containerised Microservices",
+        deliverables: [
+          "3-service application containerised with Docker",
+          "Multi-stage Dockerfile with security hardening",
+          "Docker Compose for local development environment",
+          "Images pushed to private container registry",
+          "Vulnerability scan report with remediations",
+        ],
+      },
+    },
+    {
+      label: "Phase 3",
+      title: "Kubernetes & Container Orchestration",
+      duration: "4 Weeks",
+      color: "bg-[#FEF9C3] text-[#713F12] border-[#FDE68A]",
+      icon: Zap,
+      objective: "Master Kubernetes — the industry standard for container orchestration. Learn to deploy, scale and manage containerised applications on both self-managed and managed Kubernetes (AKS/EKS).",
+      modules: [
+        {
+          title: "Module 1 — Kubernetes Architecture & Workloads",
+          topics: [
+            "Kubernetes 1.36.1 (May 2026) architecture: control plane, nodes, etcd",
+            "Pods, multi-container pods and init containers",
+            "Deployments, ReplicaSets and DaemonSets",
+            "StatefulSets for stateful applications",
+            "Jobs and CronJobs for batch workloads",
+            "Namespace isolation and resource quotas",
+          ],
+          lab: "Deploy a 3-tier application on Kubernetes with Deployments and Services",
+        },
+        {
+          title: "Module 2 — Services, Networking & Storage",
+          topics: [
+            "Services: ClusterIP, NodePort, LoadBalancer, ExternalName",
+            "Ingress controllers: NGINX Ingress, path and host routing",
+            "TLS termination with cert-manager and Let's Encrypt",
+            "Persistent Volumes, PVCs and StorageClasses",
+            "ConfigMaps and Secrets management",
+            "Network Policies for pod-level firewall",
+          ],
+          lab: "Configure Ingress with TLS, persistent storage and network policies for an app",
+        },
+        {
+          title: "Module 3 — Kubernetes Operations & Managed K8s",
+          topics: [
+            "Resource requests and limits — CPU and memory",
+            "Horizontal Pod Autoscaler (HPA) and Vertical Pod Autoscaler",
+            "Azure Kubernetes Service (AKS): cluster creation and node pools",
+            "Amazon EKS: cluster setup and managed node groups",
+            "Kubernetes RBAC: roles, role bindings, service accounts",
+            "Rolling updates, rollbacks and canary deployments",
+          ],
+          lab: "Deploy and scale an application on AKS with HPA, RBAC and cluster autoscaler",
+        },
+        {
+          title: "Module 4 — Helm & GitOps",
+          topics: [
+            "Helm architecture: charts, values, templates, hooks",
+            "Creating and publishing custom Helm charts",
+            "Helm repositories and versioning",
+            "GitOps principles and Argo CD basics",
+            "Flux CD for automated reconciliation",
+            "Managing Kubernetes across multiple clusters",
+          ],
+          lab: "Package an application as a Helm chart and deploy via GitOps with Argo CD",
+        },
+      ],
+      capstone: {
+        title: "Phase 3 Project — Production Kubernetes Platform",
+        deliverables: [
+          "Multi-service app deployed on AKS with Helm",
+          "Ingress with TLS certificate automation",
+          "HPA and cluster autoscaler configured",
+          "RBAC policies for development team",
+          "GitOps deployment pipeline with Argo CD",
+        ],
+      },
+    },
+    {
+      label: "Phase 4",
+      title: "CI/CD Pipeline Engineering",
+      duration: "4 Weeks",
+      color: "bg-[#F5F3FF] text-[#4C1D95] border-[#DDD6FE]",
+      icon: Code2,
+      objective: "Design and implement production-grade CI/CD pipelines using Jenkins, GitHub Actions and Azure DevOps. Automate build, test, security scan and deployment workflows.",
+      modules: [
+        {
+          title: "Module 1 — Jenkins CI/CD",
+          topics: [
+            "Jenkins architecture: master, agents, executors",
+            "Freestyle jobs vs Pipeline jobs",
+            "Declarative Pipeline: stages, steps, post conditions",
+            "Jenkins shared libraries and reusable functions",
+            "Jenkins credentials store and Vault integration",
+            "Blue Ocean UI and build notifications",
+          ],
+          lab: "Build a Jenkins Declarative Pipeline: code checkout → build → test → deploy to K8s",
+        },
+        {
+          title: "Module 2 — GitHub Actions",
+          topics: [
+            "GitHub Actions: workflow syntax, triggers, jobs, steps",
+            "GitHub-hosted and self-hosted runners",
+            "Secrets, environment variables and OIDC authentication",
+            "Reusable workflows and composite actions",
+            "Matrix builds for cross-platform testing",
+            "GitHub Actions for Docker build, push and K8s deploy",
+          ],
+          lab: "Build a GitHub Actions workflow: test → Docker build → push to ACR → deploy to AKS",
+        },
+        {
+          title: "Module 3 — Azure DevOps Pipelines",
+          topics: [
+            "Azure Pipelines: YAML multi-stage pipelines",
+            "Azure Boards: Epics, User Stories, Sprints",
+            "Azure Artifacts: npm, NuGet, Maven package feeds",
+            "Deployment environments and approval gates",
+            "Integration with AKS, ACR and Azure App Service",
+            "Pipeline templates and extends for reusability",
+          ],
+          lab: "Build an end-to-end Azure DevOps pipeline with approval gates and Kubernetes deployment",
+        },
+        {
+          title: "Module 4 — DevSecOps: Security in CI/CD",
+          topics: [
+            "SAST: SonarQube and Semgrep in pipelines",
+            "DAST: OWASP ZAP integration",
+            "Container image scanning: Trivy in CI/CD",
+            "Secret scanning: GitLeaks and TruffleHog",
+            "Dependency scanning: OWASP Dependency-Check",
+            "Software Bill of Materials (SBOM) generation",
+          ],
+          lab: "Add full DevSecOps security gates to an existing CI/CD pipeline",
+        },
+      ],
+      capstone: {
+        title: "Phase 4 Project — Enterprise CI/CD Platform",
+        deliverables: [
+          "Jenkins pipeline: build → SAST → test → deploy",
+          "GitHub Actions workflow for Docker + AKS",
+          "Azure DevOps pipeline with approval gates",
+          "Security scanning integrated (Trivy + SonarQube)",
+          "Multi-environment promotion (dev → staging → prod)",
+        ],
+      },
+    },
+    {
+      label: "Phase 5",
+      title: "Infrastructure as Code — Terraform",
+      duration: "3 Weeks",
+      color: "bg-[#FFF7ED] text-[#9A3412] border-[#FED7AA]",
+      icon: Layers,
+      objective: "Master Terraform for cloud infrastructure automation. Learn to write modular, reusable Terraform code that provisions and manages production Azure and AWS infrastructure.",
+      modules: [
+        {
+          title: "Module 1 — Terraform Foundations",
+          topics: [
+            "Terraform / OpenTofu 1.12.0 (May 2026): providers, state, resources, data sources",
+            "HCL syntax: variables, outputs, locals, expressions",
+            "Terraform plan, apply, destroy and import",
+            "State management: local vs remote (Azure Storage, S3)",
+            "State locking and workspace management",
+            "Terraform Cloud and enterprise features",
+          ],
+          lab: "Provision a complete Azure VNet, VM and storage using Terraform from scratch",
+        },
+        {
+          title: "Module 2 — Terraform Modules & Best Practices",
+          topics: [
+            "Module structure: main.tf, variables.tf, outputs.tf",
+            "Reusable modules and the Terraform Registry",
+            "Module versioning and dependency management",
+            "for_each and count for dynamic resources",
+            "Terraform testing: terratest and terraform validate",
+            "Secrets management: Vault provider and sensitive variables",
+          ],
+          lab: "Build and publish a reusable Terraform module for a 3-tier Azure application",
+        },
+        {
+          title: "Module 3 — Terraform in CI/CD & GitOps",
+          topics: [
+            "Terraform in GitHub Actions: plan on PR, apply on merge",
+            "Atlantis for pull-request-based Terraform workflow",
+            "Drift detection and automated remediation",
+            "Terraform with Azure DevOps: service connection and OIDC",
+            "Policy as Code with Sentinel (Terraform Cloud)",
+            "Migrating existing infrastructure to Terraform",
+          ],
+          lab: "Automate infrastructure deployment via GitHub Actions + Terraform with plan/apply PR workflow",
+        },
+      ],
+      capstone: {
+        title: "Phase 5 Project — Full Azure IaC Platform",
+        deliverables: [
+          "Modular Terraform codebase for full Azure stack",
+          "Remote state in Azure Storage with state locking",
+          "CI/CD pipeline for Terraform (plan on PR, apply on merge)",
+          "AKS cluster, ACR, networking all Terraform-managed",
+          "Compliance validation using terraform-compliance",
+        ],
+      },
+    },
+    {
+      label: "Phase 6",
+      title: "Monitoring, Observability & SRE",
+      duration: "3 Weeks",
+      color: "bg-[#F0F9FF] text-[#0C4A6E] border-[#BAE6FD]",
+      icon: Bot,
+      objective: "Build production-grade observability platforms. Learn the SRE (Site Reliability Engineering) mindset: SLIs, SLOs, error budgets, on-call practices and incident management.",
+      modules: [
+        {
+          title: "Module 1 — Prometheus & Grafana",
+          topics: [
+            "Prometheus architecture: scrape, storage, alert rules",
+            "PromQL: rate, histogram_quantile, aggregation operators",
+            "Exporters: node_exporter, kube-state-metrics, custom",
+            "Alertmanager: routing, inhibition, silencing",
+            "Grafana: dashboards, data sources, variables, annotations",
+            "Grafana Loki for log aggregation",
+          ],
+          lab: "Deploy Prometheus + Grafana on Kubernetes with 20+ dashboards and alert rules",
+        },
+        {
+          title: "Module 2 — Azure Monitor & ELK Stack",
+          topics: [
+            "Azure Monitor: metrics, logs, alerts, workbooks",
+            "Log Analytics KQL: querying application and infra logs",
+            "Application Insights: APM, distributed tracing, live metrics",
+            "Elasticsearch, Logstash, Kibana (ELK) fundamentals",
+            "Fluentd/Fluent Bit for log collection and forwarding",
+            "OpenTelemetry for vendor-neutral observability",
+          ],
+          lab: "Set up Azure Monitor with Application Insights and build a KQL-powered dashboard",
+        },
+        {
+          title: "Module 3 — SRE Practices & Incident Management",
+          topics: [
+            "SRE principles: error budgets, toil reduction",
+            "SLIs, SLOs and SLAs — defining and measuring",
+            "Incident management: severity levels, on-call rotation",
+            "Post-mortems: blameless culture, action items",
+            "Chaos Engineering with Chaos Monkey / Azure FIS",
+            "Runbooks, playbooks and automated remediation",
+          ],
+          lab: "Define SLOs for a production application, simulate failures and write a post-mortem",
+        },
+      ],
+      capstone: {
+        title: "Final Capstone — Full Production DevOps Platform",
+        deliverables: [
+          "Prometheus + Grafana + Loki observability stack on K8s",
+          "Azure Monitor + Application Insights for cloud services",
+          "SLO dashboard with error budget tracking",
+          "Automated incident response runbook",
+          "Complete CI/CD pipeline from code to production K8s",
+          "GitHub portfolio with 6 production-ready projects",
+        ],
+      },
+    },
+  ],
+  projects: [
+    { title: "Linux Server Automation Scripts", desc: "Bash scripts for server provisioning, log rotation, user management and backup automation" },
+    { title: "Dockerised Microservices App", desc: "3-service app (frontend + API + database) containerised with Docker Compose and pushed to ACR" },
+    { title: "Production Kubernetes Platform", desc: "Multi-service deployment on AKS with Helm, Ingress, TLS, HPA and GitOps via Argo CD" },
+    { title: "Jenkins CI/CD Pipeline", desc: "Full Jenkins pipeline: Git checkout → Maven/Node build → Trivy scan → Docker push → K8s deploy" },
+    { title: "GitHub Actions Full Workflow", desc: "Automated workflow: code test → build Docker image → push to ECR → deploy to EKS" },
+    { title: "Azure DevOps Enterprise Pipeline", desc: "Multi-stage Azure Pipeline with approval gates, environments and deployment to AKS" },
+    { title: "Terraform Azure IaC Module", desc: "Reusable Terraform modules provisioning VNet, AKS, ACR, Storage with remote state" },
+    { title: "Terraform CI/CD Integration", desc: "GitHub Actions Terraform workflow: plan on PR → human approval → apply on merge" },
+    { title: "Prometheus + Grafana Stack", desc: "Full observability stack on Kubernetes with 20+ dashboards, alert rules and PagerDuty integration" },
+    { title: "Azure Monitor Operations Centre", desc: "Log Analytics workspace with KQL queries, Application Insights and automated runbooks" },
+    { title: "DevSecOps Security Pipeline", desc: "CI/CD with SAST (SonarQube) + Trivy image scan + DAST (ZAP) + secrets detection integrated" },
+    { title: "End-to-End Production Deployment", desc: "Terraform infra → Helm chart → GitHub Actions CI/CD → Prometheus monitoring — full production stack" },
+    { title: "SRE Runbook & Incident Drill", desc: "Define SLOs, simulate cascading failures with chaos engineering, and write a blameless post-mortem" },
+    { title: "Microservices on EKS (AWS)", desc: "Docker-based microservices deployed to AWS EKS with ALB Ingress and CloudWatch monitoring" },
+    { title: "GitOps with Argo CD", desc: "Full GitOps workflow: infrastructure changes via PR → Argo CD syncs K8s cluster automatically" },
+  ],
+  technologies: ["Linux", "Bash", "Docker v29.3", "Kubernetes 1.36", "Helm", "Jenkins", "GitHub Actions", "Azure DevOps", "Terraform / OpenTofu 1.12", "Prometheus", "Grafana", "Loki", "Argo CD v3.3", "SonarQube", "Trivy", "Azure Monitor", "AWS EKS", "AKS"],
+  certifications: [
+    { code: "CKA", title: "Certified Kubernetes Administrator (prep)", emoji: "⚙️" },
+    { code: "HashiCorp Terraform", title: "Terraform Associate Certification (prep)", emoji: "🏗️" },
+    { code: "AZ-400", title: "Microsoft DevOps Engineer Expert (prep)", emoji: "🟦" },
+    { code: "AWS DevOps Pro", title: "AWS DevOps Engineer Professional (prep)", emoji: "☁️" },
+  ],
+  bonusTracks: [
+    { icon: Terminal, title: "Python for DevOps", topics: ["boto3 AWS automation", "Azure SDK scripts", "REST API calls with requests", "YAML/JSON parsing", "Paramiko SSH automation"] },
+    { icon: Shield, title: "Cloud Security Basics", topics: ["IAM least-privilege design", "Network security groups", "Secrets management best practices", "Container runtime security", "CIS Benchmark hardening"] },
+    { icon: Bot, title: "Interview Preparation", topics: ["100+ DevOps interview questions", "System design for DevOps", "Kubernetes troubleshooting drills", "CI/CD design questions", "Mock technical interviews"] },
+  ],
+  careerTiers: [
+    { level: "Entry-Level (0–1 yr)", roles: ["Junior DevOps Engineer", "Build & Release Engineer", "Cloud Operations Analyst", "CI/CD Engineer"], color: "border-[#BBF7D0] bg-[#F0FDF4]" },
+    { level: "Mid-Level (1–3 yr)", roles: ["DevOps Engineer", "Platform Engineer", "Cloud DevOps Engineer", "Kubernetes Engineer"], color: "border-[#BFDBFE] bg-[#EFF6FF]" },
+    { level: "Advanced (3+ yr)", roles: ["Senior DevOps Engineer", "Site Reliability Engineer", "DevSecOps Engineer", "Principal Platform Engineer"], color: "border-[#FED7AA] bg-[#FFF7ED]" },
+  ],
+  idealFor: [
+    { icon: GraduationCap, title: "Students & Freshers", desc: "No prior DevOps experience needed. Build 15 real projects in 5 months and land a DevOps role at an MNC or product company.", color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
+    { icon: Briefcase, title: "Software Developers", desc: "Own the deployment process. Add Docker, Kubernetes, CI/CD and Terraform to your developer skillset and command a 40-60% salary premium.", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
+    { icon: Users2, title: "Sysadmins & IT Engineers", desc: "Modernise your infrastructure skills. Replace manual server management with automated, cloud-native DevOps workflows that scale.", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
+  ],
+};
+
 export default function DevopsMasterProgramPage() {
-  const bundle = getCheckoutOfferingBySlug("devops-master-program");
-  return (
-    <main className="bg-white">
-      <section className="bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_100%)] px-4 pb-10 pt-12 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.36fr)_minmax(320px,0.64fr)]">
-          <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-8">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4338CA]">
-              <Sparkles className="h-3.5 w-3.5" />
-              DevOps & Automation Track
-            </span>
-            <h1 className="mt-4 text-4xl font-extrabold tracking-[-0.03em] text-[#0F172A] sm:text-5xl">DevOps Master Program</h1>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-[#475569]">
-              Master CI/CD automation, container orchestration, cloud deployment workflows, and infrastructure engineering through mentor-led practice, LMS support, and real production deployment projects.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-2.5">
-              {[
-                "CI/CD Automation",
-                "Container Orchestration",
-                "Cloud Deployment Workflows",
-                "LMS Access",
-                "Infrastructure Projects",
-                "Career Guidance",
-              ].map((badge) => (
-                <span key={badge} className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-1 text-xs font-medium text-[#334155]">
-                  {badge}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <aside className="lg:sticky lg:top-24">
-            <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-6 shadow-[0_18px_42px_rgba(15,23,42,0.10)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">Program Enrollment</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-[-0.03em] text-[#111827]">{bundle?.price || "Rs. 29,999"}</h2>
-              <p className="mt-1 text-sm text-[#94A3B8] line-through">{bundle?.originalPrice || "Rs. 59,999"}</p>
-              <p className="mt-3 text-sm font-semibold text-[#4338CA]">Industry Ready DevOps Track</p>
-              <div className="mt-5 grid gap-3 text-sm text-[#475569]">
-                <p className="flex items-center gap-2"><GraduationCap className="h-4 w-4 text-[#4F46E5]" />28 Weeks</p>
-                <p className="flex items-center gap-2"><FolderKanban className="h-4 w-4 text-[#4F46E5]" />15+ Real-World Projects</p>
-                <p className="flex items-center gap-2"><ServerCog className="h-4 w-4 text-[#4F46E5]" />Beginner to Advanced</p>
-              </div>
-              <div className="mt-6 space-y-3">
-                <ProgramEnrollmentCta courseSlug="devops-master-program" />
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-7xl">
-          <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Learning Tracks</h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {learningTracks.map((track) => (
-              <article key={track.title} className="rounded-[20px] border border-[#E2E8F0] bg-white p-5 shadow-[0_10px_26px_rgba(15,23,42,0.06)]">
-                <h3 className="text-base font-semibold text-[#0F172A]">{track.title}</h3>
-                <p className="mt-1 text-sm text-[#475569]">{track.level}</p>
-                <ul className="mt-3 space-y-1.5 text-xs text-[#475569]">
-                  {track.includes.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-[#4F46E5]" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-xl font-bold text-[#111827]">{getDisplayPriceByCourseSlug(track.courseSlug)?.price || "Rs. 0"}</p>
-                <div className="mt-4">
-                  <CourseEnrollmentAction
-                    courseSlug={track.courseSlug}
-                    checkoutHref={track.href}
-                    checkoutLabel="Enroll"
-                    checkoutHelperText=""
-                    enrolledHelperText=""
-                    checkoutButtonClassName="rounded-xl px-4 py-2.5 text-sm"
-                    enrolledButtonClassName="rounded-xl px-4 py-2.5 text-sm"
-                    helperClassName="hidden"
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Curriculum</h2>
-            <div className="mt-5 space-y-3">
-              {curriculumModules.map((module) => (
-                <details key={module} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <summary className="cursor-pointer list-none text-sm font-semibold text-[#0F172A]">{module}</summary>
-                </details>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0F172A]">Projects</h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {projects.map((project) => (
-                <article key={project} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <p className="text-sm font-semibold text-[#0F172A]">{project}</p>
-                </article>
-              ))}
-            </div>
-            <h3 className="mt-8 text-xl font-bold tracking-[-0.01em] text-[#0F172A]">Tools & Technologies</h3>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {technologies.map((tool) => (
-                <span key={tool} className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-medium text-[#334155] shadow-[0_4px_10px_rgba(15,23,42,0.04)]">
-                  <Code2 className="h-3.5 w-3.5 text-[#4F46E5]" />
-                  {tool}
-                </span>
-              ))}
-            </div>
-            <h3 className="mt-8 text-xl font-bold tracking-[-0.01em] text-[#0F172A]">Career Outcomes</h3>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {careerOutcomes.map((role) => (
-                <article key={role} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                  <p className="flex items-center gap-2 text-sm font-semibold text-[#0F172A]">
-                    <Briefcase className="h-4 w-4 text-[#4F46E5]" />
-                    {role}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+  return <ProgramPageLayout data={data} />;
 }

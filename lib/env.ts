@@ -55,7 +55,8 @@ export const env = {
   airtableApiKey: process.env.AIRTABLE_API_KEY || "",
   airtableBaseId: process.env.AIRTABLE_BASE_ID || "",
   airtableTableName: process.env.AIRTABLE_TABLE_NAME || "Leads",
-  adminEmails: readCsvEnvValues(process.env.ADMIN_EMAILS),
+  adminEmails:  readCsvEnvValues(process.env.ADMIN_EMAILS),
+  adminPhones:  readCsvEnvValues(process.env.ADMIN_PHONES),
 };
 
 export const hasFirebaseEnv = Boolean(

@@ -122,12 +122,9 @@ function getFakeEmailCandidates(rawPhone: string) {
   return getLegacyPhoneAuthCandidates(rawPhone).map((candidate) => `${candidate}@genznext.app`);
 }
 
-async function findExistingAuthEmail(auth: Auth, rawPhone: string, label: "Signup" | "Login" | "Forgot Password") {
-  const normalizedPhone = normalizePhoneForAuth(rawPhone);
+async function findExistingAuthEmail(auth: Auth, rawPhone: string) {
   const primaryEmail = getFakeEmail(rawPhone);
   const candidateEmails = getFakeEmailCandidates(rawPhone);
-
-  console.info(`${label} Email:`, primaryEmail, { normalizedPhone, candidateEmails });
 
   for (const candidateEmail of candidateEmails) {
     const methods = await fetchSignInMethodsForEmail(auth, candidateEmail);
@@ -182,6 +179,11 @@ export function PhoneAuthFlow({
   const [countryCode, setCountryCode] = useState("+91");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  /* Billing / GST fields (optional, signup only) */
+  const [showBilling, setShowBilling]         = useState(false);
+  const [billingCompany, setBillingCompany]   = useState("");
+  const [billingGst, setBillingGst]           = useState("");
+  const [billingAddress, setBillingAddress]   = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
@@ -258,7 +260,7 @@ export function PhoneAuthFlow({
       return "Use your mobile number and password to continue.";
     }
 
-    return "Join 4,200+ students already learning on GenZNext";
+    return "Join 6,000+ students already learning on GenZNext";
   }, [activeTab, isForgotPasswordMode, step]);
 
   const fieldClass = cn(
@@ -506,13 +508,20 @@ export function PhoneAuthFlow({
       clearRecaptcha(recaptchaHostRef.current);
       recaptchaVerifierRef.current = null;
 
+      const isLocalhost = isLocalPhoneAuthHost();
+
       if (code === "auth/invalid-phone-number") {
-        setStepError("Invalid phone number. Use +91XXXXXXXXXX format", isResend ? "otp" : "phone");
+        setStepError("Invalid phone number. Use a valid 10-digit mobile number.", isResend ? "otp" : "phone");
       } else if (code === "auth/too-many-requests") {
-        setStepError("Too many attempts. Please try again later.", isResend ? "otp" : "phone");
-      } else if (code === "auth/invalid-app-credential" && isLocalPhoneAuthHost()) {
+        setStepError("Too many attempts. Please wait a few minutes and try again.", isResend ? "otp" : "phone");
+      } else if (
+        (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential")
+        && isLocalhost
+      ) {
         setStepError(
-          "Firebase rejected this OTP request on localhost. Use Google sign-in, deploy to a real domain, or switch on Firebase test phone auth for local testing.",
+          "OTP is blocked on localhost. Fix in Firebase Console (choose one): " +
+          "(A) Authentication → Sign-in method → Phone → Test phone numbers → add your number with code 123456. " +
+          "(B) Authentication → Settings → Authorized domains → add 'localhost'.",
           isResend ? "otp" : "phone",
         );
       } else {
@@ -751,17 +760,50 @@ export function PhoneAuthFlow({
       if (auth.currentUser) {
         await signOut(auth);
       }
+
+      /* ── Try all candidate emails (avoids fetchSignInMethodsForEmail
+         which is broken when Firebase email enumeration protection is ON) ── */
       const normalizedLoginPhone = normalizePhoneForAuth(phone);
-      const { email: fakeEmail, methods } = await findExistingAuthEmail(auth, normalizedLoginPhone, "Login");
-      console.info("Login Email:", fakeEmail, { normalizedPhone: normalizedLoginPhone });
-      if (!methods.includes("password")) {
-        setFeedback("No account found. Please sign up.");
+      const candidates = getLegacyPhoneAuthCandidates(normalizedLoginPhone)
+        .map((c) => `${c}@genznext.app`);
+
+      let lastError: unknown = null;
+      let signedIn = false;
+
+      for (const candidateEmail of candidates) {
+        try {
+          await signInWithEmailAndPassword(auth, candidateEmail, loginPassword);
+          signedIn = true;
+          break;
+        } catch (err) {
+          lastError = err;
+          const code = err && typeof err === "object" && "code" in err ? String((err as any).code) : "";
+          /* Wrong password on a real account → stop immediately */
+          if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
+            break;
+          }
+          /* user-not-found on this candidate → try next */
+        }
+      }
+
+      if (signedIn) {
+        await finishAuthSuccess("Login successful!");
         return;
       }
-      await signInWithEmailAndPassword(auth, fakeEmail, loginPassword);
-      await finishAuthSuccess("Login successful!");
+
+      const code = lastError && typeof lastError === "object" && "code" in lastError
+        ? String((lastError as any).code)
+        : "";
+
+      if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        setFeedback("Incorrect password. Please try again.");
+      } else if (code === "auth/user-not-found" || code === "auth/invalid-email") {
+        setFeedback("No account found for this number. Please sign up first.");
+      } else {
+        setFeedback(getSanitizedErrorMessage(code, getFirebaseAuthErrorMessage(lastError)));
+      }
     } catch (error) {
-      const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+      const code = error && typeof error === "object" && "code" in error ? String((error as any).code) : "";
       setFeedback(getSanitizedErrorMessage(code, getFirebaseAuthErrorMessage(error)));
     } finally {
       setPending(false);
@@ -862,18 +904,14 @@ export function PhoneAuthFlow({
     setSuccessMessage(null);
 
     try {
+      /* Skip fetchSignInMethodsForEmail — broken with email enumeration protection.
+         Duplicate detection happens naturally: linkWithCredential throws
+         auth/credential-already-in-use if the email is already registered. */
       const normalizedSignupPhone = normalizePhoneForAuth(phone);
-      const existingAuthEmail = await findExistingAuthEmail(auth, normalizedSignupPhone, "Signup");
-      if (existingAuthEmail.methods.length > 0) {
-        setFeedback("This mobile number is already registered.");
-        setShowSignupGoToLogin(true);
-        return;
-      }
 
       const verified = await confirmationResult.confirm(otpCode);
       const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
       const signupEmail = getFakeEmail(verifiedPhone);
-      console.info("Signup Email:", signupEmail, { verifiedPhone, normalizedInputPhone: normalizedSignupPhone });
       const credential = EmailAuthProvider.credential(signupEmail, signupPassword);
       const linked = await linkWithCredential(verified.user, credential);
       await updateProfile(linked.user, {
@@ -886,6 +924,9 @@ export function PhoneAuthFlow({
         phone: verifiedPhone,
         authMethod: "password",
         createdAt: new Date().toISOString(),
+        ...(billingCompany.trim() && { companyName: billingCompany.trim() }),
+        ...(billingGst.trim()     && { gstNumber: billingGst.trim().toUpperCase() }),
+        ...(billingAddress.trim() && { billingAddress: billingAddress.trim() }),
       }, { merge: true });
 
       setSignupStep("form");
@@ -933,15 +974,11 @@ export function PhoneAuthFlow({
     clearAllFeedback();
 
     try {
+      /* Skip fetchSignInMethodsForEmail — broken with Firebase email enumeration protection.
+         Just set the primary email and proceed to OTP; the reset step will validate. */
       const normalizedForgotPhone = normalizePhoneForAuth(phone);
-      const { email: fakeEmail, methods } = await findExistingAuthEmail(auth, normalizedForgotPhone, "Forgot Password");
-      console.info("Forgot Password Email:", fakeEmail, { normalizedPhone: normalizedForgotPhone });
-      if (!methods.includes("password")) {
-        setFeedback("No account found with this number. Please sign up first.");
-        return;
-      }
-
-      setForgotPasswordEmail(fakeEmail);
+      const primaryEmail = `${normalizedForgotPhone}@genznext.app`;
+      setForgotPasswordEmail(primaryEmail);
     } catch (error) {
       setFeedback(getFirebaseAuthErrorMessage(error));
       return;
@@ -1696,6 +1733,62 @@ export function PhoneAuthFlow({
               autoComplete: "new-password",
               disabled: pending,
             })}
+            {/* ── Optional billing / GST section ── */}
+            <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3">
+              <button
+                type="button"
+                onClick={() => setShowBilling((v) => !v)}
+                className="flex w-full items-center justify-between text-[12px] font-semibold text-[#475569]"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="rounded bg-[#EEF2FF] px-1.5 py-0.5 text-[10px] text-[#4F46E5]">Optional</span>
+                  Add GST / Billing Details for Tax Invoice
+                </span>
+                <span className="text-[#94A3B8]">{showBilling ? "▲" : "▼"}</span>
+              </button>
+              {showBilling && (
+                <div className="mt-3 space-y-2.5">
+                  <div>
+                    <label className="form-label">Company / Business Name</label>
+                    <input
+                      value={billingCompany}
+                      onChange={(e) => setBillingCompany(e.target.value)}
+                      placeholder="e.g. Acme Pvt Ltd"
+                      className={cn(fieldClass)}
+                      disabled={pending}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">GST Number (GSTIN)</label>
+                    <input
+                      value={billingGst}
+                      onChange={(e) => setBillingGst(e.target.value.toUpperCase())}
+                      placeholder="e.g. 27AAHCN4778J1ZU"
+                      maxLength={15}
+                      className={cn(fieldClass, "font-mono uppercase")}
+                      disabled={pending}
+                    />
+                    {billingGst && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(billingGst) && (
+                      <p className="mt-1 text-[11px] text-rose-500">Enter a valid 15-character GSTIN</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="form-label">Billing Address</label>
+                    <input
+                      value={billingAddress}
+                      onChange={(e) => setBillingAddress(e.target.value)}
+                      placeholder="Street, City, State, PIN"
+                      className={cn(fieldClass)}
+                      disabled={pending}
+                    />
+                  </div>
+                  <p className="text-[11px] text-[#64748B]">
+                    These details will be pre-filled on your invoice at checkout. You can update them anytime from your profile.
+                  </p>
+                </div>
+              )}
+            </div>
+
             <AnimatePresence initial={false}>
               {showSignupOtpState ? (
                 <motion.div

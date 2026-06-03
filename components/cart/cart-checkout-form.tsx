@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
+import { CheckCircle2, CreditCard, LockKeyhole, ShieldCheck, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -62,6 +62,74 @@ function formatPhoneForProfile(value: string) {
   return trimmed.startsWith("+") ? `+${digits}` : digits;
 }
 
+/* ── Payment Processing Overlay ─────────────────────────── */
+function PaymentProcessingOverlay() {
+  const steps = [
+    { label: "Verifying payment signature",    done: true  },
+    { label: "Confirming order with Razorpay", done: true  },
+    { label: "Creating your enrollment record",done: false },
+    { label: "Sending confirmation on WhatsApp",done: false },
+    { label: "Unlocking LMS access",           done: false },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-[rgba(15,23,42,0.7)] backdrop-blur-sm px-4">
+      <div className="w-full max-w-sm overflow-hidden rounded-[24px] border border-[#1E293B] bg-[#0D1117] p-7 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+        {/* Spinner */}
+        <div className="flex flex-col items-center text-center">
+          <div className="relative flex h-20 w-20 items-center justify-center">
+            <div className="absolute inset-0 animate-spin rounded-full border-4 border-[#1E293B] border-t-[#9333EA]" />
+            <div className="absolute inset-3 animate-spin rounded-full border-4 border-[#1E293B] border-t-[#4F46E5]" style={{ animationDirection: "reverse", animationDuration: "0.8s" }} />
+            <ShieldCheck className="h-7 w-7 text-[#34D399]" />
+          </div>
+          <p className="mt-5 text-[17px] font-bold text-white">Processing Payment</p>
+          <p className="mt-1 text-[12px] text-[#64748B]">Please don't close this window</p>
+        </div>
+
+        {/* Timeline */}
+        <div className="mt-7 space-y-3">
+          {steps.map((step, i) => (
+            <div key={step.label} className="flex items-center gap-3">
+              {/* Icon */}
+              <div className="shrink-0">
+                {step.done ? (
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#34D399]/20">
+                    <CheckCircle2 className="h-4 w-4 text-[#34D399]" />
+                  </div>
+                ) : i === steps.findIndex(s => !s.done) ? (
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4F46E5]/20">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-[#818CF8]" />
+                  </div>
+                ) : (
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full border border-[#1E293B]">
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#334155]" />
+                  </div>
+                )}
+              </div>
+              {/* Label */}
+              <span className={`text-[12.5px] ${
+                step.done
+                  ? "text-[#34D399]"
+                  : i === steps.findIndex(s => !s.done)
+                    ? "font-semibold text-white"
+                    : "text-[#334155]"
+              }`}>
+                {step.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Security note */}
+        <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-[#334155]">
+          <LockKeyhole className="h-3.5 w-3.5" />
+          Secured by Razorpay · 256-bit SSL
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function CartCheckoutForm() {
   const checkoutFormId = "cart-checkout-form";
   const router = useRouter();
@@ -113,10 +181,16 @@ export function CartCheckoutForm() {
         }
 
         setProfile(nextProfile);
+        const profileGst     = (nextProfile as any)?.gstNumber?.trim()     || "";
+        const profileCompany = (nextProfile as any)?.companyName?.trim()   || "";
         setForm((current) => ({
           ...current,
-          phone: current.phone || nextProfile?.phone?.trim() || authPhone,
-          email: current.email || nextProfile?.email?.trim() || authEmail,
+          phone:       current.phone       || nextProfile?.phone?.trim()  || authPhone,
+          email:       current.email       || nextProfile?.email?.trim()  || authEmail,
+          /* Pre-fill billing from profile if available */
+          gstNumber:   current.gstNumber   || profileGst,
+          companyName: current.companyName || profileCompany,
+          addGstDetails: current.addGstDetails || Boolean(profileGst && profileCompany),
         }));
       } catch (error) {
         if (active) {
@@ -317,6 +391,11 @@ export function CartCheckoutForm() {
     } finally {
       setPending(false);
     }
+  }
+
+  /* ── Payment processing overlay ── */
+  if (isPaying) {
+    return <PaymentProcessingOverlay />;
   }
 
   if (!hydrated) {

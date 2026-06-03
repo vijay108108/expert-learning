@@ -443,72 +443,72 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
               animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
               exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }}
               transition={{ duration: reducedMotion ? 0.1 : 0.18, ease: "easeOut" }}
-              className="w-full max-w-3xl rounded-[26px] border border-[#E2E8F0] bg-white p-6 text-[#0F172A] shadow-[0_24px_60px_rgba(15,23,42,0.14)]"
+              className="w-full max-w-3xl overflow-hidden rounded-[26px] border border-[#E2E8F0] bg-white shadow-[0_24px_60px_rgba(15,23,42,0.14)]"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">Course Syllabus</div>
-                  <h2 className="mt-3 text-[26px] font-semibold leading-[1.2] text-white">{selectedSyllabusCourse.title}</h2>
-                  <p className="mt-2 text-sm leading-7 text-[#B7C3D9]">{selectedSyllabusCourse.subtitle}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedSyllabusSlug(null)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/6 text-[#D8E1F0] transition hover:border-[rgba(249,115,22,0.22)] hover:text-[#7C3AED]"
-                  aria-label="Close syllabus"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                <div className="rounded-[18px] border border-white/10 bg-white/6 p-4">
-                  <div className="text-[12px] font-semibold text-[#7C3AED]">Roadmap</div>
-                  <ul className="mt-3 space-y-2 text-sm text-[#D8E1F0]">
-                    {selectedSyllabusCourse.roadmap.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="rounded-[18px] border border-white/10 bg-white/6 p-4">
-                  <div className="text-[12px] font-semibold text-[#7C3AED]">Tools Covered</div>
-                  <ul className="mt-3 space-y-2 text-sm text-[#D8E1F0]">
-                    {selectedSyllabusCourse.toolsCovered.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="rounded-[18px] border border-white/10 bg-white/6 p-4">
-                  <div className="text-[12px] font-semibold text-[#7C3AED]">Outcomes</div>
-                  <ul className="mt-3 space-y-2 text-sm text-[#D8E1F0]">
-                    {selectedSyllabusCourse.outcomes.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+              {/* Modal header */}
+              <div className="border-b border-[#F1F5F9] bg-[linear-gradient(135deg,#EEF2FF,#F8FAFC)] px-6 py-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <span className="inline-flex items-center rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#4F46E5]">
+                      Course Syllabus
+                    </span>
+                    <h2 className="mt-2 text-[22px] font-bold leading-snug text-[#0F172A]">{selectedSyllabusCourse.title}</h2>
+                    <p className="mt-1 text-sm text-[#475569]">{selectedSyllabusCourse.subtitle}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSyllabusSlug(null)}
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#E2E8F0] bg-white text-[#64748B] transition hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+                    aria-label="Close syllabus"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedSyllabusSlug(null);
-                    router.push(`/dashboard/${encodeURIComponent(selectedSyllabusCourse.slug)}`);
-                  }}
-                  className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-3 text-sm font-semibold text-white"
-                >
-                  Continue Learning
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-                <Link
-                  href={selectedSyllabusCourse.officialSyllabusUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-[14px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.08)] px-5 py-3 text-sm font-medium text-[#7C3AED] transition hover:border-[rgba(249,115,22,0.32)] hover:bg-[rgba(249,115,22,0.12)]"
-                >
-                  Open Official Syllabus
-                  <ExternalLink className="h-4 w-4" />
-                </Link>
+              {/* Modal body */}
+              <div className="p-6">
+                <div className="grid gap-4 lg:grid-cols-3">
+                  {[
+                    { label: "Learning Roadmap",  items: selectedSyllabusCourse.roadmap },
+                    { label: "Tools Covered",      items: selectedSyllabusCourse.toolsCovered },
+                    { label: "Career Outcomes",    items: selectedSyllabusCourse.outcomes },
+                  ].map((col) => (
+                    <div key={col.label} className="rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#4F46E5]">{col.label}</p>
+                      <ul className="mt-3 space-y-1.5">
+                        {col.items.map((item) => (
+                          <li key={item} className="flex items-start gap-2 text-[12.5px] text-[#374151]">
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />{item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSyllabusSlug(null);
+                      router.push(`/dashboard/${encodeURIComponent(selectedSyllabusCourse.slug)}`);
+                    }}
+                    className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.25)] transition hover:scale-[1.02]"
+                  >
+                    Continue Learning <ArrowRight className="h-4 w-4" />
+                  </button>
+                  {selectedSyllabusCourse.officialSyllabusUrl && (
+                    <Link
+                      href={selectedSyllabusCourse.officialSyllabusUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center gap-2 rounded-[14px] border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#4F46E5]/30 hover:text-[#4F46E5]"
+                    >
+                      Official Syllabus <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  )}
+                </div>
               </div>
             </motion.div>
           </motion.div>

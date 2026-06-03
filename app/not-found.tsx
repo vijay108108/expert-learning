@@ -1,19 +1,54 @@
-import { ButtonLink } from "@/components/ui/button-link";
+import Link from "next/link";
+import { ArrowLeft, BookOpenCheck, Home, Search } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <section className="px-4 py-32 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-3xl rounded-[36px] border border-border bg-card p-10 text-center shadow-soft">
-        <span className="inline-flex rounded-full border border-brand-blue/15 bg-brand-blue/8 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-brand-blue">
-          404
+    <section className="flex min-h-[70vh] items-center px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-2xl text-center">
+        {/* 404 badge */}
+        <span className="inline-flex items-center rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#4F46E5]">
+          404 — Page Not Found
         </span>
-        <h1 className="mt-6 text-4xl font-semibold tracking-tight text-foreground">Page not found</h1>
-        <p className="mt-4 text-base leading-7 text-muted">
-          The page you were looking for isn’t here yet. Let’s get you back to the courses and admissions flow.
+
+        {/* Heading */}
+        <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-[#0F172A] sm:text-5xl">
+          Oops! This page doesn't exist.
+        </h1>
+        <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-[#475569]">
+          The page you're looking for may have moved, been renamed, or never existed. Let's get you back on track.
         </p>
-        <div className="mt-8 flex justify-center">
-          <ButtonLink href="/">Back to Home</ButtonLink>
+
+        {/* Quick links */}
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.28)] transition hover:scale-[1.02]"
+          >
+            <Home className="h-4 w-4" /> Back to Home
+          </Link>
+          <Link
+            href="/courses"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#4F46E5]/30 hover:text-[#4F46E5]"
+          >
+            <BookOpenCheck className="h-4 w-4" /> Browse Courses
+          </Link>
+          <Link
+            href="/programs"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#4F46E5]/30 hover:text-[#4F46E5]"
+          >
+            <Search className="h-4 w-4" /> View Programs
+          </Link>
         </div>
+
+        {/* Divider */}
+        <div className="mx-auto mt-10 h-px max-w-xs bg-[#E2E8F0]" />
+        <p className="mt-6 text-sm text-[#64748B]">
+          Still can't find what you need?{" "}
+          <Link href="/contact" className="font-semibold text-[#4F46E5] hover:underline">
+            Contact our team
+          </Link>
+          {" "}and we'll help.
+        </p>
       </div>
     </section>
   );

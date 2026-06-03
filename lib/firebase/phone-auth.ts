@@ -65,10 +65,10 @@ export function getRecaptchaVerifier(auth: Auth, container?: string | HTMLElemen
   recaptchaVerifierInstance = new RecaptchaVerifier(auth, resolvedContainer, {
     size: "invisible",
     callback: () => {
-      console.log("[Firebase Phone Auth] reCAPTCHA solved");
+      /* reCAPTCHA solved */
     },
     "expired-callback": () => {
-      console.log("[Firebase Phone Auth] reCAPTCHA expired");
+      /* reCAPTCHA expired */
       clearRecaptcha();
     },
   });

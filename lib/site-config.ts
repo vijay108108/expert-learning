@@ -11,6 +11,8 @@ export const siteConfig = {
   phone: "+91 8421056291",
   whatsapp: "918421056291",
   gstNumber: "27AAHCN4778J1ZU",
-  address: "Lucknow, BBD College, Uttar Pradesh, India",
-  addressLines: ["Lucknow, BBD College", "Uttar Pradesh, India"],
+  address: "A19, Om Bungalow, Sai Jyot Park, Rahatani, Pune, Maharashtra – 411017",
+  addressLines: ["A19, Om Bungalow, Sai Jyot Park", "Rahatani, Pune, Maharashtra – 411017"],
+  legalName: "NETSEEMS VENTURES PRIVATE LIMITED",
+  cin: "U72900MH2023PTC000000",
 };

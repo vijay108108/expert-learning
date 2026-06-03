@@ -85,6 +85,18 @@ const bundleDefinitions: BundleDefinition[] = [
     originalPriceValue: 59999,
     courseSlugs: ["devsecops-foundation", "docker-kubernetes", "ci-cd-pipeline-engineering", "aws-devops-engineer"],
   },
+  {
+    slug: "cloud-devops-ai-summer-2026",
+    title: "Cloud, DevOps & AI Engineering Professional Program",
+    subtitle: "Summer Training 2026 — 15 June Batch",
+    tagLabel: "Summer Training 2026",
+    duration: "8 Weeks (Fast-Track)",
+    level: "Beginner to Advanced",
+    highlight: "Summer Scholarship — 67% Off",
+    priceValue: 25000,
+    originalPriceValue: 75000,
+    courseSlugs: ["azure-administrator"],
+  },
 ];
 
 const bundleBySlug = new Map(bundleDefinitions.map((bundle) => [bundle.slug, bundle]));

@@ -1,26 +1,17 @@
 import { AdminShell } from "@/components/admin/admin-shell";
-import { FirebaseAdminDashboard } from "@/components/admin/firebase-admin-dashboard";
-import { FirebaseLeadManager } from "@/components/admin/firebase-lead-manager";
-import { FirebaseUserManager } from "@/components/admin/firebase-user-manager";
+import { AdminOverview } from "@/components/admin/admin-overview";
 import { buildMetadata } from "@/lib/metadata";
 
 export const metadata = buildMetadata({
-  title: "Admin LMS | GenZNext Research & Training",
-  description: "Admin frontend for managing courses, modules, lessons, and LMS resources using mock state.",
+  title: "Admin — Overview | GenZNext",
+  description: "Admin dashboard overview.",
   path: "/admin",
 });
 
 export default function AdminPage() {
   return (
-    <AdminShell
-      title="Admin LMS Content Management"
-      subtitle="Manage live LMS content, users, leads, and platform metrics."
-    >
-      <FirebaseAdminDashboard />
-      <div className="grid gap-4 lg:grid-cols-2">
-        <FirebaseUserManager />
-        <FirebaseLeadManager />
-      </div>
+    <AdminShell title="Overview" subtitle="Platform metrics and recent activity.">
+      <AdminOverview />
     </AdminShell>
   );
 }

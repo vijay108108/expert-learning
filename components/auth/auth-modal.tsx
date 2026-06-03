@@ -139,7 +139,7 @@ export function AuthModal() {
 
                     <div className="mt-8 space-y-3">
                       {[
-                        "1500+ learners",
+                        "6,000+ learners",
                         "Live mentorship",
                         "Certification support",
                         "Real-world projects",
