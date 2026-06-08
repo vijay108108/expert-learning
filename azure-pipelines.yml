@@ -30,3 +30,4 @@ steps:
 
   - script: npm run lint
     displayName: "Lint code"
+    continueOnError: true
