@@ -57,7 +57,7 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 remote_script=$(cat <<'EOF'
-                set -euo pipefail
+                set -eu
                 export DEBIAN_FRONTEND=noninteractive
 
                 log() {
@@ -65,7 +65,7 @@ stages:
                 }
 
                 run_step() {
-                  local label="$1"
+                  label="$1"
                   shift
                   log "START: ${label}"
                   "$@"
