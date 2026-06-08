@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2, Lock, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
 import { signInAnonymously } from "firebase/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { getFirebaseAuth, getUserProfile, type AppUserProfile } from "@/lib/firebase";
@@ -127,35 +127,36 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
   const { user, isAuthReady } = useAuth();
 
   /* PIN session check (fastest — no Firebase needed) */
-  const [pinAuth, setPinAuth] = useState(false);
-  const [pinChecked, setPinChecked] = useState(false);
+  const [pinAuth, setPinAuth] = useState(() => {
+    try {
+      return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
-    let pinGranted = false;
-    try {
-      pinGranted = sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
-      if (pinGranted) setPinAuth(true);
-    } catch { /* ignore */ }
-    setPinChecked(true);
-
-    /* If PIN was previously granted, ensure Firebase anon auth is active */
-    if (pinGranted) {
-      void (async () => {
-        try {
-          const auth = getFirebaseAuth();
-          if (auth && !auth.currentUser) {
-            await signInAnonymously(auth);
-          }
-        } catch { /* ignore */ }
-      })();
+    if (!pinAuth) {
+      return;
     }
-  }, []);
+
+    void (async () => {
+      try {
+        const auth = getFirebaseAuth();
+        if (auth && !auth.currentUser) {
+          await signInAnonymously(auth);
+        }
+      } catch { /* ignore */ }
+    })();
+  }, [pinAuth]);
 
   /* Firebase role check (secondary) */
   const [firebaseAdmin, setFirebaseAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!isAuthReady || !user) { setFirebaseAdmin(null); return; }
+    if (!isAuthReady || !user) {
+      return;
+    }
     let active = true;
     void (async () => {
       try {
@@ -167,15 +168,6 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
     })();
     return () => { active = false; };
   }, [isAuthReady, user]);
-
-  /* Still checking PIN session */
-  if (!pinChecked) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#060B14]">
-        <Loader2 className="h-6 w-6 animate-spin text-[#9333EA]" />
-      </div>
-    );
-  }
 
   /* Allow if: PIN authenticated OR Firebase admin */
   const allowed = pinAuth || firebaseAdmin === true;

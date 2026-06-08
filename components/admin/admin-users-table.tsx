@@ -22,7 +22,13 @@ export function AdminUsersTable() {
     }
   }
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, []);
 
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();

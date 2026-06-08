@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/lib/firebase";
 
 type Lesson = FirestoreLesson & { id: string };
+type LessonForm = FirestoreLesson & { scheduledAt?: string };
 
 const LESSON_TYPES: Array<{ value: FirestoreLesson["lessonType"]; label: string; icon: React.ElementType; color: string }> = [
   { value: "live",     label: "Live Class",      icon: Radio,     color: "text-[#EF4444]" },
@@ -21,7 +22,7 @@ const LESSON_TYPES: Array<{ value: FirestoreLesson["lessonType"]; label: string;
   { value: "quiz",     label: "Quiz",            icon: BookOpen,  color: "text-[#F59E0B]" },
 ];
 
-const emptyForm: FirestoreLesson = {
+const emptyForm: LessonForm = {
   courseSlug:  "",
   moduleId:    "",
   title:       "",
@@ -40,7 +41,7 @@ export function FirebaseLessonManager() {
   const [modules,    setModules]    = useState<Array<{ id: string; title: string }>>([]);
   const [moduleId,   setModuleId]   = useState("");
   const [lessons,    setLessons]    = useState<Lesson[]>([]);
-  const [form,       setForm]       = useState<FirestoreLesson>(emptyForm);
+  const [form,       setForm]       = useState<LessonForm>(emptyForm);
   const [editingId,  setEditingId]  = useState<string | null>(null);
   const [showForm,   setShowForm]   = useState(false);
   const [saving,     setSaving]     = useState(false);
@@ -70,8 +71,8 @@ export function FirebaseLessonManager() {
         const ls = (await listLessonsByCourse(courseSlug)) as Lesson[];
         if (!active) return;
         setLessons(ls.sort((a, b) => (a.order || 0) - (b.order || 0)));
-      } catch (err) {
-        if (active) setError("Firestore permission error — check Firebase security rules.");
+      } catch {
+        if (active) setError("Firestore permission error â€” check Firebase security rules.");
       }
     })();
     return () => { active = false; };
@@ -115,7 +116,7 @@ export function FirebaseLessonManager() {
       setEditingId(null);
       await reload();
     } catch {
-      setError("Save failed — check Firestore rules.");
+      setError("Save failed â€” check Firestore rules.");
     } finally {
       setSaving(false);
     }
@@ -145,7 +146,7 @@ export function FirebaseLessonManager() {
     <div className="space-y-4">
       {error && (
         <div className="flex items-start justify-between gap-3 rounded-xl border border-[#EF4444]/30 bg-[#FEF2F2]/10 px-4 py-3 text-[12px] text-[#EF4444]">
-          <span>⚠ {error}</span>
+          <span>âš  {error}</span>
           <button onClick={() => setError(null)}><X className="h-3.5 w-3.5" /></button>
         </div>
       )}
@@ -235,29 +236,29 @@ export function FirebaseLessonManager() {
                   className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50" />
               </div>
 
-              {/* URL field — label changes by type */}
+              {/* URL field â€” label changes by type */}
               {form.lessonType === "live" ? (
-                <Field label="🔴 Live Class Meeting Link (Zoom / Google Meet / Teams)"
+                <Field label="ðŸ”´ Live Class Meeting Link (Zoom / Google Meet / Teams)"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://meet.google.com/xxx-xxxx-xxx" />
               ) : form.lessonType === "youtube" ? (
-                <Field label="▶ YouTube Video URL"
+                <Field label="â–¶ YouTube Video URL"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://www.youtube.com/watch?v=xxxxx" />
               ) : form.lessonType === "pdf" ? (
-                <Field label="📄 PDF / Notes URL (Google Drive, Dropbox, Direct link)"
+                <Field label="ðŸ“„ PDF / Notes URL (Google Drive, Dropbox, Direct link)"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://drive.google.com/file/d/xxxx/view" />
               ) : form.lessonType === "lab" ? (
-                <Field label="🧪 Lab / Assignment URL"
+                <Field label="ðŸ§ª Lab / Assignment URL"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://github.com/your-org/lab-repo or assignment link" />
               ) : (
-                <Field label="🔗 Resource URL"
+                <Field label="ðŸ”— Resource URL"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://..." />
@@ -265,9 +266,9 @@ export function FirebaseLessonManager() {
 
               {/* Live class scheduled time */}
               {form.lessonType === "live" && (
-                <Field label="📅 Scheduled Date & Time (e.g. Sat 15 Jun, 7:00 PM IST)"
-                  value={(form as any).scheduledAt || ""}
-                  onChange={v => setForm(p => ({ ...p, scheduledAt: v } as any))}
+                <Field label="ðŸ“… Scheduled Date & Time (e.g. Sat 15 Jun, 7:00 PM IST)"
+                  value={form.scheduledAt || ""}
+                  onChange={v => setForm(p => ({ ...p, scheduledAt: v }))}
                   placeholder="Sat 15 Jun 2026, 7:00 PM IST" />
               )}
 
@@ -289,7 +290,7 @@ export function FirebaseLessonManager() {
                 <div>
                   <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#475569]">Status</label>
                   <select value={form.status || "draft"}
-                    onChange={e => setForm(p => ({ ...p, status: e.target.value as any }))}
+                    onChange={e => setForm(p => ({ ...p, status: e.target.value as FirestoreLesson["status"] }))}
                     className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white outline-none">
                     <option value="draft">Draft (hidden)</option>
                     <option value="published">Published (visible)</option>
@@ -300,8 +301,8 @@ export function FirebaseLessonManager() {
                   <select value={form.locked ? "locked" : "unlocked"}
                     onChange={e => setForm(p => ({ ...p, locked: e.target.value === "locked" }))}
                     className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white outline-none">
-                    <option value="unlocked">🔓 Unlocked (free)</option>
-                    <option value="locked">🔒 Locked (enrolled only)</option>
+                    <option value="unlocked">ðŸ”“ Unlocked (free)</option>
+                    <option value="locked">ðŸ”’ Locked (enrolled only)</option>
                   </select>
                 </div>
               </div>
@@ -315,7 +316,7 @@ export function FirebaseLessonManager() {
               <button onClick={handleSave} disabled={saving || !form.title.trim()}
                 className="flex items-center gap-2 rounded-xl bg-[#4F46E5] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#4338CA] disabled:opacity-60">
                 <Save className="h-4 w-4" />
-                {saving ? "Saving…" : editingId ? "Update Lesson" : "Add Lesson"}
+                {saving ? "Savingâ€¦" : editingId ? "Update Lesson" : "Add Lesson"}
               </button>
             </div>
           </div>
@@ -365,7 +366,7 @@ export function FirebaseLessonManager() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-[#64748B]">{lesson.duration || "—"}</td>
+                    <td className="px-4 py-3 text-[#64748B]">{lesson.duration || "â€”"}</td>
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                         lesson.status === "published"
@@ -400,8 +401,8 @@ export function FirebaseLessonManager() {
 
       {/* Upload guide */}
       <div className="rounded-xl border border-white/8 bg-white/4 px-4 py-3 text-[12px] text-[#475569]">
-        <p className="font-semibold text-[#64748B]">📎 How to add PDFs & Documents</p>
-        <p className="mt-1">Upload your file to <strong className="text-[#94A3B8]">Google Drive</strong> → right-click → Share → Anyone with link → Copy link. Paste the link in the PDF/Notes URL field above.</p>
+        <p className="font-semibold text-[#64748B]">ðŸ“Ž How to add PDFs & Documents</p>
+        <p className="mt-1">Upload your file to <strong className="text-[#94A3B8]">Google Drive</strong> â†’ right-click â†’ Share â†’ Anyone with link â†’ Copy link. Paste the link in the PDF/Notes URL field above.</p>
         <p className="mt-1">For <strong className="text-[#94A3B8]">live classes</strong>: Create a Zoom/Meet recurring session and paste the joining link. Students see it on the lesson page before the class starts.</p>
       </div>
     </div>
@@ -420,3 +421,4 @@ function Field({
     </div>
   );
 }
+

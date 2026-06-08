@@ -2,9 +2,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowRight, Award, Bot, Briefcase, CheckCircle2,
-  Clock3, GraduationCap, Layers, ShieldCheck,
-  Sparkles, Users2, X, Zap,
+  ArrowRight, Award, CheckCircle2,
+  GraduationCap, X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

@@ -9,11 +9,9 @@ import {
   Clock3,
   Code2,
   FolderKanban,
-  GraduationCap,
   Lock,
   Sparkles,
   Terminal,
-  Users2,
 } from "lucide-react";
 
 /* ─────────────────────── Types ─────────────────────────── */

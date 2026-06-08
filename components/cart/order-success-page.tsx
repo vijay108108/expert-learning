@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Download, Printer, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Printer, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -11,7 +11,6 @@ import {
   latestOrderStorageKey,
   type StoredOrderSuccess,
 } from "@/lib/order-success";
-import { siteConfig } from "@/lib/site-config";
 
 /* ── Seller block ── */
 const SELLER = {

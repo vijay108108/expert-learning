@@ -30,7 +30,13 @@ export function AdminLeadsTable() {
     } catch { /* ignore */ } finally { setLoading(false); }
   }
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, []);
 
   const filtered = leads.filter((l) => {
     const q = search.toLowerCase();

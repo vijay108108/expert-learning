@@ -6,7 +6,6 @@ import { DemoModalRoot } from "@/components/demo/demo-modal-root";
 import { AppChrome } from "@/components/layout/app-chrome";
 import { PwaProvider } from "@/components/pwa/pwa-provider";
 import { buildMetadata } from "@/lib/metadata";
-import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
 export const metadata: Metadata = {

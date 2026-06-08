@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AlertTriangle, CheckCircle2, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 import { getFirebaseDb } from "@/lib/firebase";
-import { collection, getDocs, deleteDoc, doc, writeBatch } from "firebase/firestore";
+import { collection, getDocs, writeBatch } from "firebase/firestore";
 
 /* ── Config ─────────────────────────────────────────────── */
 
@@ -227,7 +227,7 @@ export function AdminSettings() {
         <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-[#475569]">Admin Access</p>
         <p className="mb-3 text-[13px] text-[#64748B]">
           Set <code className="rounded bg-white/8 px-1 font-mono text-[12px] text-[#94A3B8]">ADMIN_EMAILS</code> in <code className="rounded bg-white/8 px-1 font-mono text-[12px] text-[#94A3B8]">.env.local</code> (comma-separated),
-          or set <code className="rounded bg-white/8 px-1 font-mono text-[12px] text-[#94A3B8]">role: "admin"</code> in Firestore <code className="rounded bg-white/8 px-1 font-mono text-[12px] text-[#94A3B8]">users</code> collection.
+          or set <code className="rounded bg-white/8 px-1 font-mono text-[12px] text-[#94A3B8]">role: &quot;admin&quot;</code> in Firestore <code className="rounded bg-white/8 px-1 font-mono text-[12px] text-[#94A3B8]">users</code> collection.
         </p>
       </div>
 

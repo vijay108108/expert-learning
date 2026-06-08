@@ -35,6 +35,11 @@ type CheckoutFormState = {
   companyName: string;
 };
 
+type CheckoutProfile = AppUserProfile & {
+  companyName?: string;
+  gstNumber?: string;
+};
+
 const initialState: CheckoutFormState = {
   phone: "",
   email: "",
@@ -83,7 +88,7 @@ function PaymentProcessingOverlay() {
             <ShieldCheck className="h-7 w-7 text-[#34D399]" />
           </div>
           <p className="mt-5 text-[17px] font-bold text-white">Processing Payment</p>
-          <p className="mt-1 text-[12px] text-[#64748B]">Please don't close this window</p>
+          <p className="mt-1 text-[12px] text-[#64748B]">Please don&apos;t close this window</p>
         </div>
 
         {/* Timeline */}
@@ -136,7 +141,7 @@ export function CartCheckoutForm() {
   const { user, isAuthReady, openAuthModal } = useAuth();
   const { clearCart, courses, hydrated, totalPaise } = useCart();
   const [form, setForm] = useState<CheckoutFormState>(initialState);
-  const [profile, setProfile] = useState<AppUserProfile | null>(null);
+  const [profile, setProfile] = useState<CheckoutProfile | null>(null);
   const [pending, setPending] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -174,15 +179,15 @@ export function CartCheckoutForm() {
 
     void (async () => {
       try {
-        const nextProfile = await getUserProfile(user.uid);
+        const nextProfile = await getUserProfile(user.uid) as CheckoutProfile;
 
         if (!active) {
           return;
         }
 
         setProfile(nextProfile);
-        const profileGst     = (nextProfile as any)?.gstNumber?.trim()     || "";
-        const profileCompany = (nextProfile as any)?.companyName?.trim()   || "";
+        const profileGst     = nextProfile?.gstNumber?.trim()     || "";
+        const profileCompany = nextProfile?.companyName?.trim()   || "";
         setForm((current) => ({
           ...current,
           phone:       current.phone       || nextProfile?.phone?.trim()  || authPhone,

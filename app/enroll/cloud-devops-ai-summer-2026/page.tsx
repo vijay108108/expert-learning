@@ -6,7 +6,7 @@ import {
   Download, Eye, GraduationCap, Loader2,
   Phone, ShieldCheck, Users2, X, Zap,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { getFirebaseAuth } from "@/lib/firebase";
@@ -92,8 +92,8 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
       const formatted = phone.startsWith("+") ? phone : `+91${phone.replace(/\D/g, "").slice(-10)}`;
       confirmRef.current = await signInWithPhoneNumber(auth, formatted, verifier);
       setStep("otp");
-    } catch (e: any) {
-      setError(e?.message || "Failed to send OTP. Try again.");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Failed to send OTP. Try again.");
     } finally {
       setPending(false);
     }
@@ -121,7 +121,7 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
       }
 
       setStep("done");
-    } catch (e: any) {
+    } catch {
       setError("Invalid OTP. Please try again.");
     } finally {
       setPending(false);
@@ -294,7 +294,7 @@ export default function SummerEnrollPage() {
                   <button
                     key={b.id}
                     type="button"
-                    onClick={() => setBatch(b.id as any)}
+                    onClick={() => setBatch(b.id as typeof batch)}
                     className={`rounded-2xl border-2 p-4 text-left transition ${
                       batch === b.id
                         ? `${b.color} shadow-md`
@@ -333,7 +333,7 @@ export default function SummerEnrollPage() {
 
             {/* What you build */}
             <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
-              <p className="text-[13px] font-bold uppercase tracking-wider text-[#4F46E5]">Capstone: What You'll Build</p>
+              <p className="text-[13px] font-bold uppercase tracking-wider text-[#4F46E5]">Capstone: What You&apos;ll Build</p>
               <p className="mt-2 text-[13px] text-[#475569]">
                 In Week 8, you deploy a <strong className="text-[#0F172A]">production-ready Azure environment</strong> — 100% using Terraform and Azure DevOps CI/CD:
               </p>

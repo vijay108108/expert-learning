@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  type Auth,
   type ConfirmationResult,
   EmailAuthProvider,
   fetchSignInMethodsForEmail,
@@ -118,22 +117,13 @@ function getFakeEmail(rawPhone: string) {
   return `${normalizedPhone}@genznext.app`;
 }
 
-function getFakeEmailCandidates(rawPhone: string) {
-  return getLegacyPhoneAuthCandidates(rawPhone).map((candidate) => `${candidate}@genznext.app`);
-}
-
-async function findExistingAuthEmail(auth: Auth, rawPhone: string) {
-  const primaryEmail = getFakeEmail(rawPhone);
-  const candidateEmails = getFakeEmailCandidates(rawPhone);
-
-  for (const candidateEmail of candidateEmails) {
-    const methods = await fetchSignInMethodsForEmail(auth, candidateEmail);
-    if (methods.length > 0) {
-      return { email: candidateEmail, methods };
-    }
+function getErrorCode(error: unknown): string {
+  if (!error || typeof error !== "object" || !("code" in error)) {
+    return "";
   }
 
-  return { email: primaryEmail, methods: [] as string[] };
+  const code = (error as { code?: unknown }).code;
+  return typeof code === "string" ? code : "";
 }
 
 function maskPhoneNumber(value: string) {
@@ -211,6 +201,16 @@ export function PhoneAuthFlow({
   const [showSignupGoToLogin, setShowSignupGoToLogin] = useState(false);
 
   const firebaseReady = isFirebaseConfigured();
+  const firebaseSetupKeys = [
+    "NEXT_PUBLIC_FIREBASE_API_KEY",
+    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+    "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
+    "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+    "NEXT_PUBLIC_FIREBASE_APP_ID",
+    "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID",
+    "NEXT_PUBLIC_FIREBASE_PHONE_AUTH_TEST_MODE",
+  ] as const;
   const otpCode = otp.join("");
   const isModal = variant === "modal";
   const formattedPhone = useMemo(() => formatPhoneForOtp(phone, countryCode), [countryCode, phone]);
@@ -386,6 +386,8 @@ export function PhoneAuthFlow({
   }, []);
 
   const logFirebaseAuthError = useCallback((_stage: string, _error: unknown) => {
+    void _stage;
+    void _error;
     // Intentionally no-op in production UI layer to avoid leaking auth internals.
   }, []);
 
@@ -568,7 +570,7 @@ export function PhoneAuthFlow({
       verifyOtpLockRef.current = false;
       setPending(false);
     }
-  }, [finishAuthSuccess, fullName, logFirebaseAuthError, mode, otpCode, resetOtpInputs]);
+  }, [finishAuthSuccess, fullName, logFirebaseAuthError, otpCode, resetOtpInputs]);
 
   useEffect(() => {
     if (activeTab !== "otp-login" || isForgotPasswordMode || step !== "otp" || pending) {
@@ -716,7 +718,7 @@ export function PhoneAuthFlow({
     try {
       await saveUserWhatsappNumber(googleUserIdRef.current, formattedGooglePhone);
       await finishAuthSuccess("Login successful!");
-    } catch (error) {
+    } catch {
       setFeedback("Unable to save your number right now. You can skip and continue.");
     } finally {
       setPending(false);
@@ -777,7 +779,7 @@ export function PhoneAuthFlow({
           break;
         } catch (err) {
           lastError = err;
-          const code = err && typeof err === "object" && "code" in err ? String((err as any).code) : "";
+          const code = getErrorCode(err);
           /* Wrong password on a real account → stop immediately */
           if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
             break;
@@ -791,9 +793,7 @@ export function PhoneAuthFlow({
         return;
       }
 
-      const code = lastError && typeof lastError === "object" && "code" in lastError
-        ? String((lastError as any).code)
-        : "";
+      const code = getErrorCode(lastError);
 
       if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
         setFeedback("Incorrect password. Please try again.");
@@ -803,7 +803,7 @@ export function PhoneAuthFlow({
         setFeedback(getSanitizedErrorMessage(code, getFirebaseAuthErrorMessage(lastError)));
       }
     } catch (error) {
-      const code = error && typeof error === "object" && "code" in error ? String((error as any).code) : "";
+      const code = getErrorCode(error);
       setFeedback(getSanitizedErrorMessage(code, getFirebaseAuthErrorMessage(error)));
     } finally {
       setPending(false);
@@ -907,8 +907,6 @@ export function PhoneAuthFlow({
       /* Skip fetchSignInMethodsForEmail — broken with email enumeration protection.
          Duplicate detection happens naturally: linkWithCredential throws
          auth/credential-already-in-use if the email is already registered. */
-      const normalizedSignupPhone = normalizePhoneForAuth(phone);
-
       const verified = await confirmationResult.confirm(otpCode);
       const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
       const signupEmail = getFakeEmail(verifiedPhone);
@@ -1480,8 +1478,20 @@ export function PhoneAuthFlow({
       </div>
 
       {!firebaseReady && (
-        <div className="mt-6 rounded-[16px] border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-3 text-sm text-[#4338CA]">
-          Firebase phone authentication is wired into the UI, but the Firebase public configuration is missing from the environment.
+        <div className="mt-6 rounded-[18px] border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-4 text-sm text-[#4338CA]">
+          <div className="font-semibold">Firebase setup required</div>
+          <p className="mt-1 leading-6">
+            Sign up, OTP login, and password login all depend on the Firebase public configuration being available in the
+            runtime environment.
+          </p>
+          <p className="mt-3 text-[12px] leading-5 text-[#4C1D95]">
+            Add these keys to your local `.env.local` or the VM app env file, then restart the app:
+          </p>
+          <div className="mt-3 grid gap-1 rounded-[14px] border border-[#DDD6FE] bg-white/70 p-3 text-[12px] font-mono text-[#312E81] sm:grid-cols-2">
+            {firebaseSetupKeys.map((key) => (
+              <div key={key}>{key}</div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -1676,7 +1686,20 @@ export function PhoneAuthFlow({
         ) : null}
 
         {showSignupState ? (
-          <>
+          !firebaseReady ? (
+            <div className="rounded-[18px] border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-sm text-[#475569]">
+              <div className="font-semibold text-[#0F172A]">Signup is paused until Firebase is configured</div>
+              <p className="mt-2 leading-6">
+                The form is intentionally disabled because the app cannot create accounts without Firebase auth and Firestore
+                access.
+              </p>
+              <p className="mt-3 text-[12px] leading-5 text-[#64748B]">
+                Once the Firebase public environment variables are present, refresh the app and the full signup flow will
+                work normally.
+              </p>
+            </div>
+          ) : (
+            <>
             {renderTextField({
               id: `password-signup-name-${variant}`,
               label: "Full Name",
@@ -1904,7 +1927,8 @@ export function PhoneAuthFlow({
                 )}
               </button>
             </div>
-          </>
+            </>
+          )
         ) : null}
 
         {showForgotPhoneState ? (

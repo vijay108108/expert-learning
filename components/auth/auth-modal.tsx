@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PhoneAuthFlow } from "@/components/auth/phone-auth-flow";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useAuth } from "@/hooks/use-auth";
@@ -12,6 +12,11 @@ export function AuthModal() {
   const { closeAuthModal, handleAuthSuccess, isModalOpen, modalMode, openAuthModal, redirectAfterAuth } = useAuth();
   const reducedMotion = useReducedMotion();
   const [isAuthBusy, setIsAuthBusy] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsAuthBusy(false);
+    closeAuthModal();
+  }, [closeAuthModal]);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -28,7 +33,6 @@ export function AuthModal() {
 
   useEffect(() => {
     if (!isModalOpen) {
-      setIsAuthBusy(false);
       return;
     }
 
@@ -40,12 +44,12 @@ export function AuthModal() {
         event.preventDefault();
         return;
       }
-      closeAuthModal();
+      handleClose();
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [closeAuthModal, isAuthBusy, isModalOpen]);
+  }, [handleClose, isAuthBusy, isModalOpen]);
 
   return (
     <AnimatePresence>
@@ -56,7 +60,7 @@ export function AuthModal() {
           exit={{ opacity: 0 }}
           transition={{ duration: reducedMotion ? 0.12 : 0.2 }}
           className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(15,23,42,0.45)] px-3 py-4 backdrop-blur-[8px] sm:px-4 sm:py-6"
-          onClick={isAuthBusy ? undefined : closeAuthModal}
+          onClick={isAuthBusy ? undefined : handleClose}
         >
           <motion.div
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 14, scale: 0.98 }}
@@ -68,7 +72,7 @@ export function AuthModal() {
           >
             <button
               type="button"
-              onClick={closeAuthModal}
+              onClick={handleClose}
               disabled={isAuthBusy}
               className="absolute top-4 right-4 z-20 inline-flex h-8 w-8 items-center justify-center rounded-[10px] border border-[rgba(226,232,240,0.8)] bg-[rgba(255,255,255,0.75)] text-[#64748B] backdrop-blur-[10px] transition hover:bg-white hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-55"
               aria-label="Close authentication modal"

@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import {
-  ArrowUpRight, BookOpenCheck, CreditCard,
-  GraduationCap, MessageSquare, TrendingUp, Users,
+  ArrowUpRight, BookOpenCheck,
+  GraduationCap, MessageSquare, Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   listAllEnrollments, listCourses, listLeads,
-  listUserProfiles, type AppUserProfile,
+  listUserProfiles, type AppUserProfile, type FirestoreLead,
 } from "@/lib/firebase";
 
 type Metric = { label: string; value: number | string; icon: React.ElementType; href: string; color: string };
@@ -29,8 +29,8 @@ export function AdminOverview() {
     { label: "Enrollments",      value: "—", icon: GraduationCap,  href: "/admin/enrollments", color: "text-[#60A5FA]" },
     { label: "Leads",            value: "—", icon: MessageSquare,  href: "/admin/leads",       color: "text-[#F59E0B]" },
   ]);
-  const [recentLeads, setRecentLeads]   = useState<any[]>([]);
-  const [recentUsers, setRecentUsers]   = useState<any[]>([]);
+  const [recentLeads, setRecentLeads]   = useState<Array<FirestoreLead & { id: string }>>([]);
+  const [recentUsers, setRecentUsers]   = useState<Array<AppUserProfile & { id: string; companyName?: string; gstNumber?: string }>>([]);
   const [loading, setLoading]           = useState(true);
 
   useEffect(() => {
@@ -50,8 +50,8 @@ export function AdminOverview() {
           { label: "Enrollments",    value: enrollments.length, icon: GraduationCap, href: "/admin/enrollments", color: "text-[#60A5FA]" },
           { label: "Leads",          value: leads.length,       icon: MessageSquare, href: "/admin/leads",       color: "text-[#F59E0B]" },
         ]);
-        setRecentLeads((leads as any[]).slice(0, 5));
-        setRecentUsers((users as any[]).slice(0, 5));
+        setRecentLeads((leads as Array<FirestoreLead & { id: string }>).slice(0, 5));
+        setRecentUsers((users as Array<AppUserProfile & { id: string; companyName?: string; gstNumber?: string }>).slice(0, 5));
       } catch { /* ignore */ } finally {
         if (active) setLoading(false);
       }
