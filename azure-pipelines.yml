@@ -56,8 +56,46 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
+                remote_script=$(cat <<'EOF'
+                set -euo pipefail
+                export DEBIAN_FRONTEND=noninteractive
+
+                log() {
+                  printf '\n[deploy] %s\n' "$1"
+                }
+
+                run_step() {
+                  local label="$1"
+                  shift
+                  log "START: ${label}"
+                  "$@"
+                  log "DONE:  ${label}"
+                }
+
+                cd /home/azureuser/expert-learning
+
+                run_step "git pull" timeout 5m git -c pull.ff=only pull --ff-only origin dev
+                run_step "npm ci" timeout 15m npm ci
+                run_step "npm run build" timeout 20m npm run build
+
+                log "START: pm2 restart"
+                set -a
+                source /home/azureuser/expert-learning/.env
+                set +a
+
+                if pm2 describe expert-learning >/dev/null 2>&1; then
+                  timeout 5m pm2 restart expert-learning --update-env
+                else
+                  timeout 5m pm2 start npm --name expert-learning -- start -- -p 3000
+                fi
+                log "DONE:  pm2 restart"
+
+                run_step "pm2 save" pm2 save
+                EOF
+                )
+
                 az vm run-command invoke \
                   --resource-group "$(RESOURCE_GROUP)" \
                   --name "$(DEV_VM_NAME)" \
                   --command-id RunShellScript \
-                  --scripts "sudo -u azureuser bash -lc 'cd /home/azureuser/expert-learning && git pull origin dev && npm ci && npm run build && set -a && source /home/azureuser/expert-learning/.env && set +a && pm2 restart expert-learning --update-env'"
+                  --scripts "$remote_script"
