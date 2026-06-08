@@ -1,4 +1,5 @@
 import { buildMetadata } from "@/lib/metadata";
+import { PrintButton } from "./PrintButton";
 
 export const metadata = buildMetadata({
   title: "Syllabus — Cloud, DevOps & AI Engineering Program | GenZNext",
@@ -155,12 +156,7 @@ export default function SyllabusPage() {
           <p className="text-[13px] font-bold text-[#0F172A]">Cloud, DevOps & AI Engineering Professional Program</p>
           <p className="text-[11px] text-[#64748B]">GenZNext Research & Training · Summer 2026</p>
         </div>
-        <button
-          onClick={() => typeof window !== "undefined" && window.print()}
-          className="rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-2 text-[13px] font-bold text-white"
-        >
-          ⬇ Download PDF
-        </button>
+        <PrintButton />
       </div>
 
       <div className="mx-auto max-w-4xl px-6 py-8 print:px-8 print:py-6">
