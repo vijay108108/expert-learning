@@ -1088,9 +1088,7 @@ export function PhoneAuthFlow({
       }
 
       const auth = getFirebaseAuth();
-      if (auth) {
-        await signOut(auth);
-        await signInWithEmailAndPassword(auth, forgotPasswordEmail, resetPasswordValue);
+      if (auth?.currentUser) {
         await signOut(auth);
       }
 

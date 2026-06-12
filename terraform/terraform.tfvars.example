@@ -1,0 +1,38 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+location                    = "centralindia"
+resource_group_name         = "genznext-rg"
+vnet_name                   = "genznext-vnet"
+vnet_address_space          = ["10.0.0.0/16"]
+subnet_name                 = "genznext-subnet"
+subnet_address_prefixes     = ["10.0.1.0/24"]
+network_security_group_name = "genznext-nsg"
+
+admin_username         = "azureuser"
+admin_ssh_public_key   = "ssh-rsa REPLACE_WITH_PUBLIC_KEY_ONLY"
+repository_url         = "https://github.com/vijay108108/expert-learning.git"
+application_port       = 3000
+vm_size                = "Standard_D2s_v3"
+
+common_tags = {
+  application = "expert-learning"
+  environment = "shared"
+  managed-by  = "terraform"
+}
+
+vms = {
+  dev = {
+    vm_name           = "dev-vm"
+    nic_name          = "dev-nic"
+    public_ip_name    = "dev-public-ip"
+    public_ip_address = "52.140.117.106"
+    deployment_branch = "dev"
+  }
+  prod = {
+    vm_name           = "prod-vm"
+    nic_name          = "prod-nic"
+    public_ip_name    = "prod-public-ip"
+    public_ip_address = "20.193.240.195"
+    deployment_branch = "main"
+  }
+}

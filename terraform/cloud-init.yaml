@@ -1,0 +1,143 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - curl
+  - wget
+  - git
+  - unzip
+  - ca-certificates
+  - gnupg
+  - build-essential
+  - ufw
+  - nginx
+  - certbot
+  - python3-certbot-nginx
+  - python3
+  - python3-pip
+
+write_files:
+  - path: /usr/local/bin/deploy-expert-learning
+    permissions: "0755"
+    owner: root:root
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      APP_USER="${admin_username}"
+      APP_DIR="/opt/expert-learning"
+      REPO_URL="${repository_url}"
+      APP_BRANCH="${app_branch}"
+      APP_PORT="${application_port}"
+      ENV_DIR="/etc/expert-learning"
+      ENV_FILE="$ENV_DIR/app.env"
+
+      mkdir -p "$ENV_DIR"
+      chown root:root "$ENV_DIR"
+      chmod 750 "$ENV_DIR"
+
+      if [ ! -f "$ENV_DIR/app.env.example" ]; then
+        cat > "$ENV_DIR/app.env.example" <<'ENVEOF'
+      NEXT_PUBLIC_SITE_URL=
+      NEXT_PUBLIC_FIREBASE_API_KEY=
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+      NEXT_PUBLIC_FIREBASE_APP_ID=
+      NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+      NEXT_PUBLIC_FIREBASE_PHONE_AUTH_TEST_MODE=
+      NEXT_PUBLIC_SUPABASE_URL=
+      NEXT_PUBLIC_SUPABASE_ANON_KEY=
+      SUPABASE_SERVICE_ROLE_KEY=
+      NEXT_PUBLIC_RAZORPAY_KEY_ID=
+      RAZORPAY_KEY_SECRET=
+      RAZORPAY_WEBHOOK_SECRET=
+      RESEND_API_KEY=
+      RESEND_FROM_EMAIL=
+      ADMISSIONS_EMAIL=
+      GMAIL_USER=
+      GMAIL_APP_PASSWORD=
+      TWILIO_ACCOUNT_SID=
+      TWILIO_AUTH_TOKEN=
+      TWILIO_WHATSAPP_FROM=
+      POSTHOG_KEY=
+      POSTHOG_HOST=
+      AIRTABLE_API_KEY=
+      AIRTABLE_BASE_ID=
+      AIRTABLE_TABLE_NAME=
+      ADMIN_EMAILS=
+      ADMIN_PHONES=
+      NEXT_PUBLIC_ADMIN_PIN=
+      ADMIN_SETUP_KEY=
+      ENVEOF
+        chmod 640 "$ENV_DIR/app.env.example"
+      fi
+
+      if ! command -v node >/dev/null 2>&1 || ! node --version | grep -q '^v22\.'; then
+        curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+        apt-get install -y nodejs
+      fi
+
+      npm install -g pm2
+
+      if [ ! -d "$APP_DIR/.git" ]; then
+        rm -rf "$APP_DIR"
+        git clone --branch "$APP_BRANCH" "$REPO_URL" "$APP_DIR"
+      else
+        git -C "$APP_DIR" fetch origin "$APP_BRANCH"
+        git -C "$APP_DIR" checkout "$APP_BRANCH"
+        git -C "$APP_DIR" pull --ff-only origin "$APP_BRANCH"
+      fi
+
+      chown -R "$APP_USER:$APP_USER" "$APP_DIR"
+
+      if [ ! -f "$ENV_FILE" ]; then
+        echo "Missing $ENV_FILE. Copy $ENV_DIR/app.env.example to $ENV_FILE, fill real values, then rerun deploy-expert-learning." >&2
+        exit 0
+      fi
+
+      install -o "$APP_USER" -g "$APP_USER" -m 600 "$ENV_FILE" "$APP_DIR/.env.production"
+
+      sudo -u "$APP_USER" bash -lc "cd '$APP_DIR' && npm ci"
+      sudo -u "$APP_USER" bash -lc "cd '$APP_DIR' && npm run build"
+      sudo -u "$APP_USER" bash -lc "cd '$APP_DIR' && pm2 start npm --name expert-learning -- start -- -p '$APP_PORT' || pm2 restart expert-learning"
+      sudo -u "$APP_USER" bash -lc "pm2 save"
+
+      env PATH="$PATH:/usr/bin" pm2 startup systemd -u "$APP_USER" --hp "/home/$APP_USER" || true
+
+      cat > /etc/nginx/sites-available/expert-learning <<NGINXEOF
+      server {
+          listen 80 default_server;
+          listen [::]:80 default_server;
+          server_name _;
+
+          client_max_body_size 25m;
+
+          location / {
+              proxy_pass http://127.0.0.1:$APP_PORT;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade \\$http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_set_header Host \\$host;
+              proxy_set_header X-Real-IP \\$remote_addr;
+              proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto \\$scheme;
+              proxy_cache_bypass \\$http_upgrade;
+          }
+      }
+      NGINXEOF
+
+      rm -f /etc/nginx/sites-enabled/default
+      ln -sf /etc/nginx/sites-available/expert-learning /etc/nginx/sites-enabled/expert-learning
+      nginx -t
+      systemctl enable nginx
+      systemctl reload nginx
+
+      ufw allow OpenSSH
+      ufw allow "Nginx Full"
+      ufw --force enable
+
+runcmd:
+  - [bash, -lc, "/usr/local/bin/deploy-expert-learning"]
