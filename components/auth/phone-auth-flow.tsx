@@ -42,6 +42,7 @@ import {
   isFirebaseConfigured,
   isLocalPhoneAuthHost,
   isPhoneAuthTestingEnabled,
+  isRetryablePhoneVerificationError,
   normalizePhoneForAuth,
   preparePhoneAuth,
   recaptchaContainerId,
@@ -62,6 +63,8 @@ const countryCodes = [
 
 const otpLength = 6;
 const resendWindowSeconds = 30;
+const phoneOtpRequestTimeoutMs = 30000;
+const phoneOtpRetryDelayMs = 250;
 
 type AuthStep = "phone" | "otp" | "google-phone";
 type AuthTab = "otp-login" | "password-login" | "signup";
@@ -139,6 +142,31 @@ function maskPhoneNumber(value: string) {
 
 function getInitialTab(mode: PhoneAuthFlowProps["mode"]): AuthTab {
   return mode === "signup" ? "signup" : "password-login";
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string) {
+  let timer: number | null = null;
+
+  const timeout = new Promise<T>((_, reject) => {
+    timer = window.setTimeout(() => {
+      reject(new Error(timeoutMessage));
+    }, timeoutMs);
+  });
+
+  return Promise.race([
+    promise.finally(() => {
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+    }),
+    timeout,
+  ]) as Promise<T>;
+}
+
+function delay(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
 }
 
 export function PhoneAuthFlow({
@@ -469,65 +497,85 @@ export function PhoneAuthFlow({
     setSuccessMessage(null);
 
     try {
-      const auth = getFirebaseAuth();
-      if (!auth) {
-        throw new Error("Firebase auth is not available.");
-      }
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const auth = getFirebaseAuth();
+        if (!auth) {
+          throw new Error("Firebase auth is not available.");
+        }
 
-      if (isLocalPhoneAuthHost() && !isPhoneAuthTestingEnabled()) {
-        setStepError(
-          "Real Firebase phone OTP is not supported on localhost. Use Google sign-in, deploy to a real domain, or enable Firebase test phone auth for local development.",
-        );
-        return;
-      }
+        if (isLocalPhoneAuthHost() && !isPhoneAuthTestingEnabled()) {
+          setStepError(
+            "Real Firebase phone OTP is not supported on localhost. Use Google sign-in, deploy to a real domain, or enable Firebase test phone auth for local development.",
+          );
+          return;
+        }
 
-      preparePhoneAuth(auth);
+        preparePhoneAuth(auth);
 
-      clearRecaptcha(recaptchaHostRef.current);
-      recaptchaVerifierRef.current = null;
-      const recaptchaMountPoint = createRecaptchaMountPoint();
+        clearRecaptcha(recaptchaHostRef.current);
+        recaptchaVerifierRef.current = null;
+        const recaptchaMountPoint = createRecaptchaMountPoint();
 
-      const verifier = getRecaptchaVerifier(auth, recaptchaMountPoint);
-      recaptchaVerifierRef.current = verifier;
+        const verifier = getRecaptchaVerifier(auth, recaptchaMountPoint);
+        recaptchaVerifierRef.current = verifier;
 
-      confirmationResultRef.current = await signInWithPhoneNumber(auth, formattedPhone, verifier);
-      setStep("otp");
-      setOtpError(null);
-      resetOtpInputs();
-      setResendTimer(resendWindowSeconds);
-      setSuccessMessage(isResend ? "A fresh OTP has been sent." : "OTP sent successfully.");
-      window.setTimeout(() => {
-        otpInputRefs.current[0]?.focus();
-      }, 40);
-    } catch (error) {
-      logFirebaseAuthError("sendOtp", error);
-      const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+        try {
+          confirmationResultRef.current = await withTimeout(
+            signInWithPhoneNumber(auth, formattedPhone, verifier),
+            phoneOtpRequestTimeoutMs,
+            "OTP request timed out. Please try again.",
+          );
+          setStep("otp");
+          setOtpError(null);
+          resetOtpInputs();
+          setResendTimer(resendWindowSeconds);
+          setSuccessMessage(isResend ? "A fresh OTP has been sent." : "OTP sent successfully.");
+          window.setTimeout(() => {
+            otpInputRefs.current[0]?.focus();
+          }, 40);
+          return;
+        } catch (error) {
+          logFirebaseAuthError("sendOtp", error);
+          const code =
+            error && typeof error === "object" && "code" in error
+              ? String((error as { code?: unknown }).code)
+              : error instanceof Error && error.message === "OTP request timed out. Please try again."
+                ? "auth/network-request-failed"
+                : "";
 
-      if (code === "auth/too-many-requests" || code === "auth/quota-exceeded") {
-        setRateLimitSeconds(60);
-      }
+          if (code === "auth/too-many-requests" || code === "auth/quota-exceeded") {
+            setRateLimitSeconds(60);
+          }
 
-      clearRecaptcha(recaptchaHostRef.current);
-      recaptchaVerifierRef.current = null;
+          clearRecaptcha(recaptchaHostRef.current);
+          recaptchaVerifierRef.current = null;
 
-      const isLocalhost = isLocalPhoneAuthHost();
+          if (attempt === 0 && isRetryablePhoneVerificationError(error)) {
+            await delay(phoneOtpRetryDelayMs);
+            continue;
+          }
 
-      if (code === "auth/invalid-phone-number") {
-        setStepError("Invalid phone number. Use a valid 10-digit mobile number.", isResend ? "otp" : "phone");
-      } else if (code === "auth/too-many-requests") {
-        setStepError("Too many attempts. Please wait a few minutes and try again.", isResend ? "otp" : "phone");
-      } else if (
-        (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential")
-        && isLocalhost
-      ) {
-        setStepError(
-          "OTP is blocked on localhost. Fix in Firebase Console (choose one): " +
-          "(A) Authentication → Sign-in method → Phone → Test phone numbers → add your number with code 123456. " +
-          "(B) Authentication → Settings → Authorized domains → add 'localhost'.",
-          isResend ? "otp" : "phone",
-        );
-      } else {
-        setStepError(getFirebaseAuthErrorMessage(error), isResend ? "otp" : "phone");
+          const isLocalhost = isLocalPhoneAuthHost();
+
+          if (code === "auth/invalid-phone-number") {
+            setStepError("Invalid phone number. Use a valid 10-digit mobile number.", isResend ? "otp" : "phone");
+          } else if (code === "auth/too-many-requests") {
+            setStepError("Too many attempts. Please wait a few minutes and try again.", isResend ? "otp" : "phone");
+          } else if (
+            (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential")
+            && isLocalhost
+          ) {
+            setStepError(
+              "OTP is blocked on localhost. Fix in Firebase Console (choose one): " +
+              "(A) Authentication â†’ Sign-in method â†’ Phone â†’ Test phone numbers â†’ add your number with code 123456. " +
+              "(B) Authentication â†’ Settings â†’ Authorized domains â†’ add 'localhost'.",
+              isResend ? "otp" : "phone",
+            );
+          } else {
+            setStepError(getFirebaseAuthErrorMessage(error), isResend ? "otp" : "phone");
+          }
+          return;
+        }
       }
     } finally {
       sendOtpLockRef.current = false;
@@ -559,7 +607,11 @@ export function PhoneAuthFlow({
     try {
       const result = await confirmationResult.confirm(otpCode);
 
-      await ensurePhoneUserProfile(result.user, fullName);
+      try {
+        await ensurePhoneUserProfile(result.user, fullName);
+      } catch {
+        // Firestore profile sync is best-effort.
+      }
       await finishAuthSuccess("Login successful!");
     } catch (error) {
       autoVerifyRef.current = null;
@@ -675,11 +727,21 @@ export function PhoneAuthFlow({
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const signedInUser = result.user;
-      await upsertGoogleUserProfile(signedInUser);
-      const userDoc = await getUserProfile(signedInUser.uid);
-      const savedPhone = userDoc?.phone?.trim() || "";
+      try {
+        await upsertGoogleUserProfile(signedInUser);
+      } catch {
+        // Google profile sync is best-effort and must not block platform entry.
+      }
 
-      if (savedPhone) {
+      try {
+        const userDoc = await getUserProfile(signedInUser.uid);
+        const savedPhone = userDoc?.phone?.trim() || "";
+
+        if (savedPhone) {
+          await finishAuthSuccess("Login successful!");
+          return;
+        }
+      } catch {
         await finishAuthSuccess("Login successful!");
         return;
       }
@@ -716,10 +778,14 @@ export function PhoneAuthFlow({
     setFeedback(null);
 
     try {
-      await saveUserWhatsappNumber(googleUserIdRef.current, formattedGooglePhone);
+      try {
+        await saveUserWhatsappNumber(googleUserIdRef.current, formattedGooglePhone);
+      } catch {
+        // Optional metadata save failed; do not block the session.
+      }
       await finishAuthSuccess("Login successful!");
     } catch {
-      setFeedback("Unable to save your number right now. You can skip and continue.");
+      await finishAuthSuccess("Login successful!");
     } finally {
       setPending(false);
     }
@@ -916,16 +982,20 @@ export function PhoneAuthFlow({
         displayName: fullName.trim(),
       });
 
-      await setDoc(doc(db, "users", linked.user.uid), {
-        uid: linked.user.uid,
-        name: fullName.trim(),
-        phone: verifiedPhone,
-        authMethod: "password",
-        createdAt: new Date().toISOString(),
-        ...(billingCompany.trim() && { companyName: billingCompany.trim() }),
-        ...(billingGst.trim()     && { gstNumber: billingGst.trim().toUpperCase() }),
-        ...(billingAddress.trim() && { billingAddress: billingAddress.trim() }),
-      }, { merge: true });
+      try {
+        await setDoc(doc(db, "users", linked.user.uid), {
+          uid: linked.user.uid,
+          name: fullName.trim(),
+          phone: verifiedPhone,
+          authMethod: "password",
+          createdAt: new Date().toISOString(),
+          ...(billingCompany.trim() && { companyName: billingCompany.trim() }),
+          ...(billingGst.trim()     && { gstNumber: billingGst.trim().toUpperCase() }),
+          ...(billingAddress.trim() && { billingAddress: billingAddress.trim() }),
+        }, { merge: true });
+      } catch {
+        // Firestore profile sync is best-effort; auth success must not be blocked.
+      }
 
       setSignupStep("form");
       setStep("phone");
@@ -1089,7 +1159,12 @@ export function PhoneAuthFlow({
 
       const auth = getFirebaseAuth();
       if (auth?.currentUser) {
-        await signOut(auth);
+        try {
+          await signOut(auth);
+        } catch {
+          // Signing out is a cleanup step here; a browser-specific auth state
+          // hiccup should not turn a successful password update into a failure.
+        }
       }
 
       const latestPhone = normalizePhoneForAuth(resetUser.phoneNumber || phone);
@@ -1117,7 +1192,7 @@ export function PhoneAuthFlow({
       } else if (code === "auth/user-not-found") {
         setFeedback("No account found with this number. Please sign up first.");
       } else if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
-        setFeedback("Password updated, but validation login failed. Please try logging in again.");
+        setFeedback("Password reset could not be completed. Please request OTP again and try once more.");
       } else {
         setFeedback(getSanitizedErrorMessage(code, "Password update failed. Please try again."));
       }

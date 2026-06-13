@@ -38,6 +38,24 @@ export function preparePhoneAuth(auth: Auth) {
     isLocalPhoneAuthHost() && isPhoneAuthTestingEnabled();
 }
 
+const retryablePhoneVerificationErrors = new Set([
+  "auth/captcha-check-failed",
+  "auth/invalid-app-credential",
+  "auth/missing-app-credential",
+  "auth/network-request-failed",
+  "auth/internal-error",
+  "auth/unauthorized-domain",
+]);
+
+export function isRetryablePhoneVerificationError(error: unknown) {
+  if (!error || typeof error !== "object" || !("code" in error)) {
+    return false;
+  }
+
+  const code = (error as { code?: unknown }).code;
+  return typeof code === "string" && retryablePhoneVerificationErrors.has(code);
+}
+
 function resolveRecaptchaContainer(container?: string | HTMLElement | null) {
   if (typeof window === "undefined") {
     throw new Error("reCAPTCHA can only be initialized in the browser.");

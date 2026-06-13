@@ -8,11 +8,13 @@ import {
   type User,
 } from "firebase/auth";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AuthContext, type AuthContextValue, type AuthModalMode } from "@/components/auth/auth-context";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(() => !isFirebaseConfigured());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,13 +62,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     redirectTo = "/dashboard",
     onAuthenticated?: (() => void | Promise<void>) | null,
   ) => {
+    const auth = getFirebaseAuth();
+    const activeUser = auth?.currentUser || user;
+
+    if (isAuthReady && activeUser) {
+      setIsModalOpen(false);
+      setPendingAuthAction(null);
+      router.replace(redirectTo);
+      return;
+    }
+
     setModalMode(mode);
     setRedirectAfterAuth(redirectTo);
     if (onAuthenticated !== undefined) {
       setPendingAuthAction(() => onAuthenticated ?? null);
     }
     setIsModalOpen(true);
-  }, []);
+  }, [isAuthReady, router, user]);
 
   const closeAuthModal = useCallback(() => {
     setIsModalOpen(false);
@@ -92,9 +104,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    await signOut(auth);
-    setUser(null);
+    try {
+      await signOut(auth);
+    } finally {
+      setUser(null);
+      setPendingAuthAction(null);
+      setIsModalOpen(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!isAuthReady || !isModalOpen) {
+      return;
+    }
+
+    const auth = getFirebaseAuth();
+    const activeUser = auth?.currentUser || user;
+
+    if (!activeUser) {
+      return;
+    }
+
+    const redirectTimer = window.setTimeout(() => {
+      setIsModalOpen(false);
+      setPendingAuthAction(null);
+      router.replace(redirectAfterAuth);
+    }, 0);
+
+    return () => window.clearTimeout(redirectTimer);
+  }, [isAuthReady, isModalOpen, redirectAfterAuth, router, user]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
