@@ -46,7 +46,9 @@ import {
   normalizePhoneForAuth,
   preparePhoneAuth,
   recaptchaContainerId,
+  releasePhoneSignupReservation,
   saveUserWhatsappNumber,
+  reservePhoneSignup,
   upsertGoogleUserProfile,
 } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
@@ -931,6 +933,7 @@ export function PhoneAuthFlow({
   async function handleSignupVerifyAndCreate() {
     const auth = getFirebaseAuth();
     const db = getFirebaseDb();
+    let reservedPhone: string | null = null;
 
     if (!auth || !db) {
       setFeedback("Firebase auth is not available right now.");
@@ -975,12 +978,17 @@ export function PhoneAuthFlow({
          auth/credential-already-in-use if the email is already registered. */
       const verified = await confirmationResult.confirm(otpCode);
       const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
+      reservedPhone = await reservePhoneSignup(verifiedPhone, verified.user.uid);
       const signupEmail = getFakeEmail(verifiedPhone);
       const credential = EmailAuthProvider.credential(signupEmail, signupPassword);
       const linked = await linkWithCredential(verified.user, credential);
-      await updateProfile(linked.user, {
-        displayName: fullName.trim(),
-      });
+      try {
+        await updateProfile(linked.user, {
+          displayName: fullName.trim(),
+        });
+      } catch {
+        // Profile decoration is best-effort; auth success must not be blocked.
+      }
 
       try {
         await setDoc(doc(db, "users", linked.user.uid), {
@@ -1004,11 +1012,20 @@ export function PhoneAuthFlow({
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
 
-      if (code === "auth/email-already-in-use") {
-        setFeedback("This mobile number is already registered.");
-        setShowSignupGoToLogin(true);
-      } else if (code === "auth/credential-already-in-use") {
-        setFeedback("This mobile number is already registered.");
+      if (reservedPhone) {
+        try {
+          await releasePhoneSignupReservation(reservedPhone);
+        } catch {
+          // If cleanup fails, keep the reservation as a conservative duplicate guard.
+        }
+      }
+
+      if (
+        code === "auth/email-already-in-use" ||
+        code === "auth/credential-already-in-use" ||
+        code === "auth/phone-number-already-in-use"
+      ) {
+        setFeedback("An account already exists with this phone number. Please log in instead.");
         setShowSignupGoToLogin(true);
       } else if (code === "auth/invalid-verification-code") {
         setOtpError("Invalid OTP. Please try again.");
