@@ -182,7 +182,7 @@ export function PhoneAuthFlow({
   onPendingChange,
 }: PhoneAuthFlowProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAuthReady } = useAuth();
   const confirmationResultRef = useRef<ConfirmationResult | null>(null);
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaHostRef = useRef<HTMLDivElement | null>(null);
@@ -1617,6 +1617,33 @@ export function PhoneAuthFlow({
   const showForgotPhoneState = activeTab === "password-login" && isForgotPasswordMode && forgotPasswordStep === "phone";
   const showForgotOtpState = activeTab === "password-login" && isForgotPasswordMode && forgotPasswordStep === "otp";
   const showForgotResetState = activeTab === "password-login" && isForgotPasswordMode && forgotPasswordStep === "reset";
+  const shouldRedirectSignedInSignupUser = mode === "signup" && isAuthReady && Boolean(user);
+
+  useEffect(() => {
+    if (!shouldRedirectSignedInSignupUser) {
+      return;
+    }
+
+    confirmationResultRef.current = null;
+    clearRecaptcha(recaptchaHostRef.current);
+    recaptchaVerifierRef.current = null;
+
+    if (isModal) {
+      onClose?.();
+    }
+
+    router.replace(redirectTo);
+  }, [
+    isModal,
+    onClose,
+    redirectTo,
+    router,
+    shouldRedirectSignedInSignupUser,
+  ]);
+
+  if (shouldRedirectSignedInSignupUser) {
+    return null;
+  }
 
   return (
     <div

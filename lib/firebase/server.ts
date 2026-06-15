@@ -77,6 +77,20 @@ export async function checkSignupPhoneExists(phone: string) {
     }
   }
 
+  if (candidates.length) {
+    const legacyClaimSnapshot = await getDocs(
+      query(collection(db, "phone-signup-claims"), where("phone", "in", candidates.slice(0, 10)), limit(1)),
+    );
+
+    if (!legacyClaimSnapshot.empty) {
+      return {
+        exists: true,
+        source: "phone-signup-claims" as const,
+        normalizedPhone,
+      };
+    }
+  }
+
   if (!candidates.length) {
     return { exists: false, source: "users" as const, normalizedPhone };
   }

@@ -38,6 +38,25 @@ function duplicatePhoneError() {
   return error;
 }
 
+async function hasPhoneSignupClaim(phone: string) {
+  const db = getFirebaseDb();
+
+  if (!db) {
+    return false;
+  }
+
+  const candidates = getPhoneLookupCandidates(phone);
+  if (!candidates.length) {
+    return false;
+  }
+
+  const snapshot = await getDocs(
+    query(collection(db, phoneSignupClaimsCollection), where("phone", "in", candidates.slice(0, 10)), limit(1)),
+  );
+
+  return !snapshot.empty;
+}
+
 export async function getUserProfile(uid: string) {
   const db = getFirebaseDb();
 
@@ -84,6 +103,10 @@ export async function reservePhoneSignup(phone: string, uid: string) {
   const normalizedPhone = getNormalizedPhoneKey(phone);
   if (!normalizedPhone) {
     throw new Error("Enter a valid phone number to continue.");
+  }
+
+  if (await hasPhoneSignupClaim(normalizedPhone)) {
+    throw duplicatePhoneError();
   }
 
   const existingProfile = await getUserProfileByPhone(normalizedPhone);
