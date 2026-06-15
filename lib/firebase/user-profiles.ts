@@ -3,7 +3,7 @@
 import { type User } from "firebase/auth";
 import { collection, doc, getDoc, getDocs, limit, query, runTransaction, setDoc, updateDoc, where } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase";
-import { normalizePhoneForAuth } from "./phone-auth";
+import { getPhoneLookupCandidates, normalizePhoneForAuth } from "./phone-utils";
 
 export type AppUserProfile = {
   uid: string;
@@ -62,8 +62,13 @@ export async function getUserProfileByPhone(phone: string) {
     return null;
   }
 
+  const candidates = getPhoneLookupCandidates(normalizedPhone);
+  if (!candidates.length) {
+    return null;
+  }
+
   const snapshot = await getDocs(
-    query(collection(db, "users"), where("phone", "==", normalizedPhone), limit(1)),
+    query(collection(db, "users"), where("phone", "in", candidates.slice(0, 10)), limit(1)),
   );
 
   return snapshot.empty ? null : (snapshot.docs[0]?.data() as AppUserProfile);

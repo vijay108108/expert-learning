@@ -90,6 +90,7 @@ export * from "./firebase/lms-activity";
 export * from "./firebase/modules";
 export * from "./firebase/payments";
 export * from "./firebase/phone-auth";
+export * from "./firebase/signup-validation";
 export * from "./firebase/progress";
 export * from "./firebase/resources";
 export * from "./firebase/user-profiles";

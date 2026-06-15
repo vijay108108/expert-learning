@@ -50,6 +50,7 @@ import {
   releasePhoneSignupReservation,
   saveUserWhatsappNumber,
   reservePhoneSignup,
+  checkSignupPhoneAvailability,
   upsertGoogleUserProfile,
 } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
@@ -906,6 +907,24 @@ export function PhoneAuthFlow({
       return;
     }
 
+    try {
+      const phoneCheck = await checkSignupPhoneAvailability(formattedPhone);
+      if (phoneCheck.exists) {
+        clearRecaptcha(recaptchaHostRef.current);
+        recaptchaVerifierRef.current = null;
+        confirmationResultRef.current = null;
+        setFeedback("Account already exists. Please login instead.");
+        setShowSignupGoToLogin(true);
+        setSignupStep("form");
+        setStep("phone");
+        resetOtpInputs();
+        return;
+      }
+    } catch (error) {
+      setFeedback(getFirebaseAuthErrorMessage(error));
+      return;
+    }
+
     await sendOtp(false);
     if (confirmationResultRef.current) {
       setSignupStep("otp");
@@ -980,6 +999,36 @@ export function PhoneAuthFlow({
          auth/credential-already-in-use if the email is already registered. */
       const verified = await confirmationResult.confirm(otpCode);
       const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
+
+      try {
+        const phoneCheck = await checkSignupPhoneAvailability(verifiedPhone);
+        if (phoneCheck.exists) {
+          try {
+            await signOut(auth);
+          } catch {
+            // If sign-out fails, the auth session will still be replaced by the next login attempt.
+          }
+
+          clearRecaptcha(recaptchaHostRef.current);
+          recaptchaVerifierRef.current = null;
+          setSignupStep("form");
+          setStep("phone");
+          resetOtpInputs();
+          confirmationResultRef.current = null;
+          setFeedback("Account already exists. Please login instead.");
+          setShowSignupGoToLogin(true);
+          return;
+        }
+      } catch (lookupError) {
+        try {
+          await signOut(auth);
+        } catch {
+          // Keep going only if we can safely validate the signup path.
+        }
+
+        throw lookupError;
+      }
+
       reservedPhone = await reservePhoneSignup(verifiedPhone, verified.user.uid);
       const signupEmail = getFakeEmail(verifiedPhone);
       const credential = EmailAuthProvider.credential(signupEmail, signupPassword);
@@ -1029,6 +1078,17 @@ export function PhoneAuthFlow({
         code === "auth/credential-already-in-use" ||
         code === "auth/phone-number-already-in-use"
       ) {
+        try {
+          await signOut(auth);
+        } catch {
+          // Keep the user on the login path even if sign-out fails.
+        }
+        clearRecaptcha(recaptchaHostRef.current);
+        recaptchaVerifierRef.current = null;
+        confirmationResultRef.current = null;
+        setSignupStep("form");
+        setStep("phone");
+        resetOtpInputs();
         setFeedback("An account already exists with this phone number. Please log in instead.");
         setShowSignupGoToLogin(true);
       } else if (code === "auth/invalid-verification-code") {
