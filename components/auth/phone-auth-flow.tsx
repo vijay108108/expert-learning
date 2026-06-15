@@ -472,6 +472,24 @@ export function PhoneAuthFlow({
     }, 1000);
   }, [onClose, onSuccess, redirectTo, router]);
 
+  async function ensureSignupPhoneCanRequestOtp() {
+    const phoneCheck = await checkSignupPhoneAvailability(formattedPhone);
+    if (!phoneCheck.exists) {
+      return true;
+    }
+
+    clearRecaptcha(recaptchaHostRef.current);
+    recaptchaVerifierRef.current = null;
+    confirmationResultRef.current = null;
+    console.info("[Auth Signup] duplicate signup blocked before OTP", { phone: phoneCheck.normalizedPhone });
+    setFeedback("An account already exists with this phone number. Please log in instead.");
+    setShowSignupGoToLogin(true);
+    setSignupStep("form");
+    setStep("phone");
+    resetOtpInputs();
+    return false;
+  }
+
   async function sendOtp(isResend = false) {
     if (sendOtpLockRef.current) {
       return;
@@ -494,6 +512,13 @@ export function PhoneAuthFlow({
     if (rateLimitSeconds > 0) {
       setStepError(`Firebase temporarily blocked OTP requests. Try again in ${rateLimitSeconds}s.`, isResend ? "otp" : "phone");
       return;
+    }
+
+    if (activeTab === "signup" && !isResend) {
+      const canRequestOtp = await ensureSignupPhoneCanRequestOtp();
+      if (!canRequestOtp) {
+        return;
+      }
     }
 
     sendOtpLockRef.current = true;
@@ -919,17 +944,8 @@ export function PhoneAuthFlow({
     setSignupLookupPending(true);
 
     try {
-      const phoneCheck = await checkSignupPhoneAvailability(formattedPhone);
-      if (phoneCheck.exists) {
-        clearRecaptcha(recaptchaHostRef.current);
-        recaptchaVerifierRef.current = null;
-        confirmationResultRef.current = null;
-        console.info("[Auth Signup] duplicate signup blocked before OTP", { phone: phoneCheck.normalizedPhone });
-        setFeedback("User already exists. Please login instead.");
-        setShowSignupGoToLogin(true);
-        setSignupStep("form");
-        setStep("phone");
-        resetOtpInputs();
+      const canRequestOtp = await ensureSignupPhoneCanRequestOtp();
+      if (!canRequestOtp) {
         return;
       }
     } catch (error) {
