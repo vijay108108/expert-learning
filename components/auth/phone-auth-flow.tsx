@@ -231,6 +231,7 @@ export function PhoneAuthFlow({
   const [resetUser, setResetUser] = useState<User | null>(null);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [showSignupGoToLogin, setShowSignupGoToLogin] = useState(false);
+  const [signupLookupPending, setSignupLookupPending] = useState(false);
 
   const firebaseReady = isFirebaseConfigured();
   const firebaseSetupKeys = [
@@ -529,6 +530,9 @@ export function PhoneAuthFlow({
             phoneOtpRequestTimeoutMs,
             "OTP request timed out. Please try again.",
           );
+          if (activeTab === "signup") {
+            console.info("[Auth Signup] OTP sent for new signup", { phone: formattedPhone, resend: isResend });
+          }
           setStep("otp");
           setOtpError(null);
           resetOtpInputs();
@@ -686,6 +690,7 @@ export function PhoneAuthFlow({
     setCountryCode(nextTab === "otp-login" ? countryCode : "+91");
     clearResetState();
     resetOtpStep();
+    setSignupLookupPending(false);
     setLoginPassword("");
     setSignupPassword("");
     setSignupConfirmPassword("");
@@ -886,6 +891,10 @@ export function PhoneAuthFlow({
       return;
     }
 
+    if (signupLookupPending || pending) {
+      return;
+    }
+
     if (fullName.trim().length < 2) {
       setFeedback("Enter your full name to continue.");
       return;
@@ -907,13 +916,16 @@ export function PhoneAuthFlow({
       return;
     }
 
+    setSignupLookupPending(true);
+
     try {
       const phoneCheck = await checkSignupPhoneAvailability(formattedPhone);
       if (phoneCheck.exists) {
         clearRecaptcha(recaptchaHostRef.current);
         recaptchaVerifierRef.current = null;
         confirmationResultRef.current = null;
-        setFeedback("Account already exists. Please login instead.");
+        console.info("[Auth Signup] duplicate signup blocked before OTP", { phone: phoneCheck.normalizedPhone });
+        setFeedback("User already exists. Please login instead.");
         setShowSignupGoToLogin(true);
         setSignupStep("form");
         setStep("phone");
@@ -923,6 +935,8 @@ export function PhoneAuthFlow({
     } catch (error) {
       setFeedback(getFirebaseAuthErrorMessage(error));
       return;
+    } finally {
+      setSignupLookupPending(false);
     }
 
     await sendOtp(false);
@@ -1015,7 +1029,8 @@ export function PhoneAuthFlow({
           setStep("phone");
           resetOtpInputs();
           confirmationResultRef.current = null;
-          setFeedback("Account already exists. Please login instead.");
+          console.info("[Auth Signup] duplicate signup blocked after OTP verification", { phone: phoneCheck.normalizedPhone });
+          setFeedback("User already exists. Please login instead.");
           setShowSignupGoToLogin(true);
           return;
         }
@@ -1061,6 +1076,7 @@ export function PhoneAuthFlow({
       setSignupStep("form");
       setStep("phone");
       resetOtpInputs();
+      console.info("[Auth Signup] user created successfully", { phone: verifiedPhone, uid: linked.user.uid });
       await finishAuthSuccess("Account created successfully!");
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
@@ -1089,7 +1105,7 @@ export function PhoneAuthFlow({
         setSignupStep("form");
         setStep("phone");
         resetOtpInputs();
-        setFeedback("An account already exists with this phone number. Please log in instead.");
+        setFeedback("User already exists. Please login instead.");
         setShowSignupGoToLogin(true);
       } else if (code === "auth/invalid-verification-code") {
         setOtpError("Invalid OTP. Please try again.");
@@ -1649,7 +1665,7 @@ export function PhoneAuthFlow({
         </div>
       )}
 
-      {user && !isForgotPasswordMode && !showGooglePhoneState ? (
+      {user && activeTab !== "signup" && !isForgotPasswordMode && !showGooglePhoneState ? (
         <div className="mt-6 rounded-[18px] border border-[#E2E8F0] bg-[#F8FAFC] p-4">
           <div className="flex items-start gap-3">
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
@@ -2061,7 +2077,7 @@ export function PhoneAuthFlow({
               <button
                 type="button"
                 onClick={() => void (showSignupOtpState ? handleSignupVerifyAndCreate() : handlePasswordSignup())}
-                disabled={pending || !firebaseReady || (showSignupOtpState && otpCode.length !== otpLength)}
+                disabled={pending || signupLookupPending || !firebaseReady || (showSignupOtpState && otpCode.length !== otpLength)}
                 className={cn(
                   isModal
                     ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"

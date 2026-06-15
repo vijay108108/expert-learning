@@ -1,6 +1,6 @@
 "use client";
 
-import { getPhoneLookupCandidates, normalizePhoneForAuth } from "./phone-utils";
+import { normalizePhoneForAuth } from "./phone-utils";
 
 type PhoneCheckResponse = {
   success: boolean;
@@ -17,16 +17,8 @@ export type SignupPhoneCheckResult = {
 };
 
 export async function checkSignupPhoneAvailability(phone: string): Promise<SignupPhoneCheckResult> {
-  const response = await fetch("/api/auth/phone-check", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      phone,
-      candidates: getPhoneLookupCandidates(phone),
-      normalizedPhone: normalizePhoneForAuth(phone),
-    }),
+  const response = await fetch(`/api/check-phone-exists?phone=${encodeURIComponent(phone)}`, {
+    method: "GET",
   });
 
   const payload = (await response.json()) as PhoneCheckResponse;
