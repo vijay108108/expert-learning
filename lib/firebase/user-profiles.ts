@@ -1,7 +1,7 @@
 "use client";
 
 import { type User } from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, limit, query, runTransaction, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, query, runTransaction, setDoc, updateDoc, where } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase";
 import { normalizePhoneForAuth } from "./phone-auth";
 
@@ -18,6 +18,15 @@ export type AppUserProfile = {
 };
 
 const phoneSignupClaimsCollection = "phone-signup-claims";
+
+type PhoneSignupClaim = {
+  phone: string;
+  uid: string;
+  status: "pending" | "active";
+  createdAt: string;
+  updatedAt: string;
+  activatedAt?: string;
+};
 
 function getNormalizedPhoneKey(phone: string) {
   return normalizePhoneForAuth(phone);
@@ -83,19 +92,74 @@ export async function reservePhoneSignup(phone: string, uid: string) {
     const claimSnapshot = await transaction.get(claimRef);
 
     if (claimSnapshot.exists()) {
+      const claim = claimSnapshot.data() as PhoneSignupClaim | undefined;
+      if (claim?.uid === uid && claim.status === "pending") {
+        return;
+      }
+
       throw duplicatePhoneError();
     }
 
     transaction.set(claimRef, {
       phone: normalizedPhone,
       uid,
-      status: "reserved",
+      status: "pending",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
+    } satisfies PhoneSignupClaim);
   });
 
   return normalizedPhone;
+}
+
+export async function finalizePhoneSignupReservation(phone: string, uid: string) {
+  const db = getFirebaseDb();
+
+  if (!db) {
+    return;
+  }
+
+  const normalizedPhone = getNormalizedPhoneKey(phone);
+  if (!normalizedPhone) {
+    return;
+  }
+
+  const claimRef = doc(db, phoneSignupClaimsCollection, normalizedPhone);
+
+  await runTransaction(db, async (transaction) => {
+    const claimSnapshot = await transaction.get(claimRef);
+
+    if (!claimSnapshot.exists()) {
+      transaction.set(claimRef, {
+        phone: normalizedPhone,
+        uid,
+        status: "active",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        activatedAt: new Date().toISOString(),
+      } satisfies PhoneSignupClaim);
+      return;
+    }
+
+    const claim = claimSnapshot.data() as PhoneSignupClaim | undefined;
+
+    if (claim?.uid !== uid) {
+      throw duplicatePhoneError();
+    }
+
+    transaction.set(
+      claimRef,
+      {
+        phone: normalizedPhone,
+        uid,
+        status: "active",
+        createdAt: claim?.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        activatedAt: new Date().toISOString(),
+      } satisfies PhoneSignupClaim,
+      { merge: true },
+    );
+  });
 }
 
 export async function releasePhoneSignupReservation(phone: string) {
@@ -110,7 +174,22 @@ export async function releasePhoneSignupReservation(phone: string) {
     return;
   }
 
-  await deleteDoc(doc(db, phoneSignupClaimsCollection, normalizedPhone));
+  const claimRef = doc(db, phoneSignupClaimsCollection, normalizedPhone);
+
+  await runTransaction(db, async (transaction) => {
+    const claimSnapshot = await transaction.get(claimRef);
+
+    if (!claimSnapshot.exists()) {
+      return;
+    }
+
+    const claim = claimSnapshot.data() as PhoneSignupClaim | undefined;
+    if (claim?.status !== "pending") {
+      return;
+    }
+
+    transaction.delete(claimRef);
+  });
 }
 
 export async function upsertGoogleUserProfile(user: User) {

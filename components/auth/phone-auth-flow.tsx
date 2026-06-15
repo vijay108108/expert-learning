@@ -46,6 +46,7 @@ import {
   normalizePhoneForAuth,
   preparePhoneAuth,
   recaptchaContainerId,
+  finalizePhoneSignupReservation,
   releasePhoneSignupReservation,
   saveUserWhatsappNumber,
   reservePhoneSignup,
@@ -934,6 +935,7 @@ export function PhoneAuthFlow({
     const auth = getFirebaseAuth();
     const db = getFirebaseDb();
     let reservedPhone: string | null = null;
+    let finalizedPhoneSignup = false;
 
     if (!auth || !db) {
       setFeedback("Firebase auth is not available right now.");
@@ -982,6 +984,8 @@ export function PhoneAuthFlow({
       const signupEmail = getFakeEmail(verifiedPhone);
       const credential = EmailAuthProvider.credential(signupEmail, signupPassword);
       const linked = await linkWithCredential(verified.user, credential);
+      await finalizePhoneSignupReservation(verifiedPhone, linked.user.uid);
+      finalizedPhoneSignup = true;
       try {
         await updateProfile(linked.user, {
           displayName: fullName.trim(),
@@ -1012,7 +1016,7 @@ export function PhoneAuthFlow({
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
 
-      if (reservedPhone) {
+      if (reservedPhone && !finalizedPhoneSignup) {
         try {
           await releasePhoneSignupReservation(reservedPhone);
         } catch {
