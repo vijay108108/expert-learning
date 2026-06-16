@@ -13,7 +13,7 @@ export function getOrganizationSchema() {
     sameAs: [
       "https://www.instagram.com/genznextofficial/",
       "https://www.facebook.com/profile.php?id=61590060611725",
-      "https://www.linkedin.com/in/adarsh-vishwakarma-184ab0410/",
+      "https://www.linkedin.com/company/genznext-research-training/",
     ],
   };
 }
