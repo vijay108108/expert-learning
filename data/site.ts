@@ -83,7 +83,7 @@ export const socialLinks = [
   },
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/in/adarsh-vishwakarma-184ab0410/",
+    href: "https://www.linkedin.com/company/genznext-research-training/",
     icon: "linkedin",
     hoverClass: "hover:border-[rgba(0,119,181,0.34)] hover:bg-[rgba(0,119,181,0.12)] hover:text-[#0077b5]",
   },
