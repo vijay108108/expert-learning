@@ -14,7 +14,11 @@ function verifyWebhookSignature(rawBody: string, signature: string) {
     .update(rawBody)
     .digest("hex");
 
-  return generated === signature;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(generated, "hex"), Buffer.from(signature, "hex"));
+  } catch {
+    return false;
+  }
 }
 
 export async function POST(request: Request) {

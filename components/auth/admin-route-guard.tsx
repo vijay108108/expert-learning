@@ -5,26 +5,13 @@ import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
 import { signInAnonymously } from "firebase/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { getFirebaseAuth, getUserProfile, type AppUserProfile } from "@/lib/firebase";
-import { env } from "@/lib/env";
 
 const ADMIN_SESSION_KEY = "gz_admin_pin_auth";
-const ADMIN_PIN         = process.env.NEXT_PUBLIC_ADMIN_PIN || "GZAdmin2026";
+// PIN must be set via NEXT_PUBLIC_ADMIN_PIN env var — no hardcoded fallback
+const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN || "";
 
-function normalizePhone(v: string | null | undefined) {
-  return (v || "").replace(/\D/g, "").slice(-10);
-}
-
-function isAdminProfile(
-  profile: AppUserProfile | null,
-  email: string | null | undefined,
-  phone: string | null | undefined,
-) {
-  if (profile?.role === "admin") return true;
-  const e = (email || "").trim().toLowerCase();
-  if (e && env.adminEmails.includes(e)) return true;
-  const p = normalizePhone(phone || profile?.phone);
-  if (p && env.adminPhones.map(normalizePhone).includes(p)) return true;
-  return false;
+function isAdminProfile(profile: AppUserProfile | null) {
+  return profile?.role === "admin";
 }
 
 /* ── PIN login screen ────────────────────────────────────── */
@@ -35,7 +22,7 @@ function AdminPinScreen({ onSuccess }: { onSuccess: () => void }) {
   const [shaking, setShaking] = useState(false);
 
   async function attempt() {
-    if (pin === ADMIN_PIN) {
+    if (ADMIN_PIN && pin === ADMIN_PIN) {
       try { sessionStorage.setItem(ADMIN_SESSION_KEY, "1"); } catch { /* ignore */ }
       /* Sign in to Firebase anonymously so Firestore operations work */
       try {
@@ -161,7 +148,7 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
     void (async () => {
       try {
         const profile = await getUserProfile(user.uid);
-        if (active) setFirebaseAdmin(isAdminProfile(profile, user.email, user.phoneNumber));
+        if (active) setFirebaseAdmin(isAdminProfile(profile));
       } catch {
         if (active) setFirebaseAdmin(false);
       }

@@ -80,7 +80,7 @@ stages:
 
                 log "START: pm2 restart"
                 set -a
-                source /home/azureuser/expert-learning/.env
+                [ -f /home/azureuser/expert-learning/.env ] && source /home/azureuser/expert-learning/.env || log "WARNING: .env not found, using existing environment"
                 set +a
 
                 if pm2 describe expert-learning >/dev/null 2>&1; then
