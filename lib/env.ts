@@ -1,4 +1,3 @@
-import "server-only";
 import { siteConfig } from "@/lib/site-config";
 
 function readEnvValue(value: string | undefined) {
