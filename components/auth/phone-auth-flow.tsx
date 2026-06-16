@@ -889,6 +889,13 @@ export function PhoneAuthFlow({
       }
 
       if (signedIn) {
+        // Back-fill phone-signup-claims so future duplicate checks work for this user
+        try {
+          const normalizedLoginPhone = normalizePhoneForAuth(phone);
+          if (normalizedLoginPhone) {
+            await finalizePhoneSignupReservation(normalizedLoginPhone, auth.currentUser?.uid || "");
+          }
+        } catch { /* best-effort */ }
         await finishAuthSuccess("Login successful!");
         return;
       }
@@ -1030,6 +1037,24 @@ export function PhoneAuthFlow({
       const verified = await confirmationResult.confirm(otpCode);
       const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
 
+      // Strongest duplicate check: if the Firebase user already has a password
+      // provider linked, this phone number was used to sign up before.
+      const alreadyHasPassword = verified.user.providerData.some(
+        (p) => p.providerId === "password",
+      );
+      if (alreadyHasPassword) {
+        try { await signOut(auth); } catch { /* ignore */ }
+        clearRecaptcha(recaptchaHostRef.current);
+        recaptchaVerifierRef.current = null;
+        setSignupStep("form");
+        setStep("phone");
+        resetOtpInputs();
+        confirmationResultRef.current = null;
+        setFeedback("An account already exists with this number. Please log in instead.");
+        setShowSignupGoToLogin(true);
+        return;
+      }
+
       try {
         const phoneCheck = await checkSignupPhoneAvailability(verifiedPhone);
         if (phoneCheck.exists) {
@@ -1045,8 +1070,7 @@ export function PhoneAuthFlow({
           setStep("phone");
           resetOtpInputs();
           confirmationResultRef.current = null;
-          console.info("[Auth Signup] duplicate signup blocked after OTP verification", { phone: phoneCheck.normalizedPhone });
-          setFeedback("User already exists. Please login instead.");
+          setFeedback("An account already exists with this number. Please log in instead.");
           setShowSignupGoToLogin(true);
           return;
         }
