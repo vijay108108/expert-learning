@@ -1037,6 +1037,26 @@ export function PhoneAuthFlow({
       const verified = await confirmationResult.confirm(otpCode);
       const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
 
+      // Strong duplicate guard: if this phone-auth UID already has a password profile,
+      // treat this as an existing account and route the user to login.
+      try {
+        const existingProfile = await getUserProfile(verified.user.uid);
+        if (existingProfile?.authMethod === "password") {
+          try { await signOut(auth); } catch { /* ignore */ }
+          clearRecaptcha(recaptchaHostRef.current);
+          recaptchaVerifierRef.current = null;
+          setSignupStep("form");
+          setStep("phone");
+          resetOtpInputs();
+          confirmationResultRef.current = null;
+          setFeedback("An account already exists with this number. Please log in instead.");
+          setShowSignupGoToLogin(true);
+          return;
+        }
+      } catch {
+        // Best-effort profile check; continue with additional duplicate checks below.
+      }
+
       // Strongest duplicate check: if the Firebase user already has a password
       // provider linked, this phone number was used to sign up before.
       const alreadyHasPassword = verified.user.providerData.some(
