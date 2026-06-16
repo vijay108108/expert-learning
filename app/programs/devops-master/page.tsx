@@ -1,4 +1,4 @@
-import { Award, Bot, Briefcase, Clock3, Code2, FolderKanban, GraduationCap, Layers, Server, Shield, Terminal, Users2, Zap } from "lucide-react";
+import { Bot, Briefcase, Clock3, Code2, FolderKanban, GraduationCap, Layers, Server, Shield, Terminal, Users2, Zap } from "lucide-react";
 import { ProgramPageLayout, type ProgramPageData } from "@/components/programs/program-page-layout";
 import { buildMetadata } from "@/lib/metadata";
 

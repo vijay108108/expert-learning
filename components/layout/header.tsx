@@ -28,11 +28,11 @@ export function Header() {
   const pathname = usePathname() ?? "";
   const { isAuthReady, openAuthModal, user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMenuPath, setMobileMenuPath] = useState(pathname);
   const [scrolled, setScrolled] = useState(false);
   const isAuthed = isAuthReady && Boolean(user);
 
-  /* Close mobile menu on route change */
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
+  const isMobileMenuOpen = mobileOpen && mobileMenuPath === pathname;
 
   /* Shadow on scroll */
   useEffect(() => {
@@ -116,12 +116,19 @@ export function Header() {
         {/* Mobile hamburger */}
         <button
           type="button"
-          onClick={() => setMobileOpen((v) => !v)}
+          onClick={() => {
+            if (isMobileMenuOpen) {
+              setMobileOpen(false);
+              return;
+            }
+            setMobileMenuPath(pathname);
+            setMobileOpen(true);
+          }}
           className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#E2E8F0] text-[#475569] transition hover:bg-[#F8FAFC] hover:text-[#0F172A] md:hidden"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMobileMenuOpen}
         >
-          {mobileOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
+          {isMobileMenuOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
         </button>
       </div>
 
@@ -129,9 +136,9 @@ export function Header() {
       <div
         className={cn(
           "overflow-hidden border-t border-[#E2E8F0] bg-white transition-all duration-200 ease-out md:hidden",
-          mobileOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+          isMobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
         )}
-        aria-hidden={!mobileOpen}
+        aria-hidden={!isMobileMenuOpen}
       >
         <div className="space-y-0.5 px-4 pb-4 pt-2">
           {navItems.map((item) => {

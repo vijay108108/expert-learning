@@ -96,13 +96,6 @@ async function writeFirestoreProfile(
 
 /* ── Route handler ───────────────────────────────────────── */
 
-export async function GET(request: Request) {
-  /* Allow GET with ?key=... for easy browser access */
-  const url = new URL(request.url);
-  const key = url.searchParams.get("key") || "";
-  return handler(key);
-}
-
 export async function POST(request: Request) {
   let key = "";
   try {
@@ -199,14 +192,8 @@ async function handler(providedKey: string) {
     /* Done */
     return NextResponse.json({
       success: true,
-      message: "Admin account ready. You can now login.",
+      message: "Admin account ready. You can now login at /admin.",
       steps: results,
-      credentials: {
-        url:      "http://localhost:3000/admin",
-        tab:      "Password Login",
-        phone:    ADMIN_PHONE,
-        password: ADMIN_PASSWORD,
-      },
     });
   } catch (err) {
     return NextResponse.json(

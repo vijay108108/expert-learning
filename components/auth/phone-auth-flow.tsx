@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  type Auth,
   type ConfirmationResult,
   EmailAuthProvider,
   fetchSignInMethodsForEmail,
@@ -43,10 +42,15 @@ import {
   isFirebaseConfigured,
   isLocalPhoneAuthHost,
   isPhoneAuthTestingEnabled,
+  isRetryablePhoneVerificationError,
   normalizePhoneForAuth,
   preparePhoneAuth,
   recaptchaContainerId,
+  finalizePhoneSignupReservation,
+  releasePhoneSignupReservation,
   saveUserWhatsappNumber,
+  reservePhoneSignup,
+  checkSignupPhoneAvailability,
   upsertGoogleUserProfile,
 } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
@@ -63,6 +67,8 @@ const countryCodes = [
 
 const otpLength = 6;
 const resendWindowSeconds = 30;
+const phoneOtpRequestTimeoutMs = 30000;
+const phoneOtpRetryDelayMs = 250;
 
 type AuthStep = "phone" | "otp" | "google-phone";
 type AuthTab = "otp-login" | "password-login" | "signup";
@@ -118,22 +124,13 @@ function getFakeEmail(rawPhone: string) {
   return `${normalizedPhone}@genznext.app`;
 }
 
-function getFakeEmailCandidates(rawPhone: string) {
-  return getLegacyPhoneAuthCandidates(rawPhone).map((candidate) => `${candidate}@genznext.app`);
-}
-
-async function findExistingAuthEmail(auth: Auth, rawPhone: string) {
-  const primaryEmail = getFakeEmail(rawPhone);
-  const candidateEmails = getFakeEmailCandidates(rawPhone);
-
-  for (const candidateEmail of candidateEmails) {
-    const methods = await fetchSignInMethodsForEmail(auth, candidateEmail);
-    if (methods.length > 0) {
-      return { email: candidateEmail, methods };
-    }
+function getErrorCode(error: unknown): string {
+  if (!error || typeof error !== "object" || !("code" in error)) {
+    return "";
   }
 
-  return { email: primaryEmail, methods: [] as string[] };
+  const code = (error as { code?: unknown }).code;
+  return typeof code === "string" ? code : "";
 }
 
 function maskPhoneNumber(value: string) {
@@ -151,6 +148,31 @@ function getInitialTab(mode: PhoneAuthFlowProps["mode"]): AuthTab {
   return mode === "signup" ? "signup" : "password-login";
 }
 
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string) {
+  let timer: number | null = null;
+
+  const timeout = new Promise<T>((_, reject) => {
+    timer = window.setTimeout(() => {
+      reject(new Error(timeoutMessage));
+    }, timeoutMs);
+  });
+
+  return Promise.race([
+    promise.finally(() => {
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+    }),
+    timeout,
+  ]) as Promise<T>;
+}
+
+function delay(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
 export function PhoneAuthFlow({
   mode,
   variant = "modal",
@@ -160,7 +182,7 @@ export function PhoneAuthFlow({
   onPendingChange,
 }: PhoneAuthFlowProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAuthReady } = useAuth();
   const confirmationResultRef = useRef<ConfirmationResult | null>(null);
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaHostRef = useRef<HTMLDivElement | null>(null);
@@ -209,8 +231,19 @@ export function PhoneAuthFlow({
   const [resetUser, setResetUser] = useState<User | null>(null);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [showSignupGoToLogin, setShowSignupGoToLogin] = useState(false);
+  const [signupLookupPending, setSignupLookupPending] = useState(false);
 
   const firebaseReady = isFirebaseConfigured();
+  const firebaseSetupKeys = [
+    "NEXT_PUBLIC_FIREBASE_API_KEY",
+    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+    "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
+    "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+    "NEXT_PUBLIC_FIREBASE_APP_ID",
+    "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID",
+    "NEXT_PUBLIC_FIREBASE_PHONE_AUTH_TEST_MODE",
+  ] as const;
   const otpCode = otp.join("");
   const isModal = variant === "modal";
   const formattedPhone = useMemo(() => formatPhoneForOtp(phone, countryCode), [countryCode, phone]);
@@ -386,6 +419,8 @@ export function PhoneAuthFlow({
   }, []);
 
   const logFirebaseAuthError = useCallback((_stage: string, _error: unknown) => {
+    void _stage;
+    void _error;
     // Intentionally no-op in production UI layer to avoid leaking auth internals.
   }, []);
 
@@ -437,6 +472,24 @@ export function PhoneAuthFlow({
     }, 1000);
   }, [onClose, onSuccess, redirectTo, router]);
 
+  async function ensureSignupPhoneCanRequestOtp() {
+    const phoneCheck = await checkSignupPhoneAvailability(formattedPhone);
+    if (!phoneCheck.exists) {
+      return true;
+    }
+
+    clearRecaptcha(recaptchaHostRef.current);
+    recaptchaVerifierRef.current = null;
+    confirmationResultRef.current = null;
+    console.info("[Auth Signup] duplicate signup blocked before OTP", { phone: phoneCheck.normalizedPhone });
+    setFeedback("An account already exists with this phone number. Please log in instead.");
+    setShowSignupGoToLogin(true);
+    setSignupStep("form");
+    setStep("phone");
+    resetOtpInputs();
+    return false;
+  }
+
   async function sendOtp(isResend = false) {
     if (sendOtpLockRef.current) {
       return;
@@ -461,71 +514,101 @@ export function PhoneAuthFlow({
       return;
     }
 
+    if (activeTab === "signup" && !isResend) {
+      const canRequestOtp = await ensureSignupPhoneCanRequestOtp();
+      if (!canRequestOtp) {
+        return;
+      }
+    }
+
     sendOtpLockRef.current = true;
     setPending(true);
     clearStepErrors();
     setSuccessMessage(null);
 
     try {
-      const auth = getFirebaseAuth();
-      if (!auth) {
-        throw new Error("Firebase auth is not available.");
-      }
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const auth = getFirebaseAuth();
+        if (!auth) {
+          throw new Error("Firebase auth is not available.");
+        }
 
-      if (isLocalPhoneAuthHost() && !isPhoneAuthTestingEnabled()) {
-        setStepError(
-          "Real Firebase phone OTP is not supported on localhost. Use Google sign-in, deploy to a real domain, or enable Firebase test phone auth for local development.",
-        );
-        return;
-      }
+        if (isLocalPhoneAuthHost() && !isPhoneAuthTestingEnabled()) {
+          setStepError(
+            "Real Firebase phone OTP is not supported on localhost. Use Google sign-in, deploy to a real domain, or enable Firebase test phone auth for local development.",
+          );
+          return;
+        }
 
-      preparePhoneAuth(auth);
+        preparePhoneAuth(auth);
 
-      clearRecaptcha(recaptchaHostRef.current);
-      recaptchaVerifierRef.current = null;
-      const recaptchaMountPoint = createRecaptchaMountPoint();
+        clearRecaptcha(recaptchaHostRef.current);
+        recaptchaVerifierRef.current = null;
+        const recaptchaMountPoint = createRecaptchaMountPoint();
 
-      const verifier = getRecaptchaVerifier(auth, recaptchaMountPoint);
-      recaptchaVerifierRef.current = verifier;
+        const verifier = getRecaptchaVerifier(auth, recaptchaMountPoint);
+        recaptchaVerifierRef.current = verifier;
 
-      confirmationResultRef.current = await signInWithPhoneNumber(auth, formattedPhone, verifier);
-      setStep("otp");
-      setOtpError(null);
-      resetOtpInputs();
-      setResendTimer(resendWindowSeconds);
-      setSuccessMessage(isResend ? "A fresh OTP has been sent." : "OTP sent successfully.");
-      window.setTimeout(() => {
-        otpInputRefs.current[0]?.focus();
-      }, 40);
-    } catch (error) {
-      logFirebaseAuthError("sendOtp", error);
-      const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+        try {
+          confirmationResultRef.current = await withTimeout(
+            signInWithPhoneNumber(auth, formattedPhone, verifier),
+            phoneOtpRequestTimeoutMs,
+            "OTP request timed out. Please try again.",
+          );
+          if (activeTab === "signup") {
+            console.info("[Auth Signup] OTP sent for new signup", { phone: formattedPhone, resend: isResend });
+          }
+          setStep("otp");
+          setOtpError(null);
+          resetOtpInputs();
+          setResendTimer(resendWindowSeconds);
+          setSuccessMessage(isResend ? "A fresh OTP has been sent." : "OTP sent successfully.");
+          window.setTimeout(() => {
+            otpInputRefs.current[0]?.focus();
+          }, 40);
+          return;
+        } catch (error) {
+          logFirebaseAuthError("sendOtp", error);
+          const code =
+            error && typeof error === "object" && "code" in error
+              ? String((error as { code?: unknown }).code)
+              : error instanceof Error && error.message === "OTP request timed out. Please try again."
+                ? "auth/network-request-failed"
+                : "";
 
-      if (code === "auth/too-many-requests" || code === "auth/quota-exceeded") {
-        setRateLimitSeconds(60);
-      }
+          if (code === "auth/too-many-requests" || code === "auth/quota-exceeded") {
+            setRateLimitSeconds(60);
+          }
 
-      clearRecaptcha(recaptchaHostRef.current);
-      recaptchaVerifierRef.current = null;
+          clearRecaptcha(recaptchaHostRef.current);
+          recaptchaVerifierRef.current = null;
 
-      const isLocalhost = isLocalPhoneAuthHost();
+          if (attempt === 0 && isRetryablePhoneVerificationError(error)) {
+            await delay(phoneOtpRetryDelayMs);
+            continue;
+          }
 
-      if (code === "auth/invalid-phone-number") {
-        setStepError("Invalid phone number. Use a valid 10-digit mobile number.", isResend ? "otp" : "phone");
-      } else if (code === "auth/too-many-requests") {
-        setStepError("Too many attempts. Please wait a few minutes and try again.", isResend ? "otp" : "phone");
-      } else if (
-        (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential")
-        && isLocalhost
-      ) {
-        setStepError(
-          "OTP is blocked on localhost. Fix in Firebase Console (choose one): " +
-          "(A) Authentication → Sign-in method → Phone → Test phone numbers → add your number with code 123456. " +
-          "(B) Authentication → Settings → Authorized domains → add 'localhost'.",
-          isResend ? "otp" : "phone",
-        );
-      } else {
-        setStepError(getFirebaseAuthErrorMessage(error), isResend ? "otp" : "phone");
+          const isLocalhost = isLocalPhoneAuthHost();
+
+          if (code === "auth/invalid-phone-number") {
+            setStepError("Invalid phone number. Use a valid 10-digit mobile number.", isResend ? "otp" : "phone");
+          } else if (code === "auth/too-many-requests") {
+            setStepError("Too many attempts. Please wait a few minutes and try again.", isResend ? "otp" : "phone");
+          } else if (
+            (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential")
+            && isLocalhost
+          ) {
+            setStepError(
+              "OTP is blocked on localhost. Fix in Firebase Console (choose one): " +
+              "(A) Authentication â†’ Sign-in method â†’ Phone â†’ Test phone numbers â†’ add your number with code 123456. " +
+              "(B) Authentication â†’ Settings â†’ Authorized domains â†’ add 'localhost'.",
+              isResend ? "otp" : "phone",
+            );
+          } else {
+            setStepError(getFirebaseAuthErrorMessage(error), isResend ? "otp" : "phone");
+          }
+          return;
+        }
       }
     } finally {
       sendOtpLockRef.current = false;
@@ -557,7 +640,11 @@ export function PhoneAuthFlow({
     try {
       const result = await confirmationResult.confirm(otpCode);
 
-      await ensurePhoneUserProfile(result.user, fullName);
+      try {
+        await ensurePhoneUserProfile(result.user, fullName);
+      } catch {
+        // Firestore profile sync is best-effort.
+      }
       await finishAuthSuccess("Login successful!");
     } catch (error) {
       autoVerifyRef.current = null;
@@ -568,7 +655,7 @@ export function PhoneAuthFlow({
       verifyOtpLockRef.current = false;
       setPending(false);
     }
-  }, [finishAuthSuccess, fullName, logFirebaseAuthError, mode, otpCode, resetOtpInputs]);
+  }, [finishAuthSuccess, fullName, logFirebaseAuthError, otpCode, resetOtpInputs]);
 
   useEffect(() => {
     if (activeTab !== "otp-login" || isForgotPasswordMode || step !== "otp" || pending) {
@@ -628,6 +715,7 @@ export function PhoneAuthFlow({
     setCountryCode(nextTab === "otp-login" ? countryCode : "+91");
     clearResetState();
     resetOtpStep();
+    setSignupLookupPending(false);
     setLoginPassword("");
     setSignupPassword("");
     setSignupConfirmPassword("");
@@ -673,11 +761,21 @@ export function PhoneAuthFlow({
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const signedInUser = result.user;
-      await upsertGoogleUserProfile(signedInUser);
-      const userDoc = await getUserProfile(signedInUser.uid);
-      const savedPhone = userDoc?.phone?.trim() || "";
+      try {
+        await upsertGoogleUserProfile(signedInUser);
+      } catch {
+        // Google profile sync is best-effort and must not block platform entry.
+      }
 
-      if (savedPhone) {
+      try {
+        const userDoc = await getUserProfile(signedInUser.uid);
+        const savedPhone = userDoc?.phone?.trim() || "";
+
+        if (savedPhone) {
+          await finishAuthSuccess("Login successful!");
+          return;
+        }
+      } catch {
         await finishAuthSuccess("Login successful!");
         return;
       }
@@ -714,10 +812,14 @@ export function PhoneAuthFlow({
     setFeedback(null);
 
     try {
-      await saveUserWhatsappNumber(googleUserIdRef.current, formattedGooglePhone);
+      try {
+        await saveUserWhatsappNumber(googleUserIdRef.current, formattedGooglePhone);
+      } catch {
+        // Optional metadata save failed; do not block the session.
+      }
       await finishAuthSuccess("Login successful!");
-    } catch (error) {
-      setFeedback("Unable to save your number right now. You can skip and continue.");
+    } catch {
+      await finishAuthSuccess("Login successful!");
     } finally {
       setPending(false);
     }
@@ -777,7 +879,7 @@ export function PhoneAuthFlow({
           break;
         } catch (err) {
           lastError = err;
-          const code = err && typeof err === "object" && "code" in err ? String((err as any).code) : "";
+          const code = getErrorCode(err);
           /* Wrong password on a real account → stop immediately */
           if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
             break;
@@ -791,9 +893,7 @@ export function PhoneAuthFlow({
         return;
       }
 
-      const code = lastError && typeof lastError === "object" && "code" in lastError
-        ? String((lastError as any).code)
-        : "";
+      const code = getErrorCode(lastError);
 
       if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
         setFeedback("Incorrect password. Please try again.");
@@ -803,7 +903,7 @@ export function PhoneAuthFlow({
         setFeedback(getSanitizedErrorMessage(code, getFirebaseAuthErrorMessage(lastError)));
       }
     } catch (error) {
-      const code = error && typeof error === "object" && "code" in error ? String((error as any).code) : "";
+      const code = getErrorCode(error);
       setFeedback(getSanitizedErrorMessage(code, getFirebaseAuthErrorMessage(error)));
     } finally {
       setPending(false);
@@ -813,6 +913,10 @@ export function PhoneAuthFlow({
   async function handlePasswordSignup() {
     if (!getFirebaseAuth() || !getFirebaseDb()) {
       setFeedback("Firebase auth is not available right now.");
+      return;
+    }
+
+    if (signupLookupPending || pending) {
       return;
     }
 
@@ -835,6 +939,20 @@ export function PhoneAuthFlow({
     if (signupPassword !== signupConfirmPassword) {
       setFeedback("Passwords do not match.");
       return;
+    }
+
+    setSignupLookupPending(true);
+
+    try {
+      const canRequestOtp = await ensureSignupPhoneCanRequestOtp();
+      if (!canRequestOtp) {
+        return;
+      }
+    } catch (error) {
+      setFeedback(getFirebaseAuthErrorMessage(error));
+      return;
+    } finally {
+      setSignupLookupPending(false);
     }
 
     await sendOtp(false);
@@ -865,6 +983,8 @@ export function PhoneAuthFlow({
   async function handleSignupVerifyAndCreate() {
     const auth = getFirebaseAuth();
     const db = getFirebaseDb();
+    let reservedPhone: string | null = null;
+    let finalizedPhoneSignup = false;
 
     if (!auth || !db) {
       setFeedback("Firebase auth is not available right now.");
@@ -907,40 +1027,101 @@ export function PhoneAuthFlow({
       /* Skip fetchSignInMethodsForEmail — broken with email enumeration protection.
          Duplicate detection happens naturally: linkWithCredential throws
          auth/credential-already-in-use if the email is already registered. */
-      const normalizedSignupPhone = normalizePhoneForAuth(phone);
-
       const verified = await confirmationResult.confirm(otpCode);
       const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
+
+      try {
+        const phoneCheck = await checkSignupPhoneAvailability(verifiedPhone);
+        if (phoneCheck.exists) {
+          try {
+            await signOut(auth);
+          } catch {
+            // If sign-out fails, the auth session will still be replaced by the next login attempt.
+          }
+
+          clearRecaptcha(recaptchaHostRef.current);
+          recaptchaVerifierRef.current = null;
+          setSignupStep("form");
+          setStep("phone");
+          resetOtpInputs();
+          confirmationResultRef.current = null;
+          console.info("[Auth Signup] duplicate signup blocked after OTP verification", { phone: phoneCheck.normalizedPhone });
+          setFeedback("User already exists. Please login instead.");
+          setShowSignupGoToLogin(true);
+          return;
+        }
+      } catch (lookupError) {
+        try {
+          await signOut(auth);
+        } catch {
+          // Keep going only if we can safely validate the signup path.
+        }
+
+        throw lookupError;
+      }
+
+      reservedPhone = await reservePhoneSignup(verifiedPhone, verified.user.uid);
       const signupEmail = getFakeEmail(verifiedPhone);
       const credential = EmailAuthProvider.credential(signupEmail, signupPassword);
       const linked = await linkWithCredential(verified.user, credential);
-      await updateProfile(linked.user, {
-        displayName: fullName.trim(),
-      });
+      await finalizePhoneSignupReservation(verifiedPhone, linked.user.uid);
+      finalizedPhoneSignup = true;
+      try {
+        await updateProfile(linked.user, {
+          displayName: fullName.trim(),
+        });
+      } catch {
+        // Profile decoration is best-effort; auth success must not be blocked.
+      }
 
-      await setDoc(doc(db, "users", linked.user.uid), {
-        uid: linked.user.uid,
-        name: fullName.trim(),
-        phone: verifiedPhone,
-        authMethod: "password",
-        createdAt: new Date().toISOString(),
-        ...(billingCompany.trim() && { companyName: billingCompany.trim() }),
-        ...(billingGst.trim()     && { gstNumber: billingGst.trim().toUpperCase() }),
-        ...(billingAddress.trim() && { billingAddress: billingAddress.trim() }),
-      }, { merge: true });
+      try {
+        await setDoc(doc(db, "users", linked.user.uid), {
+          uid: linked.user.uid,
+          name: fullName.trim(),
+          phone: verifiedPhone,
+          authMethod: "password",
+          createdAt: new Date().toISOString(),
+          ...(billingCompany.trim() && { companyName: billingCompany.trim() }),
+          ...(billingGst.trim()     && { gstNumber: billingGst.trim().toUpperCase() }),
+          ...(billingAddress.trim() && { billingAddress: billingAddress.trim() }),
+        }, { merge: true });
+      } catch {
+        // Firestore profile sync is best-effort; auth success must not be blocked.
+      }
 
       setSignupStep("form");
       setStep("phone");
       resetOtpInputs();
+      console.info("[Auth Signup] user created successfully", { phone: verifiedPhone, uid: linked.user.uid });
       await finishAuthSuccess("Account created successfully!");
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
 
-      if (code === "auth/email-already-in-use") {
-        setFeedback("This mobile number is already registered.");
-        setShowSignupGoToLogin(true);
-      } else if (code === "auth/credential-already-in-use") {
-        setFeedback("This mobile number is already registered.");
+      if (reservedPhone && !finalizedPhoneSignup) {
+        try {
+          await releasePhoneSignupReservation(reservedPhone);
+        } catch {
+          // If cleanup fails, keep the reservation as a conservative duplicate guard.
+        }
+      }
+
+      if (
+        code === "auth/email-already-in-use" ||
+        code === "auth/credential-already-in-use" ||
+        code === "auth/phone-number-already-in-use"
+      ) {
+        try {
+          await signOut(auth);
+        } catch {
+          // Keep the user on the login path even if sign-out fails.
+        }
+        clearRecaptcha(recaptchaHostRef.current);
+        recaptchaVerifierRef.current = null;
+        confirmationResultRef.current = null;
+        setSignupStep("form");
+        setStep("phone");
+        resetOtpInputs();
+        setFeedback("User already exists. Please login instead.");
         setShowSignupGoToLogin(true);
       } else if (code === "auth/invalid-verification-code") {
         setOtpError("Invalid OTP. Please try again.");
@@ -1090,10 +1271,13 @@ export function PhoneAuthFlow({
       }
 
       const auth = getFirebaseAuth();
-      if (auth) {
-        await signOut(auth);
-        await signInWithEmailAndPassword(auth, forgotPasswordEmail, resetPasswordValue);
-        await signOut(auth);
+      if (auth?.currentUser) {
+        try {
+          await signOut(auth);
+        } catch {
+          // Signing out is a cleanup step here; a browser-specific auth state
+          // hiccup should not turn a successful password update into a failure.
+        }
       }
 
       const latestPhone = normalizePhoneForAuth(resetUser.phoneNumber || phone);
@@ -1121,7 +1305,7 @@ export function PhoneAuthFlow({
       } else if (code === "auth/user-not-found") {
         setFeedback("No account found with this number. Please sign up first.");
       } else if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
-        setFeedback("Password updated, but validation login failed. Please try logging in again.");
+        setFeedback("Password reset could not be completed. Please request OTP again and try once more.");
       } else {
         setFeedback(getSanitizedErrorMessage(code, "Password update failed. Please try again."));
       }
@@ -1449,6 +1633,33 @@ export function PhoneAuthFlow({
   const showForgotPhoneState = activeTab === "password-login" && isForgotPasswordMode && forgotPasswordStep === "phone";
   const showForgotOtpState = activeTab === "password-login" && isForgotPasswordMode && forgotPasswordStep === "otp";
   const showForgotResetState = activeTab === "password-login" && isForgotPasswordMode && forgotPasswordStep === "reset";
+  const shouldRedirectSignedInSignupUser = mode === "signup" && isAuthReady && Boolean(user);
+
+  useEffect(() => {
+    if (!shouldRedirectSignedInSignupUser) {
+      return;
+    }
+
+    confirmationResultRef.current = null;
+    clearRecaptcha(recaptchaHostRef.current);
+    recaptchaVerifierRef.current = null;
+
+    if (isModal) {
+      onClose?.();
+    }
+
+    router.replace(redirectTo);
+  }, [
+    isModal,
+    onClose,
+    redirectTo,
+    router,
+    shouldRedirectSignedInSignupUser,
+  ]);
+
+  if (shouldRedirectSignedInSignupUser) {
+    return null;
+  }
 
   return (
     <div
@@ -1480,12 +1691,24 @@ export function PhoneAuthFlow({
       </div>
 
       {!firebaseReady && (
-        <div className="mt-6 rounded-[16px] border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-3 text-sm text-[#4338CA]">
-          Firebase phone authentication is wired into the UI, but the Firebase public configuration is missing from the environment.
+        <div className="mt-6 rounded-[18px] border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-4 text-sm text-[#4338CA]">
+          <div className="font-semibold">Firebase setup required</div>
+          <p className="mt-1 leading-6">
+            Sign up, OTP login, and password login all depend on the Firebase public configuration being available in the
+            runtime environment.
+          </p>
+          <p className="mt-3 text-[12px] leading-5 text-[#4C1D95]">
+            Add these keys to your local `.env.local` or the VM app env file, then restart the app:
+          </p>
+          <div className="mt-3 grid gap-1 rounded-[14px] border border-[#DDD6FE] bg-white/70 p-3 text-[12px] font-mono text-[#312E81] sm:grid-cols-2">
+            {firebaseSetupKeys.map((key) => (
+              <div key={key}>{key}</div>
+            ))}
+          </div>
         </div>
       )}
 
-      {user && !isForgotPasswordMode && !showGooglePhoneState ? (
+      {user && activeTab !== "signup" && !isForgotPasswordMode && !showGooglePhoneState ? (
         <div className="mt-6 rounded-[18px] border border-[#E2E8F0] bg-[#F8FAFC] p-4">
           <div className="flex items-start gap-3">
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
@@ -1676,7 +1899,20 @@ export function PhoneAuthFlow({
         ) : null}
 
         {showSignupState ? (
-          <>
+          !firebaseReady ? (
+            <div className="rounded-[18px] border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-sm text-[#475569]">
+              <div className="font-semibold text-[#0F172A]">Signup is paused until Firebase is configured</div>
+              <p className="mt-2 leading-6">
+                The form is intentionally disabled because the app cannot create accounts without Firebase auth and Firestore
+                access.
+              </p>
+              <p className="mt-3 text-[12px] leading-5 text-[#64748B]">
+                Once the Firebase public environment variables are present, refresh the app and the full signup flow will
+                work normally.
+              </p>
+            </div>
+          ) : (
+            <>
             {renderTextField({
               id: `password-signup-name-${variant}`,
               label: "Full Name",
@@ -1884,7 +2120,7 @@ export function PhoneAuthFlow({
               <button
                 type="button"
                 onClick={() => void (showSignupOtpState ? handleSignupVerifyAndCreate() : handlePasswordSignup())}
-                disabled={pending || !firebaseReady || (showSignupOtpState && otpCode.length !== otpLength)}
+                disabled={pending || signupLookupPending || !firebaseReady || (showSignupOtpState && otpCode.length !== otpLength)}
                 className={cn(
                   isModal
                     ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
@@ -1904,7 +2140,8 @@ export function PhoneAuthFlow({
                 )}
               </button>
             </div>
-          </>
+            </>
+          )
         ) : null}
 
         {showForgotPhoneState ? (

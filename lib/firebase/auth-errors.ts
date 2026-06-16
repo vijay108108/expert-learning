@@ -11,7 +11,7 @@ const errorMessages: Record<string, string> = {
   "auth/session-expired": "Your verification session expired. Request a fresh OTP to continue.",
   "auth/quota-exceeded": "OTP requests are temporarily unavailable for this project. Please try again later.",
   "auth/captcha-check-failed":
-    "reCAPTCHA domain check failed. Add this domain to Firebase Console → Authentication → Settings → Authorized domains, then retry.",
+    "reCAPTCHA could not be completed in this browser. Refresh the page, disable privacy/ad-blocking extensions, and try again.",
   "auth/missing-app-credential":
     "The phone verification could not be started. Refresh the page and try again.",
   "auth/invalid-app-credential":
@@ -31,7 +31,7 @@ export function getFirebaseAuthErrorMessage(error: unknown) {
     return fallbackMessage;
   }
 
-  const code = "code" in error ? String(error.code) : "";
+  const code = "code" in error ? String((error as { code?: unknown }).code) : "";
   if (code && errorMessages[code]) {
     return errorMessages[code];
   }

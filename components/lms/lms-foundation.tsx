@@ -2,7 +2,7 @@
 
 import { Award, BookOpenCheck, CalendarDays, Clock3, Files, Layers3, Users2 } from "lucide-react";
 import Link from "next/link";
-import { lmsCourseMaterials, lmsMockCourses, lmsOfficialResources } from "@/data/lms-portal-mock";
+import { lmsCourseMaterials, lmsMockCourses } from "@/data/lms-portal-mock";
 
 type LmsFoundationProps = {
   title: string;

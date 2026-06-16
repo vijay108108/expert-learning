@@ -1,7 +1,7 @@
 import {
   Award, Bot, Briefcase, Clock3, Code2,
   FolderKanban, GraduationCap, Layers,
-  Server, Shield, Sparkles, Terminal,
+  Server, Shield, Terminal,
   Users2, Zap,
 } from "lucide-react";
 import { ProgramPageLayout, type ProgramPageData } from "@/components/programs/program-page-layout";

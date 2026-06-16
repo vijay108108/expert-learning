@@ -309,7 +309,7 @@ export default function ProgramsPage() {
           <p className="text-[11px] font-bold uppercase tracking-widest text-[#9333EA]">Not Sure Which to Pick?</p>
           <h2 className="mt-2 text-2xl font-bold !text-[#0F172A]">Talk to our admissions team</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#64748B]">
-            We'll match you to the right program based on your background, goals and timeline.
+            We&apos;ll match you to the right program based on your background, goals and timeline.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02]">

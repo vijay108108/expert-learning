@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Edit2, Plus, RefreshCw, Trash2, X } from "lucide-react";
@@ -19,6 +19,8 @@ type Post = {
   createdAt: string;
   updatedAt: string;
 };
+
+type PostFieldKey = keyof Omit<Post, "id">;
 
 const emptyPost: Omit<Post, "id"> = {
   title: "", slug: "", excerpt: "", content: "", author: "",
@@ -47,7 +49,13 @@ export function CmsBlogManager() {
     } catch { /* ignore */ } finally { setLoading(false); }
   }
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, []);
 
   function openNew() {
     setForm(emptyPost);
@@ -116,7 +124,7 @@ export function CmsBlogManager() {
       ) : posts.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center">
           <p className="text-[#334155]">No blog posts yet.</p>
-          <button onClick={openNew} className="mt-3 text-[13px] text-[#4F46E5] hover:underline">Create your first post →</button>
+          <button onClick={openNew} className="mt-3 text-[13px] text-[#4F46E5] hover:underline">Create your first post â†’</button>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -138,8 +146,8 @@ export function CmsBlogManager() {
               <p className="mt-3 text-[14px] font-semibold text-white line-clamp-2">{post.title}</p>
               <p className="mt-1 text-[12px] text-[#475569] line-clamp-2">{post.excerpt}</p>
               <div className="mt-3 flex items-center justify-between text-[11px] text-[#334155]">
-                <span>{post.author || "—"}</span>
-                <span>{post.updatedAt ? new Date(post.updatedAt).toLocaleDateString("en-IN") : "—"}</span>
+                <span>{post.author || "â€”"}</span>
+                <span>{post.updatedAt ? new Date(post.updatedAt).toLocaleDateString("en-IN") : "â€”"}</span>
               </div>
             </div>
           ))}
@@ -157,15 +165,16 @@ export function CmsBlogManager() {
             </div>
             {/* Form */}
             <div className="max-h-[70vh] overflow-y-auto px-5 py-5 space-y-4">
-              {[
-                { label: "Title", key: "title", placeholder: "Post title…", type: "text" },
+              {([
+                { label: "Title", key: "title", placeholder: "Post titleâ€¦", type: "text" },
                 { label: "Slug", key: "slug", placeholder: "auto-generated-if-empty", type: "text" },
                 { label: "Author", key: "author", placeholder: "Author name", type: "text" },
-              ].map((f) => (
+              ] as Array<{ label: string; key: PostFieldKey; placeholder: string; type: string }>).map((f) => (
                 <div key={f.key}>
                   <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-[#475569]">{f.label}</label>
                   <input
-                    value={(form as any)[f.key]}
+                    type={f.type}
+                    value={form[f.key]}
                     onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
                     placeholder={f.placeholder}
                     className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
@@ -178,7 +187,7 @@ export function CmsBlogManager() {
                   rows={2}
                   value={form.excerpt}
                   onChange={(e) => setForm((p) => ({ ...p, excerpt: e.target.value }))}
-                  placeholder="Short description shown on listing page…"
+                  placeholder="Short description shown on listing pageâ€¦"
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50 resize-none"
                 />
               </div>
@@ -188,7 +197,7 @@ export function CmsBlogManager() {
                   rows={8}
                   value={form.content}
                   onChange={(e) => setForm((p) => ({ ...p, content: e.target.value }))}
-                  placeholder="Full post content in Markdown…"
+                  placeholder="Full post content in Markdownâ€¦"
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 font-mono text-[12px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50 resize-y"
                 />
               </div>
@@ -221,7 +230,7 @@ export function CmsBlogManager() {
                 Cancel
               </button>
               <button onClick={save} disabled={saving} className="rounded-xl bg-[#4F46E5] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#4338CA] disabled:opacity-60">
-                {saving ? "Saving…" : editId ? "Update Post" : "Publish Post"}
+                {saving ? "Savingâ€¦" : editId ? "Update Post" : "Publish Post"}
               </button>
             </div>
           </div>
@@ -230,3 +239,4 @@ export function CmsBlogManager() {
     </div>
   );
 }
+

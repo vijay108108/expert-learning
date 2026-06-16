@@ -240,7 +240,7 @@ export async function sendLeadEmails(payload: LeadEmailPayload) {
     providerPreference: "gmail",
   });
 
-  if (!payload.email.trim()) {
+  if (!payload.email?.trim()) {
     return { success: true };
   }
 
@@ -318,7 +318,7 @@ export async function sendEnrollmentEmail(payload: EnrollmentEmailPayload) {
     context: "enrollment notification",
   });
 
-  if (!payload.email.trim()) {
+  if (!payload.email?.trim()) {
     return { success: true };
   }
 

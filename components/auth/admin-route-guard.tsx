@@ -1,30 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2, Lock, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
 import { signInAnonymously } from "firebase/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { getFirebaseAuth, getUserProfile, type AppUserProfile } from "@/lib/firebase";
-import { env } from "@/lib/env";
 
 const ADMIN_SESSION_KEY = "gz_admin_pin_auth";
-const ADMIN_PIN         = process.env.NEXT_PUBLIC_ADMIN_PIN || "GZAdmin2026";
+// PIN must be set via NEXT_PUBLIC_ADMIN_PIN env var — no hardcoded fallback
+const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN || "";
 
-function normalizePhone(v: string | null | undefined) {
-  return (v || "").replace(/\D/g, "").slice(-10);
-}
-
-function isAdminProfile(
-  profile: AppUserProfile | null,
-  email: string | null | undefined,
-  phone: string | null | undefined,
-) {
-  if (profile?.role === "admin") return true;
-  const e = (email || "").trim().toLowerCase();
-  if (e && env.adminEmails.includes(e)) return true;
-  const p = normalizePhone(phone || profile?.phone);
-  if (p && env.adminPhones.map(normalizePhone).includes(p)) return true;
-  return false;
+function isAdminProfile(profile: AppUserProfile | null) {
+  return profile?.role === "admin";
 }
 
 /* ── PIN login screen ────────────────────────────────────── */
@@ -35,7 +22,7 @@ function AdminPinScreen({ onSuccess }: { onSuccess: () => void }) {
   const [shaking, setShaking] = useState(false);
 
   async function attempt() {
-    if (pin === ADMIN_PIN) {
+    if (ADMIN_PIN && pin === ADMIN_PIN) {
       try { sessionStorage.setItem(ADMIN_SESSION_KEY, "1"); } catch { /* ignore */ }
       /* Sign in to Firebase anonymously so Firestore operations work */
       try {
@@ -127,55 +114,47 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
   const { user, isAuthReady } = useAuth();
 
   /* PIN session check (fastest — no Firebase needed) */
-  const [pinAuth, setPinAuth] = useState(false);
-  const [pinChecked, setPinChecked] = useState(false);
+  const [pinAuth, setPinAuth] = useState(() => {
+    try {
+      return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
-    let pinGranted = false;
-    try {
-      pinGranted = sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
-      if (pinGranted) setPinAuth(true);
-    } catch { /* ignore */ }
-    setPinChecked(true);
-
-    /* If PIN was previously granted, ensure Firebase anon auth is active */
-    if (pinGranted) {
-      void (async () => {
-        try {
-          const auth = getFirebaseAuth();
-          if (auth && !auth.currentUser) {
-            await signInAnonymously(auth);
-          }
-        } catch { /* ignore */ }
-      })();
+    if (!pinAuth) {
+      return;
     }
-  }, []);
+
+    void (async () => {
+      try {
+        const auth = getFirebaseAuth();
+        if (auth && !auth.currentUser) {
+          await signInAnonymously(auth);
+        }
+      } catch { /* ignore */ }
+    })();
+  }, [pinAuth]);
 
   /* Firebase role check (secondary) */
   const [firebaseAdmin, setFirebaseAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!isAuthReady || !user) { setFirebaseAdmin(null); return; }
+    if (!isAuthReady || !user) {
+      return;
+    }
     let active = true;
     void (async () => {
       try {
         const profile = await getUserProfile(user.uid);
-        if (active) setFirebaseAdmin(isAdminProfile(profile, user.email, user.phoneNumber));
+        if (active) setFirebaseAdmin(isAdminProfile(profile));
       } catch {
         if (active) setFirebaseAdmin(false);
       }
     })();
     return () => { active = false; };
   }, [isAuthReady, user]);
-
-  /* Still checking PIN session */
-  if (!pinChecked) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#060B14]">
-        <Loader2 className="h-6 w-6 animate-spin text-[#9333EA]" />
-      </div>
-    );
-  }
 
   /* Allow if: PIN authenticated OR Firebase admin */
   const allowed = pinAuth || firebaseAdmin === true;

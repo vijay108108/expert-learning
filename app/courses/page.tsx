@@ -160,7 +160,7 @@ export default function CoursesPage() {
             <SlidersHorizontal className="h-3.5 w-3.5 text-[#64748B]" />
             {search && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-2.5 py-1 text-xs font-medium text-[#475569]">
-                "{search}" <button onClick={() => setSearch("")}><X className="h-3 w-3" /></button>
+                &quot;{search}&quot; <button onClick={() => setSearch("")}><X className="h-3 w-3" /></button>
               </span>
             )}
             {track !== "all" && (

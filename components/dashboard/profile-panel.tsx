@@ -38,6 +38,11 @@ function formatMemberSince(value: string | null) {
 
 const gstPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 
+type ProfileRecord = AppUserProfile & {
+  companyName?: string;
+  gstNumber?: string;
+};
+
 /* ── Invoice download (print) ── */
 function InvoiceCard({ invoice }: { invoice: StoredOrderSuccess }) {
   return (
@@ -70,11 +75,21 @@ function InvoiceCard({ invoice }: { invoice: StoredOrderSuccess }) {
 /* ── Main component ── */
 export function ProfilePanel() {
   const { isAuthReady, openAuthModal, user } = useAuth();
-  const [profile, setProfile]           = useState<AppUserProfile | null>(null);
+  const [profile, setProfile]           = useState<ProfileRecord | null>(null);
   const [courseCount, setCourseCount]   = useState(0);
   const [memberSince, setMemberSince]   = useState<string | null>(null);
   const [loading, setLoading]           = useState(false);
-  const [invoice, setInvoice]           = useState<StoredOrderSuccess | null>(null);
+  const [invoice]                       = useState<StoredOrderSuccess | null>(() => {
+    try {
+      if (typeof window === "undefined") {
+        return null;
+      }
+      const raw = window.localStorage.getItem(latestOrderStorageKey);
+      return raw ? (JSON.parse(raw) as StoredOrderSuccess) : null;
+    } catch {
+      return null;
+    }
+  });
 
   /* Edit state */
   const [editing, setEditing]           = useState(false);
@@ -85,14 +100,6 @@ export function ProfilePanel() {
   const [editPhone, setEditPhone]       = useState("");
   const [editCompany, setEditCompany]   = useState("");
   const [editGst, setEditGst]           = useState("");
-
-  useEffect(() => {
-    /* Load latest invoice from localStorage */
-    try {
-      const raw = window.localStorage.getItem(latestOrderStorageKey);
-      if (raw) setInvoice(JSON.parse(raw) as StoredOrderSuccess);
-    } catch { /* ignore */ }
-  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -119,15 +126,16 @@ export function ProfilePanel() {
           ...deviceCourses.map(c => c.enrolledAt),
         ].filter((v): v is string => Boolean(v)).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
-        setProfile(nextProfile);
+        setProfile(nextProfile as ProfileRecord);
         setCourseCount(uniqueIds.size);
         setMemberSince(dates[0] || new Date().toISOString());
         /* Pre-fill edit fields */
         setEditName(user.displayName || nextProfile?.name || "");
         setEditEmail(nextProfile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "") || "");
         setEditPhone(nextProfile?.phone || user.phoneNumber || "");
-        setEditCompany((nextProfile as any)?.companyName || "");
-        setEditGst((nextProfile as any)?.gstNumber || "");
+        const nextBillingProfile = nextProfile as ProfileRecord | null;
+        setEditCompany(nextBillingProfile?.companyName || "");
+        setEditGst(nextBillingProfile?.gstNumber || "");
       } catch (err) {
         if (!active) return;
         logFirestoreIssue("[Profile] Unable to load", err);
@@ -164,7 +172,7 @@ export function ProfilePanel() {
       }
       setSaveMsg("✓ Profile updated successfully");
       setEditing(false);
-    } catch (err) {
+    } catch {
       setSaveMsg("Unable to save changes. Try again.");
     } finally {
       setSaving(false);
@@ -335,8 +343,8 @@ export function ProfilePanel() {
                   { icon: User,      label: "Name",        value: displayName   || "—" },
                   { icon: Phone,     label: "Phone",       value: displayPhone  || "Not added" },
                   { icon: Mail,      label: "Email",       value: displayEmail  || "Not added" },
-                  { icon: Building2, label: "Company",     value: (profile as any)?.companyName || "Not added" },
-                  { icon: Receipt,   label: "GSTIN",       value: (profile as any)?.gstNumber   || "Not added" },
+                  { icon: Building2, label: "Company",     value: profile?.companyName || "Not added" },
+                  { icon: Receipt,   label: "GSTIN",       value: profile?.gstNumber   || "Not added" },
                 ].map((r) => (
                   <div key={r.label} className="flex items-center gap-3 rounded-xl border border-[#F1F5F9] bg-[#F8FAFC] px-4 py-3">
                     <r.icon className="h-4 w-4 shrink-0 text-[#4F46E5]" />

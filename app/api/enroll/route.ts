@@ -8,6 +8,12 @@ import { enrollmentSchema } from "@/lib/validations";
 
 export async function POST(request: Request) {
   try {
+    const adminKey = request.headers.get("x-admin-key") || "";
+    const expectedKey = process.env.ADMIN_SETUP_KEY || "";
+    if (!expectedKey || adminKey !== expectedKey) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     const body = enrollmentSchema.parse(await request.json());
     const supabase = createSupabaseAdminClient();
 

@@ -6,10 +6,16 @@ import {
   Download, Eye, GraduationCap, Loader2,
   Phone, ShieldCheck, Users2, X, Zap,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import { getFirebaseAuth } from "@/lib/firebase";
+import {
+  getFirebaseAuth,
+  getFirebaseAuthErrorMessage,
+  isRetryablePhoneVerificationError,
+  normalizePhoneForAuth,
+  preparePhoneAuth,
+} from "@/lib/firebase";
 import {
   RecaptchaVerifier, signInWithPhoneNumber,
   type ConfirmationResult,
@@ -18,6 +24,8 @@ import { getFirebaseDb } from "@/lib/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const SLUG = "cloud-devops-ai-summer-2026";
+const phoneOtpRetryDelayMs = 250;
+const phoneOtpRequestTimeoutMs = 30000;
 
 /* ── Batch options ─────────────────────────────────────────── */
 const batches = [
@@ -51,6 +59,12 @@ const valueProps = [
   { emoji: "📜", title: "Certificate That Matters", desc: "GenZNext Professional Certificate — accepted for internship applications, job interviews, LinkedIn and engineering portfolios." },
 ];
 
+function delay(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
 /* ── Syllabus Lead Capture Modal ──────────────────────────── */
 function SyllabusModal({ onClose }: { onClose: () => void }) {
   const [step, setStep]           = useState<"form" | "otp" | "done">("form");
@@ -72,28 +86,63 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
     setPending(true);
     setError("");
     try {
-      const auth = getFirebaseAuth();
-      if (!auth) throw new Error("Firebase not configured.");
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const auth = getFirebaseAuth();
+        if (!auth) throw new Error("Firebase not configured.");
 
-      /* Clean up previous */
-      if (recaptchaRef.current) { try { recaptchaRef.current.clear(); } catch { /* ignore */ } recaptchaRef.current = null; }
-      if (containerRef.current) containerRef.current.innerHTML = "";
+        /* Clean up previous */
+        if (recaptchaRef.current) {
+          try {
+            recaptchaRef.current.clear();
+          } catch {
+            /* ignore */
+          }
+          recaptchaRef.current = null;
+        }
+        if (containerRef.current) containerRef.current.innerHTML = "";
 
-      const div = document.createElement("div");
-      div.id = `recap-syllabus-${Date.now()}`;
-      containerRef.current?.appendChild(div);
+        const div = document.createElement("div");
+        div.id = `recap-syllabus-${Date.now()}`;
+        containerRef.current?.appendChild(div);
 
-      auth.settings.appVerificationDisabledForTesting =
-        window.location.hostname === "localhost";
+        preparePhoneAuth(auth);
 
-      const verifier = new RecaptchaVerifier(auth, div, { size: "invisible" });
-      recaptchaRef.current = verifier;
+        const verifier = new RecaptchaVerifier(auth, div, { size: "invisible" });
+        recaptchaRef.current = verifier;
 
-      const formatted = phone.startsWith("+") ? phone : `+91${phone.replace(/\D/g, "").slice(-10)}`;
-      confirmRef.current = await signInWithPhoneNumber(auth, formatted, verifier);
-      setStep("otp");
-    } catch (e: any) {
-      setError(e?.message || "Failed to send OTP. Try again.");
+        const formatted = phone.startsWith("+") ? phone : `+91${normalizePhoneForAuth(phone).slice(-10)}`;
+
+        try {
+          confirmRef.current = await Promise.race([
+            signInWithPhoneNumber(auth, formatted, verifier),
+            new Promise<never>((_, reject) => {
+              window.setTimeout(() => reject(new Error("OTP request timed out. Please try again.")), phoneOtpRequestTimeoutMs);
+            }),
+          ]);
+          setStep("otp");
+          return;
+        } catch (error: unknown) {
+          const code = error && typeof error === "object" && "code" in error
+            ? String((error as { code?: unknown }).code)
+            : error instanceof Error && error.message === "OTP request timed out. Please try again."
+              ? "auth/network-request-failed"
+              : "";
+
+          if (attempt === 0 && isRetryablePhoneVerificationError(error)) {
+            await delay(phoneOtpRetryDelayMs);
+            continue;
+          }
+
+          if (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential") {
+            setError(getFirebaseAuthErrorMessage(error));
+          } else {
+            setError(error instanceof Error ? error.message : "Failed to send OTP. Try again.");
+          }
+          return;
+        }
+      }
+    } catch (error: unknown) {
+      setError(getFirebaseAuthErrorMessage(error));
     } finally {
       setPending(false);
     }
@@ -121,7 +170,7 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
       }
 
       setStep("done");
-    } catch (e: any) {
+    } catch {
       setError("Invalid OTP. Please try again.");
     } finally {
       setPending(false);
@@ -294,7 +343,7 @@ export default function SummerEnrollPage() {
                   <button
                     key={b.id}
                     type="button"
-                    onClick={() => setBatch(b.id as any)}
+                    onClick={() => setBatch(b.id as typeof batch)}
                     className={`rounded-2xl border-2 p-4 text-left transition ${
                       batch === b.id
                         ? `${b.color} shadow-md`
@@ -333,7 +382,7 @@ export default function SummerEnrollPage() {
 
             {/* What you build */}
             <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
-              <p className="text-[13px] font-bold uppercase tracking-wider text-[#4F46E5]">Capstone: What You'll Build</p>
+              <p className="text-[13px] font-bold uppercase tracking-wider text-[#4F46E5]">Capstone: What You&apos;ll Build</p>
               <p className="mt-2 text-[13px] text-[#475569]">
                 In Week 8, you deploy a <strong className="text-[#0F172A]">production-ready Azure environment</strong> — 100% using Terraform and Azure DevOps CI/CD:
               </p>

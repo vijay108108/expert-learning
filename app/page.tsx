@@ -483,7 +483,7 @@ export default function Home() {
       <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Who It's For</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Who It&apos;s For</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Learning Designed For You</h2>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-3">

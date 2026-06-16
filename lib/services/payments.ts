@@ -33,7 +33,11 @@ export function verifyRazorpaySignature(payload: {
     .update(`${payload.orderId}|${payload.paymentId}`)
     .digest("hex");
 
-  return generated === payload.signature;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(generated, "hex"), Buffer.from(payload.signature, "hex"));
+  } catch {
+    return false;
+  }
 }
 
 export async function getRazorpayPaymentDetails(paymentId: string) {

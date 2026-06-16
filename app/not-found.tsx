@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, BookOpenCheck, Home, Search } from "lucide-react";
+import { BookOpenCheck, Home, Search } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -12,10 +12,10 @@ export default function NotFound() {
 
         {/* Heading */}
         <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-[#0F172A] sm:text-5xl">
-          Oops! This page doesn't exist.
+          Oops! This page doesn&apos;t exist.
         </h1>
         <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-[#475569]">
-          The page you're looking for may have moved, been renamed, or never existed. Let's get you back on track.
+          The page you&apos;re looking for may have moved, been renamed, or never existed. Let&apos;s get you back on track.
         </p>
 
         {/* Quick links */}
@@ -43,11 +43,11 @@ export default function NotFound() {
         {/* Divider */}
         <div className="mx-auto mt-10 h-px max-w-xs bg-[#E2E8F0]" />
         <p className="mt-6 text-sm text-[#64748B]">
-          Still can't find what you need?{" "}
+          Still can&apos;t find what you need?{" "}
           <Link href="/contact" className="font-semibold text-[#4F46E5] hover:underline">
             Contact our team
           </Link>
-          {" "}and we'll help.
+          {" "}and we&apos;ll help.
         </p>
       </div>
     </section>

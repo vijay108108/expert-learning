@@ -5,21 +5,9 @@ import { env } from "@/lib/env";
 
 export const recaptchaContainerId = "recaptcha-container";
 
+export { normalizePhoneForAuth } from "./phone-utils";
+
 let recaptchaVerifierInstance: RecaptchaVerifier | null = null;
-
-export function normalizePhoneForAuth(phone: string) {
-  const digits = phone.replace(/\D/g, "");
-
-  if (digits.length === 10) {
-    return `91${digits}`;
-  }
-
-  if (digits.length === 12 && digits.startsWith("91")) {
-    return digits;
-  }
-
-  return digits;
-}
 
 export function isLocalPhoneAuthHost() {
   if (typeof window === "undefined") {
@@ -36,6 +24,24 @@ export function isPhoneAuthTestingEnabled() {
 export function preparePhoneAuth(auth: Auth) {
   auth.settings.appVerificationDisabledForTesting =
     isLocalPhoneAuthHost() && isPhoneAuthTestingEnabled();
+}
+
+const retryablePhoneVerificationErrors = new Set([
+  "auth/captcha-check-failed",
+  "auth/invalid-app-credential",
+  "auth/missing-app-credential",
+  "auth/network-request-failed",
+  "auth/internal-error",
+  "auth/unauthorized-domain",
+]);
+
+export function isRetryablePhoneVerificationError(error: unknown) {
+  if (!error || typeof error !== "object" || !("code" in error)) {
+    return false;
+  }
+
+  const code = (error as { code?: unknown }).code;
+  return typeof code === "string" && retryablePhoneVerificationErrors.has(code);
 }
 
 function resolveRecaptchaContainer(container?: string | HTMLElement | null) {
