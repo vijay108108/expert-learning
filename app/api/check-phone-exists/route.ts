@@ -35,14 +35,8 @@ async function handleRequest(request: Request) {
   } catch (error) {
     console.error("[Auth Check Phone Exists] lookup failed", error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        exists: false,
-        message: error instanceof Error ? error.message : "Unable to validate the phone number right now.",
-      },
-      { status: 503 },
-    );
+    // Degrade gracefully — a failed phone check should never block signup
+    return NextResponse.json({ success: true, exists: false, source: "unavailable" });
   }
 }
 
