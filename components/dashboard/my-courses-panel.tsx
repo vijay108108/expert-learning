@@ -21,6 +21,12 @@ type MyCoursesPanelProps = {
 type DashboardCourseCard = {
   id: string;
   courseSlug: string;
+  enrollmentType: "course" | "program";
+  purchasedOfferingSlug?: string;
+  programSlug?: string;
+  programName?: string;
+  programCourseSlugs?: string[];
+  primaryCourseSlug?: string;
   title: string;
   status: string;
   batch: string;
@@ -75,6 +81,12 @@ function buildInvoiceFallbackCourses(invoice: StoredOrderSuccess) {
     return {
       id: `invoice-${invoice.orderId}-${normalizedCourseSlug}`,
       courseSlug: normalizedCourseSlug,
+      enrollmentType: courseLine.enrollmentType || "course",
+      purchasedOfferingSlug: courseLine.purchasedOfferingSlug || normalizedCourseSlug,
+      programSlug: courseLine.programSlug || "",
+      programName: courseLine.programName || "",
+      programCourseSlugs: courseLine.programCourseSlugs || [],
+      primaryCourseSlug: courseLine.primaryCourseSlug || normalizedCourseSlug,
       title: resolvedTitle,
       status: "Active",
       batch: getBatchLabel(normalizedCourseSlug, resolvedTitle),
@@ -94,6 +106,12 @@ function buildLocalCourses(courses: EnrolledCourse[]) {
     return {
       id: `local-${course.courseSlug}`,
       courseSlug: course.courseSlug,
+      enrollmentType: course.enrollmentType || "course",
+      purchasedOfferingSlug: course.purchasedOfferingSlug || course.courseSlug,
+      programSlug: course.programSlug || "",
+      programName: course.programName || "",
+      programCourseSlugs: course.programCourseSlugs || [],
+      primaryCourseSlug: course.primaryCourseSlug || course.courseSlug,
       title: resolvedTitle,
       status: formatStatus(course.status),
       batch: getBatchLabel(course.courseSlug, resolvedTitle, course.batch),
@@ -121,6 +139,12 @@ function buildFirestoreCourses(enrollments: Array<FirestoreEnrollment & { id: st
     return {
       id: enrollment.id,
       courseSlug: normalizedCourseSlug,
+      enrollmentType: enrollment.enrollmentType || (purchasedOffering?.kind === "bundle" ? "program" : "course"),
+      purchasedOfferingSlug: enrollment.purchasedOfferingSlug || normalizedCourseSlug,
+      programSlug: enrollment.programSlug || (purchasedOffering?.kind === "bundle" ? purchasedOffering.slug : ""),
+      programName: enrollment.programName || (purchasedOffering?.kind === "bundle" ? purchasedOffering.title : ""),
+      programCourseSlugs: enrollment.programCourseSlugs || (purchasedOffering?.kind === "bundle" ? purchasedOffering.courseSlugs : []),
+      primaryCourseSlug: enrollment.primaryCourseSlug || normalizedCourseSlug,
       title: resolvedTitle,
       status: formatStatus(enrollment.status),
       batch: getBatchLabel(normalizedCourseSlug, resolvedTitle),
@@ -137,14 +161,54 @@ function mergeCourses(...courseLists: DashboardCourseCard[][]) {
   const duplicateKeys: string[] = [];
   const duplicateEnrollmentIds: string[] = [];
 
+  function getCardGroupingKey(course: DashboardCourseCard) {
+    if (course.enrollmentType === "program") {
+      const programSlug = course.programSlug || course.purchasedOfferingSlug || "";
+      if (programSlug) {
+        return `program:${programSlug}`;
+      }
+    }
+
+    const purchasedOffering = course.purchasedOfferingSlug
+      ? getCheckoutOfferingBySlug(course.purchasedOfferingSlug)
+      : null;
+
+    if (purchasedOffering?.kind === "bundle") {
+      return `program:${purchasedOffering.slug}`;
+    }
+
+    return `course:${getCanonicalCourseId(course.courseSlug)}`;
+  }
+
   for (const list of courseLists) {
     for (const course of list) {
-      const canonicalCourseId = getCanonicalCourseId(course.courseSlug);
-      if (!courseMap.has(canonicalCourseId)) {
-        courseMap.set(canonicalCourseId, course);
+      const groupingKey = getCardGroupingKey(course);
+      const existing = courseMap.get(groupingKey);
+
+      if (!existing) {
+        courseMap.set(groupingKey, course);
       } else {
-        duplicateKeys.push(canonicalCourseId);
+        duplicateKeys.push(groupingKey);
         duplicateEnrollmentIds.push(course.id);
+        const mergedProgramCourseSlugs = Array.from(
+          new Set([...(existing.programCourseSlugs || []), ...(course.programCourseSlugs || [])]),
+        );
+        const shouldReplace = new Date(course.enrolledAt).getTime() > new Date(existing.enrolledAt).getTime();
+
+        courseMap.set(
+          groupingKey,
+          shouldReplace
+            ? {
+                ...course,
+                programCourseSlugs: mergedProgramCourseSlugs,
+                primaryCourseSlug: course.primaryCourseSlug || existing.primaryCourseSlug || course.courseSlug,
+              }
+            : {
+                ...existing,
+                programCourseSlugs: mergedProgramCourseSlugs,
+                primaryCourseSlug: existing.primaryCourseSlug || course.primaryCourseSlug || existing.courseSlug,
+              },
+        );
       }
     }
   }
@@ -189,12 +253,20 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
   const highlightedCourseSlug = searchParams.get("course");
 
   useEffect(() => {
-    if (!highlightedCourseSlug || !dashboardCourses.some((course) => course.courseSlug === highlightedCourseSlug)) {
+    if (!highlightedCourseSlug) {
+      return;
+    }
+
+    const highlightedCourse = dashboardCourses.find(
+      (course) => course.courseSlug === highlightedCourseSlug || course.primaryCourseSlug === highlightedCourseSlug,
+    );
+
+    if (!highlightedCourse) {
       return;
     }
 
     const frame = window.requestAnimationFrame(() => {
-      courseCardRefs.current[highlightedCourseSlug]?.scrollIntoView({
+      courseCardRefs.current[highlightedCourse.id]?.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
@@ -354,11 +426,11 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
               <article
                 key={course.id}
                 ref={(node) => {
-                  courseCardRefs.current[course.courseSlug] = node;
+                  courseCardRefs.current[course.id] = node;
                 }}
                 className={cn(
                   "group rounded-[24px] border border-[#E5E7EB] bg-white p-6 shadow-[0_10px_28px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-[#C7D2FE] hover:shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
-                  highlightedCourseSlug === course.courseSlug &&
+                  (highlightedCourseSlug === course.courseSlug || highlightedCourseSlug === course.primaryCourseSlug) &&
                     "border-[#A7F3D0] shadow-[0_18px_36px_rgba(16,185,129,0.14)]",
                 )}
               >
@@ -372,6 +444,11 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                       {course.batch ? (
                         <p>
                           <span className="text-[#6B7280]">Batch:</span> {course.batch}
+                        </p>
+                      ) : null}
+                      {course.enrollmentType === "program" ? (
+                        <p>
+                          <span className="text-[#6B7280]">Includes:</span> {Math.max(course.programCourseSlugs?.length || 0, 1)} course{Math.max(course.programCourseSlugs?.length || 0, 1) === 1 ? "" : "s"}
                         </p>
                       ) : null}
                     </div>
@@ -389,7 +466,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                 <div className="mt-6 grid gap-2 sm:grid-cols-2">
                   <button
                     type="button"
-                    onClick={() => router.push(`/dashboard/${encodeURIComponent(course.courseSlug)}`)}
+                    onClick={() => router.push(`/dashboard/${encodeURIComponent(course.primaryCourseSlug || course.courseSlug)}`)}
                     className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-3.5 py-2.5 text-[14px] font-semibold text-white shadow-[0_10px_20px_rgba(79,70,229,0.20)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_rgba(79,70,229,0.28)]"
                   >
                     Continue Learning
@@ -397,7 +474,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                   </button>
                   <button
                     type="button"
-                    onClick={() => setSelectedSyllabusSlug(course.courseSlug)}
+                    onClick={() => setSelectedSyllabusSlug(course.primaryCourseSlug || course.courseSlug)}
                     className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] border border-[#E5E7EB] bg-white px-3.5 py-2.5 text-[14px] font-semibold text-[#111827] transition hover:-translate-y-0.5 hover:border-[#C7D2FE] hover:bg-[#F9FAFB] hover:shadow-[0_8px_16px_rgba(99,102,241,0.12)]"
                   >
                     📖 Syllabus

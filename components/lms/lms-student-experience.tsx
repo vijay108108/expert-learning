@@ -63,6 +63,12 @@ function buildLocalEnrollment(userId: string, courseSlug: string) {
     userPhone: "",
     userEmail: "",
     courseId: normalizedCourseSlug,
+    enrollmentType: localCourse.enrollmentType || "course",
+    purchasedOfferingSlug: localCourse.purchasedOfferingSlug || normalizedCourseSlug,
+    programSlug: localCourse.programSlug || "",
+    programName: localCourse.programName || "",
+    programCourseSlugs: localCourse.programCourseSlugs || [],
+    primaryCourseSlug: localCourse.primaryCourseSlug || normalizedCourseSlug,
     courseName: localCourse.title || catalogCourse?.title || normalizedCourseSlug,
     amountPaid: 0,
     razorpayOrderId: "",
@@ -76,26 +82,56 @@ function buildLocalEnrollment(userId: string, courseSlug: string) {
 }
 
 function mergeRemoteAndLocalEnrollments(userId: string, enrollments: Array<FirestoreEnrollment & { id: string }>) {
-  const enrollmentMap = new Map(
-    enrollments.map((enrollment) => {
-      const purchasedOffering = enrollment.purchasedOfferingSlug
-        ? getCheckoutOfferingBySlug(enrollment.purchasedOfferingSlug)
-        : null;
-      const patchedEnrollment = {
-        ...enrollment,
-        courseName:
-          (purchasedOffering?.kind === "bundle" ? purchasedOffering.title : "")
-          || enrollment.courseName,
-      };
+  const enrollmentMap = new Map<string, FirestoreEnrollment & { id: string }>();
 
-      return [getCourseSlugByCourseId(enrollment.courseId), patchedEnrollment] as const;
-    }),
-  );
+  function getEnrollmentKey(enrollment: FirestoreEnrollment & { id: string }) {
+    if (enrollment.enrollmentType === "program") {
+      const programSlug = enrollment.programSlug || enrollment.purchasedOfferingSlug || "";
+      if (programSlug) {
+        return `program:${programSlug}`;
+      }
+    }
+
+    const purchasedOffering = enrollment.purchasedOfferingSlug
+      ? getCheckoutOfferingBySlug(enrollment.purchasedOfferingSlug)
+      : null;
+
+    if (purchasedOffering?.kind === "bundle") {
+      return `program:${purchasedOffering.slug}`;
+    }
+
+    return `course:${getCourseSlugByCourseId(enrollment.courseId)}`;
+  }
+
+  for (const enrollment of enrollments) {
+    const purchasedOffering = enrollment.purchasedOfferingSlug
+      ? getCheckoutOfferingBySlug(enrollment.purchasedOfferingSlug)
+      : null;
+    const enrollmentKey = getEnrollmentKey(enrollment);
+    const current = enrollmentMap.get(enrollmentKey);
+    const patchedEnrollment = {
+      ...enrollment,
+      courseName:
+        enrollment.programName
+        || (purchasedOffering?.kind === "bundle" ? purchasedOffering.title : "")
+        || enrollment.courseName,
+      primaryCourseSlug: enrollment.primaryCourseSlug || getCourseSlugByCourseId(enrollment.courseId),
+    };
+
+    if (!current || new Date(patchedEnrollment.enrolledAt).getTime() > new Date(current.enrolledAt).getTime()) {
+      enrollmentMap.set(enrollmentKey, patchedEnrollment);
+    }
+  }
 
   for (const localCourse of readEnrolledCourses()) {
     const localEnrollment = buildLocalEnrollment(userId, localCourse.courseSlug);
-    if (localEnrollment && !enrollmentMap.has(localEnrollment.courseId)) {
-      enrollmentMap.set(localEnrollment.courseId, localEnrollment);
+    if (!localEnrollment) {
+      continue;
+    }
+
+    const enrollmentKey = getEnrollmentKey(localEnrollment);
+    if (!enrollmentMap.has(enrollmentKey)) {
+      enrollmentMap.set(enrollmentKey, localEnrollment);
     }
   }
 

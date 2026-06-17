@@ -104,6 +104,12 @@ function buildInvoiceEnrollments(invoice: StoredOrderSuccess) {
     userPhone: invoice.customer.phone,
     userEmail: invoice.customer.email,
     courseId: getCourseSlugByCourseId(course.slug),
+    enrollmentType: course.enrollmentType || "course",
+    purchasedOfferingSlug: course.purchasedOfferingSlug || getCourseSlugByCourseId(course.slug),
+    programSlug: course.programSlug || "",
+    programName: course.programName || "",
+    programCourseSlugs: course.programCourseSlugs || [],
+    primaryCourseSlug: course.primaryCourseSlug || getCourseSlugByCourseId(course.slug),
     courseName: course.title,
     amountPaid: Math.round(course.amountPaise / 100),
     razorpayOrderId: invoice.orderId,
@@ -126,6 +132,12 @@ function buildLocalLearningEnrollments(courses: MyLearningCourse[]) {
     userPhone: "",
     userEmail: "",
     courseId: getCourseSlugByCourseId(course.courseSlug),
+    enrollmentType: course.enrollmentType || "course",
+    purchasedOfferingSlug: course.purchasedOfferingSlug || getCourseSlugByCourseId(course.courseSlug),
+    programSlug: course.programSlug || "",
+    programName: course.programName || "",
+    programCourseSlugs: course.programCourseSlugs || [],
+    primaryCourseSlug: course.primaryCourseSlug || getCourseSlugByCourseId(course.courseSlug),
     courseName: course.title,
     amountPaid: 0,
     razorpayOrderId: "",
@@ -160,19 +172,42 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
   const isCoursePortalView = Boolean(selectedCourseSlug);
 
   const dashboardEnrollments = useMemo(() => {
-    const enrollmentMap = new Map(enrollments.map((enrollment) => [getCanonicalCourseId(enrollment.courseId), enrollment]));
+    const enrollmentMap = new Map<string, FirestoreEnrollment & { id: string }>();
+
+    function getEnrollmentKey(enrollment: FirestoreEnrollment & { id: string }) {
+      if (enrollment.enrollmentType === "program") {
+        const programSlug = enrollment.programSlug || enrollment.purchasedOfferingSlug || "";
+        if (programSlug) {
+          return `program:${programSlug}`;
+        }
+      }
+
+      const purchasedOffering = enrollment.purchasedOfferingSlug
+        ? getCheckoutOfferingBySlug(enrollment.purchasedOfferingSlug)
+        : null;
+
+      if (purchasedOffering?.kind === "bundle") {
+        return `program:${purchasedOffering.slug}`;
+      }
+
+      return `course:${getCanonicalCourseId(enrollment.courseId)}`;
+    }
+
+    for (const enrollment of enrollments) {
+      enrollmentMap.set(getEnrollmentKey(enrollment), enrollment);
+    }
 
     for (const invoiceEnrollment of invoiceEnrollments) {
-      const canonicalCourseId = getCanonicalCourseId(invoiceEnrollment.courseId);
-      if (!enrollmentMap.has(canonicalCourseId)) {
-        enrollmentMap.set(canonicalCourseId, invoiceEnrollment);
+      const enrollmentKey = getEnrollmentKey(invoiceEnrollment);
+      if (!enrollmentMap.has(enrollmentKey)) {
+        enrollmentMap.set(enrollmentKey, invoiceEnrollment);
       }
     }
 
     for (const learningEnrollment of buildLocalLearningEnrollments(localLearningCourses)) {
-      const canonicalCourseId = getCanonicalCourseId(learningEnrollment.courseId);
-      if (!enrollmentMap.has(canonicalCourseId)) {
-        enrollmentMap.set(canonicalCourseId, learningEnrollment);
+      const enrollmentKey = getEnrollmentKey(learningEnrollment);
+      if (!enrollmentMap.has(enrollmentKey)) {
+        enrollmentMap.set(enrollmentKey, learningEnrollment);
       }
     }
 

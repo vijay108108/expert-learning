@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
+import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { saveEnrollmentRecord } from "@/lib/firebase";
 import { env } from "@/lib/env";
@@ -63,23 +64,45 @@ export async function POST(request: Request) {
     }
 
     const { offerings } = resolveCheckoutOfferings(courseSlugs);
-    const enrolledCourseSlugs = Array.from(new Set(offerings.flatMap((offering) => offering.courseSlugs)));
+
+    function resolveEnrollmentMetaForOffering(offering: CheckoutOffering): {
+      enrollmentType: "course" | "program";
+      purchasedOfferingSlug: string;
+      programSlug: string;
+      programName: string;
+      programCourseSlugs: string[];
+      primaryCourseSlug: string;
+    } {
+      const isProgramPurchase = offering.kind === "bundle";
+
+      return {
+        enrollmentType: isProgramPurchase ? "program" : "course",
+        purchasedOfferingSlug: offering.slug,
+        programSlug: isProgramPurchase ? offering.slug : "",
+        programName: isProgramPurchase ? offering.title : "",
+        programCourseSlugs: isProgramPurchase ? offering.courseSlugs : [],
+        primaryCourseSlug: offering.courseSlugs[0] || offering.slug,
+      };
+    }
     const enrolledAt = new Date().toISOString();
 
     await Promise.all(
-      enrolledCourseSlugs.map((slug) => {
-        const selected = resolveCheckoutOfferings([slug]).offerings[0];
-        if (!selected) {
-          return Promise.resolve(null);
-        }
+      offerings.map((offering) => {
+        const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
+        const selected = offering;
         return saveEnrollmentRecord({
           userId,
           userName: name || "GenZNext Learner",
           userPhone: phone,
           userEmail: email,
-          courseId: getCourseSlugByCourseId(slug),
-          canonicalCourseId: getCanonicalCourseIdBySlug(slug),
-          purchasedOfferingSlug: courseSlugs[0] || slug,
+          courseId: getCourseSlugByCourseId(enrollmentMeta.primaryCourseSlug),
+          canonicalCourseId: getCanonicalCourseIdBySlug(enrollmentMeta.primaryCourseSlug),
+          enrollmentType: enrollmentMeta.enrollmentType,
+          purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
+          programSlug: enrollmentMeta.programSlug,
+          programName: enrollmentMeta.programName,
+          programCourseSlugs: enrollmentMeta.programCourseSlugs,
+          primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
           courseName: selected.title,
           amountPaid: Math.round(selected.priceValue),
           razorpayOrderId: entity.order_id || "",

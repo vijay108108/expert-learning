@@ -6,6 +6,12 @@ export type InvoiceCourseLine = {
   duration: string;
   level: string;
   amountPaise: number;
+  enrollmentType?: "course" | "program";
+  purchasedOfferingSlug?: string;
+  programSlug?: string;
+  programName?: string;
+  programCourseSlugs?: string[];
+  primaryCourseSlug?: string;
 };
 
 export type StoredOrderSuccess = {

@@ -20,7 +20,12 @@ export type FirestoreEnrollment = {
   userEmail?: string;
   courseId: string;
   canonicalCourseId?: string;
+  enrollmentType?: "course" | "program";
   purchasedOfferingSlug?: string;
+  programSlug?: string;
+  programName?: string;
+  programCourseSlugs?: string[];
+  primaryCourseSlug?: string;
   courseName: string;
   amountPaid: number;
   razorpayOrderId: string;
@@ -143,7 +148,12 @@ export async function saveInvoiceEnrollments(user: User, invoice: StoredOrderSuc
         userEmail: invoice.customer.email || "",
         courseId: getCourseSlugByCourseId(course.slug),
         canonicalCourseId: getCanonicalCourseIdBySlug(course.slug),
-        purchasedOfferingSlug: course.slug,
+        enrollmentType: course.enrollmentType || "course",
+        purchasedOfferingSlug: course.purchasedOfferingSlug || course.slug,
+        programSlug: course.programSlug || "",
+        programName: course.programName || "",
+        programCourseSlugs: course.programCourseSlugs || [],
+        primaryCourseSlug: course.primaryCourseSlug || getCourseSlugByCourseId(course.slug),
         courseName: course.title,
         amountPaid: Math.round(course.amountPaise / 100),
         razorpayOrderId: invoice.orderId,

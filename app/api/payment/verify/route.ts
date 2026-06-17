@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { formatPaiseToPrice } from "@/lib/course-catalog";
+import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
 import {
@@ -28,13 +29,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "One or more selected courses were not found." }, { status: 404 });
     }
 
-    const enrolledCourseSlugs = offerings.flatMap((offering) => offering.courseSlugs);
-    const uniqueEnrolledCourseSlugs = Array.from(new Set(enrolledCourseSlugs));
+    function resolveEnrollmentMetaForOffering(offering: CheckoutOffering): {
+      enrollmentType: "course" | "program";
+      purchasedOfferingSlug: string;
+      programSlug: string;
+      programName: string;
+      programCourseSlugs: string[];
+      primaryCourseSlug: string;
+    } {
+      const isProgramPurchase = offering.kind === "bundle";
 
-    function resolveDisplayValuesForSlug(slug: string) {
-      const fallback = resolveCheckoutOfferings([slug]).offerings[0];
+      return {
+        enrollmentType: isProgramPurchase ? "program" : "course",
+        purchasedOfferingSlug: offering.slug,
+        programSlug: isProgramPurchase ? offering.slug : "",
+        programName: isProgramPurchase ? offering.title : "",
+        programCourseSlugs: isProgramPurchase ? offering.courseSlugs : [],
+        primaryCourseSlug: offering.courseSlugs[0] || offering.slug,
+      };
+    }
 
-      if (singleCourseBundleSlug && slug === singleCourseBundleSlug && purchasedOffering) {
+    function resolveDisplayValuesForOffering(offering: CheckoutOffering) {
+      if (offering.kind === "bundle") {
+        return {
+          title: offering.title,
+          duration: offering.duration,
+          level: offering.level,
+          amountPaise: offering.priceValue * 100,
+        };
+      }
+
+      if (singleCourseBundleSlug && offering.slug === singleCourseBundleSlug && purchasedOffering) {
         return {
           title: purchasedOffering.title,
           duration: purchasedOffering.duration,
@@ -44,10 +69,10 @@ export async function POST(request: Request) {
       }
 
       return {
-        title: fallback?.title || slug,
-        duration: fallback?.duration || "",
-        level: fallback?.level || "",
-        amountPaise: (fallback?.priceValue || 0) * 100,
+        title: offering.title,
+        duration: offering.duration,
+        level: offering.level,
+        amountPaise: offering.priceValue * 100,
       };
     }
 
@@ -78,16 +103,24 @@ export async function POST(request: Request) {
 
     try {
       await Promise.all(
-        uniqueEnrolledCourseSlugs.map((slug) => {
-          const display = resolveDisplayValuesForSlug(slug);
+        offerings.map((offering) => {
+          const display = resolveDisplayValuesForOffering(offering);
+          const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
+          const primaryCourseSlug = enrollmentMeta.primaryCourseSlug;
+
           return saveEnrollmentRecord({
             userId: body.userId,
             userName: body.name,
             userPhone: body.phone,
             userEmail: body.email || "",
-            courseId: getCourseSlugByCourseId(slug),
-            canonicalCourseId: getCanonicalCourseIdBySlug(slug),
-            purchasedOfferingSlug: requestedSlugs[0] || slug,
+            courseId: getCourseSlugByCourseId(primaryCourseSlug),
+            canonicalCourseId: getCanonicalCourseIdBySlug(primaryCourseSlug),
+            enrollmentType: enrollmentMeta.enrollmentType,
+            purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
+            programSlug: enrollmentMeta.programSlug,
+            programName: enrollmentMeta.programName,
+            programCourseSlugs: enrollmentMeta.programCourseSlugs,
+            primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
             courseName: display.title,
             amountPaid: Math.round(display.amountPaise / 100),
             razorpayOrderId: body.razorpay_order_id,
@@ -112,17 +145,17 @@ export async function POST(request: Request) {
         name: body.name,
         email: body.email,
         phone: body.phone,
-        courseTitles: uniqueEnrolledCourseSlugs.map((slug) => resolveDisplayValuesForSlug(slug).title),
+        courseTitles: offerings.map((offering) => resolveDisplayValuesForOffering(offering).title),
         paymentId: body.razorpay_payment_id,
         amountLabel: formatPaiseToPrice(totalPaidPaise),
         enrolledAt: paidAtIso,
       }),
       sendWhatsAppNotification({
         phone: body.phone,
-        body: `Hi ${body.name}, your enrollment for ${uniqueEnrolledCourseSlugs.length > 1 ? `${uniqueEnrolledCourseSlugs.length} programs` : resolveDisplayValuesForSlug(uniqueEnrolledCourseSlugs[0] || "").title} is confirmed. Payment ID: ${body.razorpay_payment_id}`,
+        body: `Hi ${body.name}, your enrollment for ${offerings.length > 1 ? `${offerings.length} programs` : resolveDisplayValuesForOffering(offerings[0]).title} is confirmed. Payment ID: ${body.razorpay_payment_id}`,
       }),
       captureServerEvent(body.email, "payment_verified", {
-        courseSlugs: uniqueEnrolledCourseSlugs,
+        courseSlugs: offerings.map((offering) => offering.slug),
         paymentId: body.razorpay_payment_id,
       }),
     ]);
@@ -146,14 +179,21 @@ export async function POST(request: Request) {
         companyName: body.companyName?.trim() || undefined,
         gstNumber: body.gstNumber?.trim() || undefined,
       },
-      courses: uniqueEnrolledCourseSlugs.map((slug) => {
-        const display = resolveDisplayValuesForSlug(slug);
+      courses: offerings.map((offering) => {
+        const display = resolveDisplayValuesForOffering(offering);
+        const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
         return {
-          slug,
+          slug: enrollmentMeta.primaryCourseSlug,
           title: display.title,
           duration: display.duration,
           level: display.level,
           amountPaise: display.amountPaise,
+          enrollmentType: enrollmentMeta.enrollmentType,
+          purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
+          programSlug: enrollmentMeta.programSlug,
+          programName: enrollmentMeta.programName,
+          programCourseSlugs: enrollmentMeta.programCourseSlugs,
+          primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
         };
       }),
     };

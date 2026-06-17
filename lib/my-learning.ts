@@ -9,6 +9,12 @@ export const enrolledCoursesStorageKey = "enrolledCourses";
 export type EnrolledCourse = {
   id: string;
   courseSlug: string;
+  enrollmentType?: "course" | "program";
+  purchasedOfferingSlug?: string;
+  programSlug?: string;
+  programName?: string;
+  programCourseSlugs?: string[];
+  primaryCourseSlug?: string;
   title: string;
   batch: string;
   status: "Active" | "Enrolled";
@@ -22,6 +28,12 @@ export type EnrolledCourse = {
 export type MyLearningCourse = {
   id: string;
   courseSlug: string;
+  enrollmentType?: "course" | "program";
+  purchasedOfferingSlug?: string;
+  programSlug?: string;
+  programName?: string;
+  programCourseSlugs?: string[];
+  primaryCourseSlug?: string;
   title: string;
   status: "Active" | "Enrolled";
   batchLabel: string;
@@ -61,6 +73,20 @@ function normalizeEnrolledCourse(input: Partial<EnrolledCourse> & { title?: stri
   return {
     id: typeof input.id === "string" && input.id ? input.id : courseSlug,
     courseSlug,
+    enrollmentType: input.enrollmentType === "program" ? "program" : "course",
+    purchasedOfferingSlug:
+      typeof input.purchasedOfferingSlug === "string" && input.purchasedOfferingSlug
+        ? input.purchasedOfferingSlug
+        : courseSlug,
+    programSlug: typeof input.programSlug === "string" ? input.programSlug : "",
+    programName: typeof input.programName === "string" ? input.programName : "",
+    programCourseSlugs: Array.isArray(input.programCourseSlugs)
+      ? input.programCourseSlugs.filter((item): item is string => typeof item === "string" && Boolean(item))
+      : [],
+    primaryCourseSlug:
+      typeof input.primaryCourseSlug === "string" && input.primaryCourseSlug
+        ? input.primaryCourseSlug
+        : courseSlug,
     title: input.title || catalogCourse?.title || courseSlug,
     batch: typeof input.batch === "string" && input.batch ? input.batch : "Summer 2026",
     status: input.status === "Enrolled" ? "Enrolled" : "Active",
@@ -114,36 +140,48 @@ function readLegacyMyLearningCourses() {
     }));
 }
 
-export function readEnrolledCourses() {
+export function readEnrolledCourses(): EnrolledCourse[] {
   const parsed = readStoredJson<Array<Partial<EnrolledCourse>>>(enrolledCoursesStorageKey);
 
   if (Array.isArray(parsed)) {
-    return dedupeCourseSlugRecords(
-      parsed
-      .map((item) => normalizeEnrolledCourse(item))
-      .filter((item): item is EnrolledCourse => Boolean(item))
+    const normalizedParsed = parsed.reduce<EnrolledCourse[]>((acc, item) => {
+      const normalized = normalizeEnrolledCourse(item);
+      if (normalized) {
+        acc.push(normalized);
+      }
+      return acc;
+    }, []);
+
+    return dedupeCourseSlugRecords<EnrolledCourse>(
+      normalizedParsed
       .sort((left, right) => new Date(right.enrolledAt).getTime() - new Date(left.enrolledAt).getTime()),
       "Duplicate local enrolled course records detected.",
     );
   }
 
-  return dedupeCourseSlugRecords(
-    readLegacyMyLearningCourses()
-      .map((course) =>
-        normalizeEnrolledCourse({
-          id: course.id,
-          courseSlug: course.courseSlug,
-          title: course.title,
-          batch: course.batchLabel,
-          status: course.status,
-          enrolledAt: course.enrolledAt,
-          duration: course.duration,
-          level: course.level,
-          syllabusUrl: course.syllabusUrl,
-          progress: course.progress,
-        }),
-      )
-      .filter((item): item is EnrolledCourse => Boolean(item)),
+  const normalizedLegacy = readLegacyMyLearningCourses().reduce<EnrolledCourse[]>((acc, course) => {
+    const normalized = normalizeEnrolledCourse({
+      id: course.id,
+      courseSlug: course.courseSlug,
+      title: course.title,
+      batch: course.batchLabel,
+      status: course.status,
+      enrolledAt: course.enrolledAt,
+      duration: course.duration,
+      level: course.level,
+      syllabusUrl: course.syllabusUrl,
+      progress: course.progress,
+    });
+
+    if (normalized) {
+      acc.push(normalized);
+    }
+
+    return acc;
+  }, []);
+
+  return dedupeCourseSlugRecords<EnrolledCourse>(
+    normalizedLegacy,
     "Duplicate legacy My Learning records detected.",
   );
 }
@@ -156,6 +194,12 @@ function toMyLearningCourse(course: EnrolledCourse): MyLearningCourse {
   return {
     id: course.id,
     courseSlug: course.courseSlug,
+    enrollmentType: course.enrollmentType || "course",
+    purchasedOfferingSlug: course.purchasedOfferingSlug || course.courseSlug,
+    programSlug: course.programSlug || "",
+    programName: course.programName || "",
+    programCourseSlugs: course.programCourseSlugs || [],
+    primaryCourseSlug: course.primaryCourseSlug || course.courseSlug,
     title: course.title,
     status: course.status,
     batchLabel: course.batch,
@@ -184,10 +228,16 @@ export function saveEnrolledCourses(courses: EnrolledCourse[]) {
     return courses;
   }
 
-  const normalized = dedupeCourseSlugRecords(
-    courses
-    .map((course) => normalizeEnrolledCourse(course))
-    .filter((course): course is EnrolledCourse => Boolean(course))
+  const normalizedInput = courses.reduce<EnrolledCourse[]>((acc, course) => {
+    const normalizedCourse = normalizeEnrolledCourse(course);
+    if (normalizedCourse) {
+      acc.push(normalizedCourse);
+    }
+    return acc;
+  }, []);
+
+  const normalized = dedupeCourseSlugRecords<EnrolledCourse>(
+    normalizedInput
     .sort((left, right) => new Date(right.enrolledAt).getTime() - new Date(left.enrolledAt).getTime()),
     "Duplicate local enrollment writes detected.",
   );
@@ -202,6 +252,12 @@ export function saveMyLearningCourses(courses: MyLearningCourse[]) {
     courses.map((course) => ({
       id: course.id,
       courseSlug: course.courseSlug,
+      enrollmentType: course.enrollmentType,
+      purchasedOfferingSlug: course.purchasedOfferingSlug,
+      programSlug: course.programSlug,
+      programName: course.programName,
+      programCourseSlugs: course.programCourseSlugs,
+      primaryCourseSlug: course.primaryCourseSlug,
       title: course.title,
       batch: course.batchLabel,
       status: course.status,
@@ -230,6 +286,12 @@ export function syncMyLearningFromInvoice(invoice: StoredOrderSuccess) {
     courseMap.set(normalizedCourseSlug, {
       id: previous?.id || normalizedCourseSlug,
       courseSlug: normalizedCourseSlug,
+      enrollmentType: line.enrollmentType || "course",
+      purchasedOfferingSlug: line.purchasedOfferingSlug || normalizedCourseSlug,
+      programSlug: line.programSlug || "",
+      programName: line.programName || "",
+      programCourseSlugs: line.programCourseSlugs || [],
+      primaryCourseSlug: line.primaryCourseSlug || normalizedCourseSlug,
       title: line.title || course?.title || normalizedCourseSlug,
       batch: "Summer 2026",
       status: "Active",
