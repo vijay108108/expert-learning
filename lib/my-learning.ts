@@ -230,13 +230,13 @@ export function syncMyLearningFromInvoice(invoice: StoredOrderSuccess) {
     courseMap.set(normalizedCourseSlug, {
       id: previous?.id || normalizedCourseSlug,
       courseSlug: normalizedCourseSlug,
-      title: course?.title || line.title,
+      title: line.title || course?.title || normalizedCourseSlug,
       batch: "Summer 2026",
       status: "Active",
       progress: sanitizeProgress(previous?.progress ?? 25),
       enrolledAt: invoice.paidAtIso,
-      duration: course?.duration || line.duration,
-      level: course?.level || line.level,
+      duration: line.duration || course?.duration || "Program Access",
+      level: line.level || course?.level || "Career Track",
       syllabusUrl: course?.officialSyllabusUrl || "",
     } satisfies EnrolledCourse);
   }

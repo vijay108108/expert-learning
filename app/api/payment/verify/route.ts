@@ -17,6 +17,11 @@ export async function POST(request: Request) {
     const body = paymentVerifySchema.parse(await request.json());
     const requestedSlugs = body.courseSlugs?.length ? body.courseSlugs : body.courseSlug ? [body.courseSlug] : [];
     const { offerings, missing } = resolveCheckoutOfferings(requestedSlugs);
+    const purchasedOffering = offerings.length === 1 ? offerings[0] : null;
+    const singleCourseBundleSlug =
+      purchasedOffering?.kind === "bundle" && purchasedOffering.courseSlugs.length === 1
+        ? purchasedOffering.courseSlugs[0]
+        : "";
     let clientSyncRequired = false;
 
     if (missing.length > 0 || offerings.length !== requestedSlugs.length) {
@@ -25,6 +30,26 @@ export async function POST(request: Request) {
 
     const enrolledCourseSlugs = offerings.flatMap((offering) => offering.courseSlugs);
     const uniqueEnrolledCourseSlugs = Array.from(new Set(enrolledCourseSlugs));
+
+    function resolveDisplayValuesForSlug(slug: string) {
+      const fallback = resolveCheckoutOfferings([slug]).offerings[0];
+
+      if (singleCourseBundleSlug && slug === singleCourseBundleSlug && purchasedOffering) {
+        return {
+          title: purchasedOffering.title,
+          duration: purchasedOffering.duration,
+          level: purchasedOffering.level,
+          amountPaise: purchasedOffering.priceValue * 100,
+        };
+      }
+
+      return {
+        title: fallback?.title || slug,
+        duration: fallback?.duration || "",
+        level: fallback?.level || "",
+        amountPaise: (fallback?.priceValue || 0) * 100,
+      };
+    }
 
     const signatureValid = verifyRazorpaySignature({
       orderId: body.razorpay_order_id,
@@ -54,14 +79,7 @@ export async function POST(request: Request) {
     try {
       await Promise.all(
         uniqueEnrolledCourseSlugs.map((slug) => {
-          const catalogCourse = offerings
-            .flatMap((offering) => offering.kind === "course" && offering.slug === slug ? [offering] : [])
-            .at(0);
-          const fallback = resolveCheckoutOfferings([slug]).offerings[0];
-          const selected = catalogCourse || fallback;
-          if (!selected) {
-            return Promise.resolve(null);
-          }
+          const display = resolveDisplayValuesForSlug(slug);
           return saveEnrollmentRecord({
             userId: body.userId,
             userName: body.name,
@@ -70,15 +88,15 @@ export async function POST(request: Request) {
             courseId: getCourseSlugByCourseId(slug),
             canonicalCourseId: getCanonicalCourseIdBySlug(slug),
             purchasedOfferingSlug: requestedSlugs[0] || slug,
-            courseName: selected.title,
-            amountPaid: Math.round(selected.priceValue),
+            courseName: display.title,
+            amountPaid: Math.round(display.amountPaise / 100),
             razorpayOrderId: body.razorpay_order_id,
             razorpayPaymentId: body.razorpay_payment_id,
             invoiceNumber,
             enrolledAt,
             status: "active",
-            duration: selected.duration,
-            level: selected.level,
+            duration: display.duration,
+            level: display.level,
             companyName: body.companyName?.trim() || "",
             gstNumber: body.gstNumber?.trim() || "",
           });
@@ -94,14 +112,14 @@ export async function POST(request: Request) {
         name: body.name,
         email: body.email,
         phone: body.phone,
-        courseTitles: uniqueEnrolledCourseSlugs.map((slug) => resolveCheckoutOfferings([slug]).offerings[0]?.title || slug),
+        courseTitles: uniqueEnrolledCourseSlugs.map((slug) => resolveDisplayValuesForSlug(slug).title),
         paymentId: body.razorpay_payment_id,
         amountLabel: formatPaiseToPrice(totalPaidPaise),
         enrolledAt: paidAtIso,
       }),
       sendWhatsAppNotification({
         phone: body.phone,
-        body: `Hi ${body.name}, your enrollment for ${uniqueEnrolledCourseSlugs.length > 1 ? `${uniqueEnrolledCourseSlugs.length} programs` : resolveCheckoutOfferings([uniqueEnrolledCourseSlugs[0] || ""]).offerings[0]?.title} is confirmed. Payment ID: ${body.razorpay_payment_id}`,
+        body: `Hi ${body.name}, your enrollment for ${uniqueEnrolledCourseSlugs.length > 1 ? `${uniqueEnrolledCourseSlugs.length} programs` : resolveDisplayValuesForSlug(uniqueEnrolledCourseSlugs[0] || "").title} is confirmed. Payment ID: ${body.razorpay_payment_id}`,
       }),
       captureServerEvent(body.email, "payment_verified", {
         courseSlugs: uniqueEnrolledCourseSlugs,
@@ -129,13 +147,13 @@ export async function POST(request: Request) {
         gstNumber: body.gstNumber?.trim() || undefined,
       },
       courses: uniqueEnrolledCourseSlugs.map((slug) => {
-        const selected = resolveCheckoutOfferings([slug]).offerings[0];
+        const display = resolveDisplayValuesForSlug(slug);
         return {
           slug,
-          title: selected?.title || slug,
-          duration: selected?.duration || "",
-          level: selected?.level || "",
-          amountPaise: (selected?.priceValue || 0) * 100,
+          title: display.title,
+          duration: display.duration,
+          level: display.level,
+          amountPaise: display.amountPaise,
         };
       }),
     };

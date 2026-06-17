@@ -18,7 +18,7 @@ import {
   type FirestoreEnrollment,
 } from "@/lib/firebase";
 import { readMyLearningCourses, type MyLearningCourse } from "@/lib/my-learning";
-import { getCanonicalCourseId, getCourseSlugByCourseId } from "@/lib/offering-catalog";
+import { getCanonicalCourseId, getCheckoutOfferingBySlug, getCourseSlugByCourseId } from "@/lib/offering-catalog";
 import { latestOrderStorageKey, type StoredOrderSuccess } from "@/lib/order-success";
 
 type DashboardPanelProps = {
@@ -205,11 +205,19 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
     const cardMap = new Map<string, DashboardSummaryCard>();
 
     for (const item of dashboardCourses) {
+      const purchasedOffering = item.enrollment.purchasedOfferingSlug
+        ? getCheckoutOfferingBySlug(item.enrollment.purchasedOfferingSlug)
+        : null;
+
       cardMap.set(item.enrollment.courseId, {
         id: item.enrollment.id,
         courseSlug: item.enrollment.courseId,
         badge: getCourseIcon(item.enrollment.courseId),
-        title: item.course?.title || item.enrollment.courseName,
+        title:
+          (purchasedOffering?.kind === "bundle" ? purchasedOffering.title : "")
+          || item.enrollment.courseName
+          || item.course?.title
+          || item.enrollment.courseId,
         status: `Enrolled • ${item.program.status === "live" ? "Active Batch" : "Upcoming Batch"}`,
         progress: item.displayProgress,
         progressLabel: `${item.displayProgress}% Completed`,
@@ -234,7 +242,7 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
         id: item.id,
         courseSlug: item.courseSlug,
         badge: getCourseIcon(item.courseSlug),
-        title: course?.title || item.title,
+        title: item.title || course?.title || item.courseSlug,
         status: `${item.status} • ${program?.status === "live" ? "Active Batch" : item.batchLabel || "Upcoming Batch"}`,
         progress,
         progressLabel: `${progress}% Completed`,

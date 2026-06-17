@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { getCourseBySlug } from "@/lib/course-catalog";
 import { getMyEnrollments, logFirestoreIssue, type FirestoreEnrollment } from "@/lib/firebase";
-import { getCanonicalCourseId, getCourseSlugByCourseId } from "@/lib/offering-catalog";
+import { getCanonicalCourseId, getCheckoutOfferingBySlug, getCourseSlugByCourseId } from "@/lib/offering-catalog";
 import { readEnrolledCourses, type EnrolledCourse } from "@/lib/my-learning";
 import { latestOrderStorageKey, type StoredOrderSuccess } from "@/lib/order-success";
 import { cn } from "@/lib/utils";
@@ -70,7 +70,7 @@ function buildInvoiceFallbackCourses(invoice: StoredOrderSuccess) {
   return invoice.courses.map((courseLine) => {
     const normalizedCourseSlug = getCourseSlugByCourseId(courseLine.slug);
     const catalogCourse = getCourseBySlug(normalizedCourseSlug);
-    const resolvedTitle = catalogCourse?.title || courseLine.title;
+    const resolvedTitle = courseLine.title || catalogCourse?.title || normalizedCourseSlug;
 
     return {
       id: `invoice-${invoice.orderId}-${normalizedCourseSlug}`,
@@ -80,8 +80,8 @@ function buildInvoiceFallbackCourses(invoice: StoredOrderSuccess) {
       batch: getBatchLabel(normalizedCourseSlug, resolvedTitle),
       enrolledAt: invoice.paidAtIso,
       syllabusUrl: catalogCourse?.officialSyllabusUrl || "",
-      duration: catalogCourse?.duration || courseLine.duration,
-      level: catalogCourse?.level || courseLine.level,
+      duration: courseLine.duration || catalogCourse?.duration || "Program Access",
+      level: courseLine.level || catalogCourse?.level || "Career Track",
     } satisfies DashboardCourseCard;
   });
 }
@@ -89,7 +89,7 @@ function buildInvoiceFallbackCourses(invoice: StoredOrderSuccess) {
 function buildLocalCourses(courses: EnrolledCourse[]) {
   return courses.map((course) => {
     const catalogCourse = getCourseBySlug(course.courseSlug);
-    const resolvedTitle = catalogCourse?.title || course.title;
+    const resolvedTitle = course.title || catalogCourse?.title || course.courseSlug;
 
     return {
       id: `local-${course.courseSlug}`,
@@ -109,7 +109,14 @@ function buildFirestoreCourses(enrollments: Array<FirestoreEnrollment & { id: st
   return enrollments.map((enrollment) => {
     const normalizedCourseSlug = getCourseSlugByCourseId(enrollment.courseId);
     const catalogCourse = getCourseBySlug(normalizedCourseSlug);
-    const resolvedTitle = catalogCourse?.title || enrollment.courseName;
+    const purchasedOffering = enrollment.purchasedOfferingSlug
+      ? getCheckoutOfferingBySlug(enrollment.purchasedOfferingSlug)
+      : null;
+    const resolvedTitle =
+      (purchasedOffering?.kind === "bundle" ? purchasedOffering.title : "")
+      || enrollment.courseName
+      || catalogCourse?.title
+      || normalizedCourseSlug;
 
     return {
       id: enrollment.id,

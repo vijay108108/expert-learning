@@ -19,7 +19,7 @@ import {
   type FirestoreResource,
 } from "@/lib/firebase";
 import { readEnrolledCourses } from "@/lib/my-learning";
-import { getCourseSlugByCourseId } from "@/lib/offering-catalog";
+import { getCheckoutOfferingBySlug, getCourseSlugByCourseId } from "@/lib/offering-catalog";
 
 type CourseBundle = {
   enrollment: FirestoreEnrollment & { id: string };
@@ -63,7 +63,7 @@ function buildLocalEnrollment(userId: string, courseSlug: string) {
     userPhone: "",
     userEmail: "",
     courseId: normalizedCourseSlug,
-    courseName: catalogCourse?.title || localCourse.title,
+    courseName: localCourse.title || catalogCourse?.title || normalizedCourseSlug,
     amountPaid: 0,
     razorpayOrderId: "",
     razorpayPaymentId: "",
@@ -77,7 +77,19 @@ function buildLocalEnrollment(userId: string, courseSlug: string) {
 
 function mergeRemoteAndLocalEnrollments(userId: string, enrollments: Array<FirestoreEnrollment & { id: string }>) {
   const enrollmentMap = new Map(
-    enrollments.map((enrollment) => [getCourseSlugByCourseId(enrollment.courseId), enrollment]),
+    enrollments.map((enrollment) => {
+      const purchasedOffering = enrollment.purchasedOfferingSlug
+        ? getCheckoutOfferingBySlug(enrollment.purchasedOfferingSlug)
+        : null;
+      const patchedEnrollment = {
+        ...enrollment,
+        courseName:
+          (purchasedOffering?.kind === "bundle" ? purchasedOffering.title : "")
+          || enrollment.courseName,
+      };
+
+      return [getCourseSlugByCourseId(enrollment.courseId), patchedEnrollment] as const;
+    }),
   );
 
   for (const localCourse of readEnrolledCourses()) {
