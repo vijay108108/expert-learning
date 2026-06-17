@@ -474,6 +474,10 @@ export function PhoneAuthFlow({
 
   async function ensureSignupPhoneCanRequestOtp() {
     const phoneCheck = await checkSignupPhoneAvailability(formattedPhone);
+    console.log("STEP 3 - User exists result:", phoneCheck.exists, {
+      phone: phoneCheck.normalizedPhone,
+      source: phoneCheck.source,
+    });
     if (!phoneCheck.exists) {
       return true;
     }
@@ -495,6 +499,13 @@ export function PhoneAuthFlow({
       return;
     }
 
+    console.log("STEP 1 - Send OTP clicked", {
+      activeTab,
+      isResend,
+      phone: formattedPhone,
+      normalizedPhone: normalizedPhone,
+    });
+
     const validationMessage = validatePhone();
 
     if (validationMessage) {
@@ -515,8 +526,32 @@ export function PhoneAuthFlow({
     }
 
     if (activeTab === "signup" && !isResend) {
+      console.log("STEP 2 - Checking user existence", {
+        phone: formattedPhone,
+        normalizedPhone,
+      });
       const canRequestOtp = await ensureSignupPhoneCanRequestOtp();
       if (!canRequestOtp) {
+        return;
+      }
+    }
+
+    if (activeTab === "signup" && !isResend) {
+      const signupPhoneCheck = await checkSignupPhoneAvailability(formattedPhone);
+      console.log("STEP 3 - User exists result:", signupPhoneCheck.exists, {
+        phone: signupPhoneCheck.normalizedPhone,
+        source: signupPhoneCheck.source,
+      });
+
+      if (signupPhoneCheck.exists) {
+        clearRecaptcha(recaptchaHostRef.current);
+        recaptchaVerifierRef.current = null;
+        confirmationResultRef.current = null;
+        setStepError("An account already exists with this number. Please log in instead.", "phone");
+        setShowSignupGoToLogin(true);
+        setSignupStep("form");
+        setStep("phone");
+        resetOtpInputs();
         return;
       }
     }
@@ -550,6 +585,11 @@ export function PhoneAuthFlow({
         recaptchaVerifierRef.current = verifier;
 
         try {
+          console.log("STEP 4 - Sending OTP", {
+            phone: formattedPhone,
+            activeTab,
+            isResend,
+          });
           confirmationResultRef.current = await withTimeout(
             signInWithPhoneNumber(auth, formattedPhone, verifier),
             phoneOtpRequestTimeoutMs,
