@@ -376,6 +376,15 @@ export function LmsPortal({
     () => allCourses.find((course) => course.slug === selectedProgram.courseSlug) || allCourses[0],
     [selectedProgram.courseSlug],
   );
+  const selectedEnrollment = useMemo(
+    () =>
+      enrollments.find((enrollment) => enrollment.courseId === selectedProgram.courseSlug)
+      || firstEnrollment,
+    [enrollments, firstEnrollment, selectedProgram.courseSlug],
+  );
+  const selectedCourseTitle = selectedEnrollment?.courseName || selectedCourse?.title || "Course";
+  const selectedCourseDuration = selectedEnrollment?.duration || selectedCourse?.duration || "12 Weeks";
+  const selectedCourseLevel = selectedEnrollment?.level || selectedCourse?.level || "Intermediate";
   const modules = useMemo(() => buildPlayerLessons(selectedProgram), [selectedProgram]);
   const allLessons = useMemo(() => modules.flatMap((module) => module.lessons), [modules]);
   const [selectedLessonId, setSelectedLessonId] = useState(() => allLessons[0]?.id || "");
@@ -767,9 +776,9 @@ export function LmsPortal({
             </>
           ) : null}
 
-          <div className="mt-3 px-4 text-[13px] font-bold text-[#1e293b]">{selectedCourse?.title}</div>
+          <div className="mt-3 px-4 text-[13px] font-bold text-[#1e293b]">{selectedCourseTitle}</div>
           <div className="mt-1 px-4 text-[11px] text-[#94a3b8]">
-            {selectedCourse?.duration || firstEnrollment?.duration || "12 Weeks"} · {selectedCourse?.level || firstEnrollment?.level || "Intermediate"}
+            {selectedCourseDuration} · {selectedCourseLevel}
           </div>
 
           <div className="border-b border-[#f1f5f9] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94a3b8]">
@@ -1187,12 +1196,12 @@ export function LmsPortal({
           <div className="text-[12px] uppercase tracking-[0.08em] text-[#f97316]">Certificate Ready</div>
           <div className="mt-2 text-[24px] font-semibold text-[#1e293b]">{selectedCourse?.certificate}</div>
           <div className="mt-3 text-[13px] text-[#64748b]">
-            {userInfo.name} completed {selectedCourse?.title}. Certificate ID: {certificateId}
+            {userInfo.name} completed {selectedCourseTitle}. Certificate ID: {certificateId}
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={() => downloadCertificate(userInfo.name, selectedCourse?.title || "Course", certificateId)}
+              onClick={() => downloadCertificate(userInfo.name, selectedCourseTitle, certificateId)}
               className="rounded-[8px] bg-[#f97316] px-5 py-2.5 text-[13px] font-semibold text-white"
             >
               Download Certificate

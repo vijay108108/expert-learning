@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import {
   getFirebaseAuth,
   getFirebaseAuthErrorMessage,
-  isRetryablePhoneVerificationError,
   normalizePhoneForAuth,
   preparePhoneAuth,
 } from "@/lib/firebase";
@@ -24,7 +23,6 @@ import { getFirebaseDb } from "@/lib/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const SLUG = "cloud-devops-ai-summer-2026";
-const phoneOtpRetryDelayMs = 250;
 const phoneOtpRequestTimeoutMs = 30000;
 
 /* ── Batch options ─────────────────────────────────────────── */
@@ -59,12 +57,6 @@ const valueProps = [
   { emoji: "📜", title: "Certificate That Matters", desc: "GenZNext Professional Certificate — accepted for internship applications, job interviews, LinkedIn and engineering portfolios." },
 ];
 
-function delay(ms: number) {
-  return new Promise<void>((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
-}
-
 /* ── Syllabus Lead Capture Modal ──────────────────────────── */
 function SyllabusModal({ onClose }: { onClose: () => void }) {
   const [step, setStep]           = useState<"form" | "otp" | "done">("form");
@@ -83,10 +75,12 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
       setError("Please fill all fields correctly.");
       return;
     }
+    confirmRef.current = null;
+    setOtp("");
     setPending(true);
     setError("");
     try {
-      for (let attempt = 0; attempt < 2; attempt += 1) {
+      for (let attempt = 0; attempt < 1; attempt += 1) {
         const auth = getFirebaseAuth();
         if (!auth) throw new Error("Firebase not configured.");
 
@@ -127,11 +121,6 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
             : error instanceof Error && error.message === "OTP request timed out. Please try again."
               ? "auth/network-request-failed"
               : "";
-
-          if (attempt === 0 && isRetryablePhoneVerificationError(error)) {
-            await delay(phoneOtpRetryDelayMs);
-            continue;
-          }
 
           if (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential") {
             setError(getFirebaseAuthErrorMessage(error));
@@ -177,7 +166,16 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
 
       setStep("done");
     } catch (nextError: unknown) {
-      setError(getFirebaseAuthErrorMessage(nextError));
+      const message = getFirebaseAuthErrorMessage(nextError);
+      setError(message);
+
+      const code = nextError && typeof nextError === "object" && "code" in nextError
+        ? String((nextError as { code?: unknown }).code)
+        : "";
+
+      if (code === "auth/invalid-verification-code" || code === "auth/code-expired" || code === "auth/session-expired") {
+        setOtp("");
+      }
     } finally {
       setPending(false);
     }
@@ -245,6 +243,13 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
               <button onClick={verifyOtp} disabled={pending}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3 text-[14px] font-bold text-white disabled:opacity-60">
                 {pending ? <><Loader2 className="h-4 w-4 animate-spin" />Verifying…</> : "Verify & Get Syllabus"}
+              </button>
+              <button
+                onClick={sendOtp}
+                disabled={pending}
+                className="w-full text-center text-[12px] font-semibold text-[#4F46E5] hover:text-[#4338CA] disabled:opacity-50"
+              >
+                Resend OTP
               </button>
               <button onClick={() => { setStep("form"); setOtp(""); setError(""); }} className="w-full text-center text-[12px] text-[#64748B] hover:text-[#4F46E5]">
                 ← Change phone number

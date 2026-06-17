@@ -42,7 +42,6 @@ import {
   isFirebaseConfigured,
   isLocalPhoneAuthHost,
   isPhoneAuthTestingEnabled,
-  isRetryablePhoneVerificationError,
   normalizePhoneForAuth,
   preparePhoneAuth,
   recaptchaContainerId,
@@ -68,7 +67,6 @@ const countryCodes = [
 const otpLength = 6;
 const resendWindowSeconds = 30;
 const phoneOtpRequestTimeoutMs = 30000;
-const phoneOtpRetryDelayMs = 250;
 
 type AuthStep = "phone" | "otp" | "google-phone";
 type AuthTab = "otp-login" | "password-login" | "signup";
@@ -165,12 +163,6 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: 
     }),
     timeout,
   ]) as Promise<T>;
-}
-
-function delay(ms: number) {
-  return new Promise<void>((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
 }
 
 export function PhoneAuthFlow({
@@ -520,11 +512,6 @@ export function PhoneAuthFlow({
       return;
     }
 
-    if (rateLimitSeconds > 0) {
-      setStepError(`Firebase temporarily blocked OTP requests. Try again in ${rateLimitSeconds}s.`, isResend ? "otp" : "phone");
-      return;
-    }
-
     if (activeTab === "signup" && !isResend) {
       console.log("STEP 2 - Checking user existence", {
         phone: formattedPhone,
@@ -562,7 +549,7 @@ export function PhoneAuthFlow({
     setSuccessMessage(null);
 
     try {
-      for (let attempt = 0; attempt < 2; attempt += 1) {
+      for (let attempt = 0; attempt < 1; attempt += 1) {
         const auth = getFirebaseAuth();
         if (!auth) {
           throw new Error("Firebase auth is not available.");
@@ -623,11 +610,6 @@ export function PhoneAuthFlow({
 
           clearRecaptcha(recaptchaHostRef.current);
           recaptchaVerifierRef.current = null;
-
-          if (attempt === 0 && isRetryablePhoneVerificationError(error)) {
-            await delay(phoneOtpRetryDelayMs);
-            continue;
-          }
 
           const isLocalhost = isLocalPhoneAuthHost();
 
@@ -1889,7 +1871,7 @@ export function PhoneAuthFlow({
               <button
                 type="button"
                 onClick={() => void sendOtp()}
-                disabled={pending || !firebaseReady || rateLimitSeconds > 0}
+                disabled={pending || !firebaseReady}
                 className={cn(
                   isModal
                     ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
@@ -1901,8 +1883,6 @@ export function PhoneAuthFlow({
                     <LoaderCircle className="h-4 w-4 animate-spin" />
                     Sending OTP...
                   </>
-                ) : rateLimitSeconds > 0 ? (
-                  `Try again in ${rateLimitSeconds}s`
                 ) : (
                   <>
                     Send OTP
@@ -2247,7 +2227,7 @@ export function PhoneAuthFlow({
               <button
                 type="button"
                 onClick={() => void handleForgotPasswordOtpSend()}
-                disabled={pending || !firebaseReady || rateLimitSeconds > 0}
+                disabled={pending || !firebaseReady}
                 className={cn(
                   isModal
                     ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
