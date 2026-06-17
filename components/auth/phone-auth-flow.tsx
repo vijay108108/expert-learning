@@ -482,7 +482,7 @@ export function PhoneAuthFlow({
     recaptchaVerifierRef.current = null;
     confirmationResultRef.current = null;
     console.info("[Auth Signup] duplicate signup blocked before OTP", { phone: phoneCheck.normalizedPhone });
-    setFeedback("An account already exists with this phone number. Please log in instead.");
+    setFeedback("An account already exists with this number. Please log in instead.");
     setShowSignupGoToLogin(true);
     setSignupStep("form");
     setStep("phone");
@@ -1090,6 +1090,7 @@ export function PhoneAuthFlow({
           setStep("phone");
           resetOtpInputs();
           confirmationResultRef.current = null;
+          console.info("[Auth Signup] duplicate signup blocked after OTP verification", { phone: phoneCheck.normalizedPhone });
           setFeedback("An account already exists with this number. Please log in instead.");
           setShowSignupGoToLogin(true);
           return;
