@@ -145,7 +145,7 @@ export function CartCheckoutForm() {
   const [pending, setPending] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const accountName = user?.displayName?.trim() || profile?.name?.trim() || "GenZNext Learner";
+  const accountName = profile?.name?.trim() || user?.displayName?.trim() || "GenZNext Learner";
   const accountPhone = form.phone.trim();
   const normalizedGstNumber = form.gstNumber.trim().toUpperCase();
   const gstNumberEntered = normalizedGstNumber.length > 0;

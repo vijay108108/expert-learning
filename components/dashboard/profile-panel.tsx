@@ -208,7 +208,7 @@ export function ProfilePanel() {
     );
   }
 
-  const displayName    = user.displayName || profile?.name || "GenZNext Learner";
+  const displayName    = profile?.name || user.displayName || "GenZNext Learner";
   const displayEmail   = profile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "");
   const displayPhone   = profile?.phone || user.phoneNumber || "";
   const displayInitials = getInitials(displayName || displayEmail || displayPhone);

@@ -646,7 +646,7 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
       enrollmentError={enrollmentError}
       userInfo={{
         uid: user.uid,
-        name: user.displayName || profile?.name || "GenZNext Learner",
+        name: profile?.name || user.displayName || "GenZNext Learner",
         email: user.email || profile?.email || "",
         phone: user.phoneNumber || profile?.phone || "",
         whatsappPhone: profile?.phone || user.phoneNumber || "",
