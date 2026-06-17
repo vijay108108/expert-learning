@@ -517,28 +517,18 @@ export function PhoneAuthFlow({
         phone: formattedPhone,
         normalizedPhone,
       });
-      const canRequestOtp = await ensureSignupPhoneCanRequestOtp();
-      if (!canRequestOtp) {
-        return;
-      }
-    }
-
-    if (activeTab === "signup" && !isResend) {
-      const signupPhoneCheck = await checkSignupPhoneAvailability(formattedPhone);
-      console.log("STEP 3 - User exists result:", signupPhoneCheck.exists, {
-        phone: signupPhoneCheck.normalizedPhone,
-        source: signupPhoneCheck.source,
-      });
-
-      if (signupPhoneCheck.exists) {
-        clearRecaptcha(recaptchaHostRef.current);
-        recaptchaVerifierRef.current = null;
-        confirmationResultRef.current = null;
-        setStepError("An account already exists with this number. Please log in instead.", "phone");
-        setShowSignupGoToLogin(true);
-        setSignupStep("form");
-        setStep("phone");
-        resetOtpInputs();
+      try {
+        const canRequestOtp = await ensureSignupPhoneCanRequestOtp();
+        if (!canRequestOtp) {
+          return;
+        }
+      } catch (error) {
+        setStepError(
+          error instanceof Error && error.message
+            ? error.message
+            : "Unable to validate this phone number right now. Please try again.",
+          "phone",
+        );
         return;
       }
     }
@@ -623,12 +613,17 @@ export function PhoneAuthFlow({
           ) {
             setStepError(
               "OTP is blocked on localhost. Fix in Firebase Console (choose one): " +
-              "(A) Authentication â†’ Sign-in method â†’ Phone â†’ Test phone numbers â†’ add your number with code 123456. " +
-              "(B) Authentication â†’ Settings â†’ Authorized domains â†’ add 'localhost'.",
+              "(A) Authentication -> Sign-in method -> Phone -> Test phone numbers -> add your number with code 123456. " +
+              "(B) Authentication -> Settings -> Authorized domains -> add 'localhost'.",
               isResend ? "otp" : "phone",
             );
           } else {
-            setStepError(getFirebaseAuthErrorMessage(error), isResend ? "otp" : "phone");
+            const firebaseMessage = getFirebaseAuthErrorMessage(error);
+            const message =
+              firebaseMessage === "We couldn't complete the verification. Please try again."
+                ? "OTP could not be sent. Refresh the page, disable ad-block/VPN, and try again. If this continues, use Password Login."
+                : firebaseMessage;
+            setStepError(message, isResend ? "otp" : "phone");
           }
           return;
         }

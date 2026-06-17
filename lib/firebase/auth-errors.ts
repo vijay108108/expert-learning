@@ -20,6 +20,11 @@ const errorMessages: Record<string, string> = {
     "This domain is not authorized for Firebase phone authentication. Add it in Firebase Authentication settings.",
   "auth/operation-not-allowed":
     "Phone authentication is not enabled for this Firebase project yet.",
+  "auth/app-not-authorized":
+    "This app or domain is not authorized for Firebase phone authentication. Check Firebase Auth authorized domains.",
+  "auth/invalid-api-key":
+    "Firebase configuration is invalid. Verify NEXT_PUBLIC_FIREBASE_API_KEY and related public keys.",
+  "auth/app-deleted": "The auth session is no longer valid. Refresh the page and try again.",
   "auth/internal-error": "Firebase returned an internal auth error. Please try the request again.",
   "auth/network-request-failed":
     "Google reCAPTCHA or Firebase could not be reached in time. Check your network, disable VPN/ad blockers, and try again.",
@@ -34,6 +39,10 @@ export function getFirebaseAuthErrorMessage(error: unknown) {
   const code = "code" in error ? String((error as { code?: unknown }).code) : "";
   if (code && errorMessages[code]) {
     return errorMessages[code];
+  }
+
+  if (error instanceof Error && error.message?.trim()) {
+    return error.message;
   }
 
   return fallbackMessage;
