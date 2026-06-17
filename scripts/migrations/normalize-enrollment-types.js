@@ -1,4 +1,5 @@
-import admin from "firebase-admin";
+import { applicationDefault, initializeApp } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 
 function isProgramSlug(slug) {
   return typeof slug === "string" && slug.length > 0 && !slug.includes("/");
@@ -13,12 +14,12 @@ async function run() {
     throw new Error("Set FIREBASE_PROJECT_ID to the target Firebase project id.");
   }
 
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
+  initializeApp({
+    credential: applicationDefault(),
     projectId: process.env.FIREBASE_PROJECT_ID,
   });
 
-  const db = admin.firestore();
+  const db = getFirestore();
   const snapshot = await db.collection("enrollments").get();
 
   let inspected = 0;
