@@ -601,6 +601,7 @@ export function PhoneAuthFlow({
           setStep("otp");
           setOtpError(null);
           resetOtpInputs();
+          setRateLimitSeconds(0);
           setResendTimer(resendWindowSeconds);
           setSuccessMessage(isResend ? "A fresh OTP has been sent." : "OTP sent successfully.");
           window.setTimeout(() => {
@@ -617,7 +618,7 @@ export function PhoneAuthFlow({
                 : "";
 
           if (code === "auth/too-many-requests" || code === "auth/quota-exceeded") {
-            setRateLimitSeconds(60);
+            setRateLimitSeconds(20);
           }
 
           clearRecaptcha(recaptchaHostRef.current);
@@ -748,6 +749,7 @@ export function PhoneAuthFlow({
     clearStepErrors();
     setSuccessMessage(null);
     setResendTimer(0);
+    setRateLimitSeconds(0);
   }
 
   function handleTabChange(nextTab: AuthTab) {

@@ -149,11 +149,17 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
   }
 
   async function verifyOtp() {
-    if (otp.length < 4) { setError("Enter the OTP sent to your phone."); return; }
+    if (otp.length !== 6) { setError("Enter the 6-digit OTP sent to your phone."); return; }
+    if (!confirmRef.current) {
+      setError("Your OTP session expired. Please request a new OTP.");
+      setStep("form");
+      setOtp("");
+      return;
+    }
     setPending(true);
     setError("");
     try {
-      await confirmRef.current?.confirm(otp);
+      await confirmRef.current.confirm(otp);
 
       /* Save lead to Firestore */
       const db = getFirebaseDb();
@@ -170,8 +176,8 @@ function SyllabusModal({ onClose }: { onClose: () => void }) {
       }
 
       setStep("done");
-    } catch {
-      setError("Invalid OTP. Please try again.");
+    } catch (nextError: unknown) {
+      setError(getFirebaseAuthErrorMessage(nextError));
     } finally {
       setPending(false);
     }
