@@ -23,8 +23,8 @@ const data: ProgramPageData = {
     { icon: Users2,       label: "Live Mentorship" },
   ],
   price:         "Rs. 64,999",
-  originalPrice: "Rs. 64,999",
-  priceLabel:    "All 4 phases + bonus tracks",
+  originalPrice: "Rs. 92,999",
+  priceLabel:    "30% off — All 4 phases + bonus tracks",
   enrollSlug:    "ai-generative-ai-master-program",
   enrollFeatures: [
     { icon: Clock3,       text: "20 Weeks (5 Months)" },

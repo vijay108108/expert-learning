@@ -32,8 +32,8 @@ const data: ProgramPageData = {
     { icon: Users2,        label: "Live Sessions" },
   ],
   price:         "Rs. 69,999",
-  originalPrice: "Rs. 69,999",
-  priceLabel:    "No coding. No tech background. Just results.",
+  originalPrice: "Rs. 99,999",
+  priceLabel:    "30% off — No coding. No tech background. Just results.",
   enrollSlug:    "ai-tools-master-program",
   enrollFeatures: [
     { icon: Clock3,        text: "8 Weeks (2 Months)" },

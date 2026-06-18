@@ -39,7 +39,7 @@ const programs: Program[] = [
     projects: "12+ Real Use-Case Projects",
     certification: "AI Tools Mastery Certificate",
     price: "Rs. 69,999",
-    originalPrice: "Rs. 69,999",
+    originalPrice: "Rs. 99,999",
     highlights: [
       "🚫 No Coding Required — ever",
       "🚫 No Technical Background Needed",
@@ -62,7 +62,7 @@ const programs: Program[] = [
     projects: "15+ Real-World Projects",
     certification: "AZ-104 + AZ-400 + AI DevSecOps",
     price: "Rs. 94,999",
-    originalPrice: "Rs. 94,999",
+    originalPrice: "Rs. 1,35,999",
     highlights: [
       "3-phase path: Cloud Admin → DevOps → AI Security",
       "AKS, Terraform, GitHub Copilot & Sentinel included",
@@ -84,7 +84,7 @@ const programs: Program[] = [
     projects: "12+ Real-World AI Projects",
     certification: "AI Engineer Career Track",
     price: "Rs. 64,999",
-    originalPrice: "Rs. 64,999",
+    originalPrice: "Rs. 92,999",
     highlights: [
       "Latest models: GPT-5.5, Claude Opus 4.8, Gemini 3 Pro",
       "Production RAG + multi-agent AI system projects",
@@ -106,7 +106,7 @@ const programs: Program[] = [
     projects: "12+ Real-World AWS Projects",
     certification: "CLF-C02 + SAA-C03 + DVA-C02 + SOA-C03",
     price: "Rs. 71,999",
-    originalPrice: "Rs. 71,999",
+    originalPrice: "Rs. 1,02,999",
     highlights: [
       "4 AWS certifications in a single 5-month program",
       "EC2, VPC, Lambda, RDS, EKS, S3 hands-on labs",
@@ -128,7 +128,7 @@ const programs: Program[] = [
     projects: "10+ Real-World Azure Projects",
     certification: "AZ-900 + AZ-104 + AZ-204/AI-200 + AZ-305",
     price: "Rs. 71,999",
-    originalPrice: "Rs. 71,999",
+    originalPrice: "Rs. 1,02,999",
     highlights: [
       "4 Microsoft certs — AZ-204 retiring Jul 2026, updated to AI-200",
       "Entra ID, AKS, Key Vault, Sentinel real labs",
@@ -150,7 +150,7 @@ const programs: Program[] = [
     projects: "15+ Real-World Projects",
     certification: "CKA + Terraform + AZ-400 Prep",
     price: "Rs. 74,999",
-    originalPrice: "Rs. 74,999",
+    originalPrice: "Rs. 1,07,999",
     highlights: [
       "Latest versions: K8s 1.36, Docker v29, OpenTofu 1.12",
       "Argo CD GitOps, Prometheus + Grafana + Loki stack",

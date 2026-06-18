@@ -40,8 +40,8 @@ const data: ProgramPageData = {
     { icon: Award,        label: "AZ-104 + AZ-400" },
   ],
   price:         "Rs. 94,999",
-  originalPrice: "Rs. 94,999",
-  priceLabel:    "No-cost EMI available",
+  originalPrice: "Rs. 1,35,999",
+  priceLabel:    "30% off · No-cost EMI available",
   enrollSlug:    "microsoft-cloud-ai-devops-master-program",
   enrollFeatures: [
     { icon: Clock3,       text: "24 Weeks (6 Months)" },

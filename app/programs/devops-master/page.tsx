@@ -24,8 +24,8 @@ const data: ProgramPageData = {
     { icon: Users2, label: "Live Mentorship" },
   ],
   price: "Rs. 74,999",
-  originalPrice: "Rs. 74,999",
-  priceLabel: "Full DevOps engineering stack included",
+  originalPrice: "Rs. 1,07,999",
+  priceLabel: "30% off — Full DevOps engineering stack included",
   enrollSlug: "devops-master-program",
   enrollFeatures: [
     { icon: Clock3, text: "20 Weeks (5 Months)" },
