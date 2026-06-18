@@ -3,27 +3,13 @@
 import Link from "next/link";
 import {
   ArrowRight, Award, Bot, CheckCircle2, Clock3,
-  Download, Eye, GraduationCap, Loader2,
-  Phone, ShieldCheck, Users2, X, Zap,
+  GraduationCap, ShieldCheck, Users2, Zap,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import {
-  getFirebaseAuth,
-  getFirebaseAuthErrorMessage,
-  normalizePhoneForAuth,
-  preparePhoneAuth,
-} from "@/lib/firebase";
-import {
-  RecaptchaVerifier, signInWithPhoneNumber,
-  type ConfirmationResult,
-} from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const SLUG = "cloud-devops-ai-summer-2026";
-const phoneOtpRequestTimeoutMs = 30000;
 
 /* ── Batch options ─────────────────────────────────────────── */
 const batches = [
@@ -57,244 +43,11 @@ const valueProps = [
   { emoji: "📜", title: "Certificate That Matters", desc: "GenZNext Professional Certificate — accepted for internship applications, job interviews, LinkedIn and engineering portfolios." },
 ];
 
-/* ── Syllabus Lead Capture Modal ──────────────────────────── */
-function SyllabusModal({ onClose }: { onClose: () => void }) {
-  const [step, setStep]           = useState<"form" | "otp" | "done">("form");
-  const [name, setName]           = useState("");
-  const [email, setEmail]         = useState("");
-  const [phone, setPhone]         = useState("");
-  const [otp, setOtp]             = useState("");
-  const [pending, setPending]     = useState(false);
-  const [error, setError]         = useState("");
-  const confirmRef                = useRef<ConfirmationResult | null>(null);
-  const recaptchaRef              = useRef<RecaptchaVerifier | null>(null);
-  const containerRef              = useRef<HTMLDivElement>(null);
-
-  async function sendOtp() {
-    if (!name.trim() || !email.trim() || phone.length < 10) {
-      setError("Please fill all fields correctly.");
-      return;
-    }
-    confirmRef.current = null;
-    setOtp("");
-    setPending(true);
-    setError("");
-    try {
-      for (let attempt = 0; attempt < 1; attempt += 1) {
-        const auth = getFirebaseAuth();
-        if (!auth) throw new Error("Firebase not configured.");
-
-        /* Clean up previous */
-        if (recaptchaRef.current) {
-          try {
-            recaptchaRef.current.clear();
-          } catch {
-            /* ignore */
-          }
-          recaptchaRef.current = null;
-        }
-        if (containerRef.current) containerRef.current.innerHTML = "";
-
-        const div = document.createElement("div");
-        div.id = `recap-syllabus-${Date.now()}`;
-        containerRef.current?.appendChild(div);
-
-        preparePhoneAuth(auth);
-
-        const verifier = new RecaptchaVerifier(auth, div, { size: "invisible" });
-        recaptchaRef.current = verifier;
-
-        const formatted = phone.startsWith("+") ? phone : `+91${normalizePhoneForAuth(phone).slice(-10)}`;
-
-        try {
-          confirmRef.current = await Promise.race([
-            signInWithPhoneNumber(auth, formatted, verifier),
-            new Promise<never>((_, reject) => {
-              window.setTimeout(() => reject(new Error("OTP request timed out. Please try again.")), phoneOtpRequestTimeoutMs);
-            }),
-          ]);
-          setStep("otp");
-          return;
-        } catch (error: unknown) {
-          const code = error && typeof error === "object" && "code" in error
-            ? String((error as { code?: unknown }).code)
-            : error instanceof Error && error.message === "OTP request timed out. Please try again."
-              ? "auth/network-request-failed"
-              : "";
-
-          if (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential") {
-            setError(getFirebaseAuthErrorMessage(error));
-          } else {
-            setError(error instanceof Error ? error.message : "Failed to send OTP. Try again.");
-          }
-          return;
-        }
-      }
-    } catch (error: unknown) {
-      setError(getFirebaseAuthErrorMessage(error));
-    } finally {
-      setPending(false);
-    }
-  }
-
-  async function verifyOtp() {
-    if (otp.length !== 6) { setError("Enter the 6-digit OTP sent to your phone."); return; }
-    if (!confirmRef.current) {
-      setError("Your OTP session expired. Please request a new OTP.");
-      setStep("form");
-      setOtp("");
-      return;
-    }
-    setPending(true);
-    setError("");
-    try {
-      await confirmRef.current.confirm(otp);
-
-      /* Save lead to Firestore */
-      const db = getFirebaseDb();
-      if (db) {
-        await addDoc(collection(db, "leads"), {
-          name: name.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-          course: "Cloud, DevOps & AI Engineering — Summer 2026",
-          source: "syllabus-download",
-          status: "new",
-          createdAt: serverTimestamp(),
-        });
-      }
-
-      setStep("done");
-    } catch (nextError: unknown) {
-      const message = getFirebaseAuthErrorMessage(nextError);
-      setError(message);
-
-      const code = nextError && typeof nextError === "object" && "code" in nextError
-        ? String((nextError as { code?: unknown }).code)
-        : "";
-
-      if (code === "auth/invalid-verification-code" || code === "auth/code-expired" || code === "auth/session-expired") {
-        setOtp("");
-      }
-    } finally {
-      setPending(false);
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-2xl">
-        <div className="h-1.5 w-full bg-[linear-gradient(90deg,#9333EA,#4F46E5,#0EA5E9)]" />
-        <div className="p-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-[#9333EA]">
-                {step === "done" ? "✅ Verified" : "📄 Download Syllabus"}
-              </p>
-              <h2 className="mt-1 text-[18px] font-extrabold !text-[#0F172A]">
-                {step === "form" ? "Enter your details to get the full syllabus" :
-                 step === "otp"  ? "Enter OTP sent to your phone" :
-                 "Syllabus Ready!"}
-              </h2>
-            </div>
-            <button onClick={onClose} className="mt-1 text-[#94A3B8] hover:text-[#0F172A]">
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          {step === "form" && (
-            <div className="mt-5 space-y-3">
-              {[
-                { label: "Full Name", value: name, set: setName, placeholder: "Jay Vishwakarma", type: "text" },
-                { label: "Email", value: email, set: setEmail, placeholder: "jay@example.com", type: "email" },
-              ].map((f) => (
-                <div key={f.label}>
-                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#64748B]">{f.label}</label>
-                  <input type={f.type} value={f.value} onChange={e => { f.set(e.target.value); setError(""); }}
-                    placeholder={f.placeholder}
-                    className="h-10 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-[13px] !text-[#0F172A] outline-none focus:border-[#4F46E5]" />
-                </div>
-              ))}
-              <div>
-                <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#64748B]">Phone (for OTP)</label>
-                <div className="flex gap-2">
-                  <span className="flex h-10 items-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-[13px] text-[#475569]">+91</span>
-                  <input type="tel" value={phone} onChange={e => { setPhone(e.target.value.replace(/\D/g, "")); setError(""); }}
-                    placeholder="9876543210" maxLength={10}
-                    className="h-10 flex-1 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-[13px] !text-[#0F172A] outline-none focus:border-[#4F46E5]" />
-                </div>
-              </div>
-              {error && <p className="text-[12px] text-[#EF4444]">{error}</p>}
-              <div ref={containerRef} />
-              <button onClick={sendOtp} disabled={pending}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3 text-[14px] font-bold text-white disabled:opacity-60">
-                {pending ? <><Loader2 className="h-4 w-4 animate-spin" />Sending OTP…</> : <><Phone className="h-4 w-4" />Get OTP & Download Syllabus</>}
-              </button>
-            </div>
-          )}
-
-          {step === "otp" && (
-            <div className="mt-5 space-y-3">
-              <p className="text-[13px] text-[#64748B]">OTP sent to <strong className="text-[#0F172A]">+91 {phone}</strong></p>
-              <input type="tel" value={otp} onChange={e => { setOtp(e.target.value.replace(/\D/g, "")); setError(""); }}
-                placeholder="Enter 6-digit OTP" maxLength={6}
-                className="h-12 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 text-center text-[20px] font-bold tracking-[0.3em] !text-[#0F172A] outline-none focus:border-[#4F46E5]" />
-              {error && <p className="text-[12px] text-[#EF4444]">{error}</p>}
-              <button onClick={verifyOtp} disabled={pending}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3 text-[14px] font-bold text-white disabled:opacity-60">
-                {pending ? <><Loader2 className="h-4 w-4 animate-spin" />Verifying…</> : "Verify & Get Syllabus"}
-              </button>
-              <button
-                onClick={sendOtp}
-                disabled={pending}
-                className="w-full text-center text-[12px] font-semibold text-[#4F46E5] hover:text-[#4338CA] disabled:opacity-50"
-              >
-                Resend OTP
-              </button>
-              <button onClick={() => { setStep("form"); setOtp(""); setError(""); }} className="w-full text-center text-[12px] text-[#64748B] hover:text-[#4F46E5]">
-                ← Change phone number
-              </button>
-            </div>
-          )}
-
-          {step === "done" && (
-            <div className="mt-5 space-y-3 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#F0FDF4]">
-                <CheckCircle2 className="h-8 w-8 text-[#16A34A]" />
-              </div>
-              <p className="text-[13px] text-[#475569]">
-                Hi <strong className="text-[#0F172A]">{name}</strong>! Your details are saved. View or download the full syllabus below.
-              </p>
-              <div className="grid gap-2">
-                <a href="/syllabus/cloud-devops-ai-summer-2026" target="_blank" rel="noreferrer"
-                  className="flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3 text-[14px] font-bold text-white">
-                  <Eye className="h-4 w-4" /> View Full Syllabus
-                </a>
-                <button onClick={() => {
-                  const w = window.open("/syllabus/cloud-devops-ai-summer-2026", "_blank");
-                  setTimeout(() => w?.print(), 1500);
-                }}
-                  className="flex items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-white py-3 text-[14px] font-semibold text-[#475569] hover:border-[#4F46E5]/30 hover:text-[#4F46E5]">
-                  <Download className="h-4 w-4" /> Download as PDF
-                </button>
-              </div>
-              <p className="text-[11px] text-[#94A3B8]">
-                Our team will reach out to {email} with more details about the 15 June batch.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ── Main page ─────────────────────────────────────────────── */
 export default function SummerEnrollPage() {
   const { user, openAuthModal } = useAuth();
   const router                  = useRouter();
   const [batch, setBatch]       = useState<"weekday" | "weekend">("weekday");
-  const [showSyllabus, setShowSyllabus] = useState(false);
 
   function handleRegister() {
     if (!user) {
@@ -308,8 +61,6 @@ export default function SummerEnrollPage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
-      {showSyllabus && <SyllabusModal onClose={() => setShowSyllabus(false)} />}
-
       {/* ── Hero ── */}
       <section className="bg-[linear-gradient(135deg,#3B0764_0%,#4F46E5_55%,#0369A1_100%)] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
@@ -462,11 +213,6 @@ export default function SummerEnrollPage() {
                 <button type="button" onClick={handleRegister}
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3.5 text-[15px] font-bold text-white shadow-[0_8px_24px_rgba(147,51,234,0.3)] transition hover:scale-[1.02]">
                   Register &amp; Pay Now <ArrowRight className="h-4 w-4" />
-                </button>
-
-                <button type="button" onClick={() => setShowSyllabus(true)}
-                  className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#4F46E5] bg-white py-3 text-[13px] font-bold text-[#4F46E5] transition hover:bg-[#EEF2FF]">
-                  <Download className="h-4 w-4" /> Download Syllabus (Free)
                 </button>
 
                 <Link href="/contact"

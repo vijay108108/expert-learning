@@ -33,7 +33,6 @@ import { buttonLinkClasses } from "@/components/ui/button-link";
 import { useAuth } from "@/hooks/use-auth";
 import {
   clearRecaptcha,
-  ensurePhoneUserProfile,
   getFirebaseAuth,
   getFirebaseAuthErrorMessage,
   getFirebaseDb,
@@ -54,22 +53,12 @@ import {
 } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 
-const countryCodes = [
-  { label: "India", value: "+91", flag: "IN" },
-  { label: "United States", value: "+1", flag: "US" },
-  { label: "United Kingdom", value: "+44", flag: "UK" },
-  { label: "United Arab Emirates", value: "+971", flag: "UAE" },
-  { label: "Singapore", value: "+65", flag: "SG" },
-  { label: "Canada", value: "+1", flag: "CA" },
-  { label: "Australia", value: "+61", flag: "AU" },
-] as const;
-
 const otpLength = 6;
 const resendWindowSeconds = 30;
 const phoneOtpRequestTimeoutMs = 30000;
 
 type AuthStep = "phone" | "otp" | "google-phone";
-type AuthTab = "otp-login" | "password-login" | "signup";
+type AuthTab = "password-login" | "signup";
 type ForgotPasswordStep = "phone" | "otp" | "reset";
 type SignupStep = "form" | "otp";
 
@@ -634,65 +623,6 @@ export function PhoneAuthFlow({
     }
   }
 
-  const verifyOtp = useCallback(async () => {
-    if (verifyOtpLockRef.current) {
-      return;
-    }
-
-    if (otpCode.length !== otpLength) {
-      setOtpError("Enter the complete 6-digit OTP.");
-      return;
-    }
-
-    const confirmationResult = confirmationResultRef.current;
-    if (!confirmationResult) {
-      setOtpError("Request a new OTP to continue.");
-      return;
-    }
-
-    verifyOtpLockRef.current = true;
-    setPending(true);
-    setOtpError(null);
-    setFeedback(null);
-
-    try {
-      const result = await confirmationResult.confirm(otpCode);
-
-      try {
-        await ensurePhoneUserProfile(result.user, fullName);
-      } catch {
-        // Firestore profile sync is best-effort.
-      }
-      await finishAuthSuccess("Login successful!");
-    } catch (error) {
-      autoVerifyRef.current = null;
-      logFirebaseAuthError("verifyOtp", error);
-      resetOtpInputs(true);
-      setOtpError(getFirebaseAuthErrorMessage(error));
-    } finally {
-      verifyOtpLockRef.current = false;
-      setPending(false);
-    }
-  }, [finishAuthSuccess, fullName, logFirebaseAuthError, otpCode, resetOtpInputs]);
-
-  useEffect(() => {
-    if (activeTab !== "otp-login" || isForgotPasswordMode || step !== "otp" || pending) {
-      return;
-    }
-
-    if (otpCode.length !== otpLength) {
-      autoVerifyRef.current = null;
-      return;
-    }
-
-    if (autoVerifyRef.current === otpCode) {
-      return;
-    }
-
-    autoVerifyRef.current = otpCode;
-    void verifyOtp();
-  }, [activeTab, isForgotPasswordMode, otpCode, pending, step, verifyOtp]);
-
   function handleOtpPaste(event: React.ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
     const pasted = event.clipboardData
@@ -731,7 +661,7 @@ export function PhoneAuthFlow({
 
   function handleTabChange(nextTab: AuthTab) {
     setActiveTab(nextTab);
-    setCountryCode(nextTab === "otp-login" ? countryCode : "+91");
+    setCountryCode("+91");
     clearResetState();
     resetOtpStep();
     setSignupLookupPending(false);
@@ -1667,8 +1597,6 @@ export function PhoneAuthFlow({
     );
   }
 
-  const showOtpPhoneState = activeTab === "otp-login" && step === "phone";
-  const showOtpVerifyState = activeTab === "otp-login" && step === "otp";
   const showGooglePhoneState = step === "google-phone";
   const showPasswordLoginState = activeTab === "password-login" && !isForgotPasswordMode;
   const showSignupState = activeTab === "signup";
@@ -1758,7 +1686,7 @@ export function PhoneAuthFlow({
         <div className="mt-6 rounded-[18px] border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-4 text-sm text-[#4338CA]">
           <div className="font-semibold">Firebase setup required</div>
           <p className="mt-1 leading-6">
-            Sign up, OTP login, and password login all depend on the Firebase public configuration being available in the
+            Sign up and password login both depend on the Firebase public configuration being available in the
             runtime environment.
           </p>
           <p className="mt-3 text-[12px] leading-5 text-[#4C1D95]">
@@ -1791,7 +1719,6 @@ export function PhoneAuthFlow({
       {!showGooglePhoneState ? (
         <div className="mt-7 flex gap-1.5 rounded-[18px] border border-[rgba(226,232,240,0.9)] bg-[rgba(248,250,252,0.92)] p-1.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
           {[
-            { id: "otp-login", label: "OTP Login" },
             { id: "password-login", label: "Password Login" },
             { id: "signup", label: "Sign Up" },
           ].map((tab) => {
@@ -1816,86 +1743,6 @@ export function PhoneAuthFlow({
       ) : null}
 
       <div className="mt-6 space-y-5">
-        {showOtpPhoneState ? (
-          <>
-            <div>
-              {!isModal ? (
-                <label className="form-label text-[#E2E8F0]" htmlFor={`auth-phone-${variant}`}>
-                  Mobile Number
-                </label>
-              ) : null}
-              <div className={cn("grid gap-3", !isModal && "sm:grid-cols-[140px_1fr]")}>
-                {!isModal ? (
-                  <select
-                    className="form-field"
-                    value={countryCode}
-                    onChange={(event) => {
-                      setCountryCode(event.target.value);
-                      clearAllFeedback();
-                    }}
-                    disabled={pending}
-                  >
-                    {countryCodes.map((option) => (
-                      <option key={`${option.flag}-${option.value}`} value={option.value}>
-                        {option.flag} {option.value}
-                      </option>
-                    ))}
-                  </select>
-                ) : null}
-                {renderInput(
-                  `auth-phone-${variant}`,
-                  <Smartphone className="h-[15px] w-[15px]" />,
-                  <input
-                    id={`auth-phone-${variant}`}
-                    className={cn(fieldClass, isModal && "pr-3 pl-9")}
-                    value={phone}
-                    onChange={(event) => {
-                      setPhone(event.target.value);
-                      clearAllFeedback();
-                    }}
-                    placeholder={isModal ? `${countryCode} Mobile number` : "Enter your mobile number"}
-                    autoComplete="tel-national"
-                    inputMode="tel"
-                    disabled={pending}
-                  />,
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => void sendOtp()}
-                disabled={pending || !firebaseReady}
-                className={cn(
-                  isModal
-                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
-                    : buttonLinkClasses("primary", "w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"),
-                )}
-              >
-                {pending ? (
-                  <>
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                    Sending OTP...
-                  </>
-                ) : (
-                  <>
-                    Send OTP
-                    {isModal ? <ArrowRight className="h-4 w-4" /> : null}
-                  </>
-                )}
-              </button>
-            </div>
-          </>
-        ) : null}
-
-        {showOtpVerifyState ? renderOtpSection({
-          onVerify: verifyOtp,
-          onResend: async () => {
-            await sendOtp(true);
-          },
-        }) : null}
-
         {showPasswordLoginState ? (
           <>
             {renderPhoneField({
@@ -2383,7 +2230,7 @@ export function PhoneAuthFlow({
           </>
         ) : null}
 
-        {feedback && step !== "otp" && !(showForgotOtpState || showOtpVerifyState) ? (
+        {feedback && step !== "otp" && !showForgotOtpState ? (
           <div
             className={cn(
               "rounded-[16px] px-4 py-3 text-sm",
@@ -2412,7 +2259,7 @@ export function PhoneAuthFlow({
           </div>
         ) : null}
 
-        {showOtpPhoneState ? (
+        {showPasswordLoginState ? (
           <>
             <div className="flex items-center gap-[10px]">
               <div className="h-px flex-1 bg-[#E2E8F0]" />
@@ -2449,7 +2296,7 @@ export function PhoneAuthFlow({
           </div>
         ) : null}
 
-        {showOtpPhoneState ? (
+        {showPasswordLoginState ? (
           <p className="text-center text-[11px] leading-5 text-[#64748B]">
             By continuing you agree to our{" "}
             <span className="text-[#475569] underline">Terms of Service</span> and{" "}
