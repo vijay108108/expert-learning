@@ -31,9 +31,9 @@ const data: ProgramPageData = {
     { icon: FolderKanban,  label: "30+ Use Cases" },
     { icon: Users2,        label: "Live Sessions" },
   ],
-  price:         "Rs. 9,999",
-  originalPrice: "Rs. 59,000",
-  priceLabel:    "83% off — No coding. No tech background. Just results.",
+  price:         "Rs. 69,999",
+  originalPrice: "Rs. 69,999",
+  priceLabel:    "No coding. No tech background. Just results.",
   enrollSlug:    "ai-tools-master-program",
   enrollFeatures: [
     { icon: Clock3,        text: "8 Weeks (2 Months)" },

@@ -23,9 +23,9 @@ const data: ProgramPageData = {
     { icon: FolderKanban, label: "15+ Projects" },
     { icon: Users2, label: "Live Mentorship" },
   ],
-  price: "Rs. 24,999",
-  originalPrice: "Rs. 54,999",
-  priceLabel: "54% off — Full DevOps engineering stack included",
+  price: "Rs. 74,999",
+  originalPrice: "Rs. 74,999",
+  priceLabel: "Full DevOps engineering stack included",
   enrollSlug: "devops-master-program",
   enrollFeatures: [
     { icon: Clock3, text: "20 Weeks (5 Months)" },

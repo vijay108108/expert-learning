@@ -23,9 +23,9 @@ const data: ProgramPageData = {
     { icon: FolderKanban, label: "10+ Projects" },
     { icon: Users2, label: "Live Mentorship" },
   ],
-  price: "Rs. 21,999",
-  originalPrice: "Rs. 49,999",
-  priceLabel: "56% off — All 4 Microsoft Azure tracks included",
+  price: "Rs. 71,999",
+  originalPrice: "Rs. 71,999",
+  priceLabel: "All 4 Microsoft Azure tracks included",
   enrollSlug: "microsoft-cloud-master-program",
   enrollFeatures: [
     { icon: Clock3, text: "20 Weeks (5 Months)" },
