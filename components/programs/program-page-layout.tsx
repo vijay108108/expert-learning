@@ -221,6 +221,14 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
           {/* Enrollment card */}
           <aside className="lg:sticky lg:top-24">
             <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-6 shadow-[0_18px_42px_rgba(15,23,42,0.10)]">
+              {/* Seats badge */}
+              <div className="mb-4 flex items-center gap-2 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] px-3 py-2.5">
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F97316] opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#F97316]" />
+                </span>
+                <p className="text-[13px] font-semibold text-[#9A3412]">Only 20 seats per batch — Limited enrollment</p>
+              </div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">Program Fee</p>
               <p className="mt-2 text-3xl font-bold tracking-[-0.03em] text-[#111827]">{data.price}</p>
               <p className="mt-0.5 text-sm text-[#94A3B8] line-through">{data.originalPrice}</p>
@@ -229,6 +237,11 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
                 {data.enrollFeatures.map(({ icon: Icon, text }) => (
                   <p key={text} className="flex items-center gap-2"><Icon className="h-4 w-4 text-[#4F46E5]" />{text}</p>
                 ))}
+              </div>
+              {/* 1:1 support highlight */}
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-2.5">
+                <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m10-4H9a2 2 0 00-2 2v0a2 2 0 002 2h6a2 2 0 002-2v0a2 2 0 00-2-2z" /></svg>
+                <p className="text-[12px] font-medium leading-5 text-[#3730A3]">1-on-1 support available after every live class session</p>
               </div>
               <div className="mt-5 space-y-3">
                 <Link
@@ -448,7 +461,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
           <p className="text-xs font-semibold uppercase tracking-widest text-[#A5B4FC]">Join the Next Batch</p>
           <h2 className="mt-3 text-3xl font-bold text-white">Ready to start your journey?</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#C7D2FE]">
-            Live batches start every month. Limited seats. Enroll early to secure your spot.
+            Live batches start every month. Only 20 seats per batch — enroll early to secure your spot.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-[#4F46E5] shadow-lg transition hover:scale-[1.02]">
