@@ -17,7 +17,6 @@ import {
   Users2,
   Zap,
 } from "lucide-react";
-import { SummerTrainingPopup } from "@/components/home/summer-training-popup";
 import { getOrganizationSchema } from "@/lib/schema";
 
 const stats = [
@@ -262,8 +261,6 @@ export default function Home() {
       {schemas.map((schema, index) => (
         <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       ))}
-
-      <SummerTrainingPopup />
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-[linear-gradient(160deg,#FFFFFF_0%,#F5F0FF_45%,#E0F2FE_100%)] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">

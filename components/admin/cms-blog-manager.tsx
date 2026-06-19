@@ -146,8 +146,8 @@ export function CmsBlogManager() {
               <p className="mt-3 text-[14px] font-semibold text-white line-clamp-2">{post.title}</p>
               <p className="mt-1 text-[12px] text-[#475569] line-clamp-2">{post.excerpt}</p>
               <div className="mt-3 flex items-center justify-between text-[11px] text-[#334155]">
-                <span>{post.author || "â€”"}</span>
-                <span>{post.updatedAt ? new Date(post.updatedAt).toLocaleDateString("en-IN") : "â€”"}</span>
+                <span>{post.author || "—"}</span>
+                <span>{post.updatedAt ? new Date(post.updatedAt).toLocaleDateString("en-IN") : "—"}</span>
               </div>
             </div>
           ))}
@@ -166,7 +166,7 @@ export function CmsBlogManager() {
             {/* Form */}
             <div className="max-h-[70vh] overflow-y-auto px-5 py-5 space-y-4">
               {([
-                { label: "Title", key: "title", placeholder: "Post titleâ€¦", type: "text" },
+                { label: "Title", key: "title", placeholder: "Post title…", type: "text" },
                 { label: "Slug", key: "slug", placeholder: "auto-generated-if-empty", type: "text" },
                 { label: "Author", key: "author", placeholder: "Author name", type: "text" },
               ] as Array<{ label: string; key: PostFieldKey; placeholder: string; type: string }>).map((f) => (
@@ -187,7 +187,7 @@ export function CmsBlogManager() {
                   rows={2}
                   value={form.excerpt}
                   onChange={(e) => setForm((p) => ({ ...p, excerpt: e.target.value }))}
-                  placeholder="Short description shown on listing pageâ€¦"
+                  placeholder="Short description shown on listing page…"
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50 resize-none"
                 />
               </div>
@@ -197,7 +197,7 @@ export function CmsBlogManager() {
                   rows={8}
                   value={form.content}
                   onChange={(e) => setForm((p) => ({ ...p, content: e.target.value }))}
-                  placeholder="Full post content in Markdownâ€¦"
+                  placeholder="Full post content in Markdown…"
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 font-mono text-[12px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50 resize-y"
                 />
               </div>
@@ -230,7 +230,7 @@ export function CmsBlogManager() {
                 Cancel
               </button>
               <button onClick={save} disabled={saving} className="rounded-xl bg-[#4F46E5] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#4338CA] disabled:opacity-60">
-                {saving ? "Savingâ€¦" : editId ? "Update Post" : "Publish Post"}
+                {saving ? "Saving…" : editId ? "Update Post" : "Publish Post"}
               </button>
             </div>
           </div>

@@ -72,7 +72,7 @@ export function FirebaseLessonManager() {
         if (!active) return;
         setLessons(ls.sort((a, b) => (a.order || 0) - (b.order || 0)));
       } catch {
-        if (active) setError("Firestore permission error â€” check Firebase security rules.");
+        if (active) setError("Firestore permission error — check Firebase security rules.");
       }
     })();
     return () => { active = false; };
@@ -116,7 +116,7 @@ export function FirebaseLessonManager() {
       setEditingId(null);
       await reload();
     } catch {
-      setError("Save failed â€” check Firestore rules.");
+      setError("Save failed — check Firestore rules.");
     } finally {
       setSaving(false);
     }
@@ -236,9 +236,9 @@ export function FirebaseLessonManager() {
                   className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50" />
               </div>
 
-              {/* URL field â€” label changes by type */}
+              {/* URL field — label changes by type */}
               {form.lessonType === "live" ? (
-                <Field label="ðŸ”´ Live Class Meeting Link (Zoom / Google Meet / Teams)"
+                <Field label="🔴 Live Class Meeting Link (Zoom / Google Meet / Teams)"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://meet.google.com/xxx-xxxx-xxx" />
@@ -248,17 +248,17 @@ export function FirebaseLessonManager() {
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://www.youtube.com/watch?v=xxxxx" />
               ) : form.lessonType === "pdf" ? (
-                <Field label="ðŸ“„ PDF / Notes URL (Google Drive, Dropbox, Direct link)"
+                <Field label="📄 PDF / Notes URL (Google Drive, Dropbox, Direct link)"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://drive.google.com/file/d/xxxx/view" />
               ) : form.lessonType === "lab" ? (
-                <Field label="ðŸ§ª Lab / Assignment URL"
+                <Field label="🧪 Lab / Assignment URL"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://github.com/your-org/lab-repo or assignment link" />
               ) : (
-                <Field label="ðŸ”— Resource URL"
+                <Field label="🔗 Resource URL"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://..." />
@@ -266,7 +266,7 @@ export function FirebaseLessonManager() {
 
               {/* Live class scheduled time */}
               {form.lessonType === "live" && (
-                <Field label="ðŸ“… Scheduled Date & Time (e.g. Sat 15 Jun, 7:00 PM IST)"
+                <Field label="📅 Scheduled Date & Time (e.g. Sat 15 Jun, 7:00 PM IST)"
                   value={form.scheduledAt || ""}
                   onChange={v => setForm(p => ({ ...p, scheduledAt: v }))}
                   placeholder="Sat 15 Jun 2026, 7:00 PM IST" />
@@ -301,8 +301,8 @@ export function FirebaseLessonManager() {
                   <select value={form.locked ? "locked" : "unlocked"}
                     onChange={e => setForm(p => ({ ...p, locked: e.target.value === "locked" }))}
                     className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white outline-none">
-                    <option value="unlocked">ðŸ”“ Unlocked (free)</option>
-                    <option value="locked">ðŸ”’ Locked (enrolled only)</option>
+                    <option value="unlocked">🔓 Unlocked (free)</option>
+                    <option value="locked">🔒 Locked (enrolled only)</option>
                   </select>
                 </div>
               </div>
@@ -316,7 +316,7 @@ export function FirebaseLessonManager() {
               <button onClick={handleSave} disabled={saving || !form.title.trim()}
                 className="flex items-center gap-2 rounded-xl bg-[#4F46E5] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#4338CA] disabled:opacity-60">
                 <Save className="h-4 w-4" />
-                {saving ? "Savingâ€¦" : editingId ? "Update Lesson" : "Add Lesson"}
+                {saving ? "Saving…" : editingId ? "Update Lesson" : "Add Lesson"}
               </button>
             </div>
           </div>
@@ -366,7 +366,7 @@ export function FirebaseLessonManager() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-[#64748B]">{lesson.duration || "â€”"}</td>
+                    <td className="px-4 py-3 text-[#64748B]">{lesson.duration || "—"}</td>
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                         lesson.status === "published"
@@ -401,7 +401,7 @@ export function FirebaseLessonManager() {
 
       {/* Upload guide */}
       <div className="rounded-xl border border-white/8 bg-white/4 px-4 py-3 text-[12px] text-[#475569]">
-        <p className="font-semibold text-[#64748B]">ðŸ“Ž How to add PDFs & Documents</p>
+        <p className="font-semibold text-[#64748B]">📎 How to add PDFs & Documents</p>
         <p className="mt-1">Upload your file to <strong className="text-[#94A3B8]">Google Drive</strong> â†’ right-click â†’ Share â†’ Anyone with link â†’ Copy link. Paste the link in the PDF/Notes URL field above.</p>
         <p className="mt-1">For <strong className="text-[#94A3B8]">live classes</strong>: Create a Zoom/Meet recurring session and paste the joining link. Students see it on the lesson page before the class starts.</p>
       </div>
