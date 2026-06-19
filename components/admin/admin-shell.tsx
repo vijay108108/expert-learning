@@ -41,7 +41,8 @@ const nav = [
   {
     section: "Content (CMS)",
     items: [
-      { label: "Courses",       href: "/admin/courses",      icon: BookOpenCheck },
+      { label: "Course Catalog",href: "/admin/catalog",      icon: BookOpenCheck },
+      { label: "LMS Courses",   href: "/admin/courses",      icon: BookOpenCheck },
       { label: "LMS / Programs",href: "/admin/lms",          icon: Layers },
       { label: "Modules",       href: "/admin/lms/modules",  icon: ChevronRight },
       { label: "Lessons",       href: "/admin/lms/lessons",  icon: PlayCircle },

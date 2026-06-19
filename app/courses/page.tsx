@@ -1,9 +1,9 @@
 "use client";
 
 import { BookOpenCheck, GraduationCap, Search, SlidersHorizontal, Users2, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CourseCatalogCard } from "@/components/ui/course-catalog-card";
-import { allCourses } from "@/data/courses";
+import { allCourses, type Course } from "@/data/courses";
 import type { LearningTrackKey } from "@/data/learning-tracks";
 
 const trackOptions: Array<{ value: LearningTrackKey | "all"; label: string }> = [
@@ -41,6 +41,20 @@ export default function CoursesPage() {
   const [track, setTrack] = useState<LearningTrackKey | "all">("all");
   const [level, setLevel] = useState<(typeof levelOptions)[number]["value"]>("all");
   const [mode, setMode] = useState<(typeof modeOptions)[number]["value"]>("all");
+  const [courses, setCourses] = useState<Course[]>(allCourses);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/catalog-courses")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data?.success && Array.isArray(data.courses) && data.courses.length > 0) {
+          setCourses(data.courses);
+        }
+      })
+      .catch(() => { /* keep static fallback */ });
+    return () => { cancelled = true; };
+  }, []);
 
   const hasActiveFilters = track !== "all" || level !== "all" || mode !== "all" || search.trim() !== "";
 
@@ -53,7 +67,7 @@ export default function CoursesPage() {
 
   const filteredCourses = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return allCourses.filter((course) => {
+    return courses.filter((course) => {
       const bySearch =
         !query ||
         course.title.toLowerCase().includes(query) ||
@@ -63,7 +77,7 @@ export default function CoursesPage() {
       const byMode = mode === "all" || course.mode === mode;
       return bySearch && byTrack && byLevel && byMode;
     });
-  }, [level, mode, search, track]);
+  }, [courses, level, mode, search, track]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">

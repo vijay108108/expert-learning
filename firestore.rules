@@ -49,6 +49,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Public catalog overrides/new-courses: public read; admin write
+    match /catalogCourses/{slug} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Payments: authenticated users can create their own records; read own records only
     match /payments/{paymentId} {
       allow create: if request.auth != null;

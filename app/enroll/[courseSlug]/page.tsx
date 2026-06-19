@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { CourseEnrollmentAction } from "@/components/enroll/course-enrollment-action";
 import { PageHero } from "@/components/ui/page-hero";
-import { getCourseBySlug } from "@/lib/course-catalog";
+import { getMergedCourseBySlug } from "@/lib/firebase";
 import { AzureSummerTrainingPage } from "@/sections/enroll/azure-summer-training-page";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ courseSlug: string }>;
@@ -10,7 +12,7 @@ type PageProps = {
 
 export default async function EnrollPage({ params }: PageProps) {
   const { courseSlug } = await params;
-  const course = getCourseBySlug(courseSlug);
+  const course = await getMergedCourseBySlug(courseSlug);
 
   if (!course) {
     notFound();

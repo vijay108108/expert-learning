@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Award, CheckCircle2, Clock3, FolderKanban, GraduationCap, Layers, Star } from "lucide-react";
-import { getCourseBySlug } from "@/lib/course-catalog";
+import { getMergedCourseBySlug } from "@/lib/firebase";
 import { PageHero } from "@/components/ui/page-hero";
 import { buildMetadata } from "@/lib/metadata";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -11,7 +13,7 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
+  const course = await getMergedCourseBySlug(slug);
 
   if (!course) {
     return buildMetadata({
@@ -30,7 +32,7 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function CourseSyllabusPage({ params }: PageProps) {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
+  const course = await getMergedCourseBySlug(slug);
 
   if (!course) {
     notFound();
