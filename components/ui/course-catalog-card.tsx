@@ -149,7 +149,13 @@ export function CourseCatalogCard({ course }: { course: Course }) {
                 </p>
               )}
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-2">
+            <Link
+              href={`/courses/syllabus/${course.slug}`}
+              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-2.5 text-[13px] font-semibold text-[#4F46E5] transition hover:bg-[#E0E7FF]"
+            >
+              View Syllabus <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+            <div className="mt-2 grid grid-cols-2 gap-2">
               <CourseEnrollmentAction
                 courseSlug={course.slug}
                 checkoutLabel="Enroll Now"
