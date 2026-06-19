@@ -175,7 +175,7 @@ export default function SyllabusPage() {
             </div>
             <div className="text-right text-[12px] text-[#64748B]">
               <p className="font-bold text-[#DC2626]">Summer 2026</p>
-              <p>Batch: 15 June 2026</p>
+              <p>Batch: 1 July 2026</p>
               <p className="mt-1 font-bold text-[#0F172A]">₹25,000</p>
               <p className="text-[#94A3B8] line-through">₹75,000</p>
             </div>
@@ -186,7 +186,7 @@ export default function SyllabusPage() {
               ["Duration", "8 Weeks"],
               ["Certificate", "Included"],
               ["Approach", "IaaS + AI + Hands-On"],
-              ["Batch", "15 June 2026"],
+              ["Batch", "1 July 2026"],
             ].map(([label, value]) => (
               <div key={label} className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2">
                 <p className="text-[9px] font-bold uppercase tracking-wider text-[#64748B]">{label}</p>

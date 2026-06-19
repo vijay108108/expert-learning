@@ -75,7 +75,7 @@ export default function SummerEnrollPage() {
           <p className="mt-2 text-[14px] text-[#C7D2FE]">Azure · Terraform · GitHub · Azure DevOps · AI Tools — Build real cloud infrastructure from Day 1</p>
 
           <div className="mt-5 flex flex-wrap gap-3">
-            <span className="flex items-center gap-1.5 rounded-xl bg-[#DC2626]/20 px-3 py-2 text-[12px] font-semibold text-[#FCA5A5]"><Clock3 className="h-3.5 w-3.5" />Batch: 15 June 2026</span>
+            <span className="flex items-center gap-1.5 rounded-xl bg-[#DC2626]/20 px-3 py-2 text-[12px] font-semibold text-[#FCA5A5]"><Clock3 className="h-3.5 w-3.5" />Batch: 1 July 2026</span>
             <span className="flex items-center gap-1.5 rounded-xl bg-white/10 px-3 py-2 text-[12px] font-semibold text-white"><Zap className="h-3.5 w-3.5" />8 Weeks Fast-Track</span>
             <span className="flex items-center gap-1.5 rounded-xl bg-white/10 px-3 py-2 text-[12px] font-semibold text-white"><Users2 className="h-3.5 w-3.5" />Beginner to Advanced</span>
           </div>
@@ -93,7 +93,7 @@ export default function SummerEnrollPage() {
               <span className="text-2xl">🚨</span>
               <div>
                 <p className="text-[14px] font-bold !text-[#DC2626]">Hurry — Only a few seats remaining!</p>
-                <p className="text-[13px] text-[#EF4444]">Batch: <strong>15 June 2026</strong> · Registrations close when seats fill</p>
+                <p className="text-[13px] text-[#EF4444]">Batch: <strong>1 July 2026</strong> · Registrations close when seats fill</p>
               </div>
             </div>
 
@@ -193,7 +193,7 @@ export default function SummerEnrollPage() {
 
                 <div className="mt-4 space-y-2.5 text-[13px]">
                   {[
-                    ["Starts",       "15 June 2026",         true],
+                    ["Starts",       "1 July 2026",         true],
                     ["Duration",     "8 Weeks",              false],
                     ["Certificate",  "Included",             false],
                     ["Seats",        "Limited — Hurry!",     true],

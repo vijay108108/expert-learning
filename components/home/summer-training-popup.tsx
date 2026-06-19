@@ -187,7 +187,7 @@ export function SummerTrainingPopup() {
                   {/* Details */}
                   <div className="mt-5 space-y-2.5 text-[13px]">
                     {[
-                      ["Batch Starts",   "15 June 2026",          true],
+                      ["Batch Starts",   "1 July 2026",          true],
                       ["Duration",       "8 Weeks (Fast-Track)",  false],
                       ["Mode",           "Weekend / Live Online",  false],
                       ["Certificate",    "Included (Recognized)", false],
@@ -208,7 +208,7 @@ export function SummerTrainingPopup() {
                       🚨 Hurry! Batch closes soon
                     </p>
                     <p className="mt-0.5 text-[11px] text-[#EF4444]">
-                      15 June 2026 · Only a few seats remaining · Register today to lock your spot
+                      1 July 2026 · Only a few seats remaining · Register today to lock your spot
                     </p>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export function SummerTrainingPopup() {
                     onClick={handleEnrollClick}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-5 py-3 text-[14px] font-bold text-white shadow-[0_8px_24px_rgba(147,51,234,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(147,51,234,0.4)]"
                   >
-                    Register Now — 15 Jun Batch <ArrowRight className="h-4 w-4" />
+                    Register Now — 1 Jul Batch <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
                     type="button"

@@ -324,7 +324,7 @@ export default function Home() {
                   Azure · Terraform · GitHub · AI — 8 Weeks · Certificate Included
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
-                  <span className="font-bold text-[#DC2626]">📅 Batch: 15 June 2026</span>
+                  <span className="font-bold text-[#DC2626]">📅 Batch: 1 July 2026</span>
                   <span className="text-[#94A3B8]">·</span>
                   <span className="font-semibold text-[#16A34A]">
                     ₹25,000 <span className="font-normal text-[#94A3B8] line-through">₹75,000</span>
