@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
-import { signInAnonymously } from "firebase/auth";
+import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
+import { signInAnonymously, signInWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "@/hooks/use-auth";
-import { getFirebaseAuth, getUserProfile, type AppUserProfile } from "@/lib/firebase";
+import { getFirebaseAuth, getFirebaseAuthErrorMessage, getUserProfile, type AppUserProfile } from "@/lib/firebase";
 
 const ADMIN_SESSION_KEY = "gz_admin_pin_auth";
 // PIN must be set via NEXT_PUBLIC_ADMIN_PIN env var — no hardcoded fallback
@@ -14,31 +14,64 @@ function isAdminProfile(profile: AppUserProfile | null) {
   return profile?.role === "admin";
 }
 
-/* ── PIN login screen ────────────────────────────────────── */
-function AdminPinScreen({ onSuccess }: { onSuccess: () => void }) {
-  const [pin, setPin]         = useState("");
-  const [show, setShow]       = useState(false);
-  const [error, setError]     = useState("");
-  const [shaking, setShaking] = useState(false);
+/* ── Admin email/password login screen ──────────────────── */
+function AdminLoginScreen({ onPinSuccess }: { onPinSuccess: () => void }) {
+  const [email, setEmail]       = useState("");
+  const [password, setPassword] = useState("");
+  const [show, setShow]         = useState(false);
+  const [error, setError]       = useState("");
+  const [pending, setPending]   = useState(false);
+  const [shaking, setShaking]   = useState(false);
 
-  async function attempt() {
+  function fail(message: string) {
+    setError(message);
+    setShaking(true);
+    setTimeout(() => setShaking(false), 500);
+  }
+
+  async function attemptEmailLogin() {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      fail("Firebase auth is not available right now.");
+      return;
+    }
+    if (!email.trim() || !password) {
+      fail("Enter both email and password.");
+      return;
+    }
+
+    setPending(true);
+    setError("");
+    try {
+      const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const profile = await getUserProfile(result.user.uid);
+      if (!isAdminProfile(profile)) {
+        fail("This account does not have admin access.");
+        return;
+      }
+      /* Guard's role-check effect will pick up the signed-in admin user automatically. */
+    } catch (err) {
+      fail(getFirebaseAuthErrorMessage(err));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function attemptPin(pin: string) {
     if (ADMIN_PIN && pin === ADMIN_PIN) {
       try { sessionStorage.setItem(ADMIN_SESSION_KEY, "1"); } catch { /* ignore */ }
-      /* Sign in to Firebase anonymously so Firestore operations work */
       try {
         const auth = getFirebaseAuth();
         if (auth && !auth.currentUser) {
           await signInAnonymously(auth);
         }
       } catch { /* ignore — Firestore rules may still work with if true */ }
-      onSuccess();
+      onPinSuccess();
     } else {
-      setError("Incorrect PIN. Try again.");
-      setShaking(true);
-      setTimeout(() => setShaking(false), 500);
-      setPin("");
+      fail("Incorrect PIN. Try again.");
     }
   }
+  void attemptPin;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#060B14] px-4">
@@ -55,18 +88,33 @@ function AdminPinScreen({ onSuccess }: { onSuccess: () => void }) {
 
           <p className="text-center text-[11px] font-bold uppercase tracking-widest text-[#9333EA]">GenZNext</p>
           <h1 className="mt-1 text-center text-[22px] font-extrabold text-white">Admin Panel</h1>
-          <p className="mt-2 text-center text-[13px] text-[#64748B]">Enter the admin PIN to continue</p>
+          <p className="mt-2 text-center text-[13px] text-[#64748B]">Sign in with your admin account to continue</p>
 
-          {/* PIN input */}
+          {/* Email input */}
           <div className="relative mt-6">
+            <Mail className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-[#475569]" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              onKeyDown={(e) => e.key === "Enter" && void attemptEmailLogin()}
+              placeholder="admin@genznext.com"
+              autoFocus
+              disabled={pending}
+              className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-3 text-[14px] text-white placeholder:text-[#334155] outline-none focus:border-[#9333EA] focus:ring-2 focus:ring-[#9333EA]/20"
+            />
+          </div>
+
+          {/* Password input */}
+          <div className="relative mt-3">
             <Lock className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-[#475569]" />
             <input
               type={show ? "text" : "password"}
-              value={pin}
-              onChange={(e) => { setPin(e.target.value); setError(""); }}
-              onKeyDown={(e) => e.key === "Enter" && attempt()}
-              placeholder="Enter admin PIN"
-              autoFocus
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
+              onKeyDown={(e) => e.key === "Enter" && void attemptEmailLogin()}
+              placeholder="Password"
+              disabled={pending}
               className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-10 text-[14px] text-white placeholder:text-[#334155] outline-none focus:border-[#9333EA] focus:ring-2 focus:ring-[#9333EA]/20"
             />
             <button
@@ -84,10 +132,11 @@ function AdminPinScreen({ onSuccess }: { onSuccess: () => void }) {
 
           <button
             type="button"
-            onClick={attempt}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3 text-[14px] font-bold text-white shadow-[0_8px_24px_rgba(147,51,234,0.3)] transition hover:scale-[1.02] active:scale-[0.98]"
+            onClick={() => void attemptEmailLogin()}
+            disabled={pending}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3 text-[14px] font-bold text-white shadow-[0_8px_24px_rgba(147,51,234,0.3)] transition hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            <ShieldCheck className="h-4 w-4" /> Enter Admin Panel
+            <ShieldCheck className="h-4 w-4" /> {pending ? "Signing in..." : "Sign In"}
           </button>
 
           <p className="mt-4 text-center text-[11px] text-[#334155]">
@@ -161,8 +210,8 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
 
   if (!allowed) {
     return (
-      <AdminPinScreen
-        onSuccess={() => setPinAuth(true)}
+      <AdminLoginScreen
+        onPinSuccess={() => setPinAuth(true)}
       />
     );
   }
