@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata, Viewport } from "next";
+import { JetBrains_Mono, Sora } from "next/font/google";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { DemoModalRoot } from "@/components/demo/demo-modal-root";
@@ -7,6 +7,20 @@ import { AppChrome } from "@/components/layout/app-chrome";
 import { PwaProvider } from "@/components/pwa/pwa-provider";
 import { buildMetadata } from "@/lib/metadata";
 import "./globals.css";
+
+const sora = Sora({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-sora",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono-ui",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   ...buildMetadata({
@@ -45,15 +59,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full scroll-smooth antialiased" data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      className={`h-full scroll-smooth antialiased ${sora.variable} ${jetBrainsMono.variable}`}
+      data-scroll-behavior="smooth"
+    >
       <head>
-        {/* Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
         {/* PWA / Apple icons */}
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <link rel="apple-touch-icon" sizes="152x152" href="/icon-192.png" />

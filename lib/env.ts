@@ -36,6 +36,7 @@ export const env = {
   nextPublicFirebasePhoneAuthTestMode: readBooleanEnvValue(
     process.env.NEXT_PUBLIC_FIREBASE_PHONE_AUTH_TEST_MODE,
   ),
+  firebaseServiceAccountKey: process.env.FIREBASE_SERVICE_ACCOUNT_KEY || "",
   nextPublicSupabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   nextPublicSupabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
@@ -66,6 +67,10 @@ export const hasFirebaseEnv = Boolean(
     env.nextPublicFirebaseStorageBucket &&
     env.nextPublicFirebaseMessagingSenderId &&
     env.nextPublicFirebaseAppId,
+);
+
+export const hasFirebaseAdminEnv = Boolean(
+  env.firebaseServiceAccountKey && env.nextPublicFirebaseProjectId,
 );
 
 export const hasSupabaseEnv = Boolean(

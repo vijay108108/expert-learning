@@ -3,10 +3,8 @@ import { formatPaiseToPrice } from "@/lib/course-catalog";
 import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
-import {
-  logFirestoreIssue,
-  saveEnrollmentRecord,
-} from "@/lib/firebase";
+import { logFirestoreIssue } from "@/lib/firebase";
+import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
 import { captureServerEvent } from "@/lib/services/analytics";
 import { sendEnrollmentEmail } from "@/lib/services/email";
 import { getRazorpayPaymentDetails, verifyRazorpaySignature } from "@/lib/services/payments";
@@ -108,7 +106,7 @@ export async function POST(request: Request) {
           const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
           const primaryCourseSlug = enrollmentMeta.primaryCourseSlug;
 
-          return saveEnrollmentRecord({
+          return saveEnrollmentRecordAdmin({
             userId: body.userId,
             userName: body.name,
             userPhone: body.phone,

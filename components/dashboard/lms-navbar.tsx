@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 
 const navLinks = [
   { label: "My Courses",   href: "/dashboard/courses",  icon: LayoutDashboard },
@@ -113,7 +113,7 @@ export function LmsNavbar() {
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366F1,#4F46E5)] text-[12px] font-bold text-white transition hover:scale-105"
                 aria-label="User menu"
               >
-                {(user.displayName?.[0] || user.phoneNumber?.[3] || "U").toUpperCase()}
+                {getInitials(user.displayName || user.email || user.phoneNumber, "U")}
               </button>
 
               {userMenuOpen && (

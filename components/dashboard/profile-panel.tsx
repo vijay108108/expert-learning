@@ -20,14 +20,7 @@ import {
   formatCurrencyInrFromPaise, formatInvoiceDate,
   latestOrderStorageKey, type StoredOrderSuccess,
 } from "@/lib/order-success";
-
-/* ── Helpers ── */
-function getInitials(source?: string | null) {
-  if (!source) return "GZ";
-  const words = source.trim().replace(/[@._-]/g, " ").split(/\s+/).filter(Boolean);
-  if (words.length >= 2) return `${words[0][0]}${words[1][0]}`.toUpperCase();
-  return source.trim().slice(0, 2).toUpperCase() || "GZ";
-}
+import { getInitials } from "@/lib/utils";
 
 function formatMemberSince(value: string | null) {
   if (!value) return "Recently joined";
@@ -211,7 +204,7 @@ export function ProfilePanel() {
   const displayName    = profile?.name || user.displayName || "GenZNext Learner";
   const displayEmail   = profile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "");
   const displayPhone   = profile?.phone || user.phoneNumber || "";
-  const displayInitials = getInitials(displayName || displayEmail || displayPhone);
+  const displayInitials = getInitials(displayName || displayEmail || displayPhone, "GZ");
   const learningStatus = courseCount > 0 ? "Active Learner" : "New Learner";
 
   return (

@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
-import { saveEnrollmentRecord } from "@/lib/firebase";
+import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
 import { env } from "@/lib/env";
 
 function verifyWebhookSignature(rawBody: string, signature: string) {
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
       offerings.map((offering) => {
         const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
         const selected = offering;
-        return saveEnrollmentRecord({
+        return saveEnrollmentRecordAdmin({
           userId,
           userName: name || "GenZNext Learner",
           userPhone: phone,

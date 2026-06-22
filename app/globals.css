@@ -1,9 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  --font-sora: "Sora", sans-serif;
-  --font-mono-ui: "JetBrains Mono", monospace;
-
   /* ── Core brand colours ── */
   --brand-primary:   #4F46E5;           /* indigo 600 — base */
   --brand-violet:    #9333EA;           /* purple 600 — warm end of gradient */

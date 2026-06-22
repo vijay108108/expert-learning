@@ -56,6 +56,13 @@ import { cn } from "@/lib/utils";
 const otpLength = 6;
 const resendWindowSeconds = 30;
 const phoneOtpRequestTimeoutMs = 30000;
+const otpValiditySeconds = 600; // 10 minutes
+
+function formatOtpCountdown(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
 
 type AuthStep = "phone" | "otp" | "google-phone";
 type AuthTab = "password-login" | "signup";
@@ -204,6 +211,8 @@ export function PhoneAuthFlow({
   const [otpError, setOtpError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
+  const [otpExpiresAt, setOtpExpiresAt] = useState<number | null>(null);
+  const [otpRemainingSeconds, setOtpRemainingSeconds] = useState(0);
   const [rateLimitSeconds, setRateLimitSeconds] = useState(0);
   const [googlePhone, setGooglePhone] = useState("");
   const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
@@ -375,6 +384,25 @@ export function PhoneAuthFlow({
   }, [resendTimer]);
 
   useEffect(() => {
+    if (!otpExpiresAt) {
+      setOtpRemainingSeconds(0);
+      return;
+    }
+
+    const tick = () => {
+      const remaining = Math.max(0, Math.round((otpExpiresAt - Date.now()) / 1000));
+      setOtpRemainingSeconds(remaining);
+      if (remaining <= 0) {
+        confirmationResultRef.current = null;
+      }
+    };
+
+    tick();
+    const interval = window.setInterval(tick, 1000);
+    return () => window.clearInterval(interval);
+  }, [otpExpiresAt]);
+
+  useEffect(() => {
     if (rateLimitSeconds <= 0) {
       return;
     }
@@ -496,7 +524,7 @@ export function PhoneAuthFlow({
 
     if (!getFirebaseAuth()) {
       setStepError(
-        "Firebase phone authentication is not configured yet. Add the Firebase public keys to enable OTP login.",
+        "Firebase authentication is not configured yet. Add the Firebase public keys to enable login.",
       );
       return;
     }
@@ -569,6 +597,7 @@ export function PhoneAuthFlow({
           resetOtpInputs();
           setRateLimitSeconds(0);
           setResendTimer(resendWindowSeconds);
+          setOtpExpiresAt(Date.now() + otpValiditySeconds * 1000);
           setSuccessMessage(isResend ? "A fresh OTP has been sent." : "OTP sent successfully.");
           window.setTimeout(() => {
             otpInputRefs.current[0]?.focus();
@@ -648,6 +677,7 @@ export function PhoneAuthFlow({
     setStep("phone");
     resetOtpInputs();
     confirmationResultRef.current = null;
+    setOtpExpiresAt(null);
     googleUserIdRef.current = null;
     clearRecaptcha(recaptchaHostRef.current);
     recaptchaVerifierRef.current = null;
@@ -962,6 +992,12 @@ export function PhoneAuthFlow({
       return;
     }
 
+    if (otpExpiresAt && Date.now() > otpExpiresAt) {
+      setOtpError("OTP expired. Please request a new OTP.");
+      confirmationResultRef.current = null;
+      return;
+    }
+
     const confirmationResult = confirmationResultRef.current;
     if (!confirmationResult) {
       setOtpError("Request OTP again to continue.");
@@ -1178,6 +1214,12 @@ export function PhoneAuthFlow({
       return;
     }
 
+    if (otpExpiresAt && Date.now() > otpExpiresAt) {
+      setOtpError("OTP expired. Please request a new OTP.");
+      confirmationResultRef.current = null;
+      return;
+    }
+
     const confirmationResult = confirmationResultRef.current;
     if (!confirmationResult) {
       setOtpError("Request a new OTP to continue.");
@@ -1227,6 +1269,11 @@ export function PhoneAuthFlow({
 
     if (resetPasswordValue.length < 8) {
       setFeedback("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (!/[A-Za-z]/.test(resetPasswordValue) || !/[0-9]/.test(resetPasswordValue)) {
+      setFeedback("Password must include at least one letter and one number.");
       return;
     }
 
@@ -1533,6 +1580,11 @@ export function PhoneAuthFlow({
           ) : null}
           <div className="mt-3 space-y-2">
             <p className={cn("text-sm", isModal ? "text-[#475569]" : "text-[#E2E8F0]")}>OTP sent to {maskedPhone}</p>
+            <p className={cn("text-[12px]", otpRemainingSeconds > 0 ? (isModal ? "text-[#475569]" : "text-[#CBD5E1]") : "font-medium text-rose-600")}>
+              {otpRemainingSeconds > 0
+                ? `OTP expires in ${formatOtpCountdown(otpRemainingSeconds)}`
+                : "OTP expired. Please request a new OTP."}
+            </p>
             <div className="flex flex-wrap items-center justify-between gap-3 text-[12px]">
               <button
                 type="button"
@@ -1563,7 +1615,7 @@ export function PhoneAuthFlow({
           <button
             type="button"
             onClick={() => void onVerify()}
-            disabled={pending || otpCode.length !== otpLength}
+            disabled={pending || otpCode.length !== otpLength || otpRemainingSeconds <= 0}
             className={cn(
               isModal
                 ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
@@ -1951,6 +2003,11 @@ export function PhoneAuthFlow({
                       Secure verification
                     </div>
                     <p className="mt-1 text-[13px]">OTP sent to: {maskedPhone}</p>
+                    <p className={cn("mt-1 text-[12px]", otpRemainingSeconds > 0 ? "text-[#64748B]" : "font-medium text-rose-600")}>
+                      {otpRemainingSeconds > 0
+                        ? `OTP expires in ${formatOtpCountdown(otpRemainingSeconds)}`
+                        : "OTP expired. Please request a new OTP."}
+                    </p>
                   </div>
                   <label className={cn("form-label", isModal ? "text-[#64748B]" : "text-[#E2E8F0]")} htmlFor={`signup-otp-0-${variant}`}>
                     Enter OTP
@@ -2029,7 +2086,7 @@ export function PhoneAuthFlow({
               <button
                 type="button"
                 onClick={() => void (showSignupOtpState ? handleSignupVerifyAndCreate() : handlePasswordSignup())}
-                disabled={pending || signupLookupPending || !firebaseReady || (showSignupOtpState && otpCode.length !== otpLength)}
+                disabled={pending || signupLookupPending || !firebaseReady || (showSignupOtpState && (otpCode.length !== otpLength || otpRemainingSeconds <= 0))}
                 className={cn(
                   isModal
                     ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
