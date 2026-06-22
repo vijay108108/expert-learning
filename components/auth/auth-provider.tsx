@@ -21,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [modalMode, setModalMode] = useState<AuthModalMode>("choice");
   const [redirectAfterAuth, setRedirectAfterAuth] = useState("/dashboard");
   const [pendingAuthAction, setPendingAuthAction] = useState<(() => void | Promise<void>) | null>(null);
+  const [suppressAutoRedirect, setSuppressAutoRedirect] = useState(false);
 
   useEffect(() => {
     const auth = getFirebaseAuth();
@@ -114,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!isAuthReady || !isModalOpen) {
+    if (!isAuthReady || !isModalOpen || suppressAutoRedirect) {
       return;
     }
 
@@ -132,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, 0);
 
     return () => window.clearTimeout(redirectTimer);
-  }, [isAuthReady, isModalOpen, redirectAfterAuth, router, user]);
+  }, [isAuthReady, isModalOpen, redirectAfterAuth, router, suppressAutoRedirect, user]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -141,6 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isModalOpen,
       modalMode,
       redirectAfterAuth,
+      setSuppressAutoRedirect,
       openAuthModal,
       closeAuthModal,
       handleAuthSuccess,

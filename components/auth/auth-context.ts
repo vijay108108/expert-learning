@@ -11,6 +11,7 @@ export type AuthContextValue = {
   isModalOpen: boolean;
   modalMode: AuthModalMode;
   redirectAfterAuth: string;
+  setSuppressAutoRedirect: (suppressed: boolean) => void;
   openAuthModal: (
     mode: AuthModalMode,
     redirectTo?: string,

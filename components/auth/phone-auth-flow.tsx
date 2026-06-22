@@ -170,7 +170,7 @@ export function PhoneAuthFlow({
   onPendingChange,
 }: PhoneAuthFlowProps) {
   const router = useRouter();
-  const { user, isAuthReady } = useAuth();
+  const { user, isAuthReady, setSuppressAutoRedirect } = useAuth();
   const confirmationResultRef = useRef<ConfirmationResult | null>(null);
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaHostRef = useRef<HTMLDivElement | null>(null);
@@ -222,6 +222,15 @@ export function PhoneAuthFlow({
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [showSignupGoToLogin, setShowSignupGoToLogin] = useState(false);
   const [signupLookupPending, setSignupLookupPending] = useState(false);
+
+  useEffect(() => {
+    /* Confirming the forgot-password OTP signs the user into Firebase Auth as
+       a side effect, which would otherwise trigger AuthProvider's global
+       "user is signed in, close modal and redirect to dashboard" effect
+       before the Create New Password step gets a chance to render. */
+    setSuppressAutoRedirect(isForgotPasswordMode);
+    return () => setSuppressAutoRedirect(false);
+  }, [isForgotPasswordMode, setSuppressAutoRedirect]);
 
   const firebaseReady = isFirebaseConfigured();
   const firebaseSetupKeys = [
