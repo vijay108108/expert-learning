@@ -10,19 +10,11 @@
  * Usage:
  *   curl -X POST http://localhost:3000/api/admin/seed \
  *     -H "Content-Type: application/json" \
- *     -d '{"key":"your-setup-key"}'
- *
- * Or just open: http://localhost:3000/api/admin/seed?key=your-setup-key
+ *     -d '{"key":"your-setup-key","email":"admin@example.com","password":"a-strong-password","name":"Admin Name"}'
  */
 
 import { NextResponse } from "next/server";
 import { env } from "@/lib/env";
-
-const ADMIN_PHONE    = "8817659208";
-const ADMIN_NAME     = "Jay Vishwakarma";
-const ADMIN_PASSWORD = "123456789";
-/* Phone → fake email (same pattern as phone-auth-flow.tsx) */
-const ADMIN_EMAIL    = `91${ADMIN_PHONE}@genznext.app`;
 
 /* ── Firebase REST helpers ───────────────────────────────── */
 
@@ -98,14 +90,20 @@ async function writeFirestoreProfile(
 
 export async function POST(request: Request) {
   let key = "";
+  let email = "";
+  let password = "";
+  let name = "";
   try {
     const body = await request.json();
     key = body?.key || "";
+    email = body?.email || "";
+    password = body?.password || "";
+    name = body?.name || "";
   } catch { /* ignore */ }
-  return handler(key);
+  return handler(key, email, password, name);
 }
 
-async function handler(providedKey: string) {
+async function handler(providedKey: string, ADMIN_EMAIL: string, ADMIN_PASSWORD: string, ADMIN_NAME: string) {
   const setupKey  = process.env.ADMIN_SETUP_KEY || "";
   const apiKey    = env.nextPublicFirebaseApiKey || "";
   const projectId = env.nextPublicFirebaseProjectId || "";
@@ -122,6 +120,13 @@ async function handler(providedKey: string) {
     return NextResponse.json(
       { error: "Invalid setup key." },
       { status: 401 },
+    );
+  }
+
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD || ADMIN_PASSWORD.length < 12 || !ADMIN_NAME) {
+    return NextResponse.json(
+      { error: "Provide email, name, and a password of at least 12 characters." },
+      { status: 400 },
     );
   }
 
@@ -181,7 +186,6 @@ async function handler(providedKey: string) {
     await writeFirestoreProfile(uid, idToken, projectId, {
       uid,
       name:       ADMIN_NAME,
-      phone:      ADMIN_PHONE,
       email:      ADMIN_EMAIL,
       role:       "admin",
       authMethod: "password",

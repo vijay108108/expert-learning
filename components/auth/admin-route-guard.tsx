@@ -2,20 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
-import { signInAnonymously, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { getFirebaseAuth, getFirebaseAuthErrorMessage, getUserProfile, type AppUserProfile } from "@/lib/firebase";
-
-const ADMIN_SESSION_KEY = "gz_admin_pin_auth";
-// PIN must be set via NEXT_PUBLIC_ADMIN_PIN env var — no hardcoded fallback
-const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN || "";
 
 function isAdminProfile(profile: AppUserProfile | null) {
   return profile?.role === "admin";
 }
 
 /* ── Admin email/password login screen ──────────────────── */
-function AdminLoginScreen({ onPinSuccess }: { onPinSuccess: () => void }) {
+function AdminLoginScreen() {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow]         = useState(false);
@@ -56,22 +52,6 @@ function AdminLoginScreen({ onPinSuccess }: { onPinSuccess: () => void }) {
       setPending(false);
     }
   }
-
-  async function attemptPin(pin: string) {
-    if (ADMIN_PIN && pin === ADMIN_PIN) {
-      try { sessionStorage.setItem(ADMIN_SESSION_KEY, "1"); } catch { /* ignore */ }
-      try {
-        const auth = getFirebaseAuth();
-        if (auth && !auth.currentUser) {
-          await signInAnonymously(auth);
-        }
-      } catch { /* ignore — Firestore rules may still work with if true */ }
-      onPinSuccess();
-    } else {
-      fail("Incorrect PIN. Try again.");
-    }
-  }
-  void attemptPin;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#060B14] px-4">
@@ -162,31 +142,6 @@ function AdminLoginScreen({ onPinSuccess }: { onPinSuccess: () => void }) {
 export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
   const { user, isAuthReady } = useAuth();
 
-  /* PIN session check (fastest — no Firebase needed) */
-  const [pinAuth, setPinAuth] = useState(() => {
-    try {
-      return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
-    } catch {
-      return false;
-    }
-  });
-
-  useEffect(() => {
-    if (!pinAuth) {
-      return;
-    }
-
-    void (async () => {
-      try {
-        const auth = getFirebaseAuth();
-        if (auth && !auth.currentUser) {
-          await signInAnonymously(auth);
-        }
-      } catch { /* ignore */ }
-    })();
-  }, [pinAuth]);
-
-  /* Firebase role check (secondary) */
   const [firebaseAdmin, setFirebaseAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -205,15 +160,8 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
     return () => { active = false; };
   }, [isAuthReady, user]);
 
-  /* Allow if: PIN authenticated OR Firebase admin */
-  const allowed = pinAuth || firebaseAdmin === true;
-
-  if (!allowed) {
-    return (
-      <AdminLoginScreen
-        onPinSuccess={() => setPinAuth(true)}
-      />
-    );
+  if (firebaseAdmin !== true) {
+    return <AdminLoginScreen />;
   }
 
   return <>{children}</>;

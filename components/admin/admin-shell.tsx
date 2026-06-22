@@ -248,7 +248,6 @@ export function AdminShell({
             <button
               type="button"
               onClick={async () => {
-                try { sessionStorage.removeItem("gz_admin_pin_auth"); } catch { /* ignore */ }
                 try { await signOutUser(); } catch { /* ignore */ }
                 window.location.href = "/";
               }}
