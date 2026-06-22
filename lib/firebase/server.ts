@@ -1,74 +1,25 @@
-import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
-import { collection, doc, getDoc, getDocs, getFirestore, limit, query, type Firestore, where } from "firebase/firestore";
-import { env, hasFirebaseEnv } from "@/lib/env";
+import { getAdminDb } from "./admin";
 import { getPhoneLookupCandidates, normalizePhoneForAuth } from "./phone-utils";
 
-function getFirebaseConfig() {
-  if (!hasFirebaseEnv) {
-    return null;
-  }
-
-  return {
-    apiKey: env.nextPublicFirebaseApiKey,
-    authDomain: env.nextPublicFirebaseAuthDomain,
-    projectId: env.nextPublicFirebaseProjectId,
-    storageBucket: env.nextPublicFirebaseStorageBucket,
-    messagingSenderId: env.nextPublicFirebaseMessagingSenderId,
-    appId: env.nextPublicFirebaseAppId,
-    measurementId: env.nextPublicFirebaseMeasurementId,
-  };
-}
-
-let firebaseApp: FirebaseApp | null = null;
-let firebaseDb: Firestore | null = null;
-
-export function getServerFirebaseApp() {
-  const firebaseConfig = getFirebaseConfig();
-
-  if (!firebaseConfig) {
-    return null;
-  }
-
-  if (firebaseApp) {
-    return firebaseApp;
-  }
-
-  firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  return firebaseApp;
-}
-
-export function getServerFirebaseDb() {
-  if (!hasFirebaseEnv) {
-    return null;
-  }
-
-  if (firebaseDb) {
-    return firebaseDb;
-  }
-
-  const app = getServerFirebaseApp();
-  if (!app) {
-    return null;
-  }
-
-  firebaseDb = getFirestore(app);
-  return firebaseDb;
-}
-
+/**
+ * Uses the Firebase Admin SDK (not the client SDK) because this runs in a
+ * server context with no signed-in request.auth — the client SDK would be
+ * blocked by Firestore security rules that require an authenticated user.
+ */
 export async function checkSignupPhoneExists(phone: string) {
-  const db = getServerFirebaseDb();
+  const db = getAdminDb();
+  const normalizedPhone = normalizePhoneForAuth(phone);
 
   if (!db) {
-    return { exists: false, source: "unavailable" as const, normalizedPhone: normalizePhoneForAuth(phone) };
+    return { exists: false, source: "unavailable" as const, normalizedPhone };
   }
 
-  const normalizedPhone = normalizePhoneForAuth(phone);
   const candidates = getPhoneLookupCandidates(phone);
 
   if (normalizedPhone) {
-    const claimSnapshot = await getDoc(doc(db, "phone-signup-claims", normalizedPhone));
+    const claimSnapshot = await db.collection("phone-signup-claims").doc(normalizedPhone).get();
 
-    if (claimSnapshot.exists()) {
+    if (claimSnapshot.exists) {
       return {
         exists: true,
         source: "phone-signup-claims" as const,
@@ -78,9 +29,11 @@ export async function checkSignupPhoneExists(phone: string) {
   }
 
   if (candidates.length) {
-    const legacyClaimSnapshot = await getDocs(
-      query(collection(db, "phone-signup-claims"), where("phone", "in", candidates.slice(0, 10)), limit(1)),
-    );
+    const legacyClaimSnapshot = await db
+      .collection("phone-signup-claims")
+      .where("phone", "in", candidates.slice(0, 10))
+      .limit(1)
+      .get();
 
     if (!legacyClaimSnapshot.empty) {
       return {
@@ -95,9 +48,11 @@ export async function checkSignupPhoneExists(phone: string) {
     return { exists: false, source: "users" as const, normalizedPhone };
   }
 
-  const userSnapshot = await getDocs(
-    query(collection(db, "users"), where("phone", "in", candidates.slice(0, 10)), limit(1)),
-  );
+  const userSnapshot = await db
+    .collection("users")
+    .where("phone", "in", candidates.slice(0, 10))
+    .limit(1)
+    .get();
 
   return userSnapshot.empty
     ? { exists: false, source: "users" as const, normalizedPhone }
