@@ -120,3 +120,13 @@ export function isConfiguredAdminUser(user: VerifiedFirebaseUser) {
 
   return Boolean(user.email && env.adminEmails.includes(user.email));
 }
+
+export async function requireAdmin(request: Request) {
+  const authUser = await verifyFirebaseBearerToken(request);
+
+  if (!authUser || !isConfiguredAdminUser(authUser)) {
+    return null;
+  }
+
+  return authUser;
+}

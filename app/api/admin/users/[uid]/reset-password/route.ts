@@ -6,7 +6,7 @@ type RouteContext = {
   params: Promise<{ uid: string }>;
 };
 
-export async function DELETE(request: Request, context: RouteContext) {
+export async function POST(request: Request, context: RouteContext) {
   const authUser = await requireAdmin(request);
 
   if (!authUser) {
@@ -15,9 +15,17 @@ export async function DELETE(request: Request, context: RouteContext) {
 
   const { uid } = await context.params;
 
-  if (uid === authUser.uid) {
+  let password = "";
+  try {
+    const body = await request.json();
+    password = typeof body?.password === "string" ? body.password : "";
+  } catch {
+    // Missing/invalid body handled by the validation below.
+  }
+
+  if (password.length < 8) {
     return NextResponse.json(
-      { success: false, message: "You cannot delete your own account." },
+      { success: false, message: "Password must be at least 8 characters." },
       { status: 400 },
     );
   }
@@ -33,22 +41,16 @@ export async function DELETE(request: Request, context: RouteContext) {
   }
 
   try {
-    await auth.deleteUser(uid).catch((error) => {
-      if (error?.code !== "auth/user-not-found") {
-        throw error;
-      }
-    });
-
-    const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).get();
-    const batch = db.batch();
-    enrollmentsSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-    batch.delete(db.collection("users").doc(uid));
-    await batch.commit();
+    await auth.updateUser(uid, { password });
+    await db.collection("users").doc(uid).set(
+      { passwordUpdatedAt: new Date().toISOString() },
+      { merge: true },
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: error instanceof Error ? error.message : "Unable to delete user." },
+      { success: false, message: error instanceof Error ? error.message : "Unable to reset password." },
       { status: 500 },
     );
   }
