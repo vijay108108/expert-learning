@@ -35,6 +35,10 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
       setError("Provide a phone number or an email address.");
       return;
     }
+    if (phone.trim() && !/^\d{10}$/.test(phone.trim())) {
+      setError("Phone number must be exactly 10 digits (without the country code).");
+      return;
+    }
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
@@ -80,13 +84,18 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
             disabled={pending}
             className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
           />
-          <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone number (e.g. 9876543210)"
-            disabled={pending}
-            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
-          />
+          <div className="flex h-10 overflow-hidden rounded-xl border border-white/10 bg-white/5 focus-within:border-[#4F46E5]/50">
+            <span className="inline-flex items-center border-r border-white/10 px-3 text-[13px] text-[#64748B]">+91</span>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+              placeholder="9876543210"
+              inputMode="numeric"
+              maxLength={10}
+              disabled={pending}
+              className="min-w-0 flex-1 bg-transparent px-3 text-[13px] text-white placeholder:text-[#334155] outline-none"
+            />
+          </div>
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}

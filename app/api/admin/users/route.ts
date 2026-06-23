@@ -45,6 +45,23 @@ export async function POST(request: Request) {
     );
   }
 
+  const normalizedPhone = phone ? normalizePhoneForAuth(phone) : "";
+
+  /* Must match exactly /^91\d{10}$/ — the same shape the login form's
+     normalizePhoneForAuth(phone) always produces for a real 10-digit
+     Indian number. Anything else (leading zeros, stray punctuation,
+     double country codes, non-Indian numbers) falls through this
+     function's fallback branch and silently returns the wrong digit
+     string, generating a synthetic email no login attempt can ever
+     reach — the account becomes permanently unreachable with no error
+     at creation time. */
+  if (phone && !/^91\d{10}$/.test(normalizedPhone)) {
+    return NextResponse.json(
+      { success: false, message: "Enter a valid 10-digit Indian mobile number." },
+      { status: 400 },
+    );
+  }
+
   const auth = getAdminAuth();
   const db = getAdminDb();
 
@@ -55,7 +72,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const normalizedPhone = phone ? normalizePhoneForAuth(phone) : "";
   const finalEmail = email || `${normalizedPhone}@genznext.app`;
 
   try {
