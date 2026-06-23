@@ -866,13 +866,14 @@ export function PhoneAuthFlow({
           signedIn = true;
           break;
         } catch (err) {
+          /* With email-enumeration protection, Firebase returns the same
+             "invalid-credential" code both for "wrong password on a real
+             account" and "no account with this email" — it no longer
+             exposes auth/user-not-found. Since candidates include both the
+             current and legacy email schemes, we can't tell those apart
+             from a single attempt, so every candidate must be tried before
+             giving up. */
           lastError = err;
-          const code = getErrorCode(err);
-          /* Wrong password on a real account → stop immediately */
-          if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
-            break;
-          }
-          /* user-not-found on this candidate → try next */
         }
       }
 

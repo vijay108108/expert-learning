@@ -1,10 +1,12 @@
 import "server-only";
 import { cert, getApp, getApps, initializeApp, type App } from "firebase-admin/app";
+import { getAuth, type Auth } from "firebase-admin/auth";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { env, hasFirebaseAdminEnv } from "@/lib/env";
 
 let adminApp: App | null = null;
 let adminDb: Firestore | null = null;
+let adminAuth: Auth | null = null;
 
 function getAdminApp() {
   if (!hasFirebaseAdminEnv) {
@@ -53,4 +55,24 @@ export function getAdminDb() {
 
   adminDb = getFirestore(app);
   return adminDb;
+}
+
+/**
+ * Firebase Auth backed by the Admin SDK — required for operations a
+ * signed-in user can never perform on another account through the client
+ * SDK, such as deleting a user or setting their password without knowing
+ * the old one.
+ */
+export function getAdminAuth() {
+  if (adminAuth) {
+    return adminAuth;
+  }
+
+  const app = getAdminApp();
+  if (!app) {
+    return null;
+  }
+
+  adminAuth = getAuth(app);
+  return adminAuth;
 }
