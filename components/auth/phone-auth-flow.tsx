@@ -621,7 +621,11 @@ export function PhoneAuthFlow({
                 : "";
 
           if (code === "auth/too-many-requests" || code === "auth/quota-exceeded") {
-            setRateLimitSeconds(20);
+            /* Firebase's own phone-auth abuse lockout typically lasts minutes,
+               not seconds — this is just a client-side guard against
+               immediately re-triggering the same throttle, not a guarantee
+               Firebase will accept a retry once it expires. */
+            setRateLimitSeconds(120);
           }
 
           clearRecaptcha(recaptchaHostRef.current);
@@ -2105,7 +2109,11 @@ export function PhoneAuthFlow({
               <button
                 type="button"
                 onClick={() => void (showSignupOtpState ? handleSignupVerifyAndCreate() : handlePasswordSignup())}
-                disabled={pending || signupLookupPending || !firebaseReady || (showSignupOtpState && (otpCode.length !== otpLength || otpRemainingSeconds <= 0))}
+                disabled={
+                  pending || signupLookupPending || !firebaseReady ||
+                  (!showSignupOtpState && rateLimitSeconds > 0) ||
+                  (showSignupOtpState && (otpCode.length !== otpLength || otpRemainingSeconds <= 0))
+                }
                 className={cn(
                   isModal
                     ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
@@ -2117,6 +2125,8 @@ export function PhoneAuthFlow({
                     <LoaderCircle className="h-4 w-4 animate-spin" />
                     {showSignupOtpState ? "Verifying..." : "Sending OTP..."}
                   </>
+                ) : !showSignupOtpState && rateLimitSeconds > 0 ? (
+                  `Try again in ${rateLimitSeconds}s`
                 ) : (
                   <>
                     {showSignupOtpState ? "Verify & Create Account" : "Send OTP"}
@@ -2145,7 +2155,7 @@ export function PhoneAuthFlow({
               <button
                 type="button"
                 onClick={() => void handleForgotPasswordOtpSend()}
-                disabled={pending || !firebaseReady}
+                disabled={pending || !firebaseReady || rateLimitSeconds > 0}
                 className={cn(
                   isModal
                     ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
@@ -2157,6 +2167,8 @@ export function PhoneAuthFlow({
                     <LoaderCircle className="h-4 w-4 animate-spin" />
                     Sending OTP...
                   </>
+                ) : rateLimitSeconds > 0 ? (
+                  `Try again in ${rateLimitSeconds}s`
                 ) : (
                   <>
                     Send OTP
