@@ -3,7 +3,6 @@
 import {
   type ConfirmationResult,
   EmailAuthProvider,
-  fetchSignInMethodsForEmail,
   GoogleAuthProvider,
   linkWithCredential,
   type RecaptchaVerifier,
@@ -1245,15 +1244,25 @@ export function PhoneAuthFlow({
     try {
       const result = await confirmationResult.confirm(otpCode);
       const hasPasswordProvider = result.user.providerData.some((provider) => provider.providerId === "password");
-      if (!hasPasswordProvider && forgotPasswordEmail) {
-        const auth = getFirebaseAuth();
-        const methods = auth ? await fetchSignInMethodsForEmail(auth, forgotPasswordEmail) : [];
-        if (methods.includes("password")) {
-          setOtpError("This account requires support verification. Please contact support.");
-          setForgotPasswordStep("phone");
-          setResetUser(null);
-          return;
+      if (!hasPasswordProvider) {
+        /* This phone number has no password credential on it, which means
+           confirming the OTP either created a brand-new disconnected
+           account or resolved to a phone-only/Google account. Letting the
+           flow continue would call updatePassword() on an account with no
+           email, producing a password that no login attempt can ever
+           reach. (fetchSignInMethodsForEmail can't help distinguish this —
+           it's a no-op under email-enumeration protection.) */
+        try {
+          await signOut(getFirebaseAuth()!);
+        } catch {
+          // Best-effort cleanup of the orphan/disconnected session.
         }
+        setOtpError(
+          "This number isn't set up for password login. If you signed up with Google, use \"Continue with Google\" instead, or contact support.",
+        );
+        setForgotPasswordStep("phone");
+        setResetUser(null);
+        return;
       }
       setResetUser(result.user);
       setForgotPasswordStep("reset");
