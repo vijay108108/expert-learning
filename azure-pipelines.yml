@@ -19,9 +19,9 @@ stages:
     displayName: Build Job
     steps:
     - task: NodeTool@0
+      displayName: Use Node.js 22
       inputs:
         versionSpec: '22.x'
-      displayName: Use Node.js 22
 
     - script: npm install
       displayName: Install dependencies
@@ -33,27 +33,38 @@ stages:
   displayName: Deploy to Production VM
   dependsOn: Build
   condition: succeeded()
+
   jobs:
   - job: Deploy
     displayName: Deploy
+
     steps:
     - task: SSH@0
       displayName: Deploy on genznext VM
       inputs:
         sshEndpoint: 'genznext-prod-vm-ssh'
         runOptions: 'inline'
+
         inline: |
           set -e
+
           echo "===== DEPLOY START ====="
+
           whoami
           cd /home/Mithilesh23/expert-learning
           pwd
+
           git status
           git checkout main
           git pull origin main
+
           npm install
           npm run build
+
           pm2 restart genznext
           pm2 save
+
           echo "===== DEPLOY DONE ====="
+
         readyTimeout: '20000'
+        failOnStdErr: false
