@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { getMergedCourses } from "@/lib/firebase";
 
+const hiddenCourseSlugs = new Set(["azure-administrator", "azure-devops-engineer"]);
+
 export async function GET() {
   try {
-    const courses = await getMergedCourses();
+    const courses = (await getMergedCourses()).filter((course) => !hiddenCourseSlugs.has(course.slug));
     return NextResponse.json({ success: true, courses });
   } catch (error) {
     return NextResponse.json(

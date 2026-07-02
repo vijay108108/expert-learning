@@ -109,8 +109,8 @@ export function RefinedProgramCard({
       className={cn(
         "relative flex h-full flex-col gap-3 rounded-[16px] border border-[rgba(226,232,240,0.8)] bg-[rgba(255,255,255,0.96)] p-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-[#4F46E5]/30 hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]",
         featured && "border-[rgba(79,70,229,0.4)]",
-      className,
-    )}
+        className,
+      )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-h-[24px]">

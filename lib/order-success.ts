@@ -21,6 +21,8 @@ export type StoredOrderSuccess = {
   paymentMethod: string;
   paidAtIso: string;
   subtotalPaise: number;
+  discountPaise?: number;
+  appliedCouponCode?: string;
   baseAmountPaise: number;
   gstPaise: number;
   totalPaidPaise: number;

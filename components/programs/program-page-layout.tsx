@@ -14,8 +14,6 @@ import {
   Terminal,
 } from "lucide-react";
 
-/* ─────────────────────── Types ─────────────────────────── */
-
 export type ProgramModule = {
   title: string;
   week?: string;
@@ -26,11 +24,11 @@ export type ProgramModule = {
 };
 
 export type ProgramPhase = {
-  label: string;             // "Phase 1" | "Module 1" etc.
+  label: string;
   title: string;
   duration: string;
   cert?: string;
-  color: string;             // tailwind classes for badge bg/text/border
+  color: string;
   icon: ElementType;
   objective: string;
   modules: ProgramModule[];
@@ -68,12 +66,9 @@ export type ProgramPageData = {
   faqs?: { q: string; a: string }[];
 };
 
-/* ─────────────────────── Sub-components ────────────────── */
-
 function PhaseCard({ phase }: { phase: ProgramPhase }) {
   return (
     <div className="overflow-hidden rounded-[24px] border border-[#E2E8F0] bg-white shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
-      {/* Phase header */}
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#E2E8F0] bg-[#FAFBFF] px-6 py-5">
         <div className="flex items-center gap-4">
           <div className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border ${phase.color}`}>
@@ -105,7 +100,7 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
           {phase.modules.map((mod) => (
             <details key={mod.title} className="group rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5">
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="min-w-0 flex items-center gap-3">
                   {mod.week && (
                     <span className="shrink-0 rounded-lg bg-[#EEF2FF] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#4F46E5]">
                       {mod.week}
@@ -121,9 +116,9 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
               <div className="border-t border-[#E2E8F0] px-4 pb-5 pt-4">
                 <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#4F46E5]">Topics Covered</p>
                 <ul className="grid gap-2 sm:grid-cols-2">
-                  {mod.topics.map((t) => (
-                    <li key={t} className="flex items-start gap-2 text-[12.5px] leading-[1.5] text-[#374151]">
-                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4F46E5]" />{t}
+                  {mod.topics.map((topic) => (
+                    <li key={topic} className="flex items-start gap-2 text-[12.5px] leading-[1.5] text-[#374151]">
+                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4F46E5]" />{topic}
                     </li>
                   ))}
                 </ul>
@@ -161,9 +156,9 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
               <Award className="h-4 w-4" />{phase.capstone.title}
             </p>
             <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">
-              {phase.capstone.deliverables.map((d) => (
-                <li key={d} className="flex items-start gap-2 text-[12px] text-[#334155]">
-                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4338CA]" />{d}
+              {phase.capstone.deliverables.map((deliverable) => (
+                <li key={deliverable} className="flex items-start gap-2 text-[12px] text-[#334155]">
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4338CA]" />{deliverable}
                 </li>
               ))}
             </ul>
@@ -174,13 +169,11 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
   );
 }
 
-/* ─────────────────────── Main Export ───────────────────── */
-
 export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
+  const checkoutHref = `/checkout/${encodeURIComponent(data.enrollSlug)}`;
+
   return (
     <main className="bg-white">
-
-      {/* ── Hero ── */}
       <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#EEF2FF_55%,#F8FAFC_100%)] px-4 pb-12 pt-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(300px,0.6fr)] lg:items-start">
           <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-8">
@@ -200,28 +193,33 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
             </h1>
             <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#475569]">{data.description}</p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {data.chips.map((c) => (
-                <span key={c} className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-                  c.startsWith("🚫") ? "border-[#FECACA] bg-[#FEF2F2] text-[#DC2626]" :
-                  c.startsWith("✅") ? "border-[#BBF7D0] bg-[#F0FDF4] text-[#16A34A]" :
-                  "border-[#E2E8F0] bg-[#F8FAFC] text-[#334155]"
-                }`}>{c}</span>
+              {data.chips.map((chip) => (
+                <span
+                  key={chip}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                    chip.startsWith("🚫")
+                      ? "border-[#FECACA] bg-[#FEF2F2] text-[#DC2626]"
+                      : chip.startsWith("✅")
+                        ? "border-[#BBF7D0] bg-[#F0FDF4] text-[#16A34A]"
+                        : "border-[#E2E8F0] bg-[#F8FAFC] text-[#334155]"
+                  }`}
+                >
+                  {chip}
+                </span>
               ))}
             </div>
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {data.stats.map((s) => (
-                <div key={s.label} className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
-                  <s.icon className="h-4 w-4 shrink-0 text-[#4F46E5]" />
-                  <span className="text-[13px] font-semibold text-[#0F172A]">{s.label}</span>
+              {data.stats.map((stat) => (
+                <div key={stat.label} className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
+                  <stat.icon className="h-4 w-4 shrink-0 text-[#4F46E5]" />
+                  <span className="text-[13px] font-semibold text-[#0F172A]">{stat.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Enrollment card */}
-          <aside className="lg:sticky lg:top-24">
+          <aside id="enroll" className="lg:sticky lg:top-24">
             <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-6 shadow-[0_18px_42px_rgba(15,23,42,0.10)]">
-              {/* Seats badge */}
               <div className="mb-4 flex items-center gap-2 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] px-3 py-2.5">
                 <span className="relative flex h-2.5 w-2.5 shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F97316] opacity-75" />
@@ -238,14 +236,15 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
                   <p key={text} className="flex items-center gap-2"><Icon className="h-4 w-4 text-[#4F46E5]" />{text}</p>
                 ))}
               </div>
-              {/* 1:1 support highlight */}
               <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-2.5">
-                <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m10-4H9a2 2 0 00-2 2v0a2 2 0 002 2h6a2 2 0 002-2v0a2 2 0 00-2-2z" /></svg>
+                <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m10-4H9a2 2 0 00-2 2v0a2 2 0 002 2h6a2 2 0 002-2v0a2 2 0 00-2-2z" />
+                </svg>
                 <p className="text-[12px] font-medium leading-5 text-[#3730A3]">1-on-1 support available after every live class session</p>
               </div>
               <div className="mt-5 space-y-3">
                 <Link
-                  href="/contact"
+                  href={checkoutHref}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
                 >
                   Enroll Now <ArrowRight className="h-4 w-4" />
@@ -263,16 +262,15 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </div>
       </section>
 
-      {/* ── Roadmap ── */}
       {data.roadmap && data.roadmap.length > 0 && (
         <section className="border-t border-[#E2E8F0] bg-[#0F172A] px-4 py-10 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#818CF8]">Learning Path</p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              {data.roadmap.map((step, i) => (
+              {data.roadmap.map((step, index) => (
                 <div key={step} className="flex items-center gap-3">
                   <div className="rounded-xl border border-[#334155] bg-[#1E293B] px-4 py-2.5 text-sm font-semibold text-white">{step}</div>
-                  {i < data.roadmap!.length - 1 && <ArrowRight className="h-4 w-4 shrink-0 text-[#4F46E5]" />}
+                  {index < data.roadmap!.length - 1 && <ArrowRight className="h-4 w-4 shrink-0 text-[#4F46E5]" />}
                 </div>
               ))}
             </div>
@@ -280,7 +278,6 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </section>
       )}
 
-      {/* ── Full Syllabus ── */}
       <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="text-center">
@@ -296,7 +293,6 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </div>
       </section>
 
-      {/* ── Projects ── */}
       <section className="border-t border-[#E2E8F0] bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-2">
@@ -305,14 +301,14 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
               <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Real-World Projects</h2>
               <p className="mt-2 text-sm text-[#64748B]">Portfolio-ready projects that employers recognise.</p>
               <div className="mt-6 space-y-3">
-                {data.projects.map((p, i) => (
-                  <div key={p.title} className="flex gap-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+                {data.projects.map((project, index) => (
+                  <div key={project.title} className="flex gap-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
                     <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EEF2FF] text-xs font-bold text-[#4F46E5]">
-                      {String(i + 1).padStart(2, "0")}
+                      {String(index + 1).padStart(2, "0")}
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-[#0F172A]">{p.title}</p>
-                      <p className="mt-0.5 text-[12px] leading-5 text-[#64748B]">{p.desc}</p>
+                      <p className="text-sm font-semibold text-[#0F172A]">{project.title}</p>
+                      <p className="mt-0.5 text-[12px] leading-5 text-[#64748B]">{project.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -320,31 +316,29 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
             </div>
 
             <div className="space-y-10">
-              {/* Technologies */}
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Tech Stack</p>
                 <h2 className="mt-2 text-2xl font-bold text-[#0F172A]">Tools & Technologies</h2>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {data.technologies.map((t) => (
-                    <span key={t} className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-medium text-[#334155] shadow-sm">
-                      <Code2 className="h-3 w-3 text-[#4F46E5]" />{t}
+                  {data.technologies.map((technology) => (
+                    <span key={technology} className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-medium text-[#334155] shadow-sm">
+                      <Code2 className="h-3 w-3 text-[#4F46E5]" />{technology}
                     </span>
                   ))}
                 </div>
               </div>
 
-              {/* Certifications */}
               {data.certifications && (
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">You Prepare For</p>
                   <h2 className="mt-2 text-2xl font-bold text-[#0F172A]">Certifications</h2>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    {data.certifications.map((c) => (
-                      <div key={c.code} className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3">
-                        <span className="text-2xl">{c.emoji}</span>
+                    {data.certifications.map((certification) => (
+                      <div key={certification.code} className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3">
+                        <span className="text-2xl">{certification.emoji}</span>
                         <div>
-                          <p className="text-[13px] font-bold text-[#0F172A]">{c.code}</p>
-                          <p className="text-[11px] text-[#64748B]">{c.title}</p>
+                          <p className="text-[13px] font-bold text-[#0F172A]">{certification.code}</p>
+                          <p className="text-[11px] text-[#64748B]">{certification.title}</p>
                         </div>
                       </div>
                     ))}
@@ -356,7 +350,6 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </div>
       </section>
 
-      {/* ── Bonus Tracks ── */}
       {data.bonusTracks && data.bonusTracks.length > 0 && (
         <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl">
@@ -365,16 +358,16 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
               <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Bonus Learning Tracks</h2>
             </div>
             <div className="mt-8 grid gap-5 sm:grid-cols-3">
-              {data.bonusTracks.map((b) => (
-                <div key={b.title} className="rounded-[18px] border border-[#E2E8F0] bg-white p-5">
+              {data.bonusTracks.map((track) => (
+                <div key={track.title} className="rounded-[18px] border border-[#E2E8F0] bg-white p-5">
                   <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF]">
-                    <b.icon className="h-5 w-5 text-[#4F46E5]" />
+                    <track.icon className="h-5 w-5 text-[#4F46E5]" />
                   </div>
-                  <h3 className="mt-3 text-base font-bold text-[#0F172A]">{b.title}</h3>
+                  <h3 className="mt-3 text-base font-bold text-[#0F172A]">{track.title}</h3>
                   <ul className="mt-3 space-y-1.5">
-                    {b.topics.map((t) => (
-                      <li key={t} className="flex items-start gap-2 text-[12px] text-[#64748B]">
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />{t}
+                    {track.topics.map((topic) => (
+                      <li key={topic} className="flex items-start gap-2 text-[12px] text-[#64748B]">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />{topic}
                       </li>
                     ))}
                   </ul>
@@ -385,7 +378,6 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </section>
       )}
 
-      {/* ── Career Outcomes ── */}
       <section className="border-t border-[#E2E8F0] bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="text-center">
@@ -409,7 +401,6 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </div>
       </section>
 
-      {/* ── Who It's For ── */}
       <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="text-center">
@@ -430,7 +421,6 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </div>
       </section>
 
-      {/* ── FAQs ── */}
       {data.faqs && data.faqs.length > 0 && (
         <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-4xl">
@@ -455,7 +445,6 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </section>
       )}
 
-      {/* ── CTA ── */}
       <section className="border-t border-[#E2E8F0] bg-white px-4 pb-16 pt-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764,#4F46E5_50%,#0369A1)] px-8 py-12 text-center shadow-[0_24px_60px_rgba(79,70,229,0.3)]">
           <p className="text-xs font-semibold uppercase tracking-widest text-[#A5B4FC]">Join the Next Batch</p>
@@ -464,7 +453,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
             Live batches start every month. Only 20 seats per batch — enroll early to secure your spot.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-[#4F46E5] shadow-lg transition hover:scale-[1.02]">
+            <Link href={checkoutHref} className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-[#4F46E5] shadow-lg transition hover:scale-[1.02]">
               Enroll Now <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-[rgba(255,255,255,0.25)] bg-[rgba(255,255,255,0.1)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[rgba(255,255,255,0.18)]">
@@ -480,7 +469,6 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
           </div>
         </div>
       </section>
-
     </main>
   );
 }

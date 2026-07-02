@@ -48,16 +48,16 @@ const founders = [
   {
     name: "Vijay Vishwakarma",
     role: "Founder & CEO",
-    qualification: "B.Tech ” KIT Varanasi",
+    qualification: "B.Tech — KIT Varanasi",
     badge: "Founder, NetSeems Ventures",
     badgeColor: "bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]",
     avatar: "VV",
     avatarGrad: "from-[#0EA5E9] to-[#4F46E5]",
     about:
-      "Vijay founded NetSeems Ventures Pvt. Ltd. at” the parent company behind GenZNext — after 8+ years working across enterprise cloud infrastructure, DevOps automation and platform engineering. His vision was simple: give every ambitious student and professional in India access to the same quality of technical education that MNC professionals get.",
+      "Vijay founded NetSeems Ventures Pvt. Ltd. — the parent company behind GenZNext — after 8+ years working across enterprise cloud infrastructure, DevOps automation and platform engineering. His vision was simple: give every ambitious student and professional in India access to the same quality of technical education that MNC professionals get.",
     highlights: [
       "B.Tech from KIT Varanasi",
-      "Founder of” NetSeems Ventures Pvt. Ltd.",
+      "Founder of NetSeems Ventures Pvt. Ltd.",
       "8+ years in Cloud, DevOps & Enterprise Platform Engineering",
       "Built and scaled GenZNext to 6,000+ learners across India",
     ],
@@ -100,7 +100,7 @@ const milestones = [
   { year: "2018", event: "Vijay Vishwakarma begins career in enterprise cloud & DevOps infrastructure" },
   { year: "2018", event: "Preeti Vishwakarma completes B.Tech in 2018 and M.Tech from IIT Jodhpur, joins enterprise AI research" },
   { year: "2020", event: "NetSeems Ventures Pvt. Ltd. incorporated in Pune, Maharashtra" },
-  { year: "2021", event: "GenZNext brand launched ” first batch of 40 Azure and AWS learners" },
+  { year: "2021", event: "GenZNext brand launched — first batch of 40 Azure and AWS learners" },
   { year: "2022", event: "Expanded to DevOps, AI & GenAI tracks; 500+ learners trained" },
   { year: "2023", event: "Corporate training division launched; partnered with 15+ companies" },
   { year: "2024", event: "2,000+ learners milestone; LMS portal and full program suite launched" },
@@ -112,7 +112,7 @@ export default function AboutPage() {
   return (
     <main className="bg-white">
 
-      {/* â”€â”€ Hero â”€â”€ */}
+      {/* Hero */}
       <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#F5F0FF_50%,#E0F2FE_100%)] px-4 pb-10 pt-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <span className="inline-flex items-center rounded-full border border-[#DDD6FE] bg-[#F5F0FF] px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[#7C3AED]">
@@ -138,7 +138,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* â”€â”€ Stats â”€â”€ */}
+      {/* Stats */}
       <section className="border-y border-[#1E1040] bg-[linear-gradient(135deg,#1A0535_0%,#0F172A_50%,#0C1A2E_100%)] px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s) => (
@@ -152,7 +152,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* â”€â”€ Founders â”€â”€ */}
+      {/* Founders */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
@@ -216,7 +216,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* â”€â”€ Our Story â”€â”€ */}
+      {/* Our Story */}
       <section className="bg-[#F8FAFC] px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-start">
@@ -279,7 +279,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* â”€â”€ Values â”€â”€ */}
+      {/* Values */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
@@ -300,7 +300,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* â”€â”€ CTA â”€â”€ */}
+      {/* CTA */}
       <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764_0%,#4F46E5_50%,#0369A1_100%)] px-8 py-12 text-center shadow-[0_24px_60px_rgba(147,51,234,0.3)]">
           <p className="text-xs font-bold uppercase tracking-widest text-[#C084FC]">Join the Community</p>

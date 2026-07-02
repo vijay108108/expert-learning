@@ -146,7 +146,7 @@ export function FirebaseLessonManager() {
     <div className="space-y-4">
       {error && (
         <div className="flex items-start justify-between gap-3 rounded-xl border border-[#EF4444]/30 bg-[#FEF2F2]/10 px-4 py-3 text-[12px] text-[#EF4444]">
-          <span>âš  {error}</span>
+          <span>⚠ {error}</span>
           <button onClick={() => setError(null)}><X className="h-3.5 w-3.5" /></button>
         </div>
       )}
@@ -243,7 +243,7 @@ export function FirebaseLessonManager() {
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://meet.google.com/xxx-xxxx-xxx" />
               ) : form.lessonType === "youtube" ? (
-                <Field label="â–¶ YouTube Video URL"
+                <Field label="▶ YouTube Video URL"
                   value={form.url || ""}
                   onChange={v => setForm(p => ({ ...p, url: v }))}
                   placeholder="https://www.youtube.com/watch?v=xxxxx" />
@@ -402,7 +402,7 @@ export function FirebaseLessonManager() {
       {/* Upload guide */}
       <div className="rounded-xl border border-white/8 bg-white/4 px-4 py-3 text-[12px] text-[#475569]">
         <p className="font-semibold text-[#64748B]">📎 How to add PDFs & Documents</p>
-        <p className="mt-1">Upload your file to <strong className="text-[#94A3B8]">Google Drive</strong> â†’ right-click â†’ Share â†’ Anyone with link â†’ Copy link. Paste the link in the PDF/Notes URL field above.</p>
+        <p className="mt-1">Upload your file to <strong className="text-[#94A3B8]">Google Drive</strong> → right-click → Share → Anyone with link → Copy link. Paste the link in the PDF/Notes URL field above.</p>
         <p className="mt-1">For <strong className="text-[#94A3B8]">live classes</strong>: Create a Zoom/Meet recurring session and paste the joining link. Students see it on the lesson page before the class starts.</p>
       </div>
     </div>

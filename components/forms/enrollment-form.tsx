@@ -1,10 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { getCouponPricing, normalizeCouponCode } from "@/lib/coupons";
 import {
   findExistingEnrollmentCourseIds,
+  getFirebaseAuth,
   logFirestoreIssue,
   saveInvoiceEnrollments,
   saveUserWhatsappNumber,
@@ -48,6 +50,19 @@ function formatPhoneForProfile(value: string) {
   return trimmed.startsWith("+") ? `+${digits}` : digits;
 }
 
+async function getPaymentAuthHeaders() {
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+
+  if (!token) {
+    throw new Error("Your session expired. Please sign in again.");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+}
+
 type EnrollmentFormProps = {
   course: {
     slug: string;
@@ -59,6 +74,14 @@ type EnrollmentFormProps = {
   eyebrow?: string;
   heading?: string;
   submitLabel?: string;
+};
+
+type CouponApplyResponse = {
+  success?: boolean;
+  message?: string;
+  pricing?: {
+    appliedCouponCode?: string;
+  };
 };
 
 export function EnrollmentForm({
@@ -73,8 +96,66 @@ export function EnrollmentForm({
   const [pending, setPending] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCouponCode, setAppliedCouponCode] = useState("");
+  const [couponMessage, setCouponMessage] = useState<string | null>(null);
+  const [couponStatus, setCouponStatus] = useState<"success" | "error" | null>(null);
+  const [couponPending, setCouponPending] = useState(false);
   const router = useRouter();
   const { openAuthModal, user } = useAuth();
+  const pricing = useMemo(
+    () => getCouponPricing(course.priceValue * 100, appliedCouponCode),
+    [appliedCouponCode, course.priceValue],
+  );
+
+  async function handleApplyCoupon() {
+    setMessage(null);
+
+    if (couponPending || pending || isPaying) {
+      return;
+    }
+
+    if (!couponCode.trim()) {
+      setAppliedCouponCode("");
+      setCouponStatus("error");
+      setCouponMessage("Invalid coupon code");
+      return;
+    }
+
+    setCouponPending(true);
+
+    try {
+      const response = await fetch("/api/payment/coupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseSlug: course.slug,
+          couponCode,
+        }),
+      });
+
+      const payload = (await response.json()) as CouponApplyResponse;
+
+      if (!response.ok || !payload.success || !payload.pricing?.appliedCouponCode) {
+        setAppliedCouponCode("");
+        setCouponStatus("error");
+        setCouponMessage(payload.message || "Invalid coupon code");
+        return;
+      }
+
+      setAppliedCouponCode(payload.pricing.appliedCouponCode);
+      setCouponStatus("success");
+      setCouponMessage(payload.message || "Coupon applied successfully");
+    } catch {
+      setAppliedCouponCode("");
+      setCouponStatus("error");
+      setCouponMessage("Invalid coupon code");
+    } finally {
+      setCouponPending(false);
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,13 +184,12 @@ export function EnrollmentForm({
 
       const createResponse = await fetch("/api/payment/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: await getPaymentAuthHeaders(),
         body: JSON.stringify({
           ...form,
           userId: user.uid,
           courseSlug: course.slug,
+          couponCode: appliedCouponCode,
         }),
       });
 
@@ -149,14 +229,13 @@ export function EnrollmentForm({
           try {
             const verifyResponse = await fetch("/api/payment/verify", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: await getPaymentAuthHeaders(),
               body: JSON.stringify({
                 ...response,
                 userId: user.uid,
                 ...form,
                 courseSlug: course.slug,
+                couponCode: appliedCouponCode,
               }),
             });
 
@@ -181,7 +260,10 @@ export function EnrollmentForm({
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             syncMyLearningFromInvoice(verifyPayload.invoice);
 
-            await saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
+            setIsPaying(false);
+            router.replace(dashboardPath);
+
+            void saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
               logFirestoreIssue(
                 verifyPayload.clientSyncRequired
                   ? "[Enrollment] Client enrollment recovery failed after verified payment"
@@ -193,9 +275,6 @@ export function EnrollmentForm({
             void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
               logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
             });
-
-            setIsPaying(false);
-            router.replace(dashboardPath);
           } catch (error) {
             setMessage(error instanceof Error ? error.message : "Unable to complete enrollment after payment.");
             setIsPaying(false);
@@ -267,6 +346,58 @@ export function EnrollmentForm({
             onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
             required
           />
+        </div>
+        <div className="mt-4">
+          <label className="form-label" htmlFor="enroll-coupon">
+            Coupon Code
+          </label>
+          <div className="flex gap-3">
+            <input
+              id="enroll-coupon"
+              className="form-field"
+              placeholder="Enter coupon code"
+              value={couponCode}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                setCouponCode(nextValue);
+                setMessage(null);
+                if (appliedCouponCode && normalizeCouponCode(nextValue) !== appliedCouponCode) {
+                  setAppliedCouponCode("");
+                }
+                if (couponMessage) {
+                  setCouponMessage(null);
+                  setCouponStatus(null);
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleApplyCoupon}
+              disabled={couponPending || pending || isPaying}
+              className="inline-flex shrink-0 items-center justify-center rounded-lg border border-brand-blue/15 px-4 py-[13px] text-sm font-semibold text-brand-blue transition hover:bg-brand-blue/5 disabled:opacity-70"
+            >
+              {couponPending ? "Applying..." : "Apply"}
+            </button>
+          </div>
+          {couponMessage ? (
+            <p className={`mt-2 text-sm ${couponStatus === "success" ? "text-emerald-600" : "text-rose-500"}`}>
+              {couponMessage}
+            </p>
+          ) : null}
+        </div>
+        <div className="mt-4 rounded-[18px] border border-brand-blue/10 bg-brand-surface/70 p-4">
+          <div className="flex items-center justify-between text-sm text-brand-muted">
+            <span>Original Price</span>
+            <span>{formatPrice(course.priceValue)}</span>
+          </div>
+          <div className="mt-2 flex items-center justify-between text-sm text-brand-muted">
+            <span>Discount</span>
+            <span>{pricing.discountPaise ? `-₹${Math.round(pricing.discountPaise / 100).toLocaleString("en-IN")}` : "₹0"}</span>
+          </div>
+          <div className="mt-3 flex items-center justify-between border-t border-brand-blue/10 pt-3 text-sm font-semibold text-brand-text">
+            <span>Final Payable</span>
+            <span>₹{Math.round(pricing.finalAmountPaise / 100).toLocaleString("en-IN")}</span>
+          </div>
         </div>
         <button
           type="submit"

@@ -54,3 +54,18 @@ export async function getRazorpayPaymentDetails(paymentId: string) {
     return null;
   }
 }
+
+export async function getRazorpayOrderDetails(orderId: string) {
+  const razorpay = getRazorpayClient();
+
+  if (!razorpay) {
+    return null;
+  }
+
+  try {
+    return await razorpay.orders.fetch(orderId);
+  } catch (error) {
+    console.error("[Razorpay] Unable to fetch order details", { orderId, error });
+    return null;
+  }
+}

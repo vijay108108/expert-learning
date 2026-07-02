@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
+import { getCouponPricing } from "@/lib/coupons";
 import { resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { findExistingEnrollmentCourseIds, isFirestorePermissionError, logFirestoreIssue } from "@/lib/firebase";
 import { env } from "@/lib/env";
+import { verifyFirebaseBearerToken } from "@/lib/server/firebase-auth";
 import { getRazorpayClient } from "@/lib/services/payments";
 import { paymentCreateSchema } from "@/lib/validations";
 
 export async function POST(request: Request) {
   try {
+    const authUser = await verifyFirebaseBearerToken(request);
+
+    if (!authUser) {
+      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+    }
+
     const body = paymentCreateSchema.parse(await request.json());
     const razorpay = getRazorpayClient();
     const requestedSlugs = body.courseSlugs?.length ? body.courseSlugs : body.courseSlug ? [body.courseSlug] : [];
@@ -16,10 +24,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "One or more selected courses were not found." }, { status: 404 });
     }
 
-    if (body.userId) {
+    if (authUser.uid) {
       try {
         const duplicateCourses = await findExistingEnrollmentCourseIds(
-          body.userId,
+          authUser.uid,
           offerings.flatMap((offering) => offering.courseSlugs),
         );
 
@@ -45,7 +53,13 @@ export async function POST(request: Request) {
     }
 
     const subtotalPaise = offerings.reduce((sum, offering) => sum + (offering.priceValue * 100), 0);
-    const amount = subtotalPaise;
+    const pricing = getCouponPricing(subtotalPaise, body.couponCode);
+
+    if (body.couponCode.trim() && !pricing.isApplied) {
+      return NextResponse.json({ success: false, message: "Invalid coupon code" }, { status: 400 });
+    }
+
+    const amount = pricing.finalAmountPaise;
 
     if (!amount || !razorpay) {
       return NextResponse.json(
@@ -59,7 +73,7 @@ export async function POST(request: Request) {
       currency: "INR",
       receipt: `${requestedSlugs[0]?.slice(0, 18) || "cart"}-${requestedSlugs.length}-${Date.now()}`.slice(0, 40),
       notes: {
-        userId: body.userId || "",
+        userId: authUser.uid,
         name: body.name,
         email: body.email,
         phone: body.phone,
@@ -67,6 +81,10 @@ export async function POST(request: Request) {
         courseSlugs: requestedSlugs.join(","),
         gstNumber: body.gstNumber?.trim() || "",
         companyName: body.companyName?.trim() || "",
+        couponCode: pricing.appliedCouponCode,
+        subtotalPaise: String(pricing.subtotalPaise),
+        discountPaise: String(pricing.discountPaise),
+        finalAmountPaise: String(pricing.finalAmountPaise),
       },
     });
 
@@ -75,6 +93,7 @@ export async function POST(request: Request) {
       keyId: env.nextPublicRazorpayKeyId,
       order,
       courses: offerings,
+      pricing,
     });
   } catch (error) {
     const statusCode =

@@ -239,6 +239,18 @@ export function OrderSuccessPage() {
             <div className="w-full max-w-[280px] space-y-2">
               {showTaxInvoice ? (
                 <>
+                  {invoice.discountPaise ? (
+                    <>
+                      <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
+                        <span>Original Price</span>
+                        <span>{formatCurrencyInrFromPaise(invoice.subtotalPaise)}</span>
+                      </div>
+                      <div className="flex justify-between text-[13px] text-[#34D399] print:text-[#16A34A]">
+                        <span>Coupon Discount</span>
+                        <span>-{formatCurrencyInrFromPaise(invoice.discountPaise)}</span>
+                      </div>
+                    </>
+                  ) : null}
                   <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
                     <span>Subtotal (excl. GST)</span>
                     <span>{formatCurrencyInrFromPaise(invoice.baseAmountPaise)}</span>
@@ -255,12 +267,18 @@ export function OrderSuccessPage() {
               ) : (
                 <>
                   <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
-                    <span>Course Amount</span>
+                    <span>Original Price</span>
                     <span>{formatCurrencyInrFromPaise(invoice.subtotalPaise)}</span>
                   </div>
+                  {invoice.discountPaise ? (
+                    <div className="flex justify-between text-[13px] text-[#34D399] print:text-[#16A34A]">
+                      <span>Coupon Discount</span>
+                      <span>-{formatCurrencyInrFromPaise(invoice.discountPaise)}</span>
+                    </div>
+                  ) : null}
                   <div className="flex justify-between text-[13px] text-[#94A3B8] print:text-[#475569]">
                     <span>GST (18% incl.)</span>
-                    <span>{formatCurrencyInrFromPaise(Math.round(invoice.subtotalPaise - invoice.subtotalPaise / 1.18))}</span>
+                    <span>{formatCurrencyInrFromPaise(Math.round(invoice.totalPaidPaise - invoice.totalPaidPaise / 1.18))}</span>
                   </div>
                 </>
               )}

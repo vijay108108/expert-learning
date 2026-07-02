@@ -1,31 +1,105 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { allocatePaiseProportionally, getCouponPricing } from "@/lib/coupons";
 import { formatPaiseToPrice } from "@/lib/course-catalog";
 import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
-import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
 import { logFirestoreIssue } from "@/lib/firebase";
 import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
+import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
+import { verifyFirebaseBearerToken } from "@/lib/server/firebase-auth";
 import { captureServerEvent } from "@/lib/services/analytics";
 import { sendEnrollmentEmail } from "@/lib/services/email";
-import { getRazorpayPaymentDetails, verifyRazorpaySignature } from "@/lib/services/payments";
+import { getRazorpayOrderDetails, getRazorpayPaymentDetails, verifyRazorpaySignature } from "@/lib/services/payments";
 import { sendWhatsAppNotification } from "@/lib/services/whatsapp";
 import { paymentVerifySchema } from "@/lib/validations";
+
+function readOrderNoteValue(notes: Record<string, unknown> | undefined, key: string) {
+  const value = notes?.[key];
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function readOrderNoteInteger(notes: Record<string, unknown> | undefined, key: string) {
+  const value = Number.parseInt(readOrderNoteValue(notes, key), 10);
+  return Number.isFinite(value) ? value : 0;
+}
 
 export async function POST(request: Request) {
   try {
     const body = paymentVerifySchema.parse(await request.json());
-    const requestedSlugs = body.courseSlugs?.length ? body.courseSlugs : body.courseSlug ? [body.courseSlug] : [];
-    const { offerings, missing } = resolveCheckoutOfferings(requestedSlugs);
+    let clientSyncRequired = false;
+
+    const authUser = await verifyFirebaseBearerToken(request);
+
+    if (!authUser) {
+      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+    }
+
+    const signatureValid = verifyRazorpaySignature({
+      orderId: body.razorpay_order_id,
+      paymentId: body.razorpay_payment_id,
+      signature: body.razorpay_signature,
+    });
+
+    if (!signatureValid) {
+      return NextResponse.json({ success: false, message: "Invalid payment signature." }, { status: 400 });
+    }
+
+    const [paymentDetails, orderDetails] = await Promise.all([
+      getRazorpayPaymentDetails(body.razorpay_payment_id),
+      getRazorpayOrderDetails(body.razorpay_order_id),
+    ]);
+
+    if (!paymentDetails || !orderDetails) {
+      return NextResponse.json({ success: false, message: "Unable to confirm payment with Razorpay." }, { status: 502 });
+    }
+
+    if (paymentDetails.order_id !== body.razorpay_order_id || orderDetails.id !== body.razorpay_order_id) {
+      return NextResponse.json({ success: false, message: "Payment order mismatch." }, { status: 400 });
+    }
+
+    if (paymentDetails.status !== "captured") {
+      return NextResponse.json({ success: false, message: "Payment has not been captured." }, { status: 400 });
+    }
+
+    if (orderDetails.status !== "paid") {
+      return NextResponse.json({ success: false, message: "Order is not marked as paid." }, { status: 400 });
+    }
+
+    const trustedUserId = readOrderNoteValue(orderDetails.notes, "userId");
+    const trustedName = readOrderNoteValue(orderDetails.notes, "name");
+    const trustedEmail = readOrderNoteValue(orderDetails.notes, "email");
+    const trustedPhone = readOrderNoteValue(orderDetails.notes, "phone");
+    const trustedGstNumber = readOrderNoteValue(orderDetails.notes, "gstNumber").toUpperCase();
+    const trustedCompanyName = readOrderNoteValue(orderDetails.notes, "companyName");
+    const trustedCouponCode = readOrderNoteValue(orderDetails.notes, "couponCode");
+    const trustedRequestedSlugs = readOrderNoteValue(orderDetails.notes, "courseSlugs")
+      .split(",")
+      .map((slug) => slug.trim())
+      .filter(Boolean);
+    const trustedCourseSlugs =
+      trustedRequestedSlugs.length > 0
+        ? trustedRequestedSlugs
+        : [readOrderNoteValue(orderDetails.notes, "courseSlug")].filter(Boolean);
+
+    if (!trustedUserId || trustedUserId !== authUser.uid) {
+      return NextResponse.json({ success: false, message: "Payment user mismatch." }, { status: 403 });
+    }
+
+    if (!trustedName || !trustedPhone || trustedCourseSlugs.length === 0) {
+      return NextResponse.json({ success: false, message: "Payment order details are incomplete." }, { status: 400 });
+    }
+
+    const { offerings, missing } = resolveCheckoutOfferings(trustedCourseSlugs);
+
+    if (missing.length > 0 || offerings.length !== trustedCourseSlugs.length) {
+      return NextResponse.json({ success: false, message: "One or more selected courses were not found." }, { status: 404 });
+    }
+
     const purchasedOffering = offerings.length === 1 ? offerings[0] : null;
     const singleCourseBundleSlug =
       purchasedOffering?.kind === "bundle" && purchasedOffering.courseSlugs.length === 1
         ? purchasedOffering.courseSlugs[0]
         : "";
-    let clientSyncRequired = false;
-
-    if (missing.length > 0 || offerings.length !== requestedSlugs.length) {
-      return NextResponse.json({ success: false, message: "One or more selected courses were not found." }, { status: 404 });
-    }
 
     function resolveEnrollmentMetaForOffering(offering: CheckoutOffering): {
       enrollmentType: "course" | "program";
@@ -74,43 +148,54 @@ export async function POST(request: Request) {
       };
     }
 
-    const signatureValid = verifyRazorpaySignature({
-      orderId: body.razorpay_order_id,
-      paymentId: body.razorpay_payment_id,
-      signature: body.razorpay_signature,
-    });
+    const subtotalPaise = offerings.reduce((sum, offering) => sum + (offering.priceValue * 100), 0);
+    const pricing = getCouponPricing(subtotalPaise, trustedCouponCode);
+    const trustedSubtotalPaise = readOrderNoteInteger(orderDetails.notes, "subtotalPaise");
+    const trustedDiscountPaise = readOrderNoteInteger(orderDetails.notes, "discountPaise");
+    const trustedFinalAmountPaise = readOrderNoteInteger(orderDetails.notes, "finalAmountPaise");
+    const lineItemPaise = allocatePaiseProportionally(
+      pricing.finalAmountPaise,
+      offerings.map((offering) => offering.priceValue * 100),
+    );
 
-    if (!signatureValid) {
-      return NextResponse.json({ success: false, message: "Invalid payment signature." }, { status: 400 });
+    if (
+      trustedSubtotalPaise !== pricing.subtotalPaise ||
+      trustedDiscountPaise !== pricing.discountPaise ||
+      trustedFinalAmountPaise !== pricing.finalAmountPaise ||
+      paymentDetails.amount !== pricing.finalAmountPaise ||
+      orderDetails.amount !== pricing.finalAmountPaise ||
+      orderDetails.amount_paid !== pricing.finalAmountPaise ||
+      paymentDetails.currency !== "INR" ||
+      orderDetails.currency !== "INR"
+    ) {
+      return NextResponse.json({ success: false, message: "Payment amount verification failed." }, { status: 400 });
     }
 
-    const subtotalPaise = offerings.reduce((sum, offering) => sum + (offering.priceValue * 100), 0);
-    const gstInvoiceEnabled = Boolean(body.gstNumber?.trim());
-    const { baseAmountPaise, gstPaise, totalPaidPaise } = getInclusiveGstBreakup(subtotalPaise, gstInvoiceEnabled);
-
-    const paymentDetails = await getRazorpayPaymentDetails(body.razorpay_payment_id);
-    const paidAtIso = paymentDetails?.created_at
+    const gstInvoiceEnabled = Boolean(trustedGstNumber);
+    const { baseAmountPaise, gstPaise, totalPaidPaise } = getInclusiveGstBreakup(pricing.finalAmountPaise, gstInvoiceEnabled);
+    const paidAtIso = paymentDetails.created_at
       ? new Date(paymentDetails.created_at * 1000).toISOString()
       : new Date().toISOString();
     const invoiceNumber = createInvoiceNumber(body.razorpay_order_id, paidAtIso);
     const paymentMethod =
-      paymentDetails?.method
+      paymentDetails.method
         ? `${String(paymentDetails.method).charAt(0).toUpperCase()}${String(paymentDetails.method).slice(1)}`
         : "Razorpay";
     const enrolledAt = new Date().toISOString();
 
     try {
       await Promise.all(
-        offerings.map((offering) => {
+        offerings.map((offering, index) => {
           const display = resolveDisplayValuesForOffering(offering);
           const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
           const primaryCourseSlug = enrollmentMeta.primaryCourseSlug;
+          const allocatedAmountPaise = lineItemPaise[index] || 0;
 
           return saveEnrollmentRecordAdmin({
-            userId: body.userId,
-            userName: body.name,
-            userPhone: body.phone,
-            userEmail: body.email || "",
+            userId: trustedUserId,
+            userName: trustedName,
+            userPhone: trustedPhone,
+            userEmail: trustedEmail,
             courseId: getCourseSlugByCourseId(primaryCourseSlug),
             canonicalCourseId: getCanonicalCourseIdBySlug(primaryCourseSlug),
             enrollmentType: enrollmentMeta.enrollmentType,
@@ -120,7 +205,7 @@ export async function POST(request: Request) {
             programCourseSlugs: enrollmentMeta.programCourseSlugs,
             primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
             courseName: display.title,
-            amountPaid: Math.round(display.amountPaise / 100),
+            amountPaid: Math.round(allocatedAmountPaise / 100),
             razorpayOrderId: body.razorpay_order_id,
             razorpayPaymentId: body.razorpay_payment_id,
             invoiceNumber,
@@ -128,8 +213,8 @@ export async function POST(request: Request) {
             status: "active",
             duration: display.duration,
             level: display.level,
-            companyName: body.companyName?.trim() || "",
-            gstNumber: body.gstNumber?.trim() || "",
+            companyName: trustedCompanyName,
+            gstNumber: trustedGstNumber,
           });
         }),
       );
@@ -138,26 +223,6 @@ export async function POST(request: Request) {
       logFirestoreIssue("[Payment Verify] Server enrollment save failed after verified payment; client sync required", error);
     }
 
-    await Promise.allSettled([
-      sendEnrollmentEmail({
-        name: body.name,
-        email: body.email,
-        phone: body.phone,
-        courseTitles: offerings.map((offering) => resolveDisplayValuesForOffering(offering).title),
-        paymentId: body.razorpay_payment_id,
-        amountLabel: formatPaiseToPrice(totalPaidPaise),
-        enrolledAt: paidAtIso,
-      }),
-      sendWhatsAppNotification({
-        phone: body.phone,
-        body: `Hi ${body.name}, your enrollment for ${offerings.length > 1 ? `${offerings.length} programs` : resolveDisplayValuesForOffering(offerings[0]).title} is confirmed. Payment ID: ${body.razorpay_payment_id}`,
-      }),
-      captureServerEvent(body.email, "payment_verified", {
-        courseSlugs: offerings.map((offering) => offering.slug),
-        paymentId: body.razorpay_payment_id,
-      }),
-    ]);
-
     const invoice: StoredOrderSuccess = {
       invoiceNumber,
       orderId: body.razorpay_order_id,
@@ -165,19 +230,21 @@ export async function POST(request: Request) {
       paymentMethod,
       paidAtIso,
       subtotalPaise,
+      discountPaise: pricing.discountPaise,
+      appliedCouponCode: pricing.appliedCouponCode || undefined,
       baseAmountPaise,
       gstPaise,
       totalPaidPaise,
       platformFeeLabel: "Included",
       gstInvoiceEnabled,
       customer: {
-        name: body.name,
-        phone: body.phone,
-        email: body.email || undefined,
-        companyName: body.companyName?.trim() || undefined,
-        gstNumber: body.gstNumber?.trim() || undefined,
+        name: trustedName,
+        phone: trustedPhone,
+        email: trustedEmail || undefined,
+        companyName: trustedCompanyName || undefined,
+        gstNumber: trustedGstNumber || undefined,
       },
-      courses: offerings.map((offering) => {
+      courses: offerings.map((offering, index) => {
         const display = resolveDisplayValuesForOffering(offering);
         const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
         return {
@@ -185,7 +252,7 @@ export async function POST(request: Request) {
           title: display.title,
           duration: display.duration,
           level: display.level,
-          amountPaise: display.amountPaise,
+          amountPaise: lineItemPaise[index] || 0,
           enrollmentType: enrollmentMeta.enrollmentType,
           purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
           programSlug: enrollmentMeta.programSlug,
@@ -195,6 +262,28 @@ export async function POST(request: Request) {
         };
       }),
     };
+
+    after(async () => {
+      await Promise.allSettled([
+        sendEnrollmentEmail({
+          name: trustedName,
+          email: trustedEmail,
+          phone: trustedPhone,
+          courseTitles: offerings.map((offering) => resolveDisplayValuesForOffering(offering).title),
+          paymentId: body.razorpay_payment_id,
+          amountLabel: formatPaiseToPrice(totalPaidPaise),
+          enrolledAt: paidAtIso,
+        }),
+        sendWhatsAppNotification({
+          phone: trustedPhone,
+          body: `Hi ${trustedName}, your enrollment for ${offerings.length > 1 ? `${offerings.length} programs` : resolveDisplayValuesForOffering(offerings[0]).title} is confirmed. Payment ID: ${body.razorpay_payment_id}`,
+        }),
+        captureServerEvent(trustedEmail, "payment_verified", {
+          courseSlugs: offerings.map((offering) => offering.slug),
+          paymentId: body.razorpay_payment_id,
+        }),
+      ]);
+    });
 
     return NextResponse.json({ success: true, invoice, clientSyncRequired });
   } catch (error) {

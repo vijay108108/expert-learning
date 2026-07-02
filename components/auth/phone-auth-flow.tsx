@@ -392,22 +392,27 @@ export function PhoneAuthFlow({
   }, [resendTimer]);
 
   useEffect(() => {
-    if (!otpExpiresAt) {
-      setOtpRemainingSeconds(0);
-      return;
-    }
-
     const tick = () => {
-      const remaining = Math.max(0, Math.round((otpExpiresAt - Date.now()) / 1000));
+      const remaining = otpExpiresAt
+        ? Math.max(0, Math.round((otpExpiresAt - Date.now()) / 1000))
+        : 0;
       setOtpRemainingSeconds(remaining);
-      if (remaining <= 0) {
+      if (otpExpiresAt && remaining <= 0) {
         confirmationResultRef.current = null;
       }
     };
 
-    tick();
+    const initialTickTimer = window.setTimeout(tick, 0);
+
+    if (!otpExpiresAt) {
+      return () => window.clearTimeout(initialTickTimer);
+    }
+
     const interval = window.setInterval(tick, 1000);
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialTickTimer);
+      window.clearInterval(interval);
+    };
   }, [otpExpiresAt]);
 
   useEffect(() => {
@@ -491,18 +496,13 @@ export function PhoneAuthFlow({
 
   async function ensureSignupPhoneCanRequestOtp() {
     const phoneCheck = await checkSignupPhoneAvailability(formattedPhone);
-    console.log("STEP 3 - User exists result:", phoneCheck.exists, {
-      phone: phoneCheck.normalizedPhone,
-      source: phoneCheck.source,
-    });
-    if (!phoneCheck.exists) {
+    if (phoneCheck.canProceed) {
       return true;
     }
 
     clearRecaptcha(recaptchaHostRef.current);
     recaptchaVerifierRef.current = null;
     confirmationResultRef.current = null;
-    console.info("[Auth Signup] duplicate signup blocked before OTP", { phone: phoneCheck.normalizedPhone });
     setFeedback("An account already exists with this number. Please log in instead.");
     setShowSignupGoToLogin(true);
     setSignupStep("form");
@@ -515,13 +515,6 @@ export function PhoneAuthFlow({
     if (sendOtpLockRef.current) {
       return;
     }
-
-    console.log("STEP 1 - Send OTP clicked", {
-      activeTab,
-      isResend,
-      phone: formattedPhone,
-      normalizedPhone: normalizedPhone,
-    });
 
     const validationMessage = validatePhone();
 
@@ -538,16 +531,22 @@ export function PhoneAuthFlow({
     }
 
     if (activeTab === "signup" && !isResend) {
-      console.log("STEP 2 - Checking user existence", {
-        phone: formattedPhone,
-        normalizedPhone,
-      });
       try {
         const canRequestOtp = await ensureSignupPhoneCanRequestOtp();
         if (!canRequestOtp) {
           return;
         }
       } catch (error) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "retryAfterSeconds" in error &&
+          typeof error.retryAfterSeconds === "number" &&
+          error.retryAfterSeconds > 0
+        ) {
+          setRateLimitSeconds(error.retryAfterSeconds);
+        }
+
         setStepError(
           error instanceof Error && error.message
             ? error.message
@@ -587,19 +586,11 @@ export function PhoneAuthFlow({
         recaptchaVerifierRef.current = verifier;
 
         try {
-          console.log("STEP 4 - Sending OTP", {
-            phone: formattedPhone,
-            activeTab,
-            isResend,
-          });
           confirmationResultRef.current = await withTimeout(
             signInWithPhoneNumber(auth, formattedPhone, verifier),
             phoneOtpRequestTimeoutMs,
             "OTP request timed out. Please try again.",
           );
-          if (activeTab === "signup") {
-            console.info("[Auth Signup] OTP sent for new signup", { phone: formattedPhone, resend: isResend });
-          }
           setStep("otp");
           setOtpError(null);
           resetOtpInputs();
@@ -1075,7 +1066,7 @@ export function PhoneAuthFlow({
 
       try {
         const phoneCheck = await checkSignupPhoneAvailability(verifiedPhone);
-        if (phoneCheck.exists) {
+        if (!phoneCheck.canProceed) {
           try {
             await signOut(auth);
           } catch {
@@ -1088,7 +1079,6 @@ export function PhoneAuthFlow({
           setStep("phone");
           resetOtpInputs();
           confirmationResultRef.current = null;
-          console.info("[Auth Signup] duplicate signup blocked after OTP verification", { phone: phoneCheck.normalizedPhone });
           setFeedback("An account already exists with this number. Please log in instead.");
           setShowSignupGoToLogin(true);
           return;
@@ -1135,7 +1125,6 @@ export function PhoneAuthFlow({
       setSignupStep("form");
       setStep("phone");
       resetOtpInputs();
-      console.info("[Auth Signup] user created successfully", { phone: verifiedPhone, uid: linked.user.uid });
       await finishAuthSuccess("Account created successfully!");
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
