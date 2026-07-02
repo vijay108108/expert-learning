@@ -1,9 +1,11 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
+import { allocatePaiseProportionally, getCouponPricing } from "@/lib/coupons";
 import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
 import { env } from "@/lib/env";
+import { getRazorpayOrderDetails, getRazorpayPaymentDetails } from "@/lib/services/payments";
 
 function verifyWebhookSignature(rawBody: string, signature: string) {
   if (!env.razorpayWebhookSecret) {
@@ -64,6 +66,31 @@ export async function POST(request: Request) {
     }
 
     const { offerings } = resolveCheckoutOfferings(courseSlugs);
+    const [paymentDetails, orderDetails] = await Promise.all([
+      getRazorpayPaymentDetails(entity.id),
+      getRazorpayOrderDetails(entity.order_id),
+    ]);
+
+    if (!paymentDetails || !orderDetails || paymentDetails.status !== "captured" || orderDetails.status !== "paid") {
+      return NextResponse.json({ success: true, ignored: true });
+    }
+
+    const subtotalPaise = offerings.reduce((sum, offering) => sum + (offering.priceValue * 100), 0);
+    const pricing = getCouponPricing(subtotalPaise, notes.couponCode);
+    const lineItemPaise = allocatePaiseProportionally(
+      pricing.finalAmountPaise,
+      offerings.map((offering) => offering.priceValue * 100),
+    );
+
+    if (
+      paymentDetails.amount !== pricing.finalAmountPaise ||
+      orderDetails.amount !== pricing.finalAmountPaise ||
+      orderDetails.amount_paid !== pricing.finalAmountPaise ||
+      paymentDetails.currency !== "INR" ||
+      orderDetails.currency !== "INR"
+    ) {
+      return NextResponse.json({ success: true, ignored: true });
+    }
 
     function resolveEnrollmentMetaForOffering(offering: CheckoutOffering): {
       enrollmentType: "course" | "program";
@@ -87,7 +114,7 @@ export async function POST(request: Request) {
     const enrolledAt = new Date().toISOString();
 
     await Promise.all(
-      offerings.map((offering) => {
+      offerings.map((offering, index) => {
         const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
         const selected = offering;
         return saveEnrollmentRecordAdmin({
@@ -104,7 +131,7 @@ export async function POST(request: Request) {
           programCourseSlugs: enrollmentMeta.programCourseSlugs,
           primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
           courseName: selected.title,
-          amountPaid: Math.round(selected.priceValue),
+          amountPaid: Math.round((lineItemPaise[index] || 0) / 100),
           razorpayOrderId: entity.order_id || "",
           razorpayPaymentId: entity.id || "",
           invoiceNumber: `WEBHOOK-${entity.order_id?.slice(-8) || "NA"}`,

@@ -12,6 +12,8 @@ const gstField = z
     message: "Invalid GST number format",
   });
 
+const couponCodeField = z.string().trim().optional().default("");
+
 export const leadSchema = z.object({
   name: z.string().min(2),
   email: z.string().email().or(z.literal("")).optional().default(""),
@@ -35,6 +37,7 @@ export const paymentCreateSchema = z
     courseSlugs: z.array(z.string().min(2)).min(1).optional(),
     gstNumber: gstField,
     companyName: z.string().trim().optional().default(""),
+    couponCode: couponCodeField,
   })
   .refine((value) => Boolean(value.courseSlug || value.courseSlugs?.length), {
     message: "At least one course selection is required.",
@@ -53,6 +56,17 @@ export const paymentVerifySchema = z
     phone: z.string().min(8),
     gstNumber: gstField,
     companyName: z.string().trim().optional().default(""),
+    couponCode: couponCodeField,
+  })
+  .refine((value) => Boolean(value.courseSlug || value.courseSlugs?.length), {
+    message: "At least one course selection is required.",
+  });
+
+export const paymentCouponSchema = z
+  .object({
+    courseSlug: z.string().min(2).optional(),
+    courseSlugs: z.array(z.string().min(2)).min(1).optional(),
+    couponCode: z.string().trim().min(1),
   })
   .refine((value) => Boolean(value.courseSlug || value.courseSlugs?.length), {
     message: "At least one course selection is required.",

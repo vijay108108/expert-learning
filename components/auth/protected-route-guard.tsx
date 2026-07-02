@@ -1,12 +1,13 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 
 export function ProtectedRouteGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { isAuthReady, user } = useAuth();
   const redirectedRef = useRef(false);
 
@@ -16,8 +17,10 @@ export function ProtectedRouteGuard({ children }: { children: React.ReactNode })
     }
 
     redirectedRef.current = true;
-    router.replace(`/?redirect=${encodeURIComponent(pathname)}`);
-  }, [isAuthReady, pathname, router, user]);
+    const query = searchParams.toString();
+    const redirectTarget = query ? `${pathname}?${query}` : pathname;
+    router.replace(`/login?redirect=${encodeURIComponent(redirectTarget)}`);
+  }, [isAuthReady, pathname, router, searchParams, user]);
 
   if (!isAuthReady) {
     return null;

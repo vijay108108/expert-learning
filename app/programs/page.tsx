@@ -25,138 +25,76 @@ type Program = {
 
 const programs: Program[] = [
   {
-    title: "Practical AI Tools Master Program",
-    href: "/programs/ai-tools-master",
-    slug: "ai-tools-master",
-    badge: "AI Tools Mastery",
-    badgeColor: "border-[#DDD6FE] bg-[#F5F3FF] text-[#6D28D9]",
-    stripColor: "from-[#9333EA] via-[#4F46E5] to-[#0EA5E9]",
-    hot: true,
-    tagline: "25+ AI Tools · 8 Weeks · No Coding · No Tech Background Needed",
-    description: "Master ChatGPT, Claude, Gemini, Midjourney, GitHub Copilot, ElevenLabs, Runway and 18+ more. Zero coding. Zero technical background. Anyone can join.",
-    duration: "8 Weeks",
-    level: "🟢 Zero Technical Background Required",
-    projects: "12+ Real Use-Case Projects",
-    certification: "AI Tools Mastery Certificate",
-    price: "Rs. 69,999",
-    originalPrice: "Rs. 99,999",
-    highlights: [
-      "🚫 No Coding Required — ever",
-      "🚫 No Technical Background Needed",
-      "✅ Works for students, professionals, business owners",
-    ],
-    outcomes: ["10× Productivity", "Freelance ₹2–8L/yr", "Roles ₹5–15L"],
-  },
-  {
-    title: "Microsoft Cloud & AI DevOps Master",
-    href: "/programs/microsoft-cloud-ai-devops-master",
-    slug: "microsoft-cloud-ai-devops-master",
-    badge: "Azure + DevOps + AI",
+    title: "AZ-104 – Microsoft Azure Administrator",
+    href: "/checkout/azure-administrator",
+    slug: "azure-administrator",
+    badge: "Microsoft Azure Admin",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
-    stripColor: "from-[#0078D4] via-[#4F46E5] to-[#9333EA]",
+    stripColor: "from-[#0078D4] via-[#3B82F6] to-[#0EA5E9]",
     hot: true,
-    tagline: "AZ-104 → AZ-400 → AI DevSecOps — 24 Weeks",
-    description: "Azure Administration → Azure DevOps Engineering → AI-Powered DevSecOps with Kubernetes, Terraform, GitHub Copilot & Microsoft Sentinel.",
-    duration: "24 Weeks",
-    level: "Beginner to Advanced",
-    projects: "15+ Real-World Projects",
-    certification: "AZ-104 + AZ-400 + AI DevSecOps",
-    price: "Rs. 94,999",
-    originalPrice: "Rs. 1,35,999",
+    tagline: "Azure identity, compute, networking, storage, and monitoring administration",
+    description:
+      "Build job-ready Azure administration capability aligned to AZ-104 with hands-on governance, infrastructure, backup, and monitoring practice for real enterprise environments.",
+    duration: "8 Weeks",
+    level: "Intermediate",
+    projects: "8-Module Admin Curriculum",
+    certification: "AZ-104 Certification Prep",
+    price: "₹20,000",
+    originalPrice: "",
     highlights: [
-      "3-phase path: Cloud Admin → DevOps → AI Security",
-      "AKS, Terraform, GitHub Copilot & Sentinel included",
-      "Mock interviews, LMS for life, placement support",
+      "Covers Entra ID, RBAC, virtual networking, storage, backup and recovery",
+      "Hands-on Azure Monitor and Log Analytics operations labs",
+      "Built for cloud admins, support engineers, and infrastructure teams",
     ],
-    outcomes: ["₹4–7L Entry", "₹8–16L Mid", "₹18–35L Senior"],
+    outcomes: ["Azure Ops Ready", "AZ-104 Ready", "Admin Lab Portfolio"],
   },
   {
-    title: "Master AI & Generative AI Program",
-    href: "/programs/ai-generative-ai-master",
-    slug: "ai-generative-ai-master",
-    badge: "AI & GenAI Engineering",
-    badgeColor: "border-[#C7D2FE] bg-[#EEF2FF] text-[#4338CA]",
-    stripColor: "from-[#10A37F] via-[#4F46E5] to-[#9333EA]",
-    tagline: "Python → LLMs → RAG → AI Agents — 20 Weeks",
-    description: "Build production AI applications: RAG pipelines, AI agents, LLM APIs, vector databases and cloud deployment — GPT-5.5, Claude Opus 4.8 & latest models.",
-    duration: "20 Weeks",
-    level: "Beginner to Advanced",
-    projects: "12+ Real-World AI Projects",
-    certification: "AI Engineer Career Track",
-    price: "Rs. 64,999",
-    originalPrice: "Rs. 92,999",
+    title: "AZ-400 – Microsoft DevOps Engineer",
+    href: "/checkout/azure-devops-engineer",
+    slug: "azure-devops-engineer",
+    badge: "Microsoft DevOps",
+    badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
+    stripColor: "from-[#2563EB] via-[#4F46E5] to-[#7C3AED]",
+    hot: true,
+    tagline: "CI/CD, release governance, IaC, DevSecOps, and observability on Azure",
+    description:
+      "Advance into Microsoft DevOps engineering with delivery pipelines, release controls, infrastructure as code, feedback loops, and secure platform automation aligned to AZ-400.",
+    duration: "8 Weeks",
+    level: "Advanced",
+    projects: "8-Module DevOps Curriculum",
+    certification: "AZ-400 Certification Prep",
+    price: "₹30,000",
+    originalPrice: "",
     highlights: [
-      "Latest models: GPT-5.5, Claude Opus 4.8, Gemini 3 Pro",
-      "Production RAG + multi-agent AI system projects",
-      "AI portfolio on GitHub + mock interview prep",
+      "Covers Azure Pipelines, GitHub Actions, Boards, Repos, and release governance",
+      "Includes Terraform, Bicep, policy automation, and security integration",
+      "Designed for DevOps engineers, platform teams, and release owners",
     ],
-    outcomes: ["₹4–8L Entry", "₹10–18L Mid", "₹20–40L Senior"],
+    outcomes: ["Pipeline Delivery", "AZ-400 Ready", "DevOps Case Study"],
   },
   {
-    title: "AWS Cloud Master Program",
-    href: "/programs/aws-cloud-master",
-    slug: "aws-cloud-master",
-    badge: "AWS Cloud Track",
-    badgeColor: "border-[#FEF08A] bg-[#FEFCE8] text-[#854D0E]",
-    stripColor: "from-[#FF9900] via-[#FF6600] to-[#FF9900]",
-    tagline: "CLF → SAA → DVA → SOA — All 4 AWS Certs",
-    description: "All 4 associate AWS certifications in one 20-week program: Cloud Practitioner, Solutions Architect, Developer Associate and SysOps Administrator.",
-    duration: "20 Weeks",
-    level: "Beginner to Advanced",
-    projects: "12+ Real-World AWS Projects",
-    certification: "CLF-C02 + SAA-C03 + DVA-C02 + SOA-C03",
-    price: "Rs. 71,999",
-    originalPrice: "Rs. 1,02,999",
+    title: "AIOps Engineering",
+    href: "/checkout/aiops-engineering",
+    slug: "aiops-engineering",
+    badge: "Cloud Operations AI",
+    badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
+    stripColor: "from-[#0EA5E9] via-[#4F46E5] to-[#9333EA]",
+    hot: true,
+    tagline: "Observability, incident intelligence, automation, and reliability engineering",
+    description:
+      "Learn production-focused AIOps engineering with telemetry correlation, KQL analysis, alert design, incident automation, and reliability workflows for modern cloud operations teams.",
+    duration: "8 Weeks",
+    level: "Advanced",
+    projects: "10-Module AIOps Curriculum",
+    certification: "AIOps Capstone Portfolio",
+    price: "₹30,000",
+    originalPrice: "",
     highlights: [
-      "4 AWS certifications in a single 5-month program",
-      "EC2, VPC, Lambda, RDS, EKS, S3 hands-on labs",
-      "Real-world architecture projects + mock exams",
+      "Build observability workflows across Azure Monitor, Log Analytics, and dashboards",
+      "Practice incident triage, runbook automation, and service reliability response",
+      "Industry-focused for SRE, platform operations, and cloud support teams",
     ],
-    outcomes: ["₹4–7L Entry", "₹8–15L Mid", "₹16–30L Senior"],
-  },
-  {
-    title: "Microsoft Cloud Master Program",
-    href: "/programs/microsoft-cloud-master",
-    slug: "microsoft-cloud-master",
-    badge: "Microsoft Azure Track",
-    badgeColor: "border-[#BFDBFE] bg-[#EFF6FF] text-[#1E40AF]",
-    stripColor: "from-[#0078D4] via-[#3B82F6] to-[#0078D4]",
-    tagline: "AZ-900 → AZ-104 → AZ-204 → AZ-305",
-    description: "Complete Microsoft Azure path: Fundamentals, Administrator, Developer (→ AI-200) and Solutions Architect Expert — four certifications in 20 weeks.",
-    duration: "20 Weeks",
-    level: "Beginner to Advanced",
-    projects: "10+ Real-World Azure Projects",
-    certification: "AZ-900 + AZ-104 + AZ-204/AI-200 + AZ-305",
-    price: "Rs. 71,999",
-    originalPrice: "Rs. 1,02,999",
-    highlights: [
-      "4 Microsoft certs — AZ-204 retiring Jul 2026, updated to AI-200",
-      "Entra ID, AKS, Key Vault, Sentinel real labs",
-      "Architecture case studies + placement support",
-    ],
-    outcomes: ["₹4–7L Entry", "₹8–15L Mid", "₹16–30L Senior"],
-  },
-  {
-    title: "DevOps Master Program",
-    href: "/programs/devops-master",
-    slug: "devops-master",
-    badge: "DevOps & SRE Track",
-    badgeColor: "border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]",
-    stripColor: "from-[#F05032] via-[#326CE5] to-[#E6522C]",
-    tagline: "Linux → Docker → K8s → CI/CD → Terraform → SRE",
-    description: "Full DevOps engineering stack: Linux, Docker v29, Kubernetes 1.36, Jenkins, GitHub Actions, Terraform / OpenTofu, Prometheus & SRE practices.",
-    duration: "20 Weeks",
-    level: "Beginner to Advanced",
-    projects: "15+ Real-World Projects",
-    certification: "CKA + Terraform + AZ-400 Prep",
-    price: "Rs. 74,999",
-    originalPrice: "Rs. 1,07,999",
-    highlights: [
-      "Latest versions: K8s 1.36, Docker v29, OpenTofu 1.12",
-      "Argo CD GitOps, Prometheus + Grafana + Loki stack",
-      "15 production-grade GitHub portfolio projects",
-    ],
-    outcomes: ["₹4–7L Entry", "₹8–16L Mid", "₹18–35L Senior"],
+    outcomes: ["AIOps Portfolio", "Incident Automation", "Reliability Ops"],
   },
 ];
 
@@ -166,7 +104,6 @@ export const metadata = buildMetadata({
   path: "/programs",
 });
 
-/* ── Program card ────────────────────────────────────────── */
 function ProgramCard({ program }: { program: Program }) {
   return (
     <Link
@@ -175,19 +112,15 @@ function ProgramCard({ program }: { program: Program }) {
         program.hot ? "border-[#DDD6FE]" : "border-[#E2E8F0]"
       }`}
     >
-      {/* Hot badge */}
       {program.hot && (
         <span className="absolute -top-px left-1/2 -translate-x-1/2 rounded-b-xl border border-t-0 border-[#FED7AA] bg-[#FFF7ED] px-3 py-0.5 text-[10px] font-bold text-[#C2410C]">
-          🔥 Most In-Demand
+          Most In-Demand
         </span>
       )}
 
-      {/* Top gradient strip — unique per program */}
       <div className={`h-1.5 w-full bg-gradient-to-r ${program.stripColor}`} />
 
       <div className="flex flex-1 flex-col p-5 pt-6">
-
-        {/* Badge + tagline */}
         <div className="flex flex-wrap items-center gap-2">
           <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${program.badgeColor}`}>
             {program.badge}
@@ -197,17 +130,14 @@ function ProgramCard({ program }: { program: Program }) {
           {program.tagline}
         </p>
 
-        {/* Title */}
         <h2 className="mt-2 text-[15px] font-extrabold leading-snug !text-[#0F172A]">
           {program.title}
         </h2>
 
-        {/* Description */}
         <p className="mt-1.5 text-[12px] leading-[1.6] text-[#64748B]">
           {program.description}
         </p>
 
-        {/* ── Tech Stack Logos ── */}
         <div className="mt-4">
           <p className="mb-2 text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#9333EA]">
             Tools & Technologies
@@ -215,29 +145,27 @@ function ProgramCard({ program }: { program: Program }) {
           <TechStackGrid slug={program.slug} max={14} />
         </div>
 
-        {/* Highlights */}
         <div className="mt-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3">
           <ul className="space-y-1.5">
-            {program.highlights.map((h) => (
-              <li key={h} className="flex items-start gap-2 text-[11.5px] font-medium !text-[#334155]">
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4F46E5]" />{h}
+            {program.highlights.map((highlight) => (
+              <li key={highlight} className="flex items-start gap-2 text-[11.5px] font-medium !text-[#334155]">
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4F46E5]" />
+                {highlight}
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Career outcomes */}
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {program.outcomes.map((o) => (
-            <span key={o} className="rounded-full bg-[#F0FDF4] px-2.5 py-0.5 text-[10px] font-bold !text-[#166534]">
-              {o}
+          {program.outcomes.map((outcome) => (
+            <span key={outcome} className="rounded-full bg-[#F0FDF4] px-2.5 py-0.5 text-[10px] font-bold !text-[#166534]">
+              {outcome}
             </span>
           ))}
         </div>
 
         <div className="flex-1" />
 
-        {/* Meta + Price + CTA */}
         <div className="mt-4 border-t border-[#F1F5F9] pt-4">
           <div className="mb-3 flex flex-wrap gap-3 text-[11px] text-[#64748B]">
             <span className="flex items-center gap-1"><Clock3 className="h-3 w-3 text-[#4F46E5]" />{program.duration}</span>
@@ -250,7 +178,7 @@ function ProgramCard({ program }: { program: Program }) {
               <p className="text-[10px] text-[#94A3B8] line-through">{program.originalPrice}</p>
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-[12px] bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-2.5 text-[12.5px] font-bold text-white shadow-[0_6px_16px_rgba(79,70,229,0.22)] transition group-hover:scale-[1.02] group-hover:shadow-[0_12px_28px_rgba(79,70,229,0.32)]">
-              View <ArrowRight className="h-3.5 w-3.5" />
+              Enroll Now <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </div>
         </div>
@@ -259,12 +187,9 @@ function ProgramCard({ program }: { program: Program }) {
   );
 }
 
-/* ── Page ─────────────────────────────────────────────────── */
 export default function ProgramsPage() {
   return (
     <main className="bg-white">
-
-      {/* ── Header ── */}
       <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#F5F0FF_50%,#E0F2FE_100%)] px-4 pb-8 pt-10 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <span className="inline-flex items-center rounded-full border border-[#DDD6FE] bg-[#F5F0FF] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7C3AED]">
@@ -274,15 +199,14 @@ export default function ProgramsPage() {
             Career Programs
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#64748B]">
-            Industry-ready Cloud, AI, DevOps &amp; AI Tools programs — with the actual tools
-            employers use, live mentorship and placement support.
+            Industry-ready Cloud, AI, DevOps &amp; AI Tools programs — with the actual tools employers use, live mentorship and placement support.
           </p>
           <div className="mt-5 flex flex-wrap gap-4 text-sm text-[#475569]">
             {[
-              { icon: GraduationCap, label: "6 Programs" },
-              { icon: Clock3,        label: "8–24 Week Tracks" },
-              { icon: FolderKanban,  label: "12–15 Projects Each" },
-              { icon: Award,         label: "Certification Prep Included" },
+              { icon: GraduationCap, label: "3 Programs" },
+              { icon: Clock3, label: "8 Week Tracks" },
+              { icon: FolderKanban, label: "Job-Ready Projects" },
+              { icon: Award, label: "Certification Prep Included" },
             ].map(({ icon: Icon, label }) => (
               <span key={label} className="flex items-center gap-1.5">
                 <Icon className="h-4 w-4 text-[#4F46E5]" />{label}
@@ -292,7 +216,6 @@ export default function ProgramsPage() {
         </div>
       </section>
 
-      {/* ── Cards grid ── */}
       <section className="border-t border-[#E2E8F0] px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -303,7 +226,6 @@ export default function ProgramsPage() {
         </div>
       </section>
 
-      {/* ── Bottom CTA ── */}
       <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl rounded-[24px] border border-[#E2E8F0] bg-white p-8 text-center shadow-sm">
           <p className="text-[11px] font-bold uppercase tracking-widest text-[#9333EA]">Not Sure Which to Pick?</p>
@@ -321,7 +243,6 @@ export default function ProgramsPage() {
           </div>
         </div>
       </section>
-
     </main>
   );
 }

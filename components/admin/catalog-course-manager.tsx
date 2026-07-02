@@ -107,7 +107,11 @@ export function CatalogCourseManager() {
   }
 
   useEffect(() => {
-    void load();
+    const loadTimer = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(loadTimer);
   }, []);
 
   const filtered = useMemo(() => {

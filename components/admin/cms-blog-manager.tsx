@@ -124,7 +124,7 @@ export function CmsBlogManager() {
       ) : posts.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center">
           <p className="text-[#334155]">No blog posts yet.</p>
-          <button onClick={openNew} className="mt-3 text-[13px] text-[#4F46E5] hover:underline">Create your first post â†’</button>
+          <button onClick={openNew} className="mt-3 text-[13px] text-[#4F46E5] hover:underline">Create your first post →</button>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

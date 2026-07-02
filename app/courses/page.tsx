@@ -36,12 +36,16 @@ const stats = [
   { icon: GraduationCap, value: "96%", label: "Placement satisfaction" },
 ];
 
+const hiddenCourseSlugs = new Set(["azure-administrator", "azure-devops-engineer"]);
+
 export default function CoursesPage() {
   const [search, setSearch] = useState("");
   const [track, setTrack] = useState<LearningTrackKey | "all">("all");
   const [level, setLevel] = useState<(typeof levelOptions)[number]["value"]>("all");
   const [mode, setMode] = useState<(typeof modeOptions)[number]["value"]>("all");
-  const [courses, setCourses] = useState<Course[]>(allCourses);
+  const [courses, setCourses] = useState<Course[]>(
+    allCourses.filter((course) => !hiddenCourseSlugs.has(course.slug)),
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -49,11 +53,14 @@ export default function CoursesPage() {
       .then((res) => res.json())
       .then((data) => {
         if (!cancelled && data?.success && Array.isArray(data.courses) && data.courses.length > 0) {
-          setCourses(data.courses);
+          setCourses(data.courses.filter((course: Course) => !hiddenCourseSlugs.has(course.slug)));
         }
       })
       .catch(() => { /* keep static fallback */ });
-    return () => { cancelled = true; };
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const hasActiveFilters = track !== "all" || level !== "all" || mode !== "all" || search.trim() !== "";
@@ -67,23 +74,23 @@ export default function CoursesPage() {
 
   const filteredCourses = useMemo(() => {
     const query = search.trim().toLowerCase();
+
     return courses.filter((course) => {
       const bySearch =
-        !query ||
-        course.title.toLowerCase().includes(query) ||
-        course.tags.some((tag) => tag.toLowerCase().includes(query));
+        !query
+        || course.title.toLowerCase().includes(query)
+        || course.tags.some((tag) => tag.toLowerCase().includes(query));
       const byTrack = track === "all" || course.track === track;
       const byLevel = level === "all" || course.level === level;
       const byMode = mode === "all" || course.mode === mode;
+
       return bySearch && byTrack && byLevel && byMode;
     });
   }, [courses, level, mode, search, track]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-
-      {/* ── Hero ── */}
-      <section className="bg-white border-b border-[#E2E8F0] px-4 py-10 sm:px-6 lg:px-8">
+      <section className="border-b border-[#E2E8F0] bg-white px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <span className="inline-flex items-center rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-[#64748B]">
             GenZNext Course Catalog
@@ -95,60 +102,53 @@ export default function CoursesPage() {
             Mentor-led programs in AWS, Azure, DevSecOps, AI, Generative AI and Agentic AI — with live labs, projects and certification support.
           </p>
           <div className="mt-7 flex flex-wrap gap-4">
-            {stats.map((s) => (
-              <div key={s.label} className="flex items-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
-                <s.icon className="h-4 w-4 text-[#4F46E5]" />
-                <span className="text-sm font-bold text-[#0F172A]">{s.value}</span>
-                <span className="text-sm text-[#64748B]">{s.label}</span>
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex items-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
+                <stat.icon className="h-4 w-4 text-[#4F46E5]" />
+                <span className="text-sm font-bold text-[#0F172A]">{stat.value}</span>
+                <span className="text-sm text-[#64748B]">{stat.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Filters ── */}
       <div className="sticky top-[64px] z-10 border-b border-[#E2E8F0] bg-white/95 shadow-[0_1px_8px_rgba(15,23,42,0.06)] backdrop-blur">
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-
-          {/* Search */}
           <label className="relative min-w-[200px] flex-1">
-            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search courses…"
-              className="h-9 w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] py-2 pr-3 pl-9 text-sm text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition focus:border-[#4F46E5] focus:bg-white focus:ring-2 focus:ring-[#4F46E5]/10"
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search courses..."
+              className="h-9 w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] py-2 pl-9 pr-3 text-sm text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition focus:border-[#4F46E5] focus:bg-white focus:ring-2 focus:ring-[#4F46E5]/10"
             />
           </label>
 
-          {/* Track */}
           <select
             value={track}
-            onChange={(e) => setTrack(e.target.value as LearningTrackKey | "all")}
+            onChange={(event) => setTrack(event.target.value as LearningTrackKey | "all")}
             className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
           >
-            {trackOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            {trackOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
 
-          {/* Level */}
           <select
             value={level}
-            onChange={(e) => setLevel(e.target.value as typeof level)}
+            onChange={(event) => setLevel(event.target.value as typeof level)}
             className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
           >
-            {levelOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            {levelOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
 
-          {/* Mode */}
           <select
             value={mode}
-            onChange={(e) => setMode(e.target.value as typeof mode)}
+            onChange={(event) => setMode(event.target.value as typeof mode)}
             className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
           >
-            {modeOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            {modeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
 
-          {/* Reset */}
           {hasActiveFilters && (
             <button
               onClick={resetFilters}
@@ -158,17 +158,13 @@ export default function CoursesPage() {
             </button>
           )}
 
-          {/* Count */}
           <span className="ml-auto text-sm text-[#64748B]">
             <span className="font-semibold text-[#0F172A]">{filteredCourses.length}</span> courses
           </span>
         </div>
       </div>
 
-      {/* ── Grid ── */}
       <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-
-        {/* Active filter pills */}
         {hasActiveFilters && (
           <div className="mb-5 flex flex-wrap items-center gap-2">
             <SlidersHorizontal className="h-3.5 w-3.5 text-[#64748B]" />
@@ -179,7 +175,7 @@ export default function CoursesPage() {
             )}
             {track !== "all" && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-2.5 py-1 text-xs font-medium text-[#475569]">
-                {trackOptions.find(o => o.value === track)?.label} <button onClick={() => setTrack("all")}><X className="h-3 w-3" /></button>
+                {trackOptions.find((option) => option.value === track)?.label} <button onClick={() => setTrack("all")}><X className="h-3 w-3" /></button>
               </span>
             )}
             {level !== "all" && (

@@ -1,4 +1,4 @@
-import { allCourses, type Course } from "@/data/courses";
+﻿import { allCourses, type Course } from "@/data/courses";
 import { formatPaiseToPrice, getCourseBySlug } from "@/lib/course-catalog";
 import {
   getCanonicalCourseId,
@@ -38,6 +38,18 @@ export type CheckoutOffering = {
 
 const bundleDefinitions: BundleDefinition[] = [
   {
+    slug: "ai-tools-master-program",
+    title: "Practical AI Tools Master Program",
+    subtitle: "Complete AI Tools Master bundle checkout.",
+    tagLabel: "AI Tools Mastery Track",
+    duration: "8 Weeks",
+    level: "Beginner to Advanced",
+    highlight: "Bundle Offer",
+    priceValue: 69999,
+    originalPriceValue: 99999,
+    courseSlugs: ["applied-ai-foundations", "ai-for-business-automation", "prompt-engineering", "agentic-ai-engineering"],
+  },
+  {
     slug: "microsoft-cloud-master-program",
     title: "Microsoft Cloud Master Program",
     subtitle: "Complete Microsoft Cloud Master bundle checkout.",
@@ -72,6 +84,18 @@ const bundleDefinitions: BundleDefinition[] = [
     priceValue: 29999,
     originalPriceValue: 59999,
     courseSlugs: ["applied-ai-foundations", "prompt-engineering", "rag-applications-vector-databases", "agentic-ai-engineering"],
+  },
+  {
+    slug: "microsoft-cloud-ai-devops-master-program",
+    title: "Microsoft Cloud & AI DevOps Master Program",
+    subtitle: "Complete Microsoft Cloud & AI DevOps master bundle checkout.",
+    tagLabel: "AZ-104 + AZ-400 + AIOps",
+    duration: "24 Weeks",
+    level: "Beginner to Advanced",
+    highlight: "Bundle Offer",
+    priceValue: 90000,
+    originalPriceValue: 90000,
+    courseSlugs: ["azure-administrator", "azure-devops-engineer", "aiops-engineering"],
   },
   {
     slug: "devops-master-program",
@@ -208,3 +232,4 @@ export function listBundleSlugs() {
 export function listAllCourseSlugs() {
   return allCourses.map((course) => course.slug);
 }
+

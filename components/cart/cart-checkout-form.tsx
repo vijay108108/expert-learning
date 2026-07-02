@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
+import { getCouponPricing, normalizeCouponCode } from "@/lib/coupons";
 import { formatPaiseToPrice } from "@/lib/course-catalog";
 import {
   findExistingEnrollmentCourseIds,
+  getFirebaseAuth,
   getUserProfile,
   logFirestoreIssue,
   saveInvoiceEnrollments,
@@ -40,6 +42,14 @@ type CheckoutProfile = AppUserProfile & {
   gstNumber?: string;
 };
 
+type CouponApplyResponse = {
+  success?: boolean;
+  message?: string;
+  pricing?: {
+    appliedCouponCode?: string;
+  };
+};
+
 const initialState: CheckoutFormState = {
   phone: "",
   email: "",
@@ -67,7 +77,20 @@ function formatPhoneForProfile(value: string) {
   return trimmed.startsWith("+") ? `+${digits}` : digits;
 }
 
-/* ── Payment Processing Overlay ─────────────────────────── */
+async function getPaymentAuthHeaders() {
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+
+  if (!token) {
+    throw new Error("Your session expired. Please sign in again.");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+}
+
+/* Payment Processing Overlay */
 function PaymentProcessingOverlay() {
   const steps = [
     { label: "Verifying payment signature",    done: true  },
@@ -145,15 +168,21 @@ export function CartCheckoutForm() {
   const [pending, setPending] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCouponCode, setAppliedCouponCode] = useState("");
+  const [couponMessage, setCouponMessage] = useState<string | null>(null);
+  const [couponStatus, setCouponStatus] = useState<"success" | "error" | null>(null);
+  const [couponPending, setCouponPending] = useState(false);
   const accountName = profile?.name?.trim() || user?.displayName?.trim() || "GenZNext Learner";
   const accountPhone = form.phone.trim();
   const normalizedGstNumber = form.gstNumber.trim().toUpperCase();
   const gstNumberEntered = normalizedGstNumber.length > 0;
   const isGstNumberValid = gstPattern.test(normalizedGstNumber);
   const gstInvoiceEnabled = form.addGstDetails && isGstNumberValid;
+  const pricing = useMemo(() => getCouponPricing(totalPaise, appliedCouponCode), [appliedCouponCode, totalPaise]);
   const { baseAmountPaise, gstPaise, totalPaidPaise } = useMemo(
-    () => getInclusiveGstBreakup(totalPaise, gstInvoiceEnabled),
-    [gstInvoiceEnabled, totalPaise],
+    () => getInclusiveGstBreakup(pricing.finalAmountPaise, gstInvoiceEnabled),
+    [gstInvoiceEnabled, pricing.finalAmountPaise],
   );
   const showGstInvoiceNote = gstInvoiceEnabled && Boolean(form.companyName.trim());
 
@@ -209,6 +238,55 @@ export function CartCheckoutForm() {
       window.cancelAnimationFrame(frame);
     };
   }, [user]);
+
+  async function handleApplyCoupon() {
+    setMessage(null);
+
+    if (couponPending || pending || isPaying) {
+      return;
+    }
+
+    if (!couponCode.trim()) {
+      setAppliedCouponCode("");
+      setCouponStatus("error");
+      setCouponMessage("Invalid coupon code");
+      return;
+    }
+
+    setCouponPending(true);
+
+    try {
+      const response = await fetch("/api/payment/coupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseSlugs: courses.map((course) => course.slug),
+          couponCode,
+        }),
+      });
+
+      const payload = (await response.json()) as CouponApplyResponse;
+
+      if (!response.ok || !payload.success || !payload.pricing?.appliedCouponCode) {
+        setAppliedCouponCode("");
+        setCouponStatus("error");
+        setCouponMessage(payload.message || "Invalid coupon code");
+        return;
+      }
+
+      setAppliedCouponCode(payload.pricing.appliedCouponCode);
+      setCouponStatus("success");
+      setCouponMessage(payload.message || "Coupon applied successfully");
+    } catch {
+      setAppliedCouponCode("");
+      setCouponStatus("error");
+      setCouponMessage("Invalid coupon code");
+    } finally {
+      setCouponPending(false);
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -285,13 +363,12 @@ export function CartCheckoutForm() {
         courseSlugs: courses.map((course) => course.slug),
         gstNumber: form.addGstDetails ? normalizedGstNumber : "",
         companyName: form.addGstDetails ? form.companyName.trim() : "",
+        couponCode: appliedCouponCode,
       };
 
       const createResponse = await fetch("/api/payment/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: await getPaymentAuthHeaders(),
         body: JSON.stringify(payload),
       });
 
@@ -331,9 +408,7 @@ export function CartCheckoutForm() {
           try {
             const verifyResponse = await fetch("/api/payment/verify", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: await getPaymentAuthHeaders(),
               body: JSON.stringify({
                 ...response,
                 ...payload,
@@ -360,7 +435,13 @@ export function CartCheckoutForm() {
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             syncMyLearningFromInvoice(verifyPayload.invoice);
 
-            await saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
+            clearCart();
+            window.localStorage.removeItem("cart");
+            window.localStorage.setItem("cart", JSON.stringify([]));
+            setIsPaying(false);
+            router.replace(dashboardPath);
+
+            void saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
               logFirestoreIssue(
                 verifyPayload.clientSyncRequired
                   ? "[Checkout] Client enrollment recovery failed after verified payment"
@@ -372,11 +453,6 @@ export function CartCheckoutForm() {
             void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
               logFirestoreIssue("[Checkout] Unable to save phone number after payment", error);
             });
-            clearCart();
-            window.localStorage.removeItem("cart");
-            window.localStorage.setItem("cart", JSON.stringify([]));
-            setIsPaying(false);
-            router.replace(dashboardPath);
           } catch (error) {
             setMessage(error instanceof Error ? error.message : "Unable to complete enrollment after payment.");
             setIsPaying(false);
@@ -398,7 +474,7 @@ export function CartCheckoutForm() {
     }
   }
 
-  /* ── Payment processing overlay ── */
+  /* Payment processing overlay */
   if (isPaying) {
     return <PaymentProcessingOverlay />;
   }
@@ -558,6 +634,44 @@ export function CartCheckoutForm() {
             ) : null}
           </div>
 
+          <div className="rounded-[14px] border border-[#1E2D42] bg-[rgba(255,255,255,0.02)] p-4">
+            <label className="mb-2 block text-[12px] font-medium uppercase tracking-[0.08em] text-[#64748B]">
+              Coupon Code
+            </label>
+            <div className="flex gap-3">
+              <input
+                value={couponCode}
+                onChange={(event) => {
+                  const nextValue = event.target.value;
+                  setCouponCode(nextValue);
+                  setMessage(null);
+                  if (appliedCouponCode && normalizeCouponCode(nextValue) !== appliedCouponCode) {
+                    setAppliedCouponCode("");
+                  }
+                  if (couponMessage) {
+                    setCouponMessage(null);
+                    setCouponStatus(null);
+                  }
+                }}
+                placeholder="Enter coupon code"
+                className="w-full rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-[14px] text-[#F1F5F9] outline-none transition placeholder:text-[#334155] focus:border-[rgba(249,115,22,0.35)] focus:bg-[rgba(249,115,22,0.03)]"
+              />
+              <button
+                type="button"
+                onClick={handleApplyCoupon}
+                disabled={couponPending || pending || isPaying}
+                className="inline-flex shrink-0 items-center justify-center rounded-[10px] border border-[rgba(79,70,229,0.24)] px-4 py-3 text-sm font-semibold text-[#818CF8] transition hover:bg-[rgba(79,70,229,0.08)] disabled:opacity-70"
+              >
+                {couponPending ? "Applying..." : "Apply"}
+              </button>
+            </div>
+            {couponMessage ? (
+              <div className={`mt-2 text-sm ${couponStatus === "success" ? "text-[#34D399]" : "text-[#FCA5A5]"}`}>
+                {couponMessage}
+              </div>
+            ) : null}
+          </div>
+
           {message ? (
             <div className="rounded-[10px] border border-[rgba(248,113,113,0.18)] bg-[rgba(127,29,29,0.16)] px-4 py-3 text-sm text-[#FCA5A5]">
               {message}
@@ -587,6 +701,14 @@ export function CartCheckoutForm() {
           {gstInvoiceEnabled ? (
             <>
               <div className="flex items-center justify-between text-[#CBD5E1]">
+                <span>Original Price</span>
+                <span>{formatPaiseToPrice(pricing.subtotalPaise)}</span>
+              </div>
+              <div className="flex items-center justify-between text-[#CBD5E1]">
+                <span>Discount</span>
+                <span>{pricing.discountPaise ? `-${formatCurrencyInrFromPaise(pricing.discountPaise)}` : "₹0"}</span>
+              </div>
+              <div className="flex items-center justify-between text-[#CBD5E1]">
                 <span>Base Amount (excl. GST)</span>
                 <span>{formatCurrencyInrFromPaise(baseAmountPaise)}</span>
               </div>
@@ -602,8 +724,12 @@ export function CartCheckoutForm() {
           ) : (
             <>
               <div className="flex items-center justify-between text-[#CBD5E1]">
-                <span>Subtotal</span>
-                <span>{formatPaiseToPrice(totalPaise)}</span>
+                <span>Original Price</span>
+                <span>{formatPaiseToPrice(pricing.subtotalPaise)}</span>
+              </div>
+              <div className="flex items-center justify-between text-[#CBD5E1]">
+                <span>Discount</span>
+                <span>{pricing.discountPaise ? `-${formatCurrencyInrFromPaise(pricing.discountPaise)}` : "₹0"}</span>
               </div>
               <div className="flex items-center justify-between text-[#CBD5E1]">
                 <span>Platform Fee</span>
@@ -656,3 +782,4 @@ export function CartCheckoutForm() {
     </div>
   );
 }
+
