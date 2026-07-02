@@ -33,35 +33,29 @@ stages:
   displayName: Deploy to Production VM
   dependsOn: Build
   condition: succeeded()
-
   jobs:
   - job: Deploy
     displayName: Deploy
-
     steps:
     - task: SSH@0
       displayName: Deploy on genznext VM
-
       inputs:
         sshEndpoint: 'genznext-prod-vm-ssh'
         runOptions: 'commands'
-
         commands: |
-          echo "===== DEBUG START ====="
-          whoami
-          pwd
-          ls -la /home
-          ls -la /home/Mithilesh23
-          ls -la /home/Mithilesh23/expert-learning
-          cd /home/Mithilesh23/expert-learning
-          pwd
-          git status
-          git checkout main
-          git pull origin main
-          npm install
-          npm run build
-          pm2 restart genznext
-          pm2 save
-          echo "===== DEBUG END ====="
-
+          bash -lc '
+            set -e
+            echo "===== DEPLOY START ====="
+            whoami
+            cd /home/Mithilesh23/expert-learning
+            pwd
+            git status
+            git checkout main
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart genznext
+            pm2 save
+            echo "===== DEPLOY DONE ====="
+          '
         readyTimeout: '20000'
