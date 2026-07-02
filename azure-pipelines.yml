@@ -16,10 +16,12 @@ stages:
   displayName: Build
   jobs:
   - job: BuildJob
+    displayName: Build Job
     steps:
     - task: NodeTool@0
       inputs:
         versionSpec: '22.x'
+      displayName: Use Node.js 22
 
     - script: npm install
       displayName: Install dependencies
@@ -31,20 +33,35 @@ stages:
   displayName: Deploy to Production VM
   dependsOn: Build
   condition: succeeded()
+
   jobs:
   - job: Deploy
+    displayName: Deploy
+
     steps:
     - task: SSH@0
       displayName: Deploy on genznext VM
+
       inputs:
         sshEndpoint: 'genznext-prod-vm-ssh'
         runOptions: 'commands'
+
         commands: |
+          echo "===== DEBUG START ====="
+          whoami
+          pwd
+          ls -la /home
+          ls -la /home/Mithilesh23
+          ls -la /home/Mithilesh23/expert-learning
           cd /home/Mithilesh23/expert-learning
+          pwd
+          git status
           git checkout main
           git pull origin main
           npm install
           npm run build
           pm2 restart genznext
           pm2 save
+          echo "===== DEBUG END ====="
+
         readyTimeout: '20000'
