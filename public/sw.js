@@ -1,40 +1,53 @@
-const CACHE_NAME = "genznext-v1";
+const STATIC_CACHE_NAME = "genznext-static-v2";
 const OFFLINE_URL = "/offline";
 
-// Assets to pre-cache on install
+// Only pre-cache the offline shell and app icons.
+// Do not pre-cache HTML routes or runtime-cache navigations,
+// otherwise users can get stale pages after a deployment.
 const PRECACHE_ASSETS = [
-  "/",
-  "/offline",
-  "/courses",
-  "/programs",
+  OFFLINE_URL,
   "/icon-192.png",
   "/icon-512.png",
+  "/icon-maskable-512.png",
 ];
 
-// ── Install: pre-cache shell ──────────────────────────────
+function isStaticAssetRequest(request, url) {
+  return (
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname.startsWith("/icon-") ||
+    url.pathname.endsWith(".png") ||
+    url.pathname.endsWith(".svg") ||
+    url.pathname.endsWith(".ico") ||
+    url.pathname.endsWith(".woff2")
+  );
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
+    caches.open(STATIC_CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
   );
   self.skipWaiting();
 });
 
-// ── Activate: clean old caches ────────────────────────────
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      Promise.all(keys.filter((key) => key !== STATIC_CACHE_NAME).map((key) => caches.delete(key)))
     )
   );
   self.clients.claim();
 });
 
-// ── Fetch strategy ────────────────────────────────────────
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET, cross-origin, and API requests
   if (
     request.method !== "GET" ||
     url.origin !== location.origin ||
@@ -45,38 +58,36 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets: cache-first
-  if (
-    url.pathname.startsWith("/_next/static/") ||
-    url.pathname.startsWith("/icon-") ||
-    url.pathname.endsWith(".png") ||
-    url.pathname.endsWith(".svg") ||
-    url.pathname.endsWith(".ico") ||
-    url.pathname.endsWith(".woff2")
-  ) {
+  // Always fetch documents from the network so the newest deployment loads immediately.
+  if (request.mode === "navigate" || request.destination === "document") {
+    event.respondWith(
+      (async () => {
+        try {
+          return await fetch(request, { cache: "no-store" });
+        } catch {
+          return (await caches.match(OFFLINE_URL)) || Response.error();
+        }
+      })()
+    );
+    return;
+  }
+
+  // Cache hashed/static assets for repeat visits without affecting deployment freshness.
+  if (isStaticAssetRequest(request, url)) {
     event.respondWith(
       caches.match(request).then(
-        (cached) => cached || fetch(request).then((res) => {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          return res;
-        })
+        (cached) =>
+          cached ||
+          fetch(request).then((response) => {
+            const clone = response.clone();
+            caches.open(STATIC_CACHE_NAME).then((cache) => cache.put(request, clone));
+            return response;
+          })
       )
     );
     return;
   }
 
-  // HTML pages: network-first, fallback to cache, then offline page
-  event.respondWith(
-    fetch(request)
-      .then((res) => {
-        const clone = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-        return res;
-      })
-      .catch(async () => {
-        const cached = await caches.match(request);
-        return cached || caches.match(OFFLINE_URL);
-      })
-  );
+  // Bypass the cache for all other same-origin GET requests.
+  event.respondWith(fetch(request));
 });

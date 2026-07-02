@@ -7,8 +7,38 @@ import { Download, X } from "lucide-react";
 function useServiceWorker() {
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+
+    let hasRefreshed = false;
+
     navigator.serviceWorker
       .register("/sw.js", { scope: "/" })
+      .then(async (registration) => {
+        const activateWaitingWorker = () => {
+          if (registration.waiting) {
+            registration.waiting.postMessage({ type: "SKIP_WAITING" });
+          }
+        };
+
+        await registration.update();
+        activateWaitingWorker();
+
+        registration.addEventListener("updatefound", () => {
+          const installing = registration.installing;
+          if (!installing) return;
+
+          installing.addEventListener("statechange", () => {
+            if (installing.state === "installed" && navigator.serviceWorker.controller) {
+              activateWaitingWorker();
+            }
+          });
+        });
+
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (hasRefreshed) return;
+          hasRefreshed = true;
+          window.location.reload();
+        });
+      })
       .catch(() => { /* silent in dev */ });
   }, []);
 }
