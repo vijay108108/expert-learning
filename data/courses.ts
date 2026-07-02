@@ -944,6 +944,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       tags: ["Azure", "AZ-400", "DevSecOps"],
       officialSyllabusUrl: "https://learn.microsoft.com/certifications/devops-engineer/",
     }),
+
     createCourse({
       title: "AIOps Engineering",
       slug: "aiops-engineering",
@@ -969,8 +970,8 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       lmsResources: buildLmsResources("AIOps Engineering"),
       faqs: buildFaqs("AIOps Engineering"),
       rating: 4.8,
-      priceValue: 30000,
-      originalPriceValue: 30000,
+      priceValue: 40000,
+      originalPriceValue: 40000,
       highlight: "Operations Intelligence",
       tagLabel: "Cloud Operations AI",
       tagTone: "purple",
@@ -1068,3 +1069,5 @@ export const allCourses = Object.values(coursesByCategory).flat();
 export function getCategoryData(category: string) {
   return courseCategories.find((item) => item.key === category);
 }
+
+

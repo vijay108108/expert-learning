@@ -93,7 +93,7 @@ const bundleDefinitions: BundleDefinition[] = [
     duration: "24 Weeks",
     level: "Beginner to Advanced",
     highlight: "Bundle Offer",
-    priceValue: 90000,
+    priceValue: 79000,
     originalPriceValue: 90000,
     courseSlugs: ["azure-administrator", "azure-devops-engineer", "aiops-engineering"],
   },

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Award, CheckCircle2, Clock3, FolderKanban, GraduationCap } from "lucide-react";
+import { ArrowRight, Award, CheckCircle2, Clock3, FolderKanban, GraduationCap, Layers, Users2 } from "lucide-react";
 import { buildMetadata } from "@/lib/metadata";
 import { TechStackGrid } from "@/components/ui/tech-logo";
 
@@ -87,7 +87,7 @@ const programs: Program[] = [
     level: "Advanced",
     projects: "10-Module AIOps Curriculum",
     certification: "AIOps Capstone Portfolio",
-    price: "₹30,000",
+    price: "\u20B940,000",
     originalPrice: "",
     highlights: [
       "Build observability workflows across Azure Monitor, Log Analytics, and dashboards",
@@ -97,6 +97,44 @@ const programs: Program[] = [
     outcomes: ["AIOps Portfolio", "Incident Automation", "Reliability Ops"],
   },
 ];
+
+const combinedMasterProgram = {
+  title: "Microsoft Cloud & AI DevOps Master Program",
+  href: "/programs/microsoft-cloud-ai-devops-master",
+  enrollHref: "/checkout/microsoft-cloud-ai-devops-master-program",
+  badge: "AZ-104 + AZ-400 + AIOps",
+  tag: "Focused Master Track",
+  tagline: "AZ-104 → AZ-400 → AIOps Engineering",
+  description:
+    "This master program is built around one clear journey: Azure administration, DevOps delivery, and AIOps-led operations. You first learn to run Microsoft Azure environments through AZ-104, then build modern CI/CD and platform workflows through AZ-400, and finally move into AIOps Engineering with observability, incident response, automation and reliability practices.",
+  chips: [
+    "Live Instructor-Led Sessions",
+    "AZ-104 Azure Administrator",
+    "AZ-400 DevOps Engineer",
+    "AIOps Engineering",
+    "Azure Monitor + KQL",
+    "Automation Playbooks",
+    "LMS Access",
+    "Placement Support",
+  ],
+  stats: [
+    { icon: Clock3, label: "24 Weeks" },
+    { icon: Layers, label: "3 Phases" },
+    { icon: FolderKanban, label: "3 Capstones" },
+    { icon: Award, label: "AZ-104 + AZ-400" },
+  ],
+  price: "\u20B979,000",
+  originalPrice: "\u20B990,000",
+  priceLabel: "Bundle offer: join all 3 tracks together and save \u20B911,000",
+  features: [
+    { icon: Clock3, text: "24 Weeks (3 focused phases)" },
+    { icon: GraduationCap, text: "Beginner to Advanced" },
+    { icon: Award, text: "AZ-104 + AZ-400 exam-aligned prep" },
+    { icon: Layers, text: "Azure Admin → DevOps → AIOps journey" },
+    { icon: FolderKanban, text: "3 capstones + guided labs" },
+    { icon: Users2, text: "Live sessions + LMS access for life" },
+  ],
+};
 
 export const metadata = buildMetadata({
   title: "Career Programs | GenZNext Research & Training",
@@ -223,6 +261,110 @@ export default function ProgramsPage() {
               <ProgramCard key={program.slug} program={program} />
             ))}
           </div>
+
+          <div className="mt-10 rounded-[28px] bg-[linear-gradient(160deg,#FFFFFF_0%,#EEF2FF_55%,#F8FAFC_100%)] p-4 sm:p-6">
+            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <span className="inline-flex items-center rounded-full border border-[#DDD6FE] bg-[#F5F0FF] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7C3AED]">
+                  Combined Master Program
+                </span>
+                <p className="mt-2 text-sm font-medium text-[#64748B]">
+                  Want all three tracks in one guided roadmap? This bundle keeps the same premium master-program layout.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(300px,0.6fr)] lg:items-start">
+              <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-8">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FED7AA] bg-[#FFF7ED] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9A3412]">
+                    {combinedMasterProgram.badge}
+                  </span>
+                  <span className="inline-flex items-center rounded-full border-2 border-[#DC2626] bg-[#FEF2F2] px-3 py-1 text-[11px] font-bold text-[#DC2626]">
+                    {combinedMasterProgram.tag}
+                  </span>
+                </div>
+
+                <p className="mt-4 text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">
+                  {combinedMasterProgram.tagline}
+                </p>
+                <h2 className="mt-2 text-3xl font-extrabold leading-[1.15] tracking-[-0.03em] text-[#0F172A] sm:text-4xl lg:text-[40px]">
+                  {combinedMasterProgram.title}
+                </h2>
+                <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#475569]">
+                  {combinedMasterProgram.description}
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {combinedMasterProgram.chips.map((chip) => (
+                    <span
+                      key={chip}
+                      className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-1 text-xs font-semibold text-[#334155]"
+                    >
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {combinedMasterProgram.stats.map(({ icon: Icon, label }) => (
+                    <div key={label} className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
+                      <Icon className="h-4 w-4 shrink-0 text-[#4F46E5]" />
+                      <span className="text-[13px] font-semibold text-[#0F172A]">{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <aside className="rounded-[22px] border border-[#E2E8F0] bg-white p-6 shadow-[0_18px_42px_rgba(15,23,42,0.10)]">
+                <div className="mb-4 flex items-center gap-2 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] px-3 py-2.5">
+                  <span className="relative flex h-2.5 w-2.5 shrink-0">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F97316] opacity-75" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#F97316]" />
+                  </span>
+                  <p className="text-[13px] font-semibold text-[#9A3412]">Only 20 seats per batch — Limited enrollment</p>
+                </div>
+
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">Program Fee</p>
+                <p className="mt-2 text-3xl font-bold tracking-[-0.03em] text-[#111827]">{combinedMasterProgram.price}</p>
+                <p className="mt-0.5 text-sm text-[#94A3B8] line-through">{combinedMasterProgram.originalPrice}</p>
+                <p className="mt-1.5 text-sm font-semibold text-[#16A34A]">{combinedMasterProgram.priceLabel}</p>
+
+                <div className="mt-5 space-y-2 text-sm text-[#475569]">
+                  {combinedMasterProgram.features.map(({ icon: Icon, text }) => (
+                    <p key={text} className="flex items-center gap-2">
+                      <Icon className="h-4 w-4 text-[#4F46E5]" />
+                      {text}
+                    </p>
+                  ))}
+                </div>
+
+                <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-2.5">
+                  <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m10-4H9a2 2 0 00-2 2v0a2 2 0 002 2h6a2 2 0 002-2v0a2 2 0 00-2-2z" />
+                  </svg>
+                  <p className="text-[12px] font-medium leading-5 text-[#3730A3]">1-on-1 support available after every live class session</p>
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  <Link
+                    href={combinedMasterProgram.enrollHref}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
+                  >
+                    Enroll Now <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={combinedMasterProgram.href}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+                  >
+                    View Master Program
+                  </Link>
+                </div>
+
+                <p className="mt-3 text-center text-[11px] text-[#94A3B8]">No-cost EMI · Batch starts every month</p>
+              </aside>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -246,3 +388,5 @@ export default function ProgramsPage() {
     </main>
   );
 }
+
+

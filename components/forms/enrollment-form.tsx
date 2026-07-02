@@ -347,14 +347,17 @@ export function EnrollmentForm({
             required
           />
         </div>
-        <div className="mt-4">
+        <div className="mt-4 rounded-[18px] border border-[#BFDBFE] bg-[linear-gradient(135deg,rgba(239,246,255,0.95),rgba(248,250,252,0.92))] p-4 shadow-[0_10px_24px_rgba(37,99,235,0.08)]">
           <label className="form-label" htmlFor="enroll-coupon">
             Coupon Code
           </label>
+          <p className="mb-3 text-[12px] font-medium text-[#2563EB]">
+            Have a coupon? Apply it here before payment.
+          </p>
           <div className="flex gap-3">
             <input
               id="enroll-coupon"
-              className="form-field"
+              className="form-field border-[#93C5FD] bg-white shadow-[0_6px_16px_rgba(37,99,235,0.08)]"
               placeholder="Enter coupon code"
               value={couponCode}
               onChange={(event) => {
@@ -374,7 +377,7 @@ export function EnrollmentForm({
               type="button"
               onClick={handleApplyCoupon}
               disabled={couponPending || pending || isPaying}
-              className="inline-flex shrink-0 items-center justify-center rounded-lg border border-brand-blue/15 px-4 py-[13px] text-sm font-semibold text-brand-blue transition hover:bg-brand-blue/5 disabled:opacity-70"
+              className="inline-flex shrink-0 items-center justify-center rounded-lg border border-[#93C5FD] bg-white px-4 py-[13px] text-sm font-semibold text-brand-blue shadow-[0_6px_16px_rgba(37,99,235,0.08)] transition hover:bg-[#EFF6FF] disabled:opacity-70"
             >
               {couponPending ? "Applying..." : "Apply"}
             </button>

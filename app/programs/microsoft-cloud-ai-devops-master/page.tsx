@@ -44,9 +44,9 @@ const data: ProgramPageData = {
     { icon: FolderKanban, label: "3 Capstones" },
     { icon: Award, label: "AZ-104 + AZ-400" },
   ],
-  price: "₹90,000",
-  originalPrice: "",
-  priceLabel: "AZ-104 ₹20,000 · AZ-400 ₹30,000 · AIOps Engineering ₹40,000",
+  price: "₹79,000",
+  originalPrice: "₹90,000",
+  priceLabel: "Bundle offer: join all 3 tracks together and save ₹11,000",
   enrollSlug: "microsoft-cloud-ai-devops-master-program",
   enrollFeatures: [
     { icon: Clock3, text: "24 Weeks (3 focused phases)" },
@@ -427,8 +427,8 @@ const data: ProgramPageData = {
       a: "It covers Azure Monitor, Application Insights, Log Analytics, KQL, alerting, automation runbooks, Logic Apps and reliability workflows so you can operate cloud platforms intelligently instead of just monitoring them passively.",
     },
     {
-      q: "How is the ₹90,000 fee structured?",
-      a: "The total master program fee is ₹90,000, split as ₹20,000 for AZ-104, ₹30,000 for AZ-400 and ₹40,000 for AIOps Engineering.",
+      q: "How is the fee structured?",
+      a: "The full value of the three tracks is ₹90,000: ₹20,000 for AZ-104, ₹30,000 for AZ-400 and ₹40,000 for AIOps Engineering. The master bundle is offered at ₹79,000.",
     },
     {
       q: "What will I have at the end of the program?",
