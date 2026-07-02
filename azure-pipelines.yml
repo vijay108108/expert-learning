@@ -41,21 +41,19 @@ stages:
       displayName: Deploy on genznext VM
       inputs:
         sshEndpoint: 'genznext-prod-vm-ssh'
-        runOptions: 'commands'
-        commands: |
-          bash -lc '
-            set -e
-            echo "===== DEPLOY START ====="
-            whoami
-            cd /home/Mithilesh23/expert-learning
-            pwd
-            git status
-            git checkout main
-            git pull origin main
-            npm install
-            npm run build
-            pm2 restart genznext
-            pm2 save
-            echo "===== DEPLOY DONE ====="
-          '
+        runOptions: 'inline'
+        inline: |
+          set -e
+          echo "===== DEPLOY START ====="
+          whoami
+          cd /home/Mithilesh23/expert-learning
+          pwd
+          git status
+          git checkout main
+          git pull origin main
+          npm install
+          npm run build
+          pm2 restart genznext
+          pm2 save
+          echo "===== DEPLOY DONE ====="
         readyTimeout: '20000'
