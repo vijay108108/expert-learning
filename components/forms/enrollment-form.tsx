@@ -351,6 +351,9 @@ export function EnrollmentForm({
           <label className="form-label" htmlFor="enroll-coupon">
             Coupon Code
           </label>
+          <p className="mt-1 text-sm text-brand-muted">
+            Have a coupon code? Use <span className="font-bold text-brand-text">GENZNEXT99</span>
+          </p>
           <div className="flex gap-3">
             <input
               id="enroll-coupon"

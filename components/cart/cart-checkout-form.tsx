@@ -638,6 +638,9 @@ export function CartCheckoutForm() {
             <label className="mb-2 block text-[12px] font-medium uppercase tracking-[0.08em] text-[#64748B]">
               Coupon Code
             </label>
+            <p className="mb-2 text-sm text-[#94A3B8]">
+              Have a coupon code? Use <span className="font-bold text-[#F1F5F9]">GENZNEXT99</span>
+            </p>
             <div className="flex gap-3">
               <input
                 value={couponCode}
