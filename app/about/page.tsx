@@ -253,7 +253,7 @@ export default function AboutPage() {
               <p className="mb-5 text-[11px] font-bold uppercase tracking-widest text-[#64748B]">Journey</p>
               <div className="relative space-y-0">
                 {milestones.map((m, i) => (
-                  <div key={m.year} className="flex gap-4">
+                  <div key={`${m.year}-${i}`} className="flex gap-4">
                     {/* Timeline line */}
                     <div className="flex flex-col items-center">
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
