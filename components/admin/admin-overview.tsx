@@ -18,6 +18,7 @@ const quickLinks = [
   { label: "View Users",       href: "/admin/users",        },
   { label: "View Leads",       href: "/admin/leads",        },
   { label: "View Payments",    href: "/admin/payments",     },
+  { label: "Invoices",         href: "/admin/invoices",     },
   { label: "Blog Posts",       href: "/admin/cms/blog",     },
   { label: "LMS Modules",      href: "/admin/lms/modules",  },
 ];

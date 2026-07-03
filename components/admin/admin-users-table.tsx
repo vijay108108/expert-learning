@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Search, RefreshCw, UserPlus, KeyRound, Trash2, X } from "lucide-react";
+import { Download, KeyRound, RefreshCw, Search, Trash2, UserPlus, X } from "lucide-react";
 import { getFirebaseAuth, listUserProfiles, updateUserRole, type AppUserProfile } from "@/lib/firebase";
+import { downloadCsv, formatAdminDate } from "@/lib/admin/reporting";
 
 type User = AppUserProfile & { id: string };
 
@@ -14,7 +16,6 @@ async function getAdminAuthHeader() {
   return { Authorization: `Bearer ${token}` };
 }
 
-/* ── Add User modal ─────────────────────────────────────── */
 function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -136,7 +137,6 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
   );
 }
 
-/* ── Reset Password modal ───────────────────────────────── */
 function ResetPasswordModal({
   user,
   onClose,
@@ -189,9 +189,7 @@ function ResetPasswordModal({
             <X className="h-4 w-4" />
           </button>
         </div>
-        <p className="mt-1 text-[12px] text-[#64748B]">
-          {user.name || user.phone || user.email || user.uid}
-        </p>
+        <p className="mt-1 text-[12px] text-[#64748B]">{user.name || user.phone || user.email || user.uid}</p>
 
         {success ? (
           <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-[13px] text-emerald-300">
@@ -223,11 +221,11 @@ function ResetPasswordModal({
 }
 
 export function AdminUsersTable() {
-  const [users, setUsers]         = useState<User[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [search, setSearch]       = useState("");
-  const [saving, setSaving]       = useState<string | null>(null);
-  const [deleting, setDeleting]   = useState<string | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [saving, setSaving] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [showAddUser, setShowAddUser] = useState(false);
   const [resetTarget, setResetTarget] = useState<User | null>(null);
   const [actionError, setActionError] = useState("");
@@ -237,7 +235,9 @@ export function AdminUsersTable() {
     try {
       const next = await listUserProfiles();
       setUsers(next as User[]);
-    } catch { /* ignore */ } finally {
+    } catch {
+      // ignore
+    } finally {
       setLoading(false);
     }
   }
@@ -255,12 +255,28 @@ export function AdminUsersTable() {
     return !q || (u.name || "").toLowerCase().includes(q) || (u.phone || "").includes(q) || (u.email || "").toLowerCase().includes(q);
   });
 
+  function exportCsv() {
+    downloadCsv(
+      "genznext-users.csv",
+      ["Name", "Phone", "Email", "Role", "Auth Method", "Created At", "User ID"],
+      filtered.map((user) => [
+        user.name || "",
+        user.phone || "",
+        user.email || "",
+        user.role || "student",
+        user.authMethod || "",
+        user.createdAt || "",
+        user.uid || user.id,
+      ]),
+    );
+  }
+
   async function changeRole(uid: string, role: "admin" | "student") {
     setSaving(uid);
     try {
       await updateUserRole(uid, role);
-      setUsers((prev) => prev.map((u) => (u.uid === uid || u.id === uid) ? { ...u, role } : u));
-    } catch { /* ignore */ } finally {
+      setUsers((prev) => prev.map((u) => (u.uid === uid || u.id === uid ? { ...u, role } : u)));
+    } finally {
       setSaving(null);
     }
   }
@@ -291,19 +307,21 @@ export function AdminUsersTable() {
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative min-w-[220px] flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-[#475569]" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, phone or email…"
+            placeholder="Search by name, phone or email..."
             className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
           />
         </div>
         <button onClick={load} className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-[12px] text-[#64748B] transition hover:text-white">
           <RefreshCw className="h-3.5 w-3.5" /> Refresh
+        </button>
+        <button onClick={exportCsv} className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-[12px] text-[#64748B] transition hover:text-white">
+          <Download className="h-3.5 w-3.5" /> Export CSV
         </button>
         <button
           onClick={() => setShowAddUser(true)}
@@ -320,7 +338,6 @@ export function AdminUsersTable() {
         </div>
       ) : null}
 
-      {/* Table */}
       <div className="overflow-hidden rounded-2xl border border-white/8">
         <table className="w-full text-[13px]">
           <thead>
@@ -348,59 +365,61 @@ export function AdminUsersTable() {
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-[#334155]">No users found.</td>
               </tr>
-            ) : filtered.map((user) => {
-              const uid = user.uid || user.id;
-              return (
-                <tr key={user.id} className="border-b border-white/6 bg-[#0D1117] transition hover:bg-white/3">
-                  <td className="px-4 py-3 font-medium text-white">{user.name || "—"}</td>
-                  <td className="px-4 py-3 text-[#64748B]">{user.phone || user.email || user.uid}</td>
-                  <td className="px-4 py-3 text-[#64748B]">{user.authMethod || "—"}</td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={user.role || "student"}
-                      disabled={saving === uid}
-                      onChange={(e) => changeRole(uid, e.target.value as "admin" | "student")}
-                      className={`rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[12px] text-white outline-none transition ${
-                        saving === uid ? "opacity-50" : "hover:border-[#4F46E5]/40"
-                      }`}
-                    >
-                      <option value="student">Student</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </td>
-                  <td className="px-4 py-3 text-[#475569]">
-                    {user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN") : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setResetTarget(user)}
-                        title="Reset password"
-                        className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-[#64748B] transition hover:border-[#4F46E5]/40 hover:text-white"
+            ) : (
+              filtered.map((user) => {
+                const uid = user.uid || user.id;
+                return (
+                  <tr key={user.id} className="border-b border-white/6 bg-[#0D1117] transition hover:bg-white/3">
+                    <td className="px-4 py-3">
+                      <Link href={`/admin/users/${uid}`} className="font-medium text-white hover:text-[#818CF8]">
+                        {user.name || "-"}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-[#64748B]">{user.phone || user.email || user.uid}</td>
+                    <td className="px-4 py-3 text-[#64748B]">{user.authMethod || "-"}</td>
+                    <td className="px-4 py-3">
+                      <select
+                        value={user.role || "student"}
+                        disabled={saving === uid}
+                        onChange={(e) => changeRole(uid, e.target.value as "admin" | "student")}
+                        className={`rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[12px] text-white outline-none transition ${
+                          saving === uid ? "opacity-50" : "hover:border-[#4F46E5]/40"
+                        }`}
                       >
-                        <KeyRound className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => void deleteUser(user)}
-                        disabled={deleting === uid}
-                        title="Delete user"
-                        className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-[#64748B] transition hover:border-rose-500/40 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+                        <option value="student">Student</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </td>
+                    <td className="px-4 py-3 text-[#475569]">{formatAdminDate(user.createdAt)}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setResetTarget(user)}
+                          title="Reset password"
+                          className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-[#64748B] transition hover:border-[#4F46E5]/40 hover:text-white"
+                        >
+                          <KeyRound className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => void deleteUser(user)}
+                          disabled={deleting === uid}
+                          title="Delete user"
+                          className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-[#64748B] transition hover:border-rose-500/40 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
 
       {showAddUser ? <AddUserModal onClose={() => setShowAddUser(false)} onCreated={load} /> : null}
-      {resetTarget ? (
-        <ResetPasswordModal user={resetTarget} onClose={() => setResetTarget(null)} onDone={() => {}} />
-      ) : null}
+      {resetTarget ? <ResetPasswordModal user={resetTarget} onClose={() => setResetTarget(null)} onDone={() => {}} /> : null}
     </div>
   );
 }

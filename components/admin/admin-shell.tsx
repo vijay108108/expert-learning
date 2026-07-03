@@ -6,6 +6,7 @@ import {
   BookOpenCheck,
   ChevronRight,
   CreditCard,
+  FileText,
   GraduationCap,
   LayoutDashboard,
   Layers,
@@ -56,6 +57,7 @@ const nav = [
     items: [
       { label: "Leads",         href: "/admin/leads",        icon: MessageSquare },
       { label: "Payments",      href: "/admin/payments",     icon: CreditCard },
+      { label: "Invoices",      href: "/admin/invoices",     icon: FileText },
     ],
   },
   {
