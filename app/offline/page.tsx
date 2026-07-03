@@ -4,7 +4,7 @@ import Link from "next/link";
 import { WifiOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { RetryButton } from "./RetryButton";
+import { RetryButton } from "./retry-button";
 
 export default function OfflinePage() {
   const router = useRouter();
