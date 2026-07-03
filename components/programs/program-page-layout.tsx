@@ -54,6 +54,9 @@ export type ProgramPageData = {
   originalPrice: string;
   priceLabel: string;
   enrollSlug: string;
+  syllabusHref?: string;
+  syllabusLabel?: string;
+  syllabusExternal?: boolean;
   enrollFeatures: { icon: ElementType; text: string }[];
   roadmap?: string[];
   phases: ProgramPhase[];
@@ -171,6 +174,9 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
 
 export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
   const checkoutHref = `/checkout/${encodeURIComponent(data.enrollSlug)}`;
+  const syllabusHref = data.syllabusHref || "#syllabus";
+  const syllabusLabel = data.syllabusLabel || "Official Syllabus";
+  const syllabusExternal = data.syllabusExternal || false;
 
   return (
     <main className="bg-white">
@@ -249,9 +255,26 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
                 >
                   Enroll Now <ArrowRight className="h-4 w-4" />
                 </Link>
+                {syllabusExternal ? (
+                  <a
+                    href={syllabusHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+                  >
+                    {syllabusLabel}
+                  </a>
+                ) : (
+                  <Link
+                    href={syllabusHref}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+                  >
+                    {syllabusLabel}
+                  </Link>
+                )}
                 <Link
                   href="/contact"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
                 >
                   Talk to Admissions
                 </Link>
@@ -278,7 +301,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         </section>
       )}
 
-      <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
+      <section id="syllabus" className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Full Syllabus</p>

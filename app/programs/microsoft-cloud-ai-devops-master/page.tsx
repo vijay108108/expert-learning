@@ -48,6 +48,9 @@ const data: ProgramPageData = {
   originalPrice: "₹90,000",
   priceLabel: "Bundle offer: join all 3 tracks together and save ₹11,000",
   enrollSlug: "microsoft-cloud-ai-devops-master-program",
+  syllabusHref: "#syllabus",
+  syllabusLabel: "Official Syllabus",
+  syllabusExternal: false,
   enrollFeatures: [
     { icon: Clock3, text: "24 Weeks (3 focused phases)" },
     { icon: GraduationCap, text: "Beginner to Advanced" },

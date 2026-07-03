@@ -2,10 +2,12 @@ import Link from "next/link";
 import { ArrowRight, Award, CheckCircle2, Clock3, FolderKanban, GraduationCap, Layers, Users2 } from "lucide-react";
 import { buildMetadata } from "@/lib/metadata";
 import { TechStackGrid } from "@/components/ui/tech-logo";
+import { allCourses } from "@/data/courses";
 
 type Program = {
   title: string;
   href: string;
+  syllabusHref: string;
   slug: string;
   badge: string;
   badgeColor: string;
@@ -23,10 +25,17 @@ type Program = {
   outcomes: string[];
 };
 
+const officialSyllabusBySlug = Object.fromEntries(
+  allCourses.map((course) => [course.slug, course.officialSyllabusUrl]),
+);
+
 const programs: Program[] = [
   {
     title: "AZ-104 – Microsoft Azure Administrator",
     href: "/checkout/azure-administrator",
+    syllabusHref:
+      officialSyllabusBySlug["azure-administrator"] ||
+      "https://learn.microsoft.com/certifications/azure-administrator/",
     slug: "azure-administrator",
     badge: "Microsoft Azure Admin",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
@@ -51,6 +60,9 @@ const programs: Program[] = [
   {
     title: "AZ-400 – Microsoft DevOps Engineer",
     href: "/checkout/azure-devops-engineer",
+    syllabusHref:
+      officialSyllabusBySlug["azure-devops-engineer"] ||
+      "https://learn.microsoft.com/certifications/devops-engineer/",
     slug: "azure-devops-engineer",
     badge: "Microsoft DevOps",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
@@ -75,6 +87,9 @@ const programs: Program[] = [
   {
     title: "AIOps Engineering",
     href: "/checkout/aiops-engineering",
+    syllabusHref:
+      officialSyllabusBySlug["aiops-engineering"] ||
+      "https://learn.microsoft.com/azure/azure-monitor/",
     slug: "aiops-engineering",
     badge: "Cloud Operations AI",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
@@ -102,6 +117,7 @@ const combinedMasterProgram = {
   title: "Microsoft Cloud & AI DevOps Master Program",
   href: "/programs/microsoft-cloud-ai-devops-master",
   enrollHref: "/checkout/microsoft-cloud-ai-devops-master-program",
+  syllabusHref: "/programs/microsoft-cloud-ai-devops-master#syllabus",
   badge: "AZ-104 + AZ-400 + AIOps",
   tag: "Focused Master Track",
   tagline: "AZ-104 → AZ-400 → AIOps Engineering",
@@ -144,8 +160,7 @@ export const metadata = buildMetadata({
 
 function ProgramCard({ program }: { program: Program }) {
   return (
-    <Link
-      href={program.href}
+    <article
       className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[20px] border bg-white shadow-[0_6px_20px_rgba(15,23,42,0.07)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(79,70,229,0.13)] ${
         program.hot ? "border-[#DDD6FE]" : "border-[#E2E8F0]"
       }`}
@@ -215,13 +230,24 @@ function ProgramCard({ program }: { program: Program }) {
               <p className="text-[17px] font-extrabold !text-[#0F172A]">{program.price}</p>
               <p className="text-[10px] text-[#94A3B8] line-through">{program.originalPrice}</p>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-[12px] bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-2.5 text-[12.5px] font-bold text-white shadow-[0_6px_16px_rgba(79,70,229,0.22)] transition group-hover:scale-[1.02] group-hover:shadow-[0_12px_28px_rgba(79,70,229,0.32)]">
+            <Link
+              href={program.href}
+              className="inline-flex items-center gap-1.5 rounded-[12px] bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-2.5 text-[12.5px] font-bold text-white shadow-[0_6px_16px_rgba(79,70,229,0.22)] transition group-hover:scale-[1.02] group-hover:shadow-[0_12px_28px_rgba(79,70,229,0.32)]"
+            >
               Enroll Now <ArrowRight className="h-3.5 w-3.5" />
-            </span>
+            </Link>
           </div>
+          <a
+            href={program.syllabusHref}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex w-full items-center justify-center rounded-[12px] border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-[12.5px] font-semibold text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+          >
+            Official Syllabus
+          </a>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }
 
@@ -352,6 +378,12 @@ export default function ProgramsPage() {
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
                   >
                     Enroll Now <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={combinedMasterProgram.syllabusHref}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-2.5 text-sm font-semibold text-[#4338CA] transition hover:border-[#A5B4FC] hover:bg-[#E0E7FF]"
+                  >
+                    Official Syllabus
                   </Link>
                   <Link
                     href={combinedMasterProgram.href}
