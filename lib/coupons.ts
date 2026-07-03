@@ -1,5 +1,12 @@
 export const GLOBAL_COUPON_CODE = "GENZNEXT99";
 export const GLOBAL_COUPON_DISCOUNT_PERCENT = 99;
+export const GENZENEXT9_COUPON_CODE = "GENZENEXT9";
+export const GENZENEXT9_COUPON_DISCOUNT_PERCENT = 99.9;
+
+const couponDiscountPercentByCode = {
+  [GLOBAL_COUPON_CODE]: GLOBAL_COUPON_DISCOUNT_PERCENT,
+  [GENZENEXT9_COUPON_CODE]: GENZENEXT9_COUPON_DISCOUNT_PERCENT,
+} as const;
 
 export type CouponPricing = {
   enteredCouponCode: string;
@@ -16,19 +23,24 @@ export function normalizeCouponCode(value?: string | null) {
 }
 
 export function isValidCouponCode(value?: string | null) {
-  return normalizeCouponCode(value) === GLOBAL_COUPON_CODE;
+  return Boolean(getCouponDiscountPercent(value));
+}
+
+function getCouponDiscountPercent(value?: string | null) {
+  const normalizedCouponCode = normalizeCouponCode(value);
+  return couponDiscountPercentByCode[normalizedCouponCode as keyof typeof couponDiscountPercentByCode] || 0;
 }
 
 export function getCouponPricing(subtotalPaise: number, couponCode?: string | null): CouponPricing {
   const enteredCouponCode = normalizeCouponCode(couponCode);
-  const isApplied = isValidCouponCode(enteredCouponCode);
-  const discountPercent = isApplied ? GLOBAL_COUPON_DISCOUNT_PERCENT : 0;
+  const discountPercent = getCouponDiscountPercent(enteredCouponCode);
+  const isApplied = discountPercent > 0;
   const discountPaise = isApplied ? Math.round((subtotalPaise * discountPercent) / 100) : 0;
   const finalAmountPaise = Math.max(subtotalPaise - discountPaise, 0);
 
   return {
     enteredCouponCode,
-    appliedCouponCode: isApplied ? GLOBAL_COUPON_CODE : "",
+    appliedCouponCode: isApplied ? enteredCouponCode : "",
     discountPercent,
     subtotalPaise,
     discountPaise,

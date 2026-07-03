@@ -186,6 +186,34 @@ export function CartCheckoutForm() {
   );
   const showGstInvoiceNote = gstInvoiceEnabled && Boolean(form.companyName.trim());
 
+  async function syncVerifiedPurchase(invoice: StoredOrderSuccess, profilePhone: string, mustAwaitEnrollmentSync: boolean) {
+    try {
+      await import("@/lib/firebase").then(({ upsertUserProfileFromPurchase }) =>
+        upsertUserProfileFromPurchase(user!, {
+          name: invoice.customer.name,
+          email: invoice.customer.email,
+          phone: profilePhone || invoice.customer.phone,
+          createdAt: invoice.paidAtIso,
+        }),
+      );
+    } catch (error) {
+      logFirestoreIssue("[Checkout] Unable to upsert user profile after payment", error);
+    }
+
+    if (mustAwaitEnrollmentSync) {
+      try {
+        await saveInvoiceEnrollments(user!, invoice);
+      } catch (error) {
+        logFirestoreIssue("[Checkout] Enrollment recovery sync failed after verified payment", error);
+      }
+      return;
+    }
+
+    void saveInvoiceEnrollments(user!, invoice).catch((error) => {
+      logFirestoreIssue("[Checkout] Client enrollment confirmation sync failed after verified payment", error);
+    });
+  }
+
   useEffect(() => {
     if (!user) {
       return;
@@ -435,20 +463,17 @@ export function CartCheckoutForm() {
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             syncMyLearningFromInvoice(verifyPayload.invoice);
 
+            await syncVerifiedPurchase(
+              verifyPayload.invoice,
+              profilePhone,
+              Boolean(verifyPayload.clientSyncRequired),
+            );
+
             clearCart();
             window.localStorage.removeItem("cart");
             window.localStorage.setItem("cart", JSON.stringify([]));
             setIsPaying(false);
             router.replace(dashboardPath);
-
-            void saveInvoiceEnrollments(user, verifyPayload.invoice).catch((error) => {
-              logFirestoreIssue(
-                verifyPayload.clientSyncRequired
-                  ? "[Checkout] Client enrollment recovery failed after verified payment"
-                  : "[Checkout] Client enrollment confirmation sync failed after verified payment",
-                error,
-              );
-            });
 
             void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
               logFirestoreIssue("[Checkout] Unable to save phone number after payment", error);

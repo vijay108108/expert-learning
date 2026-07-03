@@ -5,6 +5,7 @@ import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { logFirestoreIssue } from "@/lib/firebase";
 import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
+import { upsertUserProfileAdminFromPayment } from "@/lib/firebase/user-profiles-admin";
 import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
 import { verifyFirebaseBearerToken } from "@/lib/server/firebase-auth";
 import { captureServerEvent } from "@/lib/services/analytics";
@@ -218,6 +219,14 @@ export async function POST(request: Request) {
           });
         }),
       );
+
+      await upsertUserProfileAdminFromPayment({
+        uid: trustedUserId,
+        name: trustedName,
+        email: trustedEmail,
+        phone: trustedPhone,
+        createdAt: paidAtIso,
+      });
     } catch (error) {
       clientSyncRequired = true;
       logFirestoreIssue("[Payment Verify] Server enrollment save failed after verified payment; client sync required", error);

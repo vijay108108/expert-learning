@@ -17,6 +17,32 @@ export type AppUserProfile = {
   role?: "admin" | "student";
 };
 
+function inferAuthMethod(user: User, existing?: AppUserProfile | null): AppUserProfile["authMethod"] {
+  if (existing?.authMethod) {
+    return existing.authMethod;
+  }
+
+  const providerIds = user.providerData.map((item) => item.providerId);
+
+  if (providerIds.includes("google.com")) {
+    return "google";
+  }
+
+  if (providerIds.includes("password")) {
+    return "password";
+  }
+
+  if (providerIds.includes("phone")) {
+    return "otp";
+  }
+
+  if (user.phoneNumber && !user.email) {
+    return "otp";
+  }
+
+  return user.email ? "password" : "otp";
+}
+
 const phoneSignupClaimsCollection = "phone-signup-claims";
 
 type PhoneSignupClaim = {
@@ -265,11 +291,49 @@ export async function ensurePhoneUserProfile(user: User, enteredName?: string) {
     name: enteredName?.trim() || user.displayName?.trim() || "",
     phone: user.phoneNumber || "",
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     authMethod: "otp",
+    role: "student",
   };
 
   await setDoc(userRef, profile);
   return profile;
+}
+
+export async function upsertUserProfileFromPurchase(
+  user: User,
+  input: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    createdAt?: string;
+  },
+) {
+  const db = getFirebaseDb();
+
+  if (!db) {
+    return null;
+  }
+
+  const userRef = doc(db, "users", user.uid);
+  const snapshot = await getDoc(userRef);
+  const existing = snapshot.exists() ? (snapshot.data() as AppUserProfile) : null;
+  const timestamp = new Date().toISOString();
+
+  const mergedProfile: AppUserProfile = {
+    uid: user.uid,
+    name: input.name?.trim() || user.displayName?.trim() || existing?.name || "",
+    email: input.email?.trim() || user.email?.trim() || existing?.email || "",
+    photo: user.photoURL || existing?.photo || "",
+    phone: input.phone?.trim() || user.phoneNumber?.trim() || existing?.phone || "",
+    createdAt: existing?.createdAt || input.createdAt || timestamp,
+    updatedAt: timestamp,
+    authMethod: inferAuthMethod(user, existing),
+    role: existing?.role || "student",
+  };
+
+  await setDoc(userRef, mergedProfile, { merge: true });
+  return mergedProfile;
 }
 
 export async function saveUserWhatsappNumber(uid: string, phone: string) {
@@ -288,7 +352,9 @@ export async function saveUserWhatsappNumber(uid: string, phone: string) {
       {
         uid,
         phone,
+        createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        role: "student",
       } satisfies Partial<AppUserProfile>,
       { merge: true },
     );

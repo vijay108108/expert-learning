@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Download, KeyRound, RefreshCw, Search, Trash2, UserPlus, X } from "lucide-react";
-import { getFirebaseAuth, listUserProfiles, updateUserRole, type AppUserProfile } from "@/lib/firebase";
+import { getFirebaseAuth, listAllEnrollments, listUserProfiles, updateUserRole, type AppUserProfile, type FirestoreEnrollment } from "@/lib/firebase";
 import { downloadCsv, formatAdminDate } from "@/lib/admin/reporting";
 
-type User = AppUserProfile & { id: string };
+type User = AppUserProfile & { id: string; totalPaid?: number; lastPurchaseAt?: string };
+type Enrollment = FirestoreEnrollment & { id: string };
 
 async function getAdminAuthHeader() {
   const token = await getFirebaseAuth()?.currentUser?.getIdToken();
@@ -233,8 +234,36 @@ export function AdminUsersTable() {
   async function load() {
     setLoading(true);
     try {
-      const next = await listUserProfiles();
-      setUsers(next as User[]);
+      const [nextUsers, nextEnrollments] = await Promise.all([listUserProfiles(), listAllEnrollments()]);
+      const enrollments = nextEnrollments as Enrollment[];
+      const enrollmentsByUser = new Map<string, Enrollment[]>();
+
+      for (const enrollment of enrollments) {
+        const current = enrollmentsByUser.get(enrollment.userId) || [];
+        current.push(enrollment);
+        enrollmentsByUser.set(enrollment.userId, current);
+      }
+
+      const mergedUsers = (nextUsers as User[]).map((user) => {
+        const userId = user.uid || user.id;
+        const linkedEnrollments = (enrollmentsByUser.get(userId) || []).sort(
+          (left, right) => new Date(right.enrolledAt).getTime() - new Date(left.enrolledAt).getTime(),
+        );
+        const latestEnrollment = linkedEnrollments[0];
+        const earliestEnrollment = linkedEnrollments.at(-1);
+
+        return {
+          ...user,
+          name: user.name || latestEnrollment?.userName || "",
+          phone: user.phone || latestEnrollment?.userPhone || "",
+          email: user.email || latestEnrollment?.userEmail || "",
+          createdAt: user.createdAt || earliestEnrollment?.enrolledAt || "",
+          totalPaid: linkedEnrollments.reduce((sum, item) => sum + (item.amountPaid || 0), 0),
+          lastPurchaseAt: latestEnrollment?.enrolledAt || "",
+        } satisfies User;
+      });
+
+      setUsers(mergedUsers);
     } catch {
       // ignore
     } finally {

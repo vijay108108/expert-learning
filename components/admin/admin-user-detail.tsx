@@ -18,12 +18,33 @@ export function AdminUserDetail({ uid }: { uid: string }) {
     setLoading(true);
     try {
       const [users, allEnrollments] = await Promise.all([listUserProfiles(), listAllEnrollments()]);
-      const matchedUser = (users as UserRecord[]).find((item) => (item.uid || item.id) === uid) || null;
       const userEnrollments = (allEnrollments as EnrollmentRecord[])
         .filter((item) => item.userId === uid)
         .sort((left, right) => new Date(right.enrolledAt).getTime() - new Date(left.enrolledAt).getTime());
+      const matchedUser = (users as UserRecord[]).find((item) => (item.uid || item.id) === uid) || null;
+      const fallbackUser = userEnrollments[0]
+        ? {
+            id: uid,
+            uid,
+            name: userEnrollments[0].userName || "",
+            phone: userEnrollments[0].userPhone || "",
+            email: userEnrollments[0].userEmail || "",
+            createdAt: userEnrollments.at(-1)?.enrolledAt || userEnrollments[0].enrolledAt || "",
+            authMethod: "otp" as const,
+            role: "student" as const,
+          }
+        : null;
+      const mergedUser = matchedUser
+        ? {
+            ...matchedUser,
+            name: matchedUser.name || fallbackUser?.name || "",
+            phone: matchedUser.phone || fallbackUser?.phone || "",
+            email: matchedUser.email || fallbackUser?.email || "",
+            createdAt: matchedUser.createdAt || fallbackUser?.createdAt || "",
+          }
+        : fallbackUser;
 
-      setUser(matchedUser);
+      setUser(mergedUser);
       setEnrollments(userEnrollments);
     } finally {
       setLoading(false);
