@@ -17,6 +17,20 @@ export function isLocalPhoneAuthHost() {
   return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
 
+function isIpAddressHost(hostname: string) {
+  if (!hostname) {
+    return false;
+  }
+
+  // IPv4
+  if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname)) {
+    return true;
+  }
+
+  // Basic IPv6/loopback detection for bracketless browser hostnames.
+  return hostname === "::1" || hostname.includes(":");
+}
+
 export function isPhoneAuthTestingEnabled() {
   return env.nextPublicFirebasePhoneAuthTestMode;
 }
@@ -24,6 +38,32 @@ export function isPhoneAuthTestingEnabled() {
 export function preparePhoneAuth(auth: Auth) {
   auth.settings.appVerificationDisabledForTesting =
     isLocalPhoneAuthHost() && isPhoneAuthTestingEnabled();
+}
+
+export function getPhoneAuthEnvironmentError() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const { hostname, protocol } = window.location;
+
+  if (isLocalPhoneAuthHost()) {
+    if (!isPhoneAuthTestingEnabled()) {
+      return "Real Firebase phone OTP is not supported on localhost. Use Google sign-in, deploy to your real domain, or enable Firebase test phone auth for local development.";
+    }
+
+    return null;
+  }
+
+  if (isIpAddressHost(hostname)) {
+    return `Real Firebase phone OTP should be opened on your real website domain, not the raw server IP (${hostname}). Open the site on https://genznext.com or another Firebase-authorized domain.`;
+  }
+
+  if (protocol !== "https:" || !window.isSecureContext) {
+    return "Real Firebase phone OTP requires a secure HTTPS website domain. Open the site on its real HTTPS domain and try again.";
+  }
+
+  return null;
 }
 
 const retryablePhoneVerificationErrors = new Set([

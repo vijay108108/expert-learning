@@ -36,10 +36,10 @@ import {
   getFirebaseAuthErrorMessage,
   getFirebaseDb,
   getRecaptchaVerifier,
+  getPhoneAuthEnvironmentError,
   getUserProfile,
   isFirebaseConfigured,
   isLocalPhoneAuthHost,
-  isPhoneAuthTestingEnabled,
   normalizePhoneForAuth,
   preparePhoneAuth,
   recaptchaContainerId,
@@ -569,10 +569,9 @@ export function PhoneAuthFlow({
           throw new Error("Firebase auth is not available.");
         }
 
-        if (isLocalPhoneAuthHost() && !isPhoneAuthTestingEnabled()) {
-          setStepError(
-            "Real Firebase phone OTP is not supported on localhost. Use Google sign-in, deploy to a real domain, or enable Firebase test phone auth for local development.",
-          );
+        const environmentError = getPhoneAuthEnvironmentError();
+        if (environmentError) {
+          setStepError(environmentError);
           return;
         }
 
