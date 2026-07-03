@@ -56,7 +56,14 @@ export function getPhoneAuthEnvironmentError() {
   }
 
   if (isIpAddressHost(hostname)) {
-    return `Real Firebase phone OTP should be opened on your real website domain, not the raw server IP (${hostname}). Open the site on https://genznext.com or another Firebase-authorized domain.`;
+    let configuredOrigin = env.nextPublicSiteUrl;
+    try {
+      configuredOrigin = new URL(env.nextPublicSiteUrl).origin;
+    } catch {
+      // Keep configured URL as-is if parsing fails.
+    }
+
+    return `Real Firebase phone OTP should be opened on your real website domain, not the raw server IP (${hostname}). Open the site on ${configuredOrigin} or another Firebase-authorized domain.`;
   }
 
   if (protocol !== "https:" || !window.isSecureContext) {

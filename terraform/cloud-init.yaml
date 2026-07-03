@@ -30,6 +30,7 @@ write_files:
       REPO_URL="${repository_url}"
       APP_BRANCH="${app_branch}"
       APP_PORT="${application_port}"
+      DOMAIN_NAMES="${join(" ", domain_names)}"
       ENV_DIR="/etc/expert-learning"
       ENV_FILE="$ENV_DIR/app.env"
 
@@ -111,7 +112,7 @@ write_files:
       server {
           listen 80 default_server;
           listen [::]:80 default_server;
-          server_name _;
+          server_name $DOMAIN_NAMES;
 
           client_max_body_size 25m;
 

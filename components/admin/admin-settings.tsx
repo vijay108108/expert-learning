@@ -28,7 +28,7 @@ const envLinks = [
 const adminChecklist = [
   "ADMIN_EMAILS env var set in .env.local",
   "Firebase Auth — Phone enabled",
-  "Firebase Auth — localhost in authorized domains",
+  "Firebase Auth — production domain and localhost added in authorized domains",
   "NEXT_PUBLIC_FIREBASE_PHONE_AUTH_TEST_MODE=false for real OTP",
   "Razorpay webhook secret set",
   "Firestore security rules deployed",

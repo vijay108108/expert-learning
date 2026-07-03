@@ -12,6 +12,7 @@ admin_username         = "azureuser"
 admin_ssh_public_key   = "ssh-rsa REPLACE_WITH_PUBLIC_KEY_ONLY"
 repository_url         = "https://github.com/vijay108108/expert-learning.git"
 application_port       = 3000
+domain_names           = ["expertlearning.in", "www.expertlearning.in"]
 vm_size                = "Standard_D2s_v3"
 
 common_tags = {

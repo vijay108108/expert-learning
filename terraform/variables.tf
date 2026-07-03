@@ -73,6 +73,12 @@ variable "application_port" {
   default     = 3000
 }
 
+variable "domain_names" {
+  description = "Domain names served by Nginx for Expert Learning."
+  type        = list(string)
+  default     = ["expertlearning.in", "www.expertlearning.in"]
+}
+
 variable "vm_size" {
   description = "Azure VM size. Set this to the current VM size before import to prevent drift."
   type        = string

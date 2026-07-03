@@ -36,6 +36,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     repository_url   = var.repository_url
     app_branch       = each.value.deployment_branch
     application_port = var.application_port
+    domain_names     = var.domain_names
   }))
 
   lifecycle {
