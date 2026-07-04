@@ -1,4 +1,4 @@
-import { getAdminDb } from "./admin";
+import { getAdminAuth, getAdminDb } from "./admin";
 import { getPhoneLookupCandidates, normalizePhoneForAuth } from "./phone-utils";
 
 /**
@@ -8,10 +8,49 @@ import { getPhoneLookupCandidates, normalizePhoneForAuth } from "./phone-utils";
  */
 export async function checkSignupPhoneExists(phone: string) {
   const db = getAdminDb();
+  const auth = getAdminAuth();
   const normalizedPhone = normalizePhoneForAuth(phone);
+  const normalizedPhoneWithPlus = normalizedPhone ? `+${normalizedPhone}` : "";
+  const fakeEmail = normalizedPhone ? `${normalizedPhone}@genznext.app` : "";
+
+  if (!db && !auth) {
+    return { exists: false, source: "unavailable" as const, normalizedPhone };
+  }
+
+  if (auth && normalizedPhoneWithPlus) {
+    try {
+      await auth.getUserByPhoneNumber(normalizedPhoneWithPlus);
+      return {
+        exists: true,
+        source: "auth-phone" as const,
+        normalizedPhone,
+      };
+    } catch (error) {
+      const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
+      if (code !== "auth/user-not-found") {
+        throw error;
+      }
+    }
+  }
+
+  if (auth && fakeEmail) {
+    try {
+      await auth.getUserByEmail(fakeEmail);
+      return {
+        exists: true,
+        source: "auth-email" as const,
+        normalizedPhone,
+      };
+    } catch (error) {
+      const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
+      if (code !== "auth/user-not-found") {
+        throw error;
+      }
+    }
+  }
 
   if (!db) {
-    return { exists: false, source: "unavailable" as const, normalizedPhone };
+    return { exists: false, source: "auth-only" as const, normalizedPhone };
   }
 
   const candidates = getPhoneLookupCandidates(phone);

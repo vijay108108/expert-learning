@@ -31,6 +31,7 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import { buttonLinkClasses } from "@/components/ui/button-link";
 import { useAuth } from "@/hooks/use-auth";
 import {
+  type AppUserProfile,
   clearRecaptcha,
   getFirebaseAuth,
   getFirebaseAuthErrorMessage,
@@ -115,6 +116,18 @@ function getLegacyPhoneAuthCandidates(phone: string) {
 function getFakeEmail(rawPhone: string) {
   const normalizedPhone = normalizePhoneForAuth(rawPhone);
   return `${normalizedPhone}@genznext.app`;
+}
+
+function isPhonePasswordAccount(user: User, phone: string, existingProfile?: AppUserProfile | null) {
+  if (existingProfile?.authMethod === "password") {
+    return true;
+  }
+
+  if (user.providerData.some((provider) => provider.providerId === "password")) {
+    return true;
+  }
+
+  return (user.email || "").trim().toLowerCase() === getFakeEmail(phone).toLowerCase();
 }
 
 function getErrorCode(error: unknown): string {
@@ -1024,32 +1037,26 @@ export function PhoneAuthFlow({
          auth/credential-already-in-use if the email is already registered. */
       const verified = await confirmationResult.confirm(otpCode);
       const verifiedPhone = normalizePhoneForAuth(verified.user.phoneNumber || formattedPhone);
+      const existingProfile = await getUserProfile(verified.user.uid).catch(() => null);
 
       // Strong duplicate guard: if this phone-auth UID already has a password profile,
       // treat this as an existing account and route the user to login.
-      try {
-        const existingProfile = await getUserProfile(verified.user.uid);
-        if (existingProfile?.authMethod === "password") {
-          try { await signOut(auth); } catch { /* ignore */ }
-          clearRecaptcha(recaptchaHostRef.current);
-          recaptchaVerifierRef.current = null;
-          setSignupStep("form");
-          setStep("phone");
-          resetOtpInputs();
-          confirmationResultRef.current = null;
-          setFeedback("An account already exists with this number. Please log in instead.");
-          setShowSignupGoToLogin(true);
-          return;
-        }
-      } catch {
-        // Best-effort profile check; continue with additional duplicate checks below.
+      if (isPhonePasswordAccount(verified.user, verifiedPhone, existingProfile)) {
+        try { await signOut(auth); } catch { /* ignore */ }
+        clearRecaptcha(recaptchaHostRef.current);
+        recaptchaVerifierRef.current = null;
+        setSignupStep("form");
+        setStep("phone");
+        resetOtpInputs();
+        confirmationResultRef.current = null;
+        setFeedback("An account already exists with this number. Please log in instead.");
+        setShowSignupGoToLogin(true);
+        return;
       }
 
       // Strongest duplicate check: if the Firebase user already has a password
       // provider linked, this phone number was used to sign up before.
-      const alreadyHasPassword = verified.user.providerData.some(
-        (p) => p.providerId === "password",
-      );
+      const alreadyHasPassword = isPhonePasswordAccount(verified.user, verifiedPhone, existingProfile);
       if (alreadyHasPassword) {
         try { await signOut(auth); } catch { /* ignore */ }
         clearRecaptcha(recaptchaHostRef.current);
@@ -1235,7 +1242,9 @@ export function PhoneAuthFlow({
 
     try {
       const result = await confirmationResult.confirm(otpCode);
-      const hasPasswordProvider = result.user.providerData.some((provider) => provider.providerId === "password");
+      const normalizedVerifiedPhone = normalizePhoneForAuth(result.user.phoneNumber || phone);
+      const existingProfile = await getUserProfile(result.user.uid).catch(() => null);
+      const hasPasswordProvider = isPhonePasswordAccount(result.user, normalizedVerifiedPhone, existingProfile);
       if (!hasPasswordProvider) {
         /* This phone number has no password credential on it, which means
            confirming the OTP either created a brand-new disconnected
@@ -1252,7 +1261,6 @@ export function PhoneAuthFlow({
         setOtpError(
           "This number isn't set up for password login. If you signed up with Google, use \"Continue with Google\" instead, or contact support.",
         );
-        setForgotPasswordStep("phone");
         setResetUser(null);
         return;
       }
@@ -1273,7 +1281,9 @@ export function PhoneAuthFlow({
   }
 
   async function handleForgotPasswordReset() {
-    if (!resetUser) {
+    const activeResetUser = resetUser || getFirebaseAuth()?.currentUser || null;
+
+    if (!activeResetUser) {
       setFeedback("Verify OTP before resetting your password.");
       return;
     }
@@ -1309,12 +1319,12 @@ export function PhoneAuthFlow({
     clearAllFeedback();
 
     try {
-      await updatePassword(resetUser, resetPasswordValue);
+      await updatePassword(activeResetUser, resetPasswordValue);
 
       const db = getFirebaseDb();
       if (db) {
         await setDoc(
-          doc(db, "users", resetUser.uid),
+          doc(db, "users", activeResetUser.uid),
           {
             passwordUpdatedAt: new Date().toISOString(),
           },
@@ -1332,7 +1342,7 @@ export function PhoneAuthFlow({
         }
       }
 
-      const latestPhone = normalizePhoneForAuth(resetUser.phoneNumber || phone);
+      const latestPhone = normalizePhoneForAuth(activeResetUser.phoneNumber || phone);
       setPhone(latestPhone);
       setLoginPassword("");
       clearResetState();

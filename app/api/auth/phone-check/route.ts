@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
+import { env } from "@/lib/env";
 import { normalizePhoneForAuth } from "@/lib/firebase/phone-utils";
 import { checkSignupPhoneExists } from "@/lib/firebase/server";
 
@@ -30,6 +31,20 @@ function getClientIp(request: Request) {
 function getLookupBucketKey(request: Request, phone: string) {
   const normalizedPhone = normalizePhoneForAuth(phone) || phone.trim();
   return crypto.createHash("sha256").update(`${getClientIp(request)}:${normalizedPhone}`).digest("hex");
+}
+
+function isLocalhostRequest(request: Request) {
+  const candidates = [
+    request.headers.get("origin"),
+    request.headers.get("referer"),
+    request.headers.get("host"),
+    request.headers.get("x-forwarded-host"),
+  ].filter(Boolean) as string[];
+
+  return candidates.some((value) =>
+    value.includes("localhost") ||
+    value.includes("127.0.0.1"),
+  );
 }
 
 function takeLookupToken(bucketKey: string) {
@@ -84,6 +99,23 @@ export async function POST(request: Request) {
     }
 
     const result = await checkSignupPhoneExists(phone);
+
+    if (result.source === "unavailable") {
+      if (env.nextPublicFirebasePhoneAuthTestMode && isLocalhostRequest(request)) {
+        return jsonNoStore({
+          success: true,
+          canProceed: true,
+        });
+      }
+
+      return jsonNoStore(
+        {
+          success: false,
+          message: "Phone verification is temporarily unavailable. Please try again in a moment.",
+        },
+        503,
+      );
+    }
 
     return jsonNoStore({
       success: true,
