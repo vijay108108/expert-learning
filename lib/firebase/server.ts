@@ -5,6 +5,7 @@ export type SignupPhoneLookupResult = {
   exists: boolean;
   normalizedPhone: string;
   passwordEnabled: boolean;
+  uid?: string;
   source:
     | "unavailable"
     | "auth-phone"
@@ -38,6 +39,7 @@ export async function checkSignupPhoneExists(phone: string) {
         source: "auth-phone" as const,
         normalizedPhone,
         passwordEnabled: user.providerData.some((provider) => provider.providerId === "password"),
+        uid: user.uid,
       };
     } catch (error) {
       const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
@@ -49,12 +51,13 @@ export async function checkSignupPhoneExists(phone: string) {
 
   if (auth && fakeEmail) {
     try {
-      await auth.getUserByEmail(fakeEmail);
+      const user = await auth.getUserByEmail(fakeEmail);
       return {
         exists: true,
         source: "auth-email" as const,
         normalizedPhone,
         passwordEnabled: true,
+        uid: user.uid,
       };
     } catch (error) {
       const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
@@ -79,6 +82,7 @@ export async function checkSignupPhoneExists(phone: string) {
         source: "phone-signup-claims" as const,
         normalizedPhone,
         passwordEnabled: true,
+        uid: claimSnapshot.id,
       };
     }
   }
@@ -96,6 +100,7 @@ export async function checkSignupPhoneExists(phone: string) {
         source: "phone-signup-claims" as const,
         normalizedPhone,
         passwordEnabled: true,
+        uid: legacyClaimSnapshot.docs[0]?.id,
       };
     }
   }
@@ -117,5 +122,6 @@ export async function checkSignupPhoneExists(phone: string) {
         source: "users" as const,
         normalizedPhone,
         passwordEnabled: userSnapshot.docs.some((doc) => doc.data().authMethod === "password"),
+        uid: userSnapshot.docs[0]?.id,
       };
 }

@@ -873,6 +873,11 @@ export function PhoneAuthFlow({
         return;
       }
 
+      if (!phoneAccount.passwordEnabled) {
+        setFeedback("Password login is not set up for this phone number. Use Forgot Password to create one.");
+        return;
+      }
+
       const normalizedLoginPhone = normalizePhoneForAuth(phone);
       const candidates = getLegacyPhoneAuthCandidates(normalizedLoginPhone)
         .map((c) => `${c}@genznext.app`);
@@ -1219,11 +1224,6 @@ export function PhoneAuthFlow({
         return;
       }
 
-      if (!phoneAccount.passwordEnabled) {
-        setFeedback("This phone number is not set up for password login. Please log in using your original method.");
-        return;
-      }
-
       const normalizedForgotPhone = normalizePhoneForAuth(phone);
       const primaryEmail = `${normalizedForgotPhone}@genznext.app`;
       setForgotPasswordEmail(primaryEmail);
@@ -1275,6 +1275,14 @@ export function PhoneAuthFlow({
 
     try {
       const result = await confirmationResult.confirm(otpCode);
+      if (forgotPasswordStep === "otp") {
+        setResetUser(result.user);
+        setForgotPasswordStep("reset");
+        setStep("phone");
+        resetOtpInputs();
+        setSuccessMessage("OTP verified. Set your new password.");
+        return;
+      }
       const normalizedVerifiedPhone = normalizePhoneForAuth(result.user.phoneNumber || phone);
       const existingProfile = await getUserProfile(result.user.uid).catch(() => null);
       const hasPasswordProvider = isPhonePasswordAccount(result.user, normalizedVerifiedPhone, existingProfile);
@@ -1352,14 +1360,30 @@ export function PhoneAuthFlow({
     clearAllFeedback();
 
     try {
-      await updatePassword(activeResetUser, resetPasswordValue);
+      const normalizedResetPhone = normalizePhoneForAuth(activeResetUser.phoneNumber || phone);
+      const existingProfile = await getUserProfile(activeResetUser.uid).catch(() => null);
+      const passwordEnabled = isPhonePasswordAccount(activeResetUser, normalizedResetPhone, existingProfile);
+
+      if (passwordEnabled) {
+        await updatePassword(activeResetUser, resetPasswordValue);
+      } else {
+        const resetEmail = getFakeEmail(normalizedResetPhone);
+        const credential = EmailAuthProvider.credential(resetEmail, resetPasswordValue);
+        await linkWithCredential(activeResetUser, credential);
+      }
 
       const db = getFirebaseDb();
       if (db) {
         await setDoc(
           doc(db, "users", activeResetUser.uid),
           {
+            uid: activeResetUser.uid,
+            phone: normalizedResetPhone,
+            authMethod: "password",
+            createdAt: existingProfile?.createdAt || new Date().toISOString(),
             passwordUpdatedAt: new Date().toISOString(),
+            passwordEnabled: true,
+            updatedAt: new Date().toISOString(),
           },
           { merge: true },
         );
@@ -1384,7 +1408,7 @@ export function PhoneAuthFlow({
       setActiveTab("password-login");
       setFeedback(null);
       setOtpError(null);
-      setSuccessMessage("Password reset successfully.");
+      setSuccessMessage("Password reset successfully. Please login with your new password.");
       window.setTimeout(() => {
         loginPasswordInputRef.current?.focus();
       }, 60);
@@ -2267,11 +2291,11 @@ export function PhoneAuthFlow({
                 {pending ? (
                   <>
                     <LoaderCircle className="h-4 w-4 animate-spin" />
-                    Resetting password...
+                    Setting password...
                   </>
                 ) : (
                   <>
-                    Reset Password
+                    Set New Password
                     {isModal ? <ArrowRight className="h-4 w-4" /> : null}
                   </>
                 )}
