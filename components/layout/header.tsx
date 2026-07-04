@@ -97,14 +97,14 @@ export function Header() {
             <>
               <button
                 type="button"
-                onClick={() => openAuthModal("login", "/dashboard/courses")}
+                onClick={() => openAuthModal("login", "/")}
                 className="rounded-lg px-4 py-2 text-[13px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC] hover:text-[#0F172A]"
               >
                 Login
               </button>
               <button
                 type="button"
-                onClick={() => openAuthModal("signup", "/dashboard/courses")}
+                onClick={() => openAuthModal("signup", "/")}
                 className="rounded-lg bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_4px_12px_rgba(99,102,241,0.3)] transition hover:shadow-[0_6px_20px_rgba(99,102,241,0.38)] hover:scale-[1.02]"
               >
                 Get Started
@@ -173,14 +173,14 @@ export function Header() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => { openAuthModal("login", "/dashboard/courses"); setMobileOpen(false); }}
+                  onClick={() => { openAuthModal("login", "/"); setMobileOpen(false); }}
                   className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-2.5 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC]"
                 >
                   Login
                 </button>
                 <button
                   type="button"
-                  onClick={() => { openAuthModal("signup", "/dashboard/courses"); setMobileOpen(false); }}
+                  onClick={() => { openAuthModal("signup", "/"); setMobileOpen(false); }}
                   className="rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-3 py-2.5 text-sm font-semibold text-white"
                 >
                   Get Started

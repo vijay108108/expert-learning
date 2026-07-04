@@ -176,7 +176,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: 
 export function PhoneAuthFlow({
   mode,
   variant = "modal",
-  redirectTo = "/dashboard",
+  redirectTo = "/",
   onSuccess,
   onClose,
   onPendingChange,

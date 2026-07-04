@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 function getSafeRedirectPath(redirectTo?: string) {
   if (!redirectTo || !redirectTo.startsWith("/") || redirectTo.startsWith("//")) {
-    return "/dashboard/courses";
+    return "/";
   }
 
   return redirectTo;
