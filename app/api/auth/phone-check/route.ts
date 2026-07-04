@@ -105,6 +105,8 @@ export async function POST(request: Request) {
         return jsonNoStore({
           success: true,
           canProceed: true,
+          exists: false,
+          passwordEnabled: false,
         });
       }
 
@@ -120,6 +122,8 @@ export async function POST(request: Request) {
     return jsonNoStore({
       success: true,
       canProceed: !result.exists,
+      exists: result.exists,
+      passwordEnabled: result.passwordEnabled,
     });
   } catch (error) {
     console.error("[Auth Phone Check] lookup failed", error);
@@ -127,7 +131,7 @@ export async function POST(request: Request) {
     return jsonNoStore(
       {
         success: false,
-        message: error instanceof Error ? error.message : "Unable to validate the phone number right now.",
+        message: "Unable to validate the phone number right now.",
       },
       503,
     );

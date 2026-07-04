@@ -5,12 +5,16 @@ import { normalizePhoneForAuth } from "./phone-utils";
 type PhoneCheckResponse = {
   success: boolean;
   canProceed?: boolean;
+  exists?: boolean;
+  passwordEnabled?: boolean;
   message?: string;
   retryAfterSeconds?: number;
 };
 
 export type SignupPhoneCheckResult = {
   canProceed: boolean;
+  exists: boolean;
+  passwordEnabled: boolean;
 };
 
 export async function checkSignupPhoneAvailability(phone: string): Promise<SignupPhoneCheckResult> {
@@ -37,5 +41,7 @@ export async function checkSignupPhoneAvailability(phone: string): Promise<Signu
 
   return {
     canProceed: payload.canProceed !== false,
+    exists: payload.exists === true,
+    passwordEnabled: payload.passwordEnabled === true,
   };
 }

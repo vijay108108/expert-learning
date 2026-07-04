@@ -524,6 +524,14 @@ export function PhoneAuthFlow({
     return false;
   }
 
+  async function lookupPhoneAccount(phoneValue: string) {
+    const result = await checkSignupPhoneAvailability(phoneValue);
+    return {
+      exists: result.exists || !result.canProceed,
+      passwordEnabled: result.passwordEnabled,
+    };
+  }
+
   async function sendOtp(isResend = false) {
     if (sendOtpLockRef.current) {
       return;
@@ -859,6 +867,12 @@ export function PhoneAuthFlow({
 
       /* ── Try all candidate emails (avoids fetchSignInMethodsForEmail
          which is broken when Firebase email enumeration protection is ON) ── */
+      const phoneAccount = await lookupPhoneAccount(formattedPhone);
+      if (!phoneAccount.exists) {
+        setFeedback("No account found with this phone number. Please sign up first.");
+        return;
+      }
+
       const normalizedLoginPhone = normalizePhoneForAuth(phone);
       const candidates = getLegacyPhoneAuthCandidates(normalizedLoginPhone)
         .map((c) => `${c}@genznext.app`);
@@ -900,7 +914,7 @@ export function PhoneAuthFlow({
       if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
         setFeedback("Incorrect password. Please try again.");
       } else if (code === "auth/user-not-found" || code === "auth/invalid-email") {
-        setFeedback("No account found for this number. Please sign up first.");
+        setFeedback("No account found with this phone number. Please sign up first.");
       } else {
         setFeedback(getSanitizedErrorMessage(code, getFirebaseAuthErrorMessage(lastError)));
       }
@@ -951,7 +965,11 @@ export function PhoneAuthFlow({
         return;
       }
     } catch (error) {
-      setFeedback(getFirebaseAuthErrorMessage(error));
+      setFeedback(
+        error instanceof Error && error.message
+          ? error.message
+          : "Unable to validate this phone number right now. Please try again.",
+      );
       return;
     } finally {
       setSignupLookupPending(false);
@@ -1195,11 +1213,26 @@ export function PhoneAuthFlow({
     try {
       /* Skip fetchSignInMethodsForEmail — broken with Firebase email enumeration protection.
          Just set the primary email and proceed to OTP; the reset step will validate. */
+      const phoneAccount = await lookupPhoneAccount(formattedPhone);
+      if (!phoneAccount.exists) {
+        setFeedback("No account found with this phone number. Please sign up first.");
+        return;
+      }
+
+      if (!phoneAccount.passwordEnabled) {
+        setFeedback("This phone number is not set up for password login. Please log in using your original method.");
+        return;
+      }
+
       const normalizedForgotPhone = normalizePhoneForAuth(phone);
       const primaryEmail = `${normalizedForgotPhone}@genznext.app`;
       setForgotPasswordEmail(primaryEmail);
     } catch (error) {
-      setFeedback(getFirebaseAuthErrorMessage(error));
+      setFeedback(
+        error instanceof Error && error.message
+          ? error.message
+          : "Unable to validate this phone number right now. Please try again.",
+      );
       return;
     } finally {
       setPending(false);
@@ -1351,7 +1384,7 @@ export function PhoneAuthFlow({
       setActiveTab("password-login");
       setFeedback(null);
       setOtpError(null);
-      setSuccessMessage("Password updated successfully. Please login.");
+      setSuccessMessage("Password reset successfully.");
       window.setTimeout(() => {
         loginPasswordInputRef.current?.focus();
       }, 60);

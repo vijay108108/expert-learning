@@ -8,6 +8,26 @@ let adminApp: App | null = null;
 let adminDb: Firestore | null = null;
 let adminAuth: Auth | null = null;
 
+function parseServiceAccountKey(rawValue: string) {
+  const trimmed = rawValue.trim();
+  const unwrapped =
+    (trimmed.startsWith("'") && trimmed.endsWith("'")) ||
+    (trimmed.startsWith("\"") && trimmed.endsWith("\""))
+      ? trimmed.slice(1, -1)
+      : trimmed;
+
+  const parsed = JSON.parse(unwrapped) as {
+    project_id: string;
+    client_email: string;
+    private_key: string;
+  };
+
+  return {
+    ...parsed,
+    private_key: parsed.private_key?.replace(/\\n/g, "\n") || "",
+  };
+}
+
 function getAdminApp() {
   if (!hasFirebaseAdminEnv) {
     return null;
@@ -17,11 +37,18 @@ function getAdminApp() {
     return adminApp;
   }
 
-  const serviceAccount = JSON.parse(env.firebaseServiceAccountKey) as {
+  let serviceAccount: {
     project_id: string;
     client_email: string;
     private_key: string;
   };
+
+  try {
+    serviceAccount = parseServiceAccountKey(env.firebaseServiceAccountKey);
+  } catch (error) {
+    console.error("[Firebase Admin] Invalid FIREBASE_SERVICE_ACCOUNT_KEY", error);
+    return null;
+  }
 
   adminApp = getApps().length
     ? getApp()

@@ -1,6 +1,19 @@
 import { getAdminAuth, getAdminDb } from "./admin";
 import { getPhoneLookupCandidates, normalizePhoneForAuth } from "./phone-utils";
 
+export type SignupPhoneLookupResult = {
+  exists: boolean;
+  normalizedPhone: string;
+  passwordEnabled: boolean;
+  source:
+    | "unavailable"
+    | "auth-phone"
+    | "auth-email"
+    | "auth-only"
+    | "phone-signup-claims"
+    | "users";
+};
+
 /**
  * Uses the Firebase Admin SDK (not the client SDK) because this runs in a
  * server context with no signed-in request.auth — the client SDK would be
@@ -14,16 +27,17 @@ export async function checkSignupPhoneExists(phone: string) {
   const fakeEmail = normalizedPhone ? `${normalizedPhone}@genznext.app` : "";
 
   if (!db && !auth) {
-    return { exists: false, source: "unavailable" as const, normalizedPhone };
+    return { exists: false, source: "unavailable" as const, normalizedPhone, passwordEnabled: false } satisfies SignupPhoneLookupResult;
   }
 
   if (auth && normalizedPhoneWithPlus) {
     try {
-      await auth.getUserByPhoneNumber(normalizedPhoneWithPlus);
+      const user = await auth.getUserByPhoneNumber(normalizedPhoneWithPlus);
       return {
         exists: true,
         source: "auth-phone" as const,
         normalizedPhone,
+        passwordEnabled: user.providerData.some((provider) => provider.providerId === "password"),
       };
     } catch (error) {
       const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
@@ -40,6 +54,7 @@ export async function checkSignupPhoneExists(phone: string) {
         exists: true,
         source: "auth-email" as const,
         normalizedPhone,
+        passwordEnabled: true,
       };
     } catch (error) {
       const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
@@ -50,7 +65,7 @@ export async function checkSignupPhoneExists(phone: string) {
   }
 
   if (!db) {
-    return { exists: false, source: "auth-only" as const, normalizedPhone };
+    return { exists: false, source: "auth-only" as const, normalizedPhone, passwordEnabled: false } satisfies SignupPhoneLookupResult;
   }
 
   const candidates = getPhoneLookupCandidates(phone);
@@ -63,6 +78,7 @@ export async function checkSignupPhoneExists(phone: string) {
         exists: true,
         source: "phone-signup-claims" as const,
         normalizedPhone,
+        passwordEnabled: true,
       };
     }
   }
@@ -79,12 +95,13 @@ export async function checkSignupPhoneExists(phone: string) {
         exists: true,
         source: "phone-signup-claims" as const,
         normalizedPhone,
+        passwordEnabled: true,
       };
     }
   }
 
   if (!candidates.length) {
-    return { exists: false, source: "users" as const, normalizedPhone };
+    return { exists: false, source: "users" as const, normalizedPhone, passwordEnabled: false } satisfies SignupPhoneLookupResult;
   }
 
   const userSnapshot = await db
@@ -94,6 +111,11 @@ export async function checkSignupPhoneExists(phone: string) {
     .get();
 
   return userSnapshot.empty
-    ? { exists: false, source: "users" as const, normalizedPhone }
-    : { exists: true, source: "users" as const, normalizedPhone };
+    ? { exists: false, source: "users" as const, normalizedPhone, passwordEnabled: false }
+    : {
+        exists: true,
+        source: "users" as const,
+        normalizedPhone,
+        passwordEnabled: userSnapshot.docs.some((doc) => doc.data().authMethod === "password"),
+      };
 }
