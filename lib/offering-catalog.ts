@@ -34,6 +34,7 @@ export type CheckoutOffering = {
   price: string;
   originalPrice: string;
   courseSlugs: string[];
+  officialSyllabusUrl?: string;
 };
 
 const bundleDefinitions: BundleDefinition[] = [
@@ -141,6 +142,7 @@ function toCourseOffering(course: Course): CheckoutOffering {
     price: course.price,
     originalPrice: course.originalPrice,
     courseSlugs: [course.slug],
+    officialSyllabusUrl: course.officialSyllabusUrl,
   };
 }
 

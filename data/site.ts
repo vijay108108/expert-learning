@@ -89,7 +89,7 @@ export const socialLinks = [
   },
   {
     label: "Email",
-    href: "mailto:genznextofficial@gmail.com",
+    href: "mailto:info@genznext.com",
     icon: "mail",
     hoverClass: "hover:border-[rgba(249,115,22,0.34)] hover:bg-[rgba(249,115,22,0.12)] hover:text-[#f97316]",
   },

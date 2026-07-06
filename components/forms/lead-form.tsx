@@ -225,7 +225,7 @@ export function LeadForm({
       )}
       {lightTone && (
         <p className="mt-3 text-[11px] leading-5 text-[#9a7c5d]">
-          Submitted enquiries are delivered to <span className="font-semibold text-[#7c4a16]">genznextofficial@gmail.com</span>.
+          Submitted enquiries are delivered to <span className="font-semibold text-[#7c4a16]">info@genznext.com</span>.
         </p>
       )}
     </form>

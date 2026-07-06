@@ -121,7 +121,7 @@ export function DemoModalRoot() {
                     </h3>
                     <p className="mt-2 max-w-[42ch] text-[14px] leading-6 text-[#6b7280]">
                       Share your contact details and course interest. Our team will reach out on {` `}
-                      <span className="font-semibold text-[#9a5a1d]">genznextofficial@gmail.com</span> workflow and follow up with you directly.
+                      <span className="font-semibold text-[#9a5a1d]">info@genznext.com</span> workflow and follow up with you directly.
                     </p>
                   </div>
                 </div>

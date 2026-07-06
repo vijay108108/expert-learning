@@ -1,4 +1,5 @@
-import { ShieldCheck } from "lucide-react";
+import { ExternalLink, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CourseCheckoutGuard } from "@/components/enroll/course-checkout-guard";
 import { EnrollmentForm } from "@/components/forms/enrollment-form";
@@ -51,6 +52,20 @@ export default async function CourseCheckoutPage({ params }: PageProps) {
                 </div>
               </div>
             </div>
+
+            {course.officialSyllabusUrl ? (
+              <div className="mt-5">
+                <Link
+                  href={course.officialSyllabusUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-brand-blue/15 bg-white px-5 py-3 text-sm font-semibold text-brand-blue shadow-[0_10px_24px_rgba(79,70,229,0.08)] transition hover:-translate-y-0.5 hover:bg-[#EEF2FF]"
+                >
+                  Official Syllabus
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+              </div>
+            ) : null}
 
             <div className="mt-5 flex items-start gap-3 rounded-[16px] border border-emerald-400/15 bg-emerald-400/5 px-4 py-3 text-sm text-brand-muted">
               <ShieldCheck className="mt-0.5 h-4.5 w-4.5 shrink-0 text-emerald-300" />
