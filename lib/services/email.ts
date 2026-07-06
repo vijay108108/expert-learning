@@ -93,10 +93,12 @@ function getGmailTransporter() {
 
   if (!gmailTransporter) {
     gmailTransporter = nodemailer.createTransport({
-      service: "gmail",
+      host: process.env.SMTP_HOST || "nvcloud.netseems.com",
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: process.env.SMTP_SECURE === "true",
       auth: {
-        user: env.gmailUser,
-        pass: env.gmailAppPassword,
+        user: process.env.SMTP_USER || env.gmailUser,
+        pass: process.env.SMTP_PASS || env.gmailAppPassword,
       },
     });
   }
