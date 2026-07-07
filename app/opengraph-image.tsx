@@ -44,16 +44,16 @@ export default function OpenGraphImage() {
               fontWeight: 700,
             }}
           >
-            EL
+            GZ
           </div>
-          <div style={{ fontSize: 26, letterSpacing: "0.28em" }}>EXPERT LEARNING</div>
+          <div style={{ fontSize: 24, letterSpacing: "0.14em" }}>GENZNEXT RESEARCH &amp; TRAINING</div>
         </div>
         <div style={{ maxWidth: "860px", display: "flex", flexDirection: "column", gap: "18px" }}>
           <div style={{ fontSize: 70, fontWeight: 700, lineHeight: 1.05 }}>
-            Master AWS, Azure & AI Skills with Industry Experts
+            GenZNext Research &amp; Training
           </div>
           <div style={{ fontSize: 30, color: "rgba(226,232,240,0.92)", lineHeight: 1.4 }}>
-            Premium cloud, AI, DevOps, and certification programs powered by Netseems Ventures Pvt Ltd
+            AI, GenAI, Agentic AI, DevSecOps, AWS &amp; Azure Certifications
           </div>
         </div>
       </div>
