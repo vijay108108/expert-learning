@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, Award, CheckCircle2, Clock3, FolderKanban, GraduationCap, Layers, Users2 } from "lucide-react";
+import { ArrowRight, Award, CheckCircle2, Clock3, Download, FolderKanban, GraduationCap, Layers, Users2 } from "lucide-react";
 import { buildMetadata } from "@/lib/metadata";
 import { TechStackGrid } from "@/components/ui/tech-logo";
-import { allCourses } from "@/data/courses";
 
 type Program = {
   title: string;
   href: string;
   syllabusHref: string;
+  syllabusButtonClassName: string;
   slug: string;
   badge: string;
   badgeColor: string;
@@ -25,17 +25,13 @@ type Program = {
   outcomes: string[];
 };
 
-const officialSyllabusBySlug = Object.fromEntries(
-  allCourses.map((course) => [course.slug, course.officialSyllabusUrl]),
-);
-
 const programs: Program[] = [
   {
     title: "AZ-104 – Microsoft Azure Administrator",
     href: "/checkout/azure-administrator",
-    syllabusHref:
-      officialSyllabusBySlug["azure-administrator"] ||
-      "https://learn.microsoft.com/certifications/azure-administrator/",
+    syllabusHref: "/syllabus/az-104-official-syllabus.pdf",
+    syllabusButtonClassName:
+      "border-[#BFDBFE] bg-[linear-gradient(135deg,#EFF6FF,#DBEAFE)] text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.10)] hover:border-[#60A5FA] hover:text-[#1E40AF]",
     slug: "azure-administrator",
     badge: "Microsoft Azure Admin",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
@@ -60,9 +56,9 @@ const programs: Program[] = [
   {
     title: "AZ-400 – Microsoft DevOps Engineer",
     href: "/checkout/azure-devops-engineer",
-    syllabusHref:
-      officialSyllabusBySlug["azure-devops-engineer"] ||
-      "https://learn.microsoft.com/certifications/devops-engineer/",
+    syllabusHref: "/syllabus/az-400-official-syllabus.pdf",
+    syllabusButtonClassName:
+      "border-[#DDD6FE] bg-[linear-gradient(135deg,#F5F3FF,#EDE9FE)] text-[#6D28D9] shadow-[0_10px_24px_rgba(124,58,237,0.10)] hover:border-[#A78BFA] hover:text-[#5B21B6]",
     slug: "azure-devops-engineer",
     badge: "Microsoft DevOps",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
@@ -87,9 +83,9 @@ const programs: Program[] = [
   {
     title: "AIOps Engineering",
     href: "/checkout/aiops-engineering",
-    syllabusHref:
-      officialSyllabusBySlug["aiops-engineering"] ||
-      "https://learn.microsoft.com/azure/azure-monitor/",
+    syllabusHref: "/syllabus/aiops-engineer-official-syllabus.pdf",
+    syllabusButtonClassName:
+      "border-[#99F6E4] bg-[linear-gradient(135deg,#ECFEFF,#CCFBF1)] text-[#0F766E] shadow-[0_10px_24px_rgba(20,184,166,0.10)] hover:border-[#2DD4BF] hover:text-[#115E59]",
     slug: "aiops-engineering",
     badge: "Cloud Operations AI",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
@@ -117,7 +113,7 @@ const combinedMasterProgram = {
   title: "Microsoft Cloud & AI DevOps Master Program",
   href: "/programs/microsoft-cloud-ai-devops-master",
   enrollHref: "/checkout/microsoft-cloud-ai-devops-master-program",
-  syllabusHref: "/programs/microsoft-cloud-ai-devops-master#syllabus",
+  syllabusHref: "/syllabus/master-program-az104-az400-aiops-syllabus.pdf",
   badge: "AZ-104 + AZ-400 + AIOps",
   tag: "Focused Master Track",
   tagline: "AZ-104 → AZ-400 → AIOps Engineering",
@@ -241,9 +237,10 @@ function ProgramCard({ program }: { program: Program }) {
             href={program.syllabusHref}
             target="_blank"
             rel="noreferrer"
-            className="mt-3 inline-flex w-full items-center justify-center rounded-[12px] border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-[12.5px] font-semibold text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+            className={`mt-3 inline-flex w-full items-center justify-center gap-2 rounded-[12px] border px-4 py-2.5 text-[12.5px] font-semibold transition ${program.syllabusButtonClassName}`}
           >
-            Official Syllabus
+            <Download className="h-3.5 w-3.5" />
+            Download Syllabus
           </a>
         </div>
       </div>
@@ -381,15 +378,12 @@ export default function ProgramsPage() {
                   </Link>
                   <Link
                     href={combinedMasterProgram.syllabusHref}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-2.5 text-sm font-semibold text-[#4338CA] transition hover:border-[#A5B4FC] hover:bg-[#E0E7FF]"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDD6FE] bg-[linear-gradient(135deg,#F5F3FF,#EDE9FE)] px-4 py-2.5 text-sm font-semibold text-[#6D28D9] shadow-[0_10px_24px_rgba(124,58,237,0.12)] transition hover:-translate-y-0.5 hover:border-[#A78BFA] hover:bg-[linear-gradient(135deg,#EDE9FE,#DDD6FE)] hover:text-[#5B21B6]"
                   >
-                    Official Syllabus
-                  </Link>
-                  <Link
-                    href={combinedMasterProgram.href}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
-                  >
-                    View Master Program
+                    <Download className="h-4 w-4" />
+                    Download Syllabus
                   </Link>
                 </div>
 

@@ -837,7 +837,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       certificate: "Azure Administrator AZ-104 Completion",
       icon: "cloudCog",
       tags: ["Azure", "AZ-104", "Admin"],
-      officialSyllabusUrl: "https://learn.microsoft.com/certifications/azure-administrator/",
+      officialSyllabusUrl: "/syllabus/az-104-official-syllabus.pdf",
     }),
     createCourse({
       title: "Azure Developer AZ-204",

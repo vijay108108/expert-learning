@@ -1,4 +1,4 @@
-import { ExternalLink, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CourseCheckoutGuard } from "@/components/enroll/course-checkout-guard";
@@ -9,9 +9,26 @@ type PageProps = {
   params: Promise<{ courseSlug: string }>;
 };
 
+function getSyllabusButtonClassName(slug: string) {
+  if (slug === "azure-administrator") {
+    return "border-[#BFDBFE] bg-[linear-gradient(135deg,#EFF6FF,#DBEAFE)] text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.12)] hover:-translate-y-0.5 hover:border-[#60A5FA] hover:text-[#1E40AF] hover:bg-[linear-gradient(135deg,#DBEAFE,#BFDBFE)]";
+  }
+
+  if (slug === "azure-devops-engineer") {
+    return "border-[#DDD6FE] bg-[linear-gradient(135deg,#F5F3FF,#EDE9FE)] text-[#6D28D9] shadow-[0_10px_24px_rgba(124,58,237,0.12)] hover:-translate-y-0.5 hover:border-[#A78BFA] hover:text-[#5B21B6] hover:bg-[linear-gradient(135deg,#EDE9FE,#DDD6FE)]";
+  }
+
+  if (slug === "aiops-engineering") {
+    return "border-[#99F6E4] bg-[linear-gradient(135deg,#ECFEFF,#CCFBF1)] text-[#0F766E] shadow-[0_10px_24px_rgba(20,184,166,0.12)] hover:-translate-y-0.5 hover:border-[#2DD4BF] hover:text-[#115E59] hover:bg-[linear-gradient(135deg,#CCFBF1,#99F6E4)]";
+  }
+
+  return "border-brand-blue/15 bg-[linear-gradient(135deg,#FFFFFF,#EEF2FF)] text-brand-blue shadow-[0_10px_24px_rgba(79,70,229,0.08)] hover:-translate-y-0.5 hover:border-[#C7D2FE] hover:bg-[#EEF2FF]";
+}
+
 export default async function CourseCheckoutPage({ params }: PageProps) {
   const { courseSlug } = await params;
   const course = getCheckoutOfferingBySlug(courseSlug);
+  const syllabusButtonClassName = getSyllabusButtonClassName(courseSlug);
 
   if (!course) {
     notFound();
@@ -59,10 +76,9 @@ export default async function CourseCheckoutPage({ params }: PageProps) {
                   href={course.officialSyllabusUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-brand-blue/15 bg-white px-5 py-3 text-sm font-semibold text-brand-blue shadow-[0_10px_24px_rgba(79,70,229,0.08)] transition hover:-translate-y-0.5 hover:bg-[#EEF2FF]"
+                  className={`inline-flex w-full items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold transition ${syllabusButtonClassName}`}
                 >
-                  Official Syllabus
-                  <ExternalLink className="h-4 w-4" />
+                  Download Syllabus
                 </Link>
               </div>
             ) : null}

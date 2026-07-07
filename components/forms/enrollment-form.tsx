@@ -402,17 +402,17 @@ export function EnrollmentForm({
             required
           />
         </div>
-        <div className="mt-4 rounded-[18px] border border-[#BFDBFE] bg-[linear-gradient(135deg,rgba(239,246,255,0.95),rgba(248,250,252,0.92))] p-4 shadow-[0_10px_24px_rgba(37,99,235,0.08)]">
+        <div className="mt-4 rounded-[22px] border border-[#C7D2FE] bg-[linear-gradient(135deg,rgba(239,246,255,0.98),rgba(245,243,255,0.96)_55%,rgba(248,250,252,0.95))] p-4 shadow-[0_14px_32px_rgba(79,70,229,0.10)] sm:p-5">
           <label className="form-label" htmlFor="enroll-coupon">
-            Coupon Code
+            🎁 Apply Coupon & Save More
           </label>
-          <p className="mb-3 text-[12px] font-medium text-[#2563EB]">
-            Have a coupon? Apply it here before payment.
+          <p className="mb-4 text-[12.5px] font-medium leading-5 text-[#4F46E5] sm:text-[13px]">
+            Have a coupon code? Enter below to unlock your discount.
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <input
               id="enroll-coupon"
-              className="form-field border-[#93C5FD] bg-white shadow-[0_6px_16px_rgba(37,99,235,0.08)]"
+              className="form-field min-w-0 border-[#BFDBFE] bg-white/95 px-4 py-3 shadow-[0_8px_20px_rgba(37,99,235,0.08)] transition focus:border-[#6366F1] focus:ring-4 focus:ring-[#C7D2FE]/50"
               placeholder="Enter coupon code"
               value={couponCode}
               onChange={(event) => {
@@ -432,15 +432,27 @@ export function EnrollmentForm({
               type="button"
               onClick={handleApplyCoupon}
               disabled={couponPending || pending || isPaying}
-              className="inline-flex shrink-0 items-center justify-center rounded-lg border border-[#93C5FD] bg-white px-4 py-[13px] text-sm font-semibold text-brand-blue shadow-[0_6px_16px_rgba(37,99,235,0.08)] transition hover:bg-[#EFF6FF] disabled:opacity-70"
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#7C3AED,#4F46E5,#2563EB)] px-5 py-3 text-sm font-bold text-white shadow-[0_14px_28px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_32px_rgba(79,70,229,0.30)] disabled:opacity-70 sm:min-w-[128px]"
             >
               {couponPending ? "Applying..." : "Apply"}
             </button>
           </div>
           {couponMessage ? (
-            <p className={`mt-2 text-sm ${couponStatus === "success" ? "text-emerald-600" : "text-rose-500"}`}>
-              {couponMessage}
-            </p>
+            couponStatus === "success" ? (
+              <div className="mt-4 rounded-[18px] border border-emerald-200 bg-[linear-gradient(135deg,#ECFDF5,#F0FDF4)] p-4 shadow-[0_10px_22px_rgba(16,185,129,0.10)]">
+                <p className="text-sm font-bold text-emerald-700">✅ Coupon Applied Successfully</p>
+                <p className="mt-1 text-sm font-semibold text-emerald-800">
+                  {appliedCouponCode || couponCode.trim().toUpperCase()} Applied
+                </p>
+                <p className="mt-1 text-sm text-emerald-700">
+                  You saved ₹{Math.round(pricing.discountPaise / 100).toLocaleString("en-IN")} 🎉
+                </p>
+              </div>
+            ) : (
+              <div className="mt-4 rounded-[16px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
+                {couponMessage}
+              </div>
+            )
           ) : null}
         </div>
         <div className="mt-4 rounded-[18px] border border-brand-blue/10 bg-brand-surface/70 p-4">
