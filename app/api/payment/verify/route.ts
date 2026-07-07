@@ -5,7 +5,9 @@ import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { logFirestoreIssue } from "@/lib/firebase";
 import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
+import { saveInvoiceRecordAdmin } from "@/lib/firebase/invoices-admin";
 import { upsertUserProfileAdminFromPayment } from "@/lib/firebase/user-profiles-admin";
+import type { PersistedInvoiceRecord } from "@/lib/invoices";
 import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
 import { verifyFirebaseBearerToken } from "@/lib/server/firebase-auth";
 import { captureServerEvent } from "@/lib/services/analytics";
@@ -184,6 +186,53 @@ export async function POST(request: Request) {
         : "Razorpay";
     const enrolledAt = new Date().toISOString();
 
+    const invoice: StoredOrderSuccess = {
+      invoiceNumber,
+      orderId: body.razorpay_order_id,
+      paymentId: body.razorpay_payment_id,
+      paymentMethod,
+      paidAtIso,
+      subtotalPaise,
+      discountPaise: pricing.discountPaise,
+      discountPercentage: pricing.discountPercent,
+      appliedCouponCode: pricing.appliedCouponCode || undefined,
+      baseAmountPaise,
+      gstPaise,
+      totalPaidPaise,
+      platformFeeLabel: "Included",
+      gstInvoiceEnabled,
+      customer: {
+        name: trustedName,
+        phone: trustedPhone,
+        email: trustedEmail || undefined,
+        companyName: trustedCompanyName || undefined,
+        gstNumber: trustedGstNumber || undefined,
+      },
+      courses: offerings.map((offering, index) => {
+        const display = resolveDisplayValuesForOffering(offering);
+        const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
+        return {
+          slug: enrollmentMeta.primaryCourseSlug,
+          title: display.title,
+          duration: display.duration,
+          level: display.level,
+          amountPaise: lineItemPaise[index] || 0,
+          originalAmountPaise: offering.priceValue * 100,
+          discountAmountPaise: (offering.priceValue * 100) - (lineItemPaise[index] || 0),
+          finalPaidAmountPaise: lineItemPaise[index] || 0,
+          couponCode: pricing.appliedCouponCode || undefined,
+          discountPercentage: pricing.discountPercent,
+          paymentStatus: "captured",
+          enrollmentType: enrollmentMeta.enrollmentType,
+          purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
+          programSlug: enrollmentMeta.programSlug,
+          programName: enrollmentMeta.programName,
+          programCourseSlugs: enrollmentMeta.programCourseSlugs,
+          primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
+        };
+      }),
+    };
+
     try {
       await Promise.all(
         offerings.map((offering, index) => {
@@ -233,57 +282,16 @@ export async function POST(request: Request) {
         phone: trustedPhone,
         createdAt: paidAtIso,
       });
+
+      await saveInvoiceRecordAdmin({
+        ...invoice,
+        userId: trustedUserId,
+        paymentStatus: "captured",
+      } satisfies PersistedInvoiceRecord);
     } catch (error) {
       clientSyncRequired = true;
       logFirestoreIssue("[Payment Verify] Server enrollment save failed after verified payment; client sync required", error);
     }
-
-    const invoice: StoredOrderSuccess = {
-      invoiceNumber,
-      orderId: body.razorpay_order_id,
-      paymentId: body.razorpay_payment_id,
-      paymentMethod,
-      paidAtIso,
-      subtotalPaise,
-      discountPaise: pricing.discountPaise,
-      discountPercentage: pricing.discountPercent,
-      appliedCouponCode: pricing.appliedCouponCode || undefined,
-      baseAmountPaise,
-      gstPaise,
-      totalPaidPaise,
-      platformFeeLabel: "Included",
-      gstInvoiceEnabled,
-      customer: {
-        name: trustedName,
-        phone: trustedPhone,
-        email: trustedEmail || undefined,
-        companyName: trustedCompanyName || undefined,
-        gstNumber: trustedGstNumber || undefined,
-      },
-      courses: offerings.map((offering, index) => {
-        const display = resolveDisplayValuesForOffering(offering);
-        const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
-        return {
-          slug: enrollmentMeta.primaryCourseSlug,
-          title: display.title,
-          duration: display.duration,
-          level: display.level,
-          amountPaise: lineItemPaise[index] || 0,
-          originalAmountPaise: offering.priceValue * 100,
-          discountAmountPaise: (offering.priceValue * 100) - (lineItemPaise[index] || 0),
-          finalPaidAmountPaise: lineItemPaise[index] || 0,
-          couponCode: pricing.appliedCouponCode || undefined,
-          discountPercentage: pricing.discountPercent,
-          paymentStatus: "captured",
-          enrollmentType: enrollmentMeta.enrollmentType,
-          purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
-          programSlug: enrollmentMeta.programSlug,
-          programName: enrollmentMeta.programName,
-          programCourseSlugs: enrollmentMeta.programCourseSlugs,
-          primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
-        };
-      }),
-    };
 
     after(async () => {
       await Promise.allSettled([

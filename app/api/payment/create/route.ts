@@ -6,7 +6,9 @@ import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOff
 import { findExistingEnrollmentCourseIds, isFirestorePermissionError, logFirestoreIssue } from "@/lib/firebase";
 import { env } from "@/lib/env";
 import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
+import { saveInvoiceRecordAdmin } from "@/lib/firebase/invoices-admin";
 import { upsertUserProfileAdminFromPayment } from "@/lib/firebase/user-profiles-admin";
+import type { PersistedInvoiceRecord } from "@/lib/invoices";
 import { verifyFirebaseBearerToken } from "@/lib/server/firebase-auth";
 import { getRazorpayClient } from "@/lib/services/payments";
 import { paymentCreateSchema } from "@/lib/validations";
@@ -101,6 +103,52 @@ export async function POST(request: Request) {
       const enrolledAt = paidAtIso;
       const gstInvoiceEnabled = Boolean(body.gstNumber?.trim());
       const { baseAmountPaise, gstPaise, totalPaidPaise } = getInclusiveGstBreakup(pricing.finalAmountPaise, gstInvoiceEnabled);
+      const invoice: StoredOrderSuccess = {
+        invoiceNumber,
+        orderId: invoiceOrderId,
+        paymentId: "",
+        paymentMethod,
+        paidAtIso,
+        subtotalPaise,
+        discountPaise: pricing.discountPaise,
+        discountPercentage: pricing.discountPercent,
+        appliedCouponCode: pricing.appliedCouponCode || undefined,
+        baseAmountPaise,
+        gstPaise,
+        totalPaidPaise,
+        platformFeeLabel: "Included",
+        gstInvoiceEnabled,
+        customer: {
+          name: body.name,
+          phone: body.phone,
+          email: body.email || undefined,
+          companyName: body.companyName?.trim() || undefined,
+          gstNumber: body.gstNumber?.trim() || undefined,
+        },
+        courses: offerings.map((offering, index) => {
+          const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
+          return {
+            slug: enrollmentMeta.primaryCourseSlug,
+            title: offering.title,
+            duration: offering.duration,
+            level: offering.level,
+            amountPaise: lineItemPaise[index] || 0,
+            originalAmountPaise: offering.priceValue * 100,
+            discountAmountPaise: (offering.priceValue * 100) - (lineItemPaise[index] || 0),
+            finalPaidAmountPaise: lineItemPaise[index] || 0,
+            couponCode: pricing.appliedCouponCode || undefined,
+            discountPercentage: pricing.discountPercent,
+            paymentStatus: "free",
+            enrollmentType: enrollmentMeta.enrollmentType,
+            purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
+            programSlug: enrollmentMeta.programSlug,
+            programName: enrollmentMeta.programName,
+            programCourseSlugs: enrollmentMeta.programCourseSlugs,
+            primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
+          };
+        }),
+      };
+
       let clientSyncRequired = false;
 
       try {
@@ -150,56 +198,16 @@ export async function POST(request: Request) {
           phone: body.phone,
           createdAt: paidAtIso,
         });
+
+        await saveInvoiceRecordAdmin({
+          ...invoice,
+          userId: authUser.uid,
+          paymentStatus: "free",
+        } satisfies PersistedInvoiceRecord);
       } catch (error) {
         clientSyncRequired = true;
         logFirestoreIssue("[Payment Create] Free coupon enrollment save failed; client sync required", error);
       }
-
-      const invoice: StoredOrderSuccess = {
-        invoiceNumber,
-        orderId: invoiceOrderId,
-        paymentId: "",
-        paymentMethod,
-        paidAtIso,
-        subtotalPaise,
-        discountPaise: pricing.discountPaise,
-        discountPercentage: pricing.discountPercent,
-        appliedCouponCode: pricing.appliedCouponCode || undefined,
-        baseAmountPaise,
-        gstPaise,
-        totalPaidPaise,
-        platformFeeLabel: "Included",
-        gstInvoiceEnabled,
-        customer: {
-          name: body.name,
-          phone: body.phone,
-          email: body.email || undefined,
-          companyName: body.companyName?.trim() || undefined,
-          gstNumber: body.gstNumber?.trim() || undefined,
-        },
-        courses: offerings.map((offering, index) => {
-          const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
-          return {
-            slug: enrollmentMeta.primaryCourseSlug,
-            title: offering.title,
-            duration: offering.duration,
-            level: offering.level,
-            amountPaise: lineItemPaise[index] || 0,
-            originalAmountPaise: offering.priceValue * 100,
-            discountAmountPaise: (offering.priceValue * 100) - (lineItemPaise[index] || 0),
-            finalPaidAmountPaise: lineItemPaise[index] || 0,
-            couponCode: pricing.appliedCouponCode || undefined,
-            discountPercentage: pricing.discountPercent,
-            paymentStatus: "free",
-            enrollmentType: enrollmentMeta.enrollmentType,
-            purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
-            programSlug: enrollmentMeta.programSlug,
-            programName: enrollmentMeta.programName,
-            programCourseSlugs: enrollmentMeta.programCourseSlugs,
-            primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
-          };
-        }),
-      };
 
       return NextResponse.json({
         success: true,

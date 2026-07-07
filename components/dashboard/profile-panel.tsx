@@ -1,31 +1,48 @@
 "use client";
 
 import {
-  BookOpenCheck, CalendarDays, CheckCircle2,
-  Download, Edit2, LoaderCircle, Mail,
-  Phone, Save, ShieldCheck, User, X,
-  Building2, Receipt,
+  BookOpenCheck,
+  Building2,
+  CalendarDays,
+  CheckCircle2,
+  Download,
+  Edit2,
+  ExternalLink,
+  LoaderCircle,
+  Mail,
+  Phone,
+  Receipt,
+  Save,
+  ShieldCheck,
+  User,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  getFirebaseDb, getMyEnrollments, getUserProfile,
-  logFirestoreIssue, type AppUserProfile,
+  getFirebaseDb,
+  getMyEnrollments,
+  getUserProfile,
+  listInvoicesByUser,
+  logFirestoreIssue,
+  type AppUserProfile,
+  type FirestoreEnrollment,
 } from "@/lib/firebase";
+import { buildFallbackInvoicesFromEnrollments, mergeInvoiceRecords, type PersistedInvoiceRecord } from "@/lib/invoices";
 import { readEnrolledCourses } from "@/lib/my-learning";
 import { getCanonicalCourseId } from "@/lib/offering-catalog";
-import {
-  formatCurrencyInrFromPaise, formatInvoiceDate,
-  latestOrderStorageKey, type StoredOrderSuccess,
-} from "@/lib/order-success";
+import { formatCurrencyInrFromPaise, formatInvoiceDate } from "@/lib/order-success";
 import { getInitials } from "@/lib/utils";
 
 function formatMemberSince(value: string | null) {
   if (!value) return "Recently joined";
   return new Intl.DateTimeFormat("en-IN", {
-    day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
   }).format(new Date(value));
 }
 
@@ -36,111 +53,162 @@ type ProfileRecord = AppUserProfile & {
   gstNumber?: string;
 };
 
-/* ── Invoice download (print) ── */
-function InvoiceCard({ invoice }: { invoice: StoredOrderSuccess }) {
+function formatPaymentStatus(value: PersistedInvoiceRecord["paymentStatus"]) {
+  switch (value) {
+    case "captured":
+      return "Success";
+    case "failed":
+      return "Failed";
+    case "free":
+      return "Success";
+    default:
+      return "Pending";
+  }
+}
+
+function InvoiceSummaryCard({ invoice }: { invoice: PersistedInvoiceRecord }) {
+  const courseLabel = invoice.courses.map((item) => item.title).join(", ");
+  const paymentStatusLabel = formatPaymentStatus(invoice.paymentStatus);
+  const paymentStatusClass =
+    invoice.paymentStatus === "captured" || invoice.paymentStatus === "free"
+      ? "border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]"
+      : invoice.paymentStatus === "failed"
+        ? "border-[#FECACA] bg-[#FEF2F2] text-[#B91C1C]"
+        : "border-[#E5E7EB] bg-[#F8FAFC] text-[#475569]";
+
   return (
-    <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
-      <div className="flex items-start justify-between gap-3">
+    <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 shadow-sm">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-[12px] font-bold text-[#0F172A]">{invoice.invoiceNumber}</p>
-          <p className="mt-0.5 text-[11px] text-[#64748B]">
-            {invoice.courses.map(c => c.title).join(", ")}
-          </p>
-          <p className="mt-0.5 text-[11px] text-[#64748B]">
-            {formatInvoiceDate(invoice.paidAtIso)} · {formatCurrencyInrFromPaise(invoice.totalPaidPaise)}
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-[13px] font-bold text-[#0F172A]">{invoice.invoiceNumber}</p>
+            <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${paymentStatusClass}`}>
+              {paymentStatusLabel}
+            </span>
+          </div>
+          <p className="mt-1 text-[12px] font-medium text-[#334155]">{courseLabel}</p>
+          <p className="mt-1 text-[11px] text-[#64748B]">
+            Purchased on {formatInvoiceDate(invoice.paidAtIso)}
           </p>
         </div>
-        <button
-          onClick={() => {
-            // Store invoice and open print window
-            window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(invoice));
-            window.open(`/order-success?orderId=${invoice.orderId}`, "_blank");
-          }}
-          className="flex items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[12px] font-semibold text-[#4F46E5] transition hover:border-[#4F46E5]/30 hover:bg-[#EEF2FF]"
+
+        <Link
+          href={`/dashboard/invoices/${encodeURIComponent(invoice.invoiceNumber)}`}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#C7D2FE] bg-white px-3 py-2 text-[12px] font-semibold text-[#4F46E5] transition hover:bg-[#EEF2FF]"
         >
-          <Download className="h-3.5 w-3.5" /> Invoice
-        </button>
+          <Download className="h-3.5 w-3.5" />
+          View / Download Invoice
+        </Link>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {[
+          { label: "Course Name", value: courseLabel },
+          { label: "Order ID", value: invoice.orderId || "-" },
+          { label: "Razorpay Payment ID", value: invoice.paymentId || "-" },
+          { label: "Amount Paid", value: formatCurrencyInrFromPaise(invoice.totalPaidPaise) },
+          { label: "Payment Status", value: paymentStatusLabel },
+          { label: "Purchase Date", value: formatInvoiceDate(invoice.paidAtIso) },
+          { label: "Billing Name", value: invoice.customer.name || "-" },
+          { label: "Phone Number", value: invoice.customer.phone || "-" },
+          { label: "Email", value: invoice.customer.email || "-" },
+          { label: "Company Name", value: invoice.customer.companyName || "-" },
+          { label: "GSTIN", value: invoice.customer.gstNumber || "-" },
+          { label: "Coupon", value: invoice.appliedCouponCode || "-" },
+        ].map((item) => (
+          <div key={item.label} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">{item.label}</p>
+            <p className="mt-1 break-words text-[12px] font-medium text-[#0F172A]">{item.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 flex items-center gap-2 text-[11px] text-[#64748B]">
+        <ExternalLink className="h-3.5 w-3.5 text-[#4F46E5]" />
+        Open invoice page, then use browser Print → Save as PDF for download.
       </div>
     </div>
   );
 }
 
-/* ── Main component ── */
 export function ProfilePanel() {
   const { isAuthReady, openAuthModal, user } = useAuth();
-  const [profile, setProfile]           = useState<ProfileRecord | null>(null);
-  const [courseCount, setCourseCount]   = useState(0);
-  const [memberSince, setMemberSince]   = useState<string | null>(null);
-  const [loading, setLoading]           = useState(false);
-  const [invoice]                       = useState<StoredOrderSuccess | null>(() => {
-    try {
-      if (typeof window === "undefined") {
-        return null;
-      }
-      const raw = window.localStorage.getItem(latestOrderStorageKey);
-      return raw ? (JSON.parse(raw) as StoredOrderSuccess) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [profile, setProfile] = useState<ProfileRecord | null>(null);
+  const [courseCount, setCourseCount] = useState(0);
+  const [memberSince, setMemberSince] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [invoices, setInvoices] = useState<PersistedInvoiceRecord[]>([]);
 
-  /* Edit state */
-  const [editing, setEditing]           = useState(false);
-  const [saving, setSaving]             = useState(false);
-  const [saveMsg, setSaveMsg]           = useState<string | null>(null);
-  const [editName, setEditName]         = useState("");
-  const [editEmail, setEditEmail]       = useState("");
-  const [editPhone, setEditPhone]       = useState("");
-  const [editCompany, setEditCompany]   = useState("");
-  const [editGst, setEditGst]           = useState("");
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editCompany, setEditCompany] = useState("");
+  const [editGst, setEditGst] = useState("");
 
   useEffect(() => {
     if (!user) return;
     let active = true;
-    const frame = window.requestAnimationFrame(() => { if (active) setLoading(true); });
+    const frame = window.requestAnimationFrame(() => {
+      if (active) {
+        setLoading(true);
+      }
+    });
 
     void (async () => {
       try {
-        const [nextProfile, enrollments] = await Promise.all([
+        const [nextProfile, enrollments, savedInvoices] = await Promise.all([
           getUserProfile(user.uid),
           getMyEnrollments(user.uid),
+          listInvoicesByUser(user.uid),
         ]);
+
         if (!active) return;
 
+        const typedEnrollments = enrollments as Array<FirestoreEnrollment & { id: string }>;
         const deviceCourses = readEnrolledCourses();
         const uniqueIds = new Set([
-          ...enrollments.map(e => getCanonicalCourseId(e.courseId)),
-          ...deviceCourses.map(c => getCanonicalCourseId(c.courseSlug)),
+          ...typedEnrollments.map((item) => getCanonicalCourseId(item.courseId)),
+          ...deviceCourses.map((item) => getCanonicalCourseId(item.courseSlug)),
         ]);
         const dates = [
           nextProfile?.createdAt,
           user.metadata.creationTime ? new Date(user.metadata.creationTime).toISOString() : null,
-          ...enrollments.map(e => e.enrolledAt),
-          ...deviceCourses.map(c => c.enrolledAt),
-        ].filter((v): v is string => Boolean(v)).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+          ...typedEnrollments.map((item) => item.enrolledAt),
+          ...deviceCourses.map((item) => item.enrolledAt),
+        ]
+          .filter((value): value is string => Boolean(value))
+          .sort((left, right) => new Date(left).getTime() - new Date(right).getTime());
+
+        const fallbackInvoices = buildFallbackInvoicesFromEnrollments(typedEnrollments);
 
         setProfile(nextProfile as ProfileRecord);
         setCourseCount(uniqueIds.size);
         setMemberSince(dates[0] || new Date().toISOString());
-        /* Pre-fill edit fields */
+        setInvoices(mergeInvoiceRecords(savedInvoices as PersistedInvoiceRecord[], fallbackInvoices));
         setEditName(user.displayName || nextProfile?.name || "");
         setEditEmail(nextProfile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "") || "");
         setEditPhone(nextProfile?.phone || user.phoneNumber || "");
         const nextBillingProfile = nextProfile as ProfileRecord | null;
         setEditCompany(nextBillingProfile?.companyName || "");
         setEditGst(nextBillingProfile?.gstNumber || "");
-      } catch (err) {
+      } catch (error) {
         if (!active) return;
-        logFirestoreIssue("[Profile] Unable to load", err);
-        const dc = readEnrolledCourses();
-        const ids = new Set(dc.map(c => getCanonicalCourseId(c.courseSlug)));
+        logFirestoreIssue("[Profile] Unable to load", error);
+        const deviceCourses = readEnrolledCourses();
+        const ids = new Set(deviceCourses.map((item) => getCanonicalCourseId(item.courseSlug)));
         setCourseCount(ids.size);
       } finally {
         if (active) setLoading(false);
       }
     })();
 
-    return () => { active = false; window.cancelAnimationFrame(frame); };
+    return () => {
+      active = false;
+      window.cancelAnimationFrame(frame);
+    };
   }, [user]);
 
   async function handleSave() {
@@ -149,22 +217,37 @@ export function ProfilePanel() {
       setSaveMsg("Invalid GSTIN format. Check and retry.");
       return;
     }
+
     setSaving(true);
     setSaveMsg(null);
     const db = getFirebaseDb();
+
     try {
       if (db) {
-        await setDoc(doc(db, "users", user.uid), {
-          name:       editName.trim()  || undefined,
-          email:      editEmail.trim() || undefined,
-          phone:      editPhone.trim() || undefined,
-          companyName:editCompany.trim() || undefined,
-          gstNumber:  editGst.trim().toUpperCase() || undefined,
-          updatedAt:  new Date().toISOString(),
-        }, { merge: true });
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            name: editName.trim() || undefined,
+            email: editEmail.trim() || undefined,
+            phone: editPhone.trim() || undefined,
+            companyName: editCompany.trim() || undefined,
+            gstNumber: editGst.trim().toUpperCase() || undefined,
+            updatedAt: new Date().toISOString(),
+          },
+          { merge: true },
+        );
       }
-      setSaveMsg("✓ Profile updated successfully");
+
+      setSaveMsg("Profile updated successfully");
       setEditing(false);
+      setProfile((current) => ({
+        ...(current || { uid: user.uid }),
+        name: editName.trim() || undefined,
+        email: editEmail.trim() || undefined,
+        phone: editPhone.trim() || undefined,
+        companyName: editCompany.trim() || undefined,
+        gstNumber: editGst.trim().toUpperCase() || undefined,
+      }));
     } catch {
       setSaveMsg("Unable to save changes. Try again.");
     } finally {
@@ -172,19 +255,17 @@ export function ProfilePanel() {
     }
   }
 
-  /* ── Loading ── */
   if (!isAuthReady || (user && loading)) {
     return (
       <div className="flex min-h-full items-center justify-center bg-[#F8FAFC] px-4 py-10">
         <div className="inline-flex items-center gap-3 rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4 text-sm text-[#475569] shadow-sm">
           <LoaderCircle className="h-4 w-4 animate-spin text-[#4F46E5]" />
-          Loading your profile…
+          Loading your profile...
         </div>
       </div>
     );
   }
 
-  /* ── Not signed in ── */
   if (!user) {
     return (
       <main className="min-h-full bg-[#F8FAFC] px-4 py-8 sm:px-6 lg:px-10">
@@ -192,8 +273,11 @@ export function ProfilePanel() {
           <User className="mx-auto h-10 w-10 text-[#CBD5E1]" />
           <h1 className="mt-4 text-xl font-bold !text-[#0F172A]">Sign in to view your profile</h1>
           <p className="mt-2 text-sm text-[#64748B]">Manage your details, download invoices and track your learning.</p>
-          <button onClick={() => openAuthModal("login", "/dashboard/profile")}
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-5 py-2.5 text-sm font-semibold text-white">
+          <button
+            type="button"
+            onClick={() => openAuthModal("login", "/dashboard/profile")}
+            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-5 py-2.5 text-sm font-semibold text-white"
+          >
             Sign In
           </button>
         </div>
@@ -201,24 +285,20 @@ export function ProfilePanel() {
     );
   }
 
-  const displayName    = profile?.name || user.displayName || "GenZNext Learner";
-  const displayEmail   = profile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "");
-  const displayPhone   = profile?.phone || user.phoneNumber || "";
+  const displayName = profile?.name || user.displayName || "GenZNext Learner";
+  const displayEmail = profile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "");
+  const displayPhone = profile?.phone || user.phoneNumber || "";
   const displayInitials = getInitials(displayName || displayEmail || displayPhone, "GZ");
   const learningStatus = courseCount > 0 ? "Active Learner" : "New Learner";
 
   return (
     <main className="min-h-full bg-[#F8FAFC] px-4 py-6 text-[#0F172A] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl space-y-5">
-
-        {/* ── Profile header ── */}
         <section className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-sm">
-          {/* Top gradient strip */}
           <div className="h-1.5 w-full bg-[linear-gradient(90deg,#9333EA,#4F46E5,#0EA5E9)]" />
           <div className="p-6">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                {/* Avatar */}
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] text-lg font-bold text-white shadow-[0_8px_20px_rgba(147,51,234,0.28)]">
                   {displayInitials}
                 </div>
@@ -226,14 +306,19 @@ export function ProfilePanel() {
                   <h1 className="text-[22px] font-extrabold !text-[#0F172A]">{displayName}</h1>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2.5 py-0.5 text-[11px] font-semibold text-[#166534]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E]" />{learningStatus}
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E]" />
+                      {learningStatus}
                     </span>
                     <span className="text-[12px] text-[#64748B]">Member since {formatMemberSince(memberSince)}</span>
                   </div>
                 </div>
               </div>
               <button
-                onClick={() => { setEditing(!editing); setSaveMsg(null); }}
+                type="button"
+                onClick={() => {
+                  setEditing(!editing);
+                  setSaveMsg(null);
+                }}
                 className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-[12px] font-semibold transition ${
                   editing
                     ? "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412] hover:bg-[#FEF3C7]"
@@ -244,26 +329,24 @@ export function ProfilePanel() {
               </button>
             </div>
 
-            {/* Stats row */}
             <div className="mt-5 grid grid-cols-3 gap-3">
               {[
-                { icon: BookOpenCheck, label: "Courses",      value: courseCount.toString(), color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
-                { icon: ShieldCheck,   label: "Status",       value: learningStatus,          color: "text-[#16A34A]", bg: "bg-[#F0FDF4]" },
-                { icon: CalendarDays,  label: "Member Since", value: formatMemberSince(memberSince), color: "text-[#9333EA]", bg: "bg-[#F5F0FF]" },
-              ].map((s) => (
-                <div key={s.label} className="rounded-xl border border-[#F1F5F9] bg-[#F8FAFC] p-3 text-center">
-                  <div className={`mx-auto mb-1.5 flex h-8 w-8 items-center justify-center rounded-lg ${s.bg}`}>
-                    <s.icon className={`h-4 w-4 ${s.color}`} />
+                { icon: BookOpenCheck, label: "Courses", value: courseCount.toString(), color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
+                { icon: ShieldCheck, label: "Status", value: learningStatus, color: "text-[#16A34A]", bg: "bg-[#F0FDF4]" },
+                { icon: CalendarDays, label: "Member Since", value: formatMemberSince(memberSince), color: "text-[#9333EA]", bg: "bg-[#F5F0FF]" },
+              ].map((item) => (
+                <div key={item.label} className="rounded-xl border border-[#F1F5F9] bg-[#F8FAFC] p-3 text-center">
+                  <div className={`mx-auto mb-1.5 flex h-8 w-8 items-center justify-center rounded-lg ${item.bg}`}>
+                    <item.icon className={`h-4 w-4 ${item.color}`} />
                   </div>
-                  <p className="text-[12px] font-bold !text-[#0F172A] line-clamp-1">{s.value}</p>
-                  <p className="text-[10px] text-[#64748B]">{s.label}</p>
+                  <p className="text-[12px] font-bold !text-[#0F172A] line-clamp-1">{item.value}</p>
+                  <p className="text-[10px] text-[#64748B]">{item.label}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── Edit / View contact details ── */}
         <section className="rounded-2xl border border-[#E2E8F0] bg-white shadow-sm">
           <div className="border-b border-[#F1F5F9] px-5 py-4">
             <p className="text-[13px] font-bold !text-[#0F172A]">Contact & Billing Details</p>
@@ -271,122 +354,131 @@ export function ProfilePanel() {
           </div>
           <div className="p-5">
             {editing ? (
-              /* ── Edit form ── */
               <div className="space-y-4">
                 {[
-                  { label: "Full Name",    icon: User,      value: editName,    set: setEditName,    placeholder: "Your full name",       type: "text" },
-                  { label: "Email",        icon: Mail,      value: editEmail,   set: setEditEmail,   placeholder: "your@email.com",       type: "email" },
-                  { label: "Phone",        icon: Phone,     value: editPhone,   set: setEditPhone,   placeholder: "+91 9876543210",       type: "tel" },
+                  { label: "Full Name", icon: User, value: editName, set: setEditName, placeholder: "Your full name", type: "text" },
+                  { label: "Email", icon: Mail, value: editEmail, set: setEditEmail, placeholder: "your@email.com", type: "email" },
+                  { label: "Phone", icon: Phone, value: editPhone, set: setEditPhone, placeholder: "+91 9876543210", type: "tel" },
                   { label: "Company Name", icon: Building2, value: editCompany, set: setEditCompany, placeholder: "For GST invoices (optional)", type: "text" },
-                ].map((f) => (
-                  <div key={f.label}>
-                    <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#64748B]">{f.label}</label>
+                ].map((field) => (
+                  <div key={field.label}>
+                    <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#64748B]">{field.label}</label>
                     <div className="relative">
-                      <f.icon className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+                      <field.icon className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
                       <input
-                        type={f.type}
-                        value={f.value}
-                        onChange={e => f.set(e.target.value)}
-                        placeholder={f.placeholder}
+                        type={field.type}
+                        value={field.value}
+                        onChange={(event) => field.set(event.target.value)}
+                        placeholder={field.placeholder}
                         className="h-11 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-9 pr-3 text-[13px] !text-[#0F172A] outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                       />
                     </div>
                   </div>
                 ))}
 
-                {/* GST field with validation */}
                 <div>
                   <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#64748B]">
-                    GST Number <span className="font-normal normal-case text-[#94A3B8]">(optional — for tax invoices)</span>
+                    GST Number <span className="font-normal normal-case text-[#94A3B8]">(optional - for tax invoices)</span>
                   </label>
                   <div className="relative">
                     <Receipt className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
                     <input
                       type="text"
                       value={editGst}
-                      onChange={e => setEditGst(e.target.value.toUpperCase())}
+                      onChange={(event) => setEditGst(event.target.value.toUpperCase())}
                       placeholder="27AAHCN4778J1ZU"
                       maxLength={15}
                       className="h-11 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-9 pr-3 font-mono text-[13px] uppercase !text-[#0F172A] outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
                     />
                   </div>
-                  {editGst && !gstPattern.test(editGst) && (
+                  {editGst && !gstPattern.test(editGst) ? (
                     <p className="mt-1 text-[11px] text-rose-500">Enter a valid 15-character GSTIN</p>
-                  )}
+                  ) : null}
                 </div>
 
-                {saveMsg && (
-                  <p className={`rounded-xl px-3 py-2 text-[12px] font-medium ${saveMsg.startsWith("✓") ? "bg-[#F0FDF4] text-[#16A34A]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
+                {saveMsg ? (
+                  <p className={`rounded-xl px-3 py-2 text-[12px] font-medium ${saveMsg === "Profile updated successfully" ? "bg-[#F0FDF4] text-[#16A34A]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
                     {saveMsg}
                   </p>
-                )}
+                ) : null}
 
                 <button
+                  type="button"
                   onClick={handleSave}
                   disabled={saving}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3 text-[13px] font-bold text-white disabled:opacity-60"
                 >
-                  {saving ? <><LoaderCircle className="h-4 w-4 animate-spin" />Saving…</> : <><Save className="h-4 w-4" />Save Changes</>}
+                  {saving ? <><LoaderCircle className="h-4 w-4 animate-spin" />Saving...</> : <><Save className="h-4 w-4" />Save Changes</>}
                 </button>
               </div>
             ) : (
-              /* ── View mode ── */
               <div className="space-y-3">
                 {[
-                  { icon: User,      label: "Name",        value: displayName   || "—" },
-                  { icon: Phone,     label: "Phone",       value: displayPhone  || "Not added" },
-                  { icon: Mail,      label: "Email",       value: displayEmail  || "Not added" },
-                  { icon: Building2, label: "Company",     value: profile?.companyName || "Not added" },
-                  { icon: Receipt,   label: "GSTIN",       value: profile?.gstNumber   || "Not added" },
-                ].map((r) => (
-                  <div key={r.label} className="flex items-center gap-3 rounded-xl border border-[#F1F5F9] bg-[#F8FAFC] px-4 py-3">
-                    <r.icon className="h-4 w-4 shrink-0 text-[#4F46E5]" />
+                  { icon: User, label: "Name", value: displayName || "-" },
+                  { icon: Phone, label: "Phone", value: displayPhone || "Not added" },
+                  { icon: Mail, label: "Email", value: displayEmail || "Not added" },
+                  { icon: Building2, label: "Company", value: profile?.companyName || "Not added" },
+                  { icon: Receipt, label: "GSTIN", value: profile?.gstNumber || "Not added" },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center gap-3 rounded-xl border border-[#F1F5F9] bg-[#F8FAFC] px-4 py-3">
+                    <item.icon className="h-4 w-4 shrink-0 text-[#4F46E5]" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">{r.label}</p>
-                      <p className={`mt-0.5 text-[13px] font-medium ${r.value === "Not added" ? "text-[#94A3B8] italic" : "!text-[#0F172A]"}`}>
-                        {r.value}
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">{item.label}</p>
+                      <p className={`mt-0.5 text-[13px] font-medium ${item.value === "Not added" ? "text-[#94A3B8] italic" : "!text-[#0F172A]"}`}>
+                        {item.value}
                       </p>
                     </div>
                   </div>
                 ))}
-                {saveMsg?.startsWith("✓") && (
+                {saveMsg === "Profile updated successfully" ? (
                   <p className="flex items-center gap-1.5 rounded-xl bg-[#F0FDF4] px-3 py-2 text-[12px] font-medium text-[#16A34A]">
                     <CheckCircle2 className="h-3.5 w-3.5" />{saveMsg}
                   </p>
-                )}
+                ) : null}
               </div>
             )}
           </div>
         </section>
 
-        {/* ── Invoice ── */}
-        {invoice && (
-          <section className="rounded-2xl border border-[#E2E8F0] bg-white shadow-sm">
-            <div className="border-b border-[#F1F5F9] px-5 py-4">
-              <p className="text-[13px] font-bold !text-[#0F172A]">Payment Invoices</p>
-              <p className="text-[12px] text-[#64748B]">Download your payment receipts</p>
-            </div>
-            <div className="p-5">
-              <InvoiceCard invoice={invoice} />
-              <p className="mt-3 text-[11px] text-[#94A3B8]">
-                Invoice opens in a new tab — use browser Print → Save as PDF to download.
-              </p>
-            </div>
-          </section>
-        )}
+        <section className="rounded-2xl border border-[#E2E8F0] bg-white shadow-sm">
+          <div className="border-b border-[#F1F5F9] px-5 py-4">
+            <p className="text-[13px] font-bold !text-[#0F172A]">Invoices</p>
+            <p className="text-[12px] text-[#64748B]">Your course purchase history and downloadable invoice records.</p>
+          </div>
+          <div className="p-5">
+            {invoices.length ? (
+              <div className="space-y-4">
+                {invoices.map((invoice) => (
+                  <InvoiceSummaryCard key={invoice.invoiceNumber} invoice={invoice} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-5 py-8 text-center">
+                <Receipt className="mx-auto h-8 w-8 text-[#94A3B8]" />
+                <p className="mt-3 text-[14px] font-semibold text-[#0F172A]">No invoices available yet</p>
+                <p className="mt-1 text-[12px] text-[#64748B]">
+                  Once you purchase a course, your invoice details will appear here automatically.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
 
-        {/* ── Quick links ── */}
         <section className="grid gap-3 sm:grid-cols-2">
-          <Link href="/dashboard/courses"
-            className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-white p-4 transition hover:border-[#4F46E5]/30 hover:bg-[#EEF2FF]">
+          <Link
+            href="/dashboard/courses"
+            className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-white p-4 transition hover:border-[#4F46E5]/30 hover:bg-[#EEF2FF]"
+          >
             <BookOpenCheck className="h-5 w-5 text-[#4F46E5]" />
             <div>
               <p className="text-[13px] font-bold !text-[#0F172A]">My Courses</p>
               <p className="text-[11px] text-[#64748B]">{courseCount} enrolled program{courseCount !== 1 ? "s" : ""}</p>
             </div>
           </Link>
-          <Link href="/lms/my-learning"
-            className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-white p-4 transition hover:border-[#4F46E5]/30 hover:bg-[#EEF2FF]">
+          <Link
+            href="/lms/my-learning"
+            className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-white p-4 transition hover:border-[#4F46E5]/30 hover:bg-[#EEF2FF]"
+          >
             <ShieldCheck className="h-5 w-5 text-[#4F46E5]" />
             <div>
               <p className="text-[13px] font-bold !text-[#0F172A]">LMS Portal</p>
@@ -394,7 +486,6 @@ export function ProfilePanel() {
             </div>
           </Link>
         </section>
-
       </div>
     </main>
   );
