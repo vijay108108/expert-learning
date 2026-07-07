@@ -12,8 +12,9 @@ import {
   PlayCircle,
   User,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { getUserProfile } from "@/lib/firebase/user-profiles";
 import { cn, getInitials } from "@/lib/utils";
 
 const navLinks = [
@@ -58,11 +59,45 @@ export function LmsNavbar() {
   const router     = useRouter();
   const { user, signOutUser } = useAuth();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [profileName, setProfileName] = useState("");
 
   const activeLabel = useMemo(() => {
     const match = navLinks.find((l) => pathname === l.href || pathname.startsWith(l.href + "/"));
     return match?.label ?? "Dashboard";
   }, [pathname]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProfileName() {
+      if (!user?.uid) {
+        if (active) {
+          setProfileName("");
+        }
+        return;
+      }
+
+      try {
+        const profile = await getUserProfile(user.uid);
+        if (active) {
+          setProfileName(profile?.name?.trim() || "");
+        }
+      } catch {
+        if (active) {
+          setProfileName("");
+        }
+      }
+    }
+
+    void loadProfileName();
+
+    return () => {
+      active = false;
+    };
+  }, [user?.uid]);
+
+  const resolvedDisplayName = profileName || user?.displayName || "";
+  const resolvedIdentity = resolvedDisplayName || user?.email || user?.phoneNumber || "";
 
   async function handleSignOut() {
     try { await signOutUser(); } catch { /* ignore */ }
@@ -113,7 +148,7 @@ export function LmsNavbar() {
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366F1,#4F46E5)] text-[12px] font-bold text-white transition hover:scale-105"
                 aria-label="User menu"
               >
-                {getInitials(user.displayName || user.email || user.phoneNumber, "U")}
+                {getInitials(resolvedIdentity, "U")}
               </button>
 
               {userMenuOpen && (
@@ -121,7 +156,7 @@ export function LmsNavbar() {
                   {/* User info */}
                   <div className="border-b border-[#F1F5F9] px-4 py-3">
                     <p className="text-[13px] font-semibold text-[#0F172A] truncate">
-                      {user.displayName || "Learner"}
+                      {resolvedDisplayName || "Learner"}
                     </p>
                     <p className="mt-0.5 text-[11px] text-[#64748B] truncate">
                       {user.phoneNumber || user.email || ""}

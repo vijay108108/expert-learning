@@ -320,7 +320,7 @@ export default function Home() {
                   Identity · Compute · Networking · Storage · Monitoring · 8 Weeks
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
-                  <span className="font-bold text-[#DC2626]">Batch: 10 July 2026</span>
+                  <span className="font-bold text-[#DC2626]">Batch: 15 July 2026</span>
                   <span className="text-[#94A3B8]">·</span>
                   <span className="font-semibold text-[#16A34A]">
                     ₹20,000 <span className="font-normal text-[#94A3B8] line-through">₹30,000</span>
