@@ -87,6 +87,16 @@ export async function POST(request: Request) {
 
     const invoice = body.invoice;
 
+    console.info("[Invoice Persist Debug]", {
+      authUid: authUser.uid,
+      invoiceNumber: invoice.invoiceNumber,
+      orderId: invoice.orderId,
+      paymentId: invoice.paymentId,
+      paymentMethod: invoice.paymentMethod,
+      totalPaidPaise: invoice.totalPaidPaise,
+      couponCode: invoice.appliedCouponCode || "",
+    });
+
     await saveInvoiceRecordAdmin({
       ...invoice,
       userId: authUser.uid,

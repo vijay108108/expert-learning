@@ -8,6 +8,10 @@ export type PersistedInvoiceRecord = StoredOrderSuccess & {
   paymentStatus: InvoicePaymentStatus;
 };
 
+type RecoverableEnrollment = FirestoreEnrollment & {
+  id?: string;
+};
+
 function resolveInvoicePaymentStatus(enrollments: FirestoreEnrollment[]): InvoicePaymentStatus {
   if (enrollments.some((item) => item.paymentStatus === "captured")) {
     return "captured";
@@ -46,9 +50,27 @@ function buildInvoiceLineItems(enrollments: FirestoreEnrollment[]): InvoiceCours
   }));
 }
 
+export function buildPersistedInvoiceRecordFromStoredOrder(
+  userId: string,
+  invoice: StoredOrderSuccess,
+): PersistedInvoiceRecord {
+  const paymentStatus: InvoicePaymentStatus =
+    invoice.courses.some((course) => course.paymentStatus === "captured")
+      ? "captured"
+      : invoice.courses.some((course) => course.paymentStatus === "free") || invoice.totalPaidPaise <= 0
+        ? "free"
+        : "pending";
+
+  return {
+    ...invoice,
+    userId,
+    paymentStatus,
+  };
+}
+
 export function buildInvoiceRecordFromEnrollments(
   invoiceNumber: string,
-  enrollments: FirestoreEnrollment[],
+  enrollments: RecoverableEnrollment[],
 ): PersistedInvoiceRecord | null {
   if (!enrollments.length) {
     return null;
@@ -80,7 +102,12 @@ export function buildInvoiceRecordFromEnrollments(
     invoiceNumber: invoiceNumber || createInvoiceNumber(primary.razorpayOrderId || `legacy-${Date.now()}`, paidAtIso),
     orderId: primary.razorpayOrderId || "",
     paymentId: primary.razorpayPaymentId || "",
-    paymentMethod: primary.paymentStatus === "free" ? "Coupon" : "Razorpay",
+    paymentMethod:
+      primary.paymentStatus === "free"
+        ? "Free Coupon"
+        : primary.couponCode
+          ? "Razorpay + Coupon"
+          : "Razorpay",
     paidAtIso,
     subtotalPaise,
     discountPaise,
@@ -102,22 +129,55 @@ export function buildInvoiceRecordFromEnrollments(
   };
 }
 
-export function buildFallbackInvoicesFromEnrollments(enrollments: FirestoreEnrollment[]) {
-  const grouped = new Map<string, FirestoreEnrollment[]>();
-
-  for (const enrollment of enrollments) {
-    const invoiceNumber = enrollment.invoiceNumber || "";
-    if (!invoiceNumber) {
-      continue;
-    }
-
-    const current = grouped.get(invoiceNumber) || [];
-    current.push(enrollment);
-    grouped.set(invoiceNumber, current);
+function resolveFallbackInvoiceGroupKey(enrollment: RecoverableEnrollment) {
+  if (enrollment.invoiceNumber) {
+    return `invoice:${enrollment.invoiceNumber}`;
   }
 
-  return Array.from(grouped.entries())
-    .map(([invoiceNumber, lineItems]) => buildInvoiceRecordFromEnrollments(invoiceNumber, lineItems))
+  if (enrollment.razorpayPaymentId) {
+    return `payment:${enrollment.razorpayPaymentId}`;
+  }
+
+  if (enrollment.razorpayOrderId) {
+    return `order:${enrollment.razorpayOrderId}`;
+  }
+
+  if (enrollment.enrolledAt) {
+    return `enrolled:${enrollment.userId}:${enrollment.enrolledAt}:${enrollment.couponCode || "nocoupon"}`;
+  }
+
+  return `enrollment:${enrollment.userId}:${enrollment.id || enrollment.courseId}`;
+}
+
+function resolveFallbackInvoiceNumber(enrollments: RecoverableEnrollment[]) {
+  const primary = enrollments[0];
+
+  if (!primary) {
+    return "";
+  }
+
+  if (primary.invoiceNumber) {
+    return primary.invoiceNumber;
+  }
+
+  return createInvoiceNumber(
+    primary.razorpayOrderId || primary.razorpayPaymentId || `fallback-${primary.userId}-${primary.courseId}`,
+    primary.enrolledAt,
+  );
+}
+
+export function buildFallbackInvoicesFromEnrollments(enrollments: RecoverableEnrollment[]) {
+  const grouped = new Map<string, RecoverableEnrollment[]>();
+
+  for (const enrollment of enrollments) {
+    const groupKey = resolveFallbackInvoiceGroupKey(enrollment);
+    const current = grouped.get(groupKey) || [];
+    current.push(enrollment);
+    grouped.set(groupKey, current);
+  }
+
+  return Array.from(grouped.values())
+    .map((lineItems) => buildInvoiceRecordFromEnrollments(resolveFallbackInvoiceNumber(lineItems), lineItems))
     .filter((item): item is PersistedInvoiceRecord => Boolean(item))
     .sort((left, right) => new Date(right.paidAtIso).getTime() - new Date(left.paidAtIso).getTime());
 }

@@ -5,6 +5,7 @@ import {
   Building2,
   CalendarDays,
   CheckCircle2,
+  ChevronDown,
   Download,
   Edit2,
   ExternalLink,
@@ -22,6 +23,7 @@ import { useEffect, useState } from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { useAuth } from "@/hooks/use-auth";
 import {
+  getFirebaseAuth,
   getFirebaseDb,
   getMyEnrollments,
   getUserProfile,
@@ -30,10 +32,15 @@ import {
   type AppUserProfile,
   type FirestoreEnrollment,
 } from "@/lib/firebase";
-import { buildFallbackInvoicesFromEnrollments, mergeInvoiceRecords, type PersistedInvoiceRecord } from "@/lib/invoices";
+import {
+  buildFallbackInvoicesFromEnrollments,
+  buildPersistedInvoiceRecordFromStoredOrder,
+  mergeInvoiceRecords,
+  type PersistedInvoiceRecord,
+} from "@/lib/invoices";
 import { readEnrolledCourses } from "@/lib/my-learning";
 import { getCanonicalCourseId } from "@/lib/offering-catalog";
-import { formatCurrencyInrFromPaise, formatInvoiceDate } from "@/lib/order-success";
+import { formatCurrencyInrFromPaise, formatInvoiceDate, latestOrderStorageKey, type StoredOrderSuccess } from "@/lib/order-success";
 import { getInitials } from "@/lib/utils";
 
 function formatMemberSince(value: string | null) {
@@ -56,19 +63,85 @@ type ProfileRecord = AppUserProfile & {
 function formatPaymentStatus(value: PersistedInvoiceRecord["paymentStatus"]) {
   switch (value) {
     case "captured":
-      return "Success";
+      return "Paid Successfully";
     case "failed":
       return "Failed";
     case "free":
-      return "Success";
+      return "Enrolled Successfully";
     default:
       return "Pending";
+  }
+}
+
+function formatPaymentMethod(invoice: PersistedInvoiceRecord) {
+  if (invoice.paymentStatus === "free" || invoice.totalPaidPaise <= 0) {
+    return "Free Coupon";
+  }
+
+  if (invoice.appliedCouponCode && invoice.discountPaise) {
+    return "Razorpay + Coupon";
+  }
+
+  return "Razorpay";
+}
+
+async function persistRecoveredInvoice(invoice: PersistedInvoiceRecord) {
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+
+  if (!token) {
+    return;
+  }
+
+  await fetch("/api/payment/invoice", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ invoice }),
+  });
+}
+
+function normalizePhoneNumber(value?: string | null) {
+  const digits = (value || "").replace(/\D/g, "");
+  return digits.length > 10 ? digits.slice(-10) : digits;
+}
+
+function readLatestRecoveredInvoice(userUid: string, userPhone?: string | null) {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(latestOrderStorageKey);
+
+    if (!raw) {
+      return null;
+    }
+
+    const storedInvoice = JSON.parse(raw) as StoredOrderSuccess;
+    const invoicePhone = normalizePhoneNumber(storedInvoice.customer.phone);
+    const currentUserPhone = normalizePhoneNumber(userPhone);
+
+    if (invoicePhone && currentUserPhone && invoicePhone !== currentUserPhone) {
+      return null;
+    }
+
+    return buildPersistedInvoiceRecordFromStoredOrder(userUid, storedInvoice);
+  } catch (error) {
+    logFirestoreIssue("[Profile] Unable to restore latest recovered invoice", error);
+    return null;
   }
 }
 
 function InvoiceSummaryCard({ invoice }: { invoice: PersistedInvoiceRecord }) {
   const courseLabel = invoice.courses.map((item) => item.title).join(", ");
   const paymentStatusLabel = formatPaymentStatus(invoice.paymentStatus);
+  const paymentMethodLabel = formatPaymentMethod(invoice);
+  const amountPaidLabel = formatCurrencyInrFromPaise(invoice.totalPaidPaise);
+  const discountAppliedLabel = formatCurrencyInrFromPaise(invoice.discountPaise || 0);
+  const originalAmountLabel = formatCurrencyInrFromPaise(invoice.subtotalPaise);
+  const purchaseDateLabel = formatInvoiceDate(invoice.paidAtIso);
   const paymentStatusClass =
     invoice.paymentStatus === "captured" || invoice.paymentStatus === "free"
       ? "border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]"
@@ -78,55 +151,84 @@ function InvoiceSummaryCard({ invoice }: { invoice: PersistedInvoiceRecord }) {
 
   return (
     <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 shadow-sm">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div>
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-[13px] font-bold text-[#0F172A]">{invoice.invoiceNumber}</p>
             <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${paymentStatusClass}`}>
               {paymentStatusLabel}
             </span>
+            {invoice.appliedCouponCode ? (
+              <span className="inline-flex rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-2.5 py-0.5 text-[10px] font-semibold text-[#4338CA]">
+                {invoice.appliedCouponCode}
+              </span>
+            ) : null}
           </div>
           <p className="mt-1 text-[12px] font-medium text-[#334155]">{courseLabel}</p>
           <p className="mt-1 text-[11px] text-[#64748B]">
-            Purchased on {formatInvoiceDate(invoice.paidAtIso)}
+            Purchased on {purchaseDateLabel}
           </p>
+
+          <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="flex min-h-[78px] flex-col justify-center rounded-xl border border-[#E2E8F0] bg-white px-3 py-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Amount Paid</p>
+              <p className="mt-1 text-[14px] font-semibold leading-none text-[#0F172A]">{amountPaidLabel}</p>
+            </div>
+            <div className="flex min-h-[78px] flex-col justify-center rounded-xl border border-[#E2E8F0] bg-white px-3 py-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Original Price</p>
+              <p className="mt-1 text-[14px] font-semibold leading-none text-[#0F172A]">{originalAmountLabel}</p>
+            </div>
+            <div className="flex min-h-[78px] flex-col justify-center rounded-xl border border-[#E2E8F0] bg-white px-3 py-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Discount</p>
+              <p className="mt-1 text-[14px] font-semibold leading-none text-[#0F172A]">{discountAppliedLabel}</p>
+            </div>
+            <div className="flex min-h-[78px] flex-col justify-center rounded-xl border border-[#E2E8F0] bg-white px-3 py-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Payment Method</p>
+              <p className="mt-1 truncate text-[14px] font-semibold leading-none text-[#0F172A]">{paymentMethodLabel}</p>
+            </div>
+          </div>
         </div>
 
-        <Link
-          href={`/dashboard/invoices/${encodeURIComponent(invoice.invoiceNumber)}`}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#C7D2FE] bg-white px-3 py-2 text-[12px] font-semibold text-[#4F46E5] transition hover:bg-[#EEF2FF]"
-        >
-          <Download className="h-3.5 w-3.5" />
-          View / Download Invoice
-        </Link>
+        <div className="flex flex-wrap gap-2 xl:justify-end">
+          <Link
+            href={`/dashboard/invoices/${encodeURIComponent(invoice.invoiceNumber)}`}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#C7D2FE] bg-white px-3 py-2 text-[12px] font-semibold text-[#4F46E5] transition hover:bg-[#EEF2FF]"
+          >
+            <Download className="h-3.5 w-3.5" />
+            View / Download Invoice
+          </Link>
+        </div>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {[
-          { label: "Course Name", value: courseLabel },
-          { label: "Order ID", value: invoice.orderId || "-" },
-          { label: "Razorpay Payment ID", value: invoice.paymentId || "-" },
-          { label: "Amount Paid", value: formatCurrencyInrFromPaise(invoice.totalPaidPaise) },
-          { label: "Payment Status", value: paymentStatusLabel },
-          { label: "Purchase Date", value: formatInvoiceDate(invoice.paidAtIso) },
-          { label: "Billing Name", value: invoice.customer.name || "-" },
-          { label: "Phone Number", value: invoice.customer.phone || "-" },
-          { label: "Email", value: invoice.customer.email || "-" },
-          { label: "Company Name", value: invoice.customer.companyName || "-" },
-          { label: "GSTIN", value: invoice.customer.gstNumber || "-" },
-          { label: "Coupon", value: invoice.appliedCouponCode || "-" },
-        ].map((item) => (
-          <div key={item.label} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">{item.label}</p>
-            <p className="mt-1 break-words text-[12px] font-medium text-[#0F172A]">{item.value}</p>
+      <details className="mt-3 group rounded-xl border border-[#E2E8F0] bg-white">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 text-[12px] font-semibold text-[#334155]">
+          <span>View Details</span>
+          <ChevronDown className="h-4 w-4 text-[#64748B] transition group-open:rotate-180" />
+        </summary>
+        <div className="border-t border-[#E2E8F0] px-3 py-3">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {[
+              { label: "Order ID", value: invoice.orderId || "-" },
+              { label: "Razorpay Payment ID", value: invoice.paymentId || "-" },
+              { label: "Billing Name", value: invoice.customer.name || "-" },
+              { label: "Phone Number", value: invoice.customer.phone || "-" },
+              { label: "Email", value: invoice.customer.email || "-" },
+              { label: "Company Name", value: invoice.customer.companyName || "-" },
+              { label: "GSTIN", value: invoice.customer.gstNumber || "-" },
+            ].map((item) => (
+              <div key={item.label} className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">{item.label}</p>
+                <p className="mt-1 break-words text-[12px] font-medium text-[#0F172A]">{item.value}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="mt-4 flex items-center gap-2 text-[11px] text-[#64748B]">
-        <ExternalLink className="h-3.5 w-3.5 text-[#4F46E5]" />
-        Open invoice page, then use browser Print → Save as PDF for download.
-      </div>
+          <div className="mt-3 flex items-center gap-2 text-[11px] text-[#64748B]">
+            <ExternalLink className="h-3.5 w-3.5 text-[#4F46E5]" />
+            Open invoice page, then use browser Print to Save as PDF for download.
+          </div>
+        </div>
+      </details>
     </div>
   );
 }
@@ -169,6 +271,7 @@ export function ProfilePanel() {
 
         const typedEnrollments = enrollments as Array<FirestoreEnrollment & { id: string }>;
         const deviceCourses = readEnrolledCourses();
+        const recoveredLocalInvoice = readLatestRecoveredInvoice(user.uid, user.phoneNumber);
         const uniqueIds = new Set([
           ...typedEnrollments.map((item) => getCanonicalCourseId(item.courseId)),
           ...deviceCourses.map((item) => getCanonicalCourseId(item.courseSlug)),
@@ -183,17 +286,43 @@ export function ProfilePanel() {
           .sort((left, right) => new Date(left).getTime() - new Date(right).getTime());
 
         const fallbackInvoices = buildFallbackInvoicesFromEnrollments(typedEnrollments);
+        const localFallbackInvoices = recoveredLocalInvoice ? [recoveredLocalInvoice] : [];
+        const mergedRecoveredInvoices = mergeInvoiceRecords(fallbackInvoices, localFallbackInvoices);
+        const persistedInvoiceNumbers = new Set(
+          (savedInvoices as PersistedInvoiceRecord[]).map((item) => item.invoiceNumber),
+        );
+        const missingRecoveredInvoices = mergedRecoveredInvoices.filter(
+          (item) => !persistedInvoiceNumbers.has(item.invoiceNumber),
+        );
+
+        console.info("[Profile Invoice Debug] current uid", user.uid);
+        console.info("[Profile Invoice Debug] enrollments count", typedEnrollments.length);
+        console.info("[Profile Invoice Debug] invoices count", (savedInvoices as PersistedInvoiceRecord[]).length);
+        console.info("[Profile Invoice Debug] fallback invoices count", fallbackInvoices.length + localFallbackInvoices.length);
+        console.info(
+          "[Profile Invoice Debug] final invoice count",
+          mergeInvoiceRecords(savedInvoices as PersistedInvoiceRecord[], mergedRecoveredInvoices).length,
+        );
+        console.info("[Profile Invoice Debug] enrollment userIds", Array.from(new Set(typedEnrollments.map((item) => item.userId))).slice(0, 5));
+        console.info(
+          "[Profile Invoice Debug] invoice userIds",
+          Array.from(new Set((savedInvoices as PersistedInvoiceRecord[]).map((item) => item.userId))).slice(0, 5),
+        );
 
         setProfile(nextProfile as ProfileRecord);
         setCourseCount(uniqueIds.size);
         setMemberSince(dates[0] || new Date().toISOString());
-        setInvoices(mergeInvoiceRecords(savedInvoices as PersistedInvoiceRecord[], fallbackInvoices));
+        setInvoices(mergeInvoiceRecords(savedInvoices as PersistedInvoiceRecord[], mergedRecoveredInvoices));
         setEditName(user.displayName || nextProfile?.name || "");
         setEditEmail(nextProfile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "") || "");
         setEditPhone(nextProfile?.phone || user.phoneNumber || "");
         const nextBillingProfile = nextProfile as ProfileRecord | null;
         setEditCompany(nextBillingProfile?.companyName || "");
         setEditGst(nextBillingProfile?.gstNumber || "");
+
+        if (missingRecoveredInvoices.length) {
+          void Promise.allSettled(missingRecoveredInvoices.map((invoice) => persistRecoveredInvoice(invoice)));
+        }
       } catch (error) {
         if (!active) return;
         logFirestoreIssue("[Profile] Unable to load", error);

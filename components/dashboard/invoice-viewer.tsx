@@ -6,7 +6,7 @@ import { Download, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { getInvoiceByNumberForUser, getMyEnrollments, type FirestoreEnrollment, type FirestoreInvoice } from "@/lib/firebase";
 import { InvoiceDocument } from "@/components/invoice/invoice-document";
-import { buildInvoiceRecordFromEnrollments, type PersistedInvoiceRecord } from "@/lib/invoices";
+import { buildFallbackInvoicesFromEnrollments, buildInvoiceRecordFromEnrollments, type PersistedInvoiceRecord } from "@/lib/invoices";
 
 export function InvoiceViewer({ invoiceNumber }: { invoiceNumber: string }) {
   const { isAuthReady, openAuthModal, user } = useAuth();
@@ -36,10 +36,15 @@ export function InvoiceViewer({ invoiceNumber }: { invoiceNumber: string }) {
           return;
         }
 
-        const fallbackInvoice = buildInvoiceRecordFromEnrollments(
-          invoiceNumber,
-          (enrollments as Array<FirestoreEnrollment & { id: string }>).filter((item) => item.invoiceNumber === invoiceNumber),
+        const fallbackInvoices = buildFallbackInvoicesFromEnrollments(
+          enrollments as Array<FirestoreEnrollment & { id: string }>,
         );
+        const fallbackInvoice =
+          fallbackInvoices.find((item) => item.invoiceNumber === invoiceNumber) ||
+          buildInvoiceRecordFromEnrollments(
+            invoiceNumber,
+            (enrollments as Array<FirestoreEnrollment & { id: string }>).filter((item) => item.invoiceNumber === invoiceNumber),
+          );
 
         setInvoice((storedInvoice as FirestoreInvoice | null) || fallbackInvoice);
       } finally {

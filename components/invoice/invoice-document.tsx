@@ -2,6 +2,7 @@
 
 import { CheckCircle2 } from "lucide-react";
 import { formatCurrencyInrFromPaise, formatInvoiceDate, type StoredOrderSuccess } from "@/lib/order-success";
+import type { PersistedInvoiceRecord } from "@/lib/invoices";
 
 const SELLER = {
   legalName: "NETSEEMS VENTURES PRIVATE LIMITED",
@@ -26,8 +27,40 @@ function InvoiceVal({ children, className = "" }: { children: React.ReactNode; c
   return <p className={`mt-0.5 text-[12.5px] text-[#E2E8F0] ${className}`}>{children}</p>;
 }
 
-export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess }) {
+function resolveInvoicePaymentStatus(invoice: StoredOrderSuccess | PersistedInvoiceRecord) {
+  const persistedInvoice = invoice as PersistedInvoiceRecord;
+
+  if (persistedInvoice.paymentStatus === "free" || invoice.totalPaidPaise <= 0) {
+    return "ENROLLED";
+  }
+
+  if (persistedInvoice.paymentStatus === "failed") {
+    return "FAILED";
+  }
+
+  if (persistedInvoice.paymentStatus === "pending") {
+    return "PENDING";
+  }
+
+  return "PAID";
+}
+
+function resolveInvoiceMethod(invoice: StoredOrderSuccess | PersistedInvoiceRecord) {
+  if (invoice.totalPaidPaise <= 0) {
+    return "Free Coupon";
+  }
+
+  if (invoice.appliedCouponCode && invoice.discountPaise) {
+    return "Razorpay + Coupon";
+  }
+
+  return invoice.paymentMethod || "Razorpay";
+}
+
+export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess | PersistedInvoiceRecord }) {
   const showTaxInvoice = Boolean(invoice.gstInvoiceEnabled && invoice.customer.gstNumber);
+  const statusLabel = resolveInvoicePaymentStatus(invoice);
+  const paymentMethodLabel = resolveInvoiceMethod(invoice);
 
   return (
     <div
@@ -61,7 +94,7 @@ export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess }) {
               {formatInvoiceDate(invoice.paidAtIso)}
             </p>
             <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#34D399]/10 px-3 py-1 text-[11px] font-bold text-[#34D399] print:bg-[#F0FDF4] print:text-[#16A34A]">
-              <CheckCircle2 className="h-3 w-3" /> PAID
+              <CheckCircle2 className="h-3 w-3" /> {statusLabel}
             </div>
           </div>
         </div>
@@ -93,7 +126,9 @@ export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess }) {
             {[
               ["Razorpay Order", invoice.orderId || "-"],
               ["Payment ID", invoice.paymentId || "-"],
-              ["Method", invoice.paymentMethod || "-"],
+              ["Method", paymentMethodLabel],
+              ["Status", statusLabel],
+              ["Coupon", invoice.appliedCouponCode || "-"],
               ["Date", formatInvoiceDate(invoice.paidAtIso)],
             ].map(([label, value]) => (
               <div key={label} className="flex flex-wrap justify-between gap-2">
