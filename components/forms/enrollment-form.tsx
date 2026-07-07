@@ -64,6 +64,18 @@ async function getPaymentAuthHeaders() {
   };
 }
 
+async function persistVerifiedInvoiceRecord(invoice: StoredOrderSuccess) {
+  const response = await fetch("/api/payment/invoice", {
+    method: "POST",
+    headers: await getPaymentAuthHeaders(),
+    body: JSON.stringify({ invoice }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to persist invoice record.");
+  }
+}
+
 type EnrollmentFormProps = {
   course: {
     slug: string;
@@ -127,11 +139,21 @@ export function EnrollmentForm({
       } catch (error) {
         logFirestoreIssue("[Enrollment] Enrollment recovery sync failed after verified payment", error);
       }
+
+      try {
+        await persistVerifiedInvoiceRecord(invoice);
+      } catch (error) {
+        logFirestoreIssue("[Enrollment] Invoice recovery sync failed after verified payment", error);
+      }
       return;
     }
 
     void saveInvoiceEnrollments(user!, invoice).catch((error) => {
       logFirestoreIssue("[Enrollment] Client enrollment confirmation sync failed after verified payment", error);
+    });
+
+    void persistVerifiedInvoiceRecord(invoice).catch((error) => {
+      logFirestoreIssue("[Enrollment] Client invoice confirmation sync failed after verified payment", error);
     });
   }
 

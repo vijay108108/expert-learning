@@ -90,6 +90,18 @@ async function getPaymentAuthHeaders() {
   };
 }
 
+async function persistVerifiedInvoiceRecord(invoice: StoredOrderSuccess) {
+  const response = await fetch("/api/payment/invoice", {
+    method: "POST",
+    headers: await getPaymentAuthHeaders(),
+    body: JSON.stringify({ invoice }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to persist invoice record.");
+  }
+}
+
 /* Payment Processing Overlay */
 function PaymentProcessingOverlay() {
   const steps = [
@@ -206,11 +218,21 @@ export function CartCheckoutForm() {
       } catch (error) {
         logFirestoreIssue("[Checkout] Enrollment recovery sync failed after verified payment", error);
       }
+
+      try {
+        await persistVerifiedInvoiceRecord(invoice);
+      } catch (error) {
+        logFirestoreIssue("[Checkout] Invoice recovery sync failed after verified payment", error);
+      }
       return;
     }
 
     void saveInvoiceEnrollments(user!, invoice).catch((error) => {
       logFirestoreIssue("[Checkout] Client enrollment confirmation sync failed after verified payment", error);
+    });
+
+    void persistVerifiedInvoiceRecord(invoice).catch((error) => {
+      logFirestoreIssue("[Checkout] Client invoice confirmation sync failed after verified payment", error);
     });
   }
 
