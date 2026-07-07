@@ -6,6 +6,12 @@ export type InvoiceCourseLine = {
   duration: string;
   level: string;
   amountPaise: number;
+  originalAmountPaise?: number;
+  discountAmountPaise?: number;
+  finalPaidAmountPaise?: number;
+  couponCode?: string;
+  discountPercentage?: number;
+  paymentStatus?: "captured" | "free";
   enrollmentType?: "course" | "program";
   purchasedOfferingSlug?: string;
   programSlug?: string;
@@ -22,6 +28,7 @@ export type StoredOrderSuccess = {
   paidAtIso: string;
   subtotalPaise: number;
   discountPaise?: number;
+  discountPercentage?: number;
   appliedCouponCode?: string;
   baseAmountPaise: number;
   gstPaise: number;

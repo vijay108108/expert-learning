@@ -37,6 +37,12 @@ export type FirestoreEnrollment = {
   level: string;
   companyName?: string;
   gstNumber?: string;
+  couponCode?: string;
+  discountPercentage?: number;
+  originalAmount?: number;
+  discountAmount?: number;
+  finalPaidAmount?: number;
+  paymentStatus?: "created" | "captured" | "failed" | "free";
 };
 
 type EnrollmentWriteInput = Omit<FirestoreEnrollment, "status"> & {
@@ -156,6 +162,12 @@ export async function saveInvoiceEnrollments(user: User, invoice: StoredOrderSuc
         primaryCourseSlug: course.primaryCourseSlug || getCourseSlugByCourseId(course.slug),
         courseName: course.title,
         amountPaid: Math.round(course.amountPaise / 100),
+        couponCode: invoice.appliedCouponCode || "",
+        discountPercentage: invoice.discountPercentage || 0,
+        originalAmount: Math.round((course.originalAmountPaise ?? course.amountPaise) / 100),
+        discountAmount: Math.round((course.discountAmountPaise ?? 0) / 100),
+        finalPaidAmount: Math.round((course.finalPaidAmountPaise ?? course.amountPaise) / 100),
+        paymentStatus: course.paymentStatus || (invoice.totalPaidPaise > 0 ? "captured" : "free"),
         razorpayOrderId: invoice.orderId,
         razorpayPaymentId: invoice.paymentId,
         invoiceNumber: invoice.invoiceNumber,

@@ -405,9 +405,42 @@ export function CartCheckoutForm() {
         message?: string;
         keyId?: string;
         order?: { id: string; amount: number; currency: string };
+        freeEnrollment?: boolean;
+        clientSyncRequired?: boolean;
+        invoice?: StoredOrderSuccess;
       };
 
-      if (!createResponse.ok || !createPayload.order || !createPayload.keyId) {
+      if (!createResponse.ok) {
+        throw new Error(createPayload.message || "Unable to start checkout.");
+      }
+
+      if (createPayload.freeEnrollment && createPayload.invoice) {
+        const dashboardPath = getInvoiceDashboardPath(createPayload.invoice, {
+          paymentCompleted: true,
+        });
+
+        window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(createPayload.invoice));
+        syncMyLearningFromInvoice(createPayload.invoice);
+
+        await syncVerifiedPurchase(
+          createPayload.invoice,
+          profilePhone,
+          Boolean(createPayload.clientSyncRequired),
+        );
+
+        clearCart();
+        window.localStorage.removeItem("cart");
+        window.localStorage.setItem("cart", JSON.stringify([]));
+        setIsPaying(false);
+        router.replace(dashboardPath);
+
+        void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
+          logFirestoreIssue("[Checkout] Unable to save phone number after payment", error);
+        });
+        return;
+      }
+
+      if (!createPayload.order || !createPayload.keyId) {
         throw new Error(createPayload.message || "Unable to start checkout.");
       }
 
@@ -730,8 +763,12 @@ export function CartCheckoutForm() {
                 <span>{formatPaiseToPrice(pricing.subtotalPaise)}</span>
               </div>
               <div className="flex items-center justify-between text-[#CBD5E1]">
-                <span>Discount</span>
+                <span>{appliedCouponCode ? `Discount (${appliedCouponCode})` : "Discount"}</span>
                 <span>{pricing.discountPaise ? `-${formatCurrencyInrFromPaise(pricing.discountPaise)}` : "₹0"}</span>
+              </div>
+              <div className="flex items-center justify-between text-[#CBD5E1]">
+                <span>Coupon Code</span>
+                <span>{appliedCouponCode || "—"}</span>
               </div>
               <div className="flex items-center justify-between text-[#CBD5E1]">
                 <span>Base Amount (excl. GST)</span>
@@ -753,8 +790,12 @@ export function CartCheckoutForm() {
                 <span>{formatPaiseToPrice(pricing.subtotalPaise)}</span>
               </div>
               <div className="flex items-center justify-between text-[#CBD5E1]">
-                <span>Discount</span>
+                <span>{appliedCouponCode ? `Discount (${appliedCouponCode})` : "Discount"}</span>
                 <span>{pricing.discountPaise ? `-${formatCurrencyInrFromPaise(pricing.discountPaise)}` : "₹0"}</span>
+              </div>
+              <div className="flex items-center justify-between text-[#CBD5E1]">
+                <span>Coupon Code</span>
+                <span>{appliedCouponCode || "—"}</span>
               </div>
               <div className="flex items-center justify-between text-[#CBD5E1]">
                 <span>Platform Fee</span>

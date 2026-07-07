@@ -4,11 +4,16 @@ import { getFirebaseDb } from "@/lib/firebase";
 export type FirestorePayment = {
   userId: string;
   razorpayOrderId: string;
-  razorpayPaymentId: string;
+  razorpayPaymentId?: string;
   amountPaid: number;
   currency: "INR";
-  status: "created" | "captured" | "failed";
+  status: "created" | "captured" | "failed" | "free";
   courseSlugs: string[];
+  couponCode?: string;
+  discountPercentage?: number;
+  originalAmount?: number;
+  discountAmount?: number;
+  finalPaidAmount?: number;
   createdAt?: string;
   updatedAt?: string;
 };

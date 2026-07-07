@@ -199,6 +199,7 @@ export function EnrollmentForm({
 
     setPending(true);
     setIsPaying(true);
+    const profilePhone = formatPhoneForProfile(form.phone);
 
     try {
       const duplicateCourses = await findExistingEnrollmentCourseIds(user.uid, [course.slug]);
@@ -225,9 +226,39 @@ export function EnrollmentForm({
         message?: string;
         keyId?: string;
         order?: { id: string; amount: number; currency: string };
+        freeEnrollment?: boolean;
+        clientSyncRequired?: boolean;
+        invoice?: StoredOrderSuccess;
       };
 
-      if (!createResponse.ok || !createPayload.order || !createPayload.keyId) {
+      if (!createResponse.ok) {
+        throw new Error(createPayload.message || "Unable to start payment.");
+      }
+
+      if (createPayload.freeEnrollment && createPayload.invoice) {
+        const dashboardPath = getInvoiceDashboardPath(createPayload.invoice, {
+          paymentCompleted: true,
+        });
+
+        window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(createPayload.invoice));
+        syncMyLearningFromInvoice(createPayload.invoice);
+
+        await syncVerifiedPurchase(
+          createPayload.invoice,
+          profilePhone,
+          Boolean(createPayload.clientSyncRequired),
+        );
+
+        setIsPaying(false);
+        router.replace(dashboardPath);
+
+        void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
+          logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
+        });
+        return;
+      }
+
+      if (!createPayload.order || !createPayload.keyId) {
         throw new Error(createPayload.message || "Unable to start payment.");
       }
 
@@ -418,8 +449,12 @@ export function EnrollmentForm({
             <span>{formatPrice(course.priceValue)}</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-sm text-brand-muted">
-            <span>Discount</span>
+            <span>{appliedCouponCode ? `Discount (${appliedCouponCode})` : "Discount"}</span>
             <span>{pricing.discountPaise ? `-₹${Math.round(pricing.discountPaise / 100).toLocaleString("en-IN")}` : "₹0"}</span>
+          </div>
+          <div className="mt-2 flex items-center justify-between text-sm text-brand-muted">
+            <span>Coupon Code</span>
+            <span>{appliedCouponCode || "—"}</span>
           </div>
           <div className="mt-3 flex items-center justify-between border-t border-brand-blue/10 pt-3 text-sm font-semibold text-brand-text">
             <span>Final Payable</span>
