@@ -150,6 +150,7 @@ export async function POST(request: Request) {
       };
 
       let clientSyncRequired = false;
+      let enrollmentSaved = false;
 
       try {
         await Promise.all(
@@ -190,7 +191,13 @@ export async function POST(request: Request) {
             });
           }),
         );
+        enrollmentSaved = true;
+      } catch (error) {
+        clientSyncRequired = true;
+        logFirestoreIssue("[Payment Create] Free coupon enrollment save failed; client sync required", error);
+      }
 
+      try {
         await upsertUserProfileAdminFromPayment({
           uid: authUser.uid,
           name: body.name,
@@ -198,15 +205,22 @@ export async function POST(request: Request) {
           phone: body.phone,
           createdAt: paidAtIso,
         });
+      } catch (error) {
+        logFirestoreIssue("[Payment Create] Free coupon profile sync failed", error);
+      }
 
+      try {
         await saveInvoiceRecordAdmin({
           ...invoice,
           userId: authUser.uid,
           paymentStatus: "free",
         } satisfies PersistedInvoiceRecord);
       } catch (error) {
-        clientSyncRequired = true;
-        logFirestoreIssue("[Payment Create] Free coupon enrollment save failed; client sync required", error);
+        if (enrollmentSaved) {
+          logFirestoreIssue("[Payment Create] Free coupon invoice persistence failed", error);
+        } else {
+          logFirestoreIssue("[Payment Create] Free coupon invoice persistence skipped because enrollment save failed", error);
+        }
       }
 
       return NextResponse.json({

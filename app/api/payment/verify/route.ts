@@ -233,6 +233,8 @@ export async function POST(request: Request) {
       }),
     };
 
+    let enrollmentSaved = false;
+
     try {
       await Promise.all(
         offerings.map((offering, index) => {
@@ -274,7 +276,13 @@ export async function POST(request: Request) {
           });
         }),
       );
+      enrollmentSaved = true;
+    } catch (error) {
+      clientSyncRequired = true;
+      logFirestoreIssue("[Payment Verify] Server enrollment save failed after verified payment; client sync required", error);
+    }
 
+    try {
       await upsertUserProfileAdminFromPayment({
         uid: trustedUserId,
         name: trustedName,
@@ -282,15 +290,22 @@ export async function POST(request: Request) {
         phone: trustedPhone,
         createdAt: paidAtIso,
       });
+    } catch (error) {
+      logFirestoreIssue("[Payment Verify] User profile sync failed after verified payment", error);
+    }
 
+    try {
       await saveInvoiceRecordAdmin({
         ...invoice,
         userId: trustedUserId,
         paymentStatus: "captured",
       } satisfies PersistedInvoiceRecord);
     } catch (error) {
-      clientSyncRequired = true;
-      logFirestoreIssue("[Payment Verify] Server enrollment save failed after verified payment; client sync required", error);
+      if (enrollmentSaved) {
+        logFirestoreIssue("[Payment Verify] Invoice persistence failed after verified payment", error);
+      } else {
+        logFirestoreIssue("[Payment Verify] Invoice persistence skipped because enrollment save failed", error);
+      }
     }
 
     after(async () => {
