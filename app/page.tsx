@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   Award,
   BookOpenCheck,
@@ -43,11 +43,11 @@ const reviews = [
     company: "TCS",
     avatar: "PS",
     rating: 5,
-    text: "Cleared my AZ-104 in the first attempt thanks to GenZNext's structured roadmap and mock exams. The Azure content is the best I've seen â€” better than official Microsoft courses.",
+    text: "Cleared my AZ-104 in the first attempt thanks to GenZNext's structured roadmap and mock exams. The Azure content is the best I've seen — better than official Microsoft courses.",
   },
   {
     name: "Arjun Kapoor",
-    role: "Software Engineer â†’ Cloud Engineer",
+    role: "Software Engineer → Cloud Engineer",
     company: "Wipro",
     avatar: "AK",
     rating: 5,
@@ -68,7 +68,7 @@ const reviews = [
     avatar: "VS",
     rating: 5,
     b2b: true,
-    text: "We enrolled our entire engineering team in the GenZNext DevOps corporate batch. ROI was immediate â€” deployment frequency doubled in 60 days. Highly recommend for B2B teams.",
+    text: "We enrolled our entire engineering team in the GenZNext DevOps corporate batch. ROI was immediate — deployment frequency doubled in 60 days. Highly recommend for B2B teams.",
   },
   {
     name: "Anjali Rao",
@@ -85,7 +85,7 @@ const reviews = [
     avatar: "DJ",
     rating: 5,
     b2b: true,
-    text: "As a founder building cloud-native products, this program helped me understand the full stack â€” from infrastructure to GenAI. Worth every rupee. My technical decisions improved overnight.",
+    text: "As a founder building cloud-native products, this program helped me understand the full stack — from infrastructure to GenAI. Worth every rupee. My technical decisions improved overnight.",
   },
   {
     name: "Sneha Patel",
@@ -97,7 +97,7 @@ const reviews = [
   },
   {
     name: "Aakash Verma",
-    role: "B.Tech Student â†’ Intern at AWS Partner",
+    role: "B.Tech Student → Intern at AWS Partner",
     company: "Amity University",
     avatar: "AV",
     rating: 5,
@@ -109,7 +109,7 @@ const reviews = [
     company: "Mindtree",
     avatar: "MT",
     rating: 5,
-    text: "The SRE-aligned content in the DevOps track is brilliant. Kubernetes, Helm, observability â€” all covered end-to-end with real cluster exercises. Nothing theoretical here.",
+    text: "The SRE-aligned content in the DevOps track is brilliant. Kubernetes, Helm, observability — all covered end-to-end with real cluster exercises. Nothing theoretical here.",
   },
   {
     name: "Kritika Bhatt",
@@ -126,7 +126,7 @@ const reviews = [
     company: "L&T Infotech",
     avatar: "RD",
     rating: 5,
-    text: "From Terraform to Azure Policy to DevSecOps pipelines â€” GenZNext covered it all with depth. The weekly live sessions kept me accountable and the batch community is very active.",
+    text: "From Terraform to Azure Policy to DevSecOps pipelines — GenZNext covered it all with depth. The weekly live sessions kept me accountable and the batch community is very active.",
   },
   {
     name: "Pooja Nair",
@@ -134,7 +134,7 @@ const reviews = [
     company: "Mphasis",
     avatar: "PN",
     rating: 5,
-    text: "The Generative AI course content is up-to-date with GPT-4, Claude, LangChain and vector DBs. I've been recommending it to everyone in my team. Practical over theoretical â€” love it.",
+    text: "The Generative AI course content is up-to-date with GPT-4, Claude, LangChain and vector DBs. I've been recommending it to everyone in my team. Practical over theoretical — love it.",
   },
   {
     name: "Suresh Babu",
@@ -163,7 +163,7 @@ const reviews = [
   },
   {
     name: "Swati Agrawal",
-    role: "Product Manager â†’ Tech PM",
+    role: "Product Manager → Tech PM",
     company: "Razorpay",
     avatar: "SA",
     rating: 5,
@@ -175,7 +175,7 @@ const reviews = [
     company: "Nagarro",
     avatar: "NS",
     rating: 5,
-    text: "The DevSecOps content is not watered down. Real-world pipelines, security scanning, container hardening â€” everything I use daily. My team now follows the same frameworks.",
+    text: "The DevSecOps content is not watered down. Real-world pipelines, security scanning, container hardening — everything I use daily. My team now follows the same frameworks.",
   },
   {
     name: "Divya Srivastava",
@@ -262,7 +262,7 @@ export default function Home() {
         <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       ))}
 
-      {/* â”€â”€ Hero â”€â”€ */}
+      {/* Hero */}
       <section className="relative overflow-hidden bg-[linear-gradient(160deg,#FFFFFF_0%,#F5F0FF_45%,#E0F2FE_100%)] px-4 pb-16 pt-10 sm:px-6 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-16">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(147,51,234,0.1)_0%,transparent_65%)]" />
@@ -302,21 +302,32 @@ export default function Home() {
 
           <div className="space-y-3">
 
-            {/* â”€â”€ Summer Training Notification â”€â”€ */}
-            <Link
-              href="/checkout/azure-administrator"
-              className="group flex items-start justify-between gap-3 rounded-2xl border border-[#FECACA] bg-[linear-gradient(135deg,#FEF2F2,#FFF1F2)] p-4 shadow-[0_4px_16px_rgba(220,38,38,0.12)] transition hover:shadow-[0_8px_24px_rgba(220,38,38,0.18)]"
+            {/* Summer Training Notification */}            <Link
+              href="/courses/azure/az-104"
+              className="group flex items-start justify-between gap-4 rounded-2xl border border-[#BFDBFE] bg-[linear-gradient(135deg,#F8FBFF_0%,#F2F8FF_42%,#EEF4FF_100%)] p-4 shadow-[0_8px_22px_rgba(37,99,235,0.10)] transition hover:shadow-[0_14px_30px_rgba(37,99,235,0.16)]"
             >
               <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex animate-pulse items-center rounded-full bg-[#DC2626] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-white">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="grid grid-cols-2 gap-[2px] rounded-[6px] bg-white p-1 shadow-sm">
+                      <span className="h-3 w-3 bg-[#F25022]" />
+                      <span className="h-3 w-3 bg-[#7FBA00]" />
+                      <span className="h-3 w-3 bg-[#00A4EF]" />
+                      <span className="h-3 w-3 bg-[#FFB900]" />
+                    </div>
+                    <div className="leading-none">
+                      <p className="text-[11px] font-semibold text-[#5B5B5B]">Microsoft</p>
+                      <p className="mt-0.5 text-[13px] font-semibold text-[#0078D4]">Azure</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex animate-pulse items-center rounded-full bg-[#E11D48] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-white">
                     Live
                   </span>
                 </div>
-                <p className="mt-1.5 text-[13px] font-bold leading-snug !text-[#0F172A]">
-                  AZ-104 – Microsoft Azure Administrator
+                <p className="mt-2 text-[12px] font-medium leading-snug text-[#64748B]">
+                  Microsoft Certified: Azure Administrator Associate AZ-104
                 </p>
-                <p className="mt-1 text-[11.5px] text-[#64748B]">
+                <p className="mt-1 text-[11.5px] text-[#5B6B84]">
                   Identity · Compute · Networking · Storage · Monitoring · 8 Weeks
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
@@ -325,10 +336,10 @@ export default function Home() {
                   <span className="font-semibold text-[#16A34A]">
                     ₹20,000 <span className="font-normal text-[#94A3B8] line-through">₹30,000</span>
                   </span>
-                  <span className="rounded-full bg-[#FECACA] px-2 py-0.5 font-bold text-[#DC2626]">33% off</span>
+                  <span className="rounded-full bg-[#FFE4E6] px-2 py-0.5 font-bold text-[#E11D48]">33% off</span>
                 </div>
               </div>
-              <span className="mt-0.5 shrink-0 rounded-xl bg-[#DC2626] px-3 py-2 text-[11px] font-bold text-white transition group-hover:bg-[#B91C1C]">
+              <span className="mt-0.5 shrink-0 rounded-xl bg-[linear-gradient(135deg,#0078D4,#2563EB)] px-3 py-2 text-[11px] font-bold text-white transition group-hover:brightness-95">
                 Register →
               </span>
             </Link>
@@ -366,7 +377,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* â”€â”€ Stats Bar â”€â”€ */}
+      {/* Stats Bar */}
       <section className="border-y border-[#1E1040] bg-[linear-gradient(135deg,#1A0535_0%,#0F172A_50%,#0C1A2E_100%)] px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {stats.map((stat) => (
@@ -379,14 +390,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* â”€â”€ Learning Tracks â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Learning Tracks Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Programs</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">6 High-Demand Learning Tracks</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#64748B]">
-              From students entering the industry to enterprises upskilling teams â€” we have a track for every ambition.
+              From students entering the industry to enterprises upskilling teams Ã¢â‚¬â€ we have a track for every ambition.
             </p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -397,7 +408,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[#0F172A]">{track.label}</p>
-                  <p className="mt-0.5 text-[12px] text-[#64748B] group-hover:text-[#4F46E5]">View curriculum â†’</p>
+                  <p className="mt-0.5 text-[12px] text-[#64748B] group-hover:text-[#4F46E5]">View curriculum Ã¢â€ â€™</p>
                 </div>
               </Link>
             ))}
@@ -405,7 +416,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* â”€â”€ Why GenZNext â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Why GenZNext Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
@@ -431,7 +442,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* â”€â”€ Student Reviews (floating marquee) â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Student Reviews (floating marquee) Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <section className="overflow-hidden bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -455,7 +466,7 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-[linear-gradient(to_right,white,transparent)]" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-[linear-gradient(to_left,white,transparent)]" />
 
-          {/* Row 1 â€” scrolls left */}
+          {/* Row 1 Ã¢â‚¬â€ scrolls left */}
           <div className="overflow-hidden">
             <div className="marquee-track marquee-left">
               {[...reviews.slice(0, 11), ...reviews.slice(0, 11)].map((review, i) => (
@@ -464,7 +475,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Row 2 â€” scrolls right */}
+          {/* Row 2 Ã¢â‚¬â€ scrolls right */}
           <div className="overflow-hidden">
             <div className="marquee-track marquee-right">
               {[...reviews.slice(10), ...reviews.slice(10)].map((review, i) => (
@@ -475,7 +486,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* â”€â”€ Who This Is For â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Who This Is For Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
@@ -498,7 +509,7 @@ export default function Home() {
                 title: "Working Professionals",
                 color: "text-[#059669]",
                 bg: "bg-[#ECFDF5]",
-                desc: "Upskill, switch roles, or get promoted. Our flex learning model fits around your job. Clear AWS, Azure or DevOps certifications in 6â€“8 weeks.",
+                desc: "Upskill, switch roles, or get promoted. Our flex learning model fits around your job. Clear AWS, Azure or DevOps certifications in 6Ã¢â‚¬â€œ8 weeks.",
                 cta: "Explore Tracks",
                 href: "/programs",
               },
@@ -527,21 +538,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* â”€â”€ CTA â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ CTA Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <section className="bg-white px-4 pb-16 pt-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764_0%,#4F46E5_50%,#0369A1_100%)] px-8 py-14 text-center shadow-[0_24px_60px_rgba(147,51,234,0.35)] sm:px-14">
           {/* Label */}
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C084FC]">Start Today</p>
 
-          {/* Heading â€” forced white */}
+          {/* Heading Ã¢â‚¬â€ forced white */}
           <h2 className="mt-4 text-[30px] font-extrabold leading-tight tracking-tight !text-white sm:text-[42px]">
             Join <span className="text-[#6EE7B7]">6,000+</span> learners<br className="hidden sm:block" /> building cloud careers
           </h2>
 
-          {/* Subtitle â€” high contrast white */}
+          {/* Subtitle Ã¢â‚¬â€ high contrast white */}
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-7 !text-white/80">
             Pick your specialization and start with structured mentorship, real projects,
-            and certification-focused learning â€” all in one platform.
+            and certification-focused learning Ã¢â‚¬â€ all in one platform.
           </p>
 
           {/* CTAs */}
@@ -569,3 +580,4 @@ export default function Home() {
     </>
   );
 }
+

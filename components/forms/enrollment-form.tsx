@@ -87,6 +87,7 @@ type EnrollmentFormProps = {
   eyebrow?: string;
   heading?: string;
   submitLabel?: string;
+  compact?: boolean;
 };
 
 type CouponApplyResponse = {
@@ -104,6 +105,7 @@ export function EnrollmentForm({
   eyebrow = "Enrollment",
   heading,
   submitLabel = "Enroll Now",
+  compact = false,
 }: EnrollmentFormProps) {
   const [form, setForm] = useState(initialState);
   const [pending, setPending] = useState(false);
@@ -375,7 +377,7 @@ export function EnrollmentForm({
 
   return (
     <div id={sectionId} className={cn("surface-form p-5 sm:p-7", className)}>
-      <div className="mb-6 flex items-end justify-between gap-4 border-b border-brand-blue/10 pb-5">
+      <div className={cn("flex items-end justify-between gap-4 border-b border-brand-blue/10", compact ? "mb-5 pb-4" : "mb-6 pb-5")}>
         <div>
           <div className="section-label">{eyebrow}</div>
           <h3 className="mt-2 text-[22px] font-bold text-brand-text">{heading || course.title}</h3>
@@ -396,7 +398,7 @@ export function EnrollmentForm({
             required
           />
         </div>
-        <div className="mt-4">
+        <div className={compact ? "mt-3.5" : "mt-4"}>
           <label className="form-label" htmlFor="enroll-email">
             Email
           </label>
@@ -410,7 +412,7 @@ export function EnrollmentForm({
             required
           />
         </div>
-        <div className="mt-4">
+        <div className={compact ? "mt-3.5" : "mt-4"}>
           <label className="form-label" htmlFor="enroll-phone">
             Phone
           </label>
@@ -424,11 +426,11 @@ export function EnrollmentForm({
             required
           />
         </div>
-        <div className="mt-4 rounded-[22px] border border-[#C7D2FE] bg-[linear-gradient(135deg,rgba(239,246,255,0.98),rgba(245,243,255,0.96)_55%,rgba(248,250,252,0.95))] p-4 shadow-[0_14px_32px_rgba(79,70,229,0.10)] sm:p-5">
+        <div className={cn("rounded-[22px] border border-[#C7D2FE] bg-[linear-gradient(135deg,rgba(239,246,255,0.98),rgba(245,243,255,0.96)_55%,rgba(248,250,252,0.95))] shadow-[0_14px_32px_rgba(79,70,229,0.10)]", compact ? "mt-3.5 p-3.5 sm:p-4" : "mt-4 p-4 sm:p-5")}>
           <label className="form-label" htmlFor="enroll-coupon">
             🎁 Apply Coupon & Save More
           </label>
-          <p className="mb-4 text-[12.5px] font-medium leading-5 text-[#4F46E5] sm:text-[13px]">
+          <p className={cn("text-[12.5px] font-medium leading-5 text-[#4F46E5] sm:text-[13px]", compact ? "mb-3" : "mb-4")}>
             Have a coupon code? Enter below to unlock your discount.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -477,7 +479,7 @@ export function EnrollmentForm({
             )
           ) : null}
         </div>
-        <div className="mt-4 rounded-[18px] border border-brand-blue/10 bg-brand-surface/70 p-4">
+        <div className={cn("rounded-[18px] border border-brand-blue/10 bg-brand-surface/70", compact ? "mt-3.5 p-3.5" : "mt-4 p-4")}>
           <div className="flex items-center justify-between text-sm text-brand-muted">
             <span>Original Price</span>
             <span>{formatPrice(course.priceValue)}</span>
@@ -498,7 +500,7 @@ export function EnrollmentForm({
         <button
           type="submit"
           disabled={pending || isPaying}
-          className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-[13px] text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:opacity-70"
+          className={cn("inline-flex w-full items-center justify-center rounded-lg bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:opacity-70", compact ? "mt-4 py-3" : "mt-5 py-[13px]")}
         >
           {pending || isPaying ? "Processing..." : submitLabel}
         </button>

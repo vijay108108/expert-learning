@@ -1,5 +1,4 @@
 import { ShieldCheck } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CourseCheckoutGuard } from "@/components/enroll/course-checkout-guard";
 import { EnrollmentForm } from "@/components/forms/enrollment-form";
@@ -9,26 +8,9 @@ type PageProps = {
   params: Promise<{ courseSlug: string }>;
 };
 
-function getSyllabusButtonClassName(slug: string) {
-  if (slug === "azure-administrator") {
-    return "border-[#BFDBFE] bg-[linear-gradient(135deg,#EFF6FF,#DBEAFE)] text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.12)] hover:-translate-y-0.5 hover:border-[#60A5FA] hover:text-[#1E40AF] hover:bg-[linear-gradient(135deg,#DBEAFE,#BFDBFE)]";
-  }
-
-  if (slug === "azure-devops-engineer") {
-    return "border-[#DDD6FE] bg-[linear-gradient(135deg,#F5F3FF,#EDE9FE)] text-[#6D28D9] shadow-[0_10px_24px_rgba(124,58,237,0.12)] hover:-translate-y-0.5 hover:border-[#A78BFA] hover:text-[#5B21B6] hover:bg-[linear-gradient(135deg,#EDE9FE,#DDD6FE)]";
-  }
-
-  if (slug === "aiops-engineering") {
-    return "border-[#99F6E4] bg-[linear-gradient(135deg,#ECFEFF,#CCFBF1)] text-[#0F766E] shadow-[0_10px_24px_rgba(20,184,166,0.12)] hover:-translate-y-0.5 hover:border-[#2DD4BF] hover:text-[#115E59] hover:bg-[linear-gradient(135deg,#CCFBF1,#99F6E4)]";
-  }
-
-  return "border-brand-blue/15 bg-[linear-gradient(135deg,#FFFFFF,#EEF2FF)] text-brand-blue shadow-[0_10px_24px_rgba(79,70,229,0.08)] hover:-translate-y-0.5 hover:border-[#C7D2FE] hover:bg-[#EEF2FF]";
-}
-
 export default async function CourseCheckoutPage({ params }: PageProps) {
   const { courseSlug } = await params;
   const course = getCheckoutOfferingBySlug(courseSlug);
-  const syllabusButtonClassName = getSyllabusButtonClassName(courseSlug);
 
   if (!course) {
     notFound();
@@ -36,21 +18,21 @@ export default async function CourseCheckoutPage({ params }: PageProps) {
 
   return (
     <>
-      <section className="px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.94fr_1.06fr]">
-          <aside className="surface-card p-6">
+      <section className="px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.94fr_1.06fr]">
+          <aside className="surface-card p-5 sm:p-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue-light/25 bg-brand-blue/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-blue-light">
               <span className="h-2 w-2 rounded-full bg-[#4F46E5]" />
               {course.tagLabel}
             </div>
-            <h2 className="mt-4 text-[28px] font-bold leading-tight text-brand-text">{course.title}</h2>
-            <p className="mt-4 text-sm leading-7 text-brand-muted">{course.overview}</p>
+            <h2 className="mt-3 text-[28px] font-bold leading-tight text-brand-text">{course.title}</h2>
+            <p className="mt-3 text-sm leading-7 text-brand-muted">{course.overview}</p>
 
-            <div className="mt-6 rounded-[18px] border border-brand-blue-light/18 bg-brand-surface/80 p-5">
+            <div className="mt-5 rounded-[18px] border border-brand-blue-light/18 bg-brand-surface/80 p-4 sm:p-5">
               <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-blue-light">
                 Course Summary
               </div>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <div className="surface-form p-4">
                   <div className="form-label">Price</div>
                   <div className="mono-meta text-base text-brand-text">{course.price}</div>
@@ -70,20 +52,7 @@ export default async function CourseCheckoutPage({ params }: PageProps) {
               </div>
             </div>
 
-            {course.officialSyllabusUrl ? (
-              <div className="mt-5">
-                <Link
-                  href={course.officialSyllabusUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`inline-flex w-full items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold transition ${syllabusButtonClassName}`}
-                >
-                  Download Syllabus
-                </Link>
-              </div>
-            ) : null}
-
-            <div className="mt-5 flex items-start gap-3 rounded-[16px] border border-emerald-400/15 bg-emerald-400/5 px-4 py-3 text-sm text-brand-muted">
+            <div className="mt-4 flex items-start gap-3 rounded-[16px] border border-emerald-400/15 bg-emerald-400/5 px-4 py-3 text-sm text-brand-muted">
               <ShieldCheck className="mt-0.5 h-4.5 w-4.5 shrink-0 text-emerald-300" />
               <p>Secure payment powered by Razorpay. Your enrollment details stay protected throughout checkout.</p>
             </div>
@@ -95,6 +64,7 @@ export default async function CourseCheckoutPage({ params }: PageProps) {
               eyebrow="Enrollment Form"
               heading="Enter your details to continue"
               submitLabel="Proceed to Payment"
+              compact
             />
           </CourseCheckoutGuard>
         </div>

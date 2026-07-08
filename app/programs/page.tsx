@@ -5,6 +5,8 @@ import { TechStackGrid } from "@/components/ui/tech-logo";
 
 type Program = {
   title: string;
+  credentialTitle: string;
+  credentialDuration: string;
   href: string;
   syllabusHref: string;
   syllabusButtonClassName: string;
@@ -29,6 +31,8 @@ const programs: Program[] = [
   {
     title: "AZ-104 – Microsoft Azure Administrator",
     href: "/checkout/azure-administrator",
+    credentialTitle: "Microsoft Certified: Azure Administrator Associate AZ-104",
+    credentialDuration: "2 Months",
     syllabusHref: "/syllabus/az-104-official-syllabus.pdf",
     syllabusButtonClassName:
       "border-[#BFDBFE] bg-[linear-gradient(135deg,#EFF6FF,#DBEAFE)] text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.10)] hover:border-[#60A5FA] hover:text-[#1E40AF]",
@@ -56,6 +60,8 @@ const programs: Program[] = [
   {
     title: "AZ-400 – Microsoft DevOps Engineer",
     href: "/checkout/azure-devops-engineer",
+    credentialTitle: "Microsoft Certified DevOps Engineer Expert AZ-400",
+    credentialDuration: "1 Month",
     syllabusHref: "/syllabus/az-400-official-syllabus.pdf",
     syllabusButtonClassName:
       "border-[#DDD6FE] bg-[linear-gradient(135deg,#F5F3FF,#EDE9FE)] text-[#6D28D9] shadow-[0_10px_24px_rgba(124,58,237,0.10)] hover:border-[#A78BFA] hover:text-[#5B21B6]",
@@ -83,6 +89,8 @@ const programs: Program[] = [
   {
     title: "AIOps Engineering",
     href: "/checkout/aiops-engineering",
+    credentialTitle: "Microsoft Azure AIOps Engineering Specialist",
+    credentialDuration: "2 Months",
     syllabusHref: "/syllabus/aiops-engineer-official-syllabus.pdf",
     syllabusButtonClassName:
       "border-[#99F6E4] bg-[linear-gradient(135deg,#ECFEFF,#CCFBF1)] text-[#0F766E] shadow-[0_10px_24px_rgba(20,184,166,0.10)] hover:border-[#2DD4BF] hover:text-[#115E59]",
@@ -175,13 +183,32 @@ function ProgramCard({ program }: { program: Program }) {
             {program.badge}
           </span>
         </div>
-        <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-[#4F46E5]">
+        <div className="mt-3 rounded-[18px] border border-[#E2E8F0] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FBFF_100%)] p-3 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="grid shrink-0 grid-cols-2 gap-[2px] rounded-[8px] bg-white p-1.5 shadow-sm">
+                <span className="h-4 w-4 rounded-[2px] bg-[#F25022]" />
+                <span className="h-4 w-4 rounded-[2px] bg-[#7FBA00]" />
+                <span className="h-4 w-4 rounded-[2px] bg-[#00A4EF]" />
+                <span className="h-4 w-4 rounded-[2px] bg-[#FFB900]" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold leading-none text-[#737373]">Microsoft</p>
+                <p className="mt-0.5 text-[15px] font-semibold leading-none tracking-[-0.03em] text-[#8C8C8C]">Azure</p>
+                <p className="mt-2 text-[11px] font-medium leading-snug text-[#334155]">
+                  {program.credentialTitle}
+                </p>
+              </div>
+            </div>
+            <span className="shrink-0 pt-1 text-[10.5px] font-medium text-[#94A3B8]">
+              {program.credentialDuration}
+            </span>
+          </div>
+        </div>
+
+        <p className="mt-3 text-[10.5px] font-semibold uppercase tracking-wider text-[#4F46E5]">
           {program.tagline}
         </p>
-
-        <h2 className="mt-2 text-[15px] font-extrabold leading-snug !text-[#0F172A]">
-          {program.title}
-        </h2>
 
         <p className="mt-1.5 text-[12px] leading-[1.6] text-[#64748B]">
           {program.description}
@@ -306,6 +333,27 @@ export default function ProgramsPage() {
                   <span className="inline-flex items-center rounded-full border-2 border-[#DC2626] bg-[#FEF2F2] px-3 py-1 text-[11px] font-bold text-[#DC2626]">
                     {combinedMasterProgram.tag}
                   </span>
+                </div>
+
+                <div className="mt-4 rounded-[20px] border border-[#E2E8F0] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FBFF_100%)] p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div className="grid shrink-0 grid-cols-2 gap-[3px] rounded-[10px] bg-white p-1.5 shadow-sm">
+                        <span className="h-5 w-5 rounded-[3px] bg-[#F25022]" />
+                        <span className="h-5 w-5 rounded-[3px] bg-[#7FBA00]" />
+                        <span className="h-5 w-5 rounded-[3px] bg-[#00A4EF]" />
+                        <span className="h-5 w-5 rounded-[3px] bg-[#FFB900]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-semibold leading-none text-[#737373]">Microsoft</p>
+                        <p className="mt-0.5 text-[20px] font-semibold leading-none tracking-[-0.03em] text-[#8C8C8C]">Azure</p>
+                        <p className="mt-3 text-[13px] font-medium leading-snug text-[#334155]">
+                          Microsoft Certified Azure Administrator, DevOps Engineer Expert and Azure AIOps Engineering Specialist
+                        </p>
+                      </div>
+                    </div>
+                    <span className="shrink-0 pt-1 text-[12px] font-medium text-[#94A3B8]">24 Weeks</span>
+                  </div>
                 </div>
 
                 <p className="mt-4 text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">
