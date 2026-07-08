@@ -88,10 +88,10 @@ export default function AzureAdministratorCoursePage() {
                 </span>
               </div>
               <p className="mt-4 text-[15px] leading-8 text-[#475569]">
-                Simplilearn&apos;s AZ 104 Course provides you with a deep understanding of the entire administrative
-                lifecycle in Azure environments. This certification course shows you how to maintain services related to
-                computing, storage, network, and security. Enhance your Azure Administrator skills and prepare to ace
-                the AZ-104 Azure Administrator exam.
+                GenZNext&apos;s AZ-104 course gives you a deep understanding of the full administrative lifecycle in
+                Azure environments. This certification-aligned track shows you how to maintain services related to
+                computing, storage, networking, and security while preparing confidently for the AZ-104 Azure
+                Administrator exam.
               </p>
             </div>
           </div>
