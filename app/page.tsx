@@ -390,14 +390,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Learning Tracks Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Learning Tracks */}
       <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Programs</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">6 High-Demand Learning Tracks</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#64748B]">
-              From students entering the industry to enterprises upskilling teams Ã¢â‚¬â€ we have a track for every ambition.
+              From students entering the industry to enterprises upskilling teams — we have a track for every ambition.
             </p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -408,7 +408,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[#0F172A]">{track.label}</p>
-                  <p className="mt-0.5 text-[12px] text-[#64748B] group-hover:text-[#4F46E5]">View curriculum Ã¢â€ â€™</p>
+                  <p className="mt-0.5 text-[12px] text-[#64748B] group-hover:text-[#4F46E5]">View curriculum →</p>
                 </div>
               </Link>
             ))}
@@ -416,7 +416,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Why GenZNext Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Why GenZNext */}
       <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
@@ -442,7 +442,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Student Reviews (floating marquee) Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Student Reviews (floating marquee) */}
       <section className="overflow-hidden bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -466,7 +466,7 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-[linear-gradient(to_right,white,transparent)]" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-[linear-gradient(to_left,white,transparent)]" />
 
-          {/* Row 1 Ã¢â‚¬â€ scrolls left */}
+          {/* Row 1 — scrolls left */}
           <div className="overflow-hidden">
             <div className="marquee-track marquee-left">
               {[...reviews.slice(0, 11), ...reviews.slice(0, 11)].map((review, i) => (
@@ -475,7 +475,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Row 2 Ã¢â‚¬â€ scrolls right */}
+          {/* Row 2 — scrolls right */}
           <div className="overflow-hidden">
             <div className="marquee-track marquee-right">
               {[...reviews.slice(10), ...reviews.slice(10)].map((review, i) => (
@@ -486,7 +486,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Who This Is For Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* Who This Is For */}
       <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
@@ -509,7 +509,7 @@ export default function Home() {
                 title: "Working Professionals",
                 color: "text-[#059669]",
                 bg: "bg-[#ECFDF5]",
-                desc: "Upskill, switch roles, or get promoted. Our flex learning model fits around your job. Clear AWS, Azure or DevOps certifications in 6Ã¢â‚¬â€œ8 weeks.",
+                desc: "Upskill, switch roles, or get promoted. Our flex learning model fits around your job. Clear AWS, Azure or DevOps certifications in 6–8 weeks.",
                 cta: "Explore Tracks",
                 href: "/programs",
               },
@@ -538,21 +538,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ CTA Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* CTA */}
       <section className="bg-white px-4 pb-16 pt-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764_0%,#4F46E5_50%,#0369A1_100%)] px-8 py-14 text-center shadow-[0_24px_60px_rgba(147,51,234,0.35)] sm:px-14">
           {/* Label */}
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C084FC]">Start Today</p>
 
-          {/* Heading Ã¢â‚¬â€ forced white */}
+          {/* Heading forced white */}
           <h2 className="mt-4 text-[30px] font-extrabold leading-tight tracking-tight !text-white sm:text-[42px]">
             Join <span className="text-[#6EE7B7]">6,000+</span> learners<br className="hidden sm:block" /> building cloud careers
           </h2>
 
-          {/* Subtitle Ã¢â‚¬â€ high contrast white */}
+          {/* Subtitle high contrast white */}
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-7 !text-white/80">
             Pick your specialization and start with structured mentorship, real projects,
-            and certification-focused learning Ã¢â‚¬â€ all in one platform.
+            and certification-focused learning — all in one platform.
           </p>
 
           {/* CTAs */}
