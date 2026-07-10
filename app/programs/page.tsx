@@ -48,7 +48,7 @@ const programs: Program[] = [
     level: "Intermediate",
     projects: "8-Module Admin Curriculum",
     certification: "AZ-104 Certification Prep",
-    price: "₹20,000",
+    price: "₹23,600",
     originalPrice: "",
     highlights: [
       "Covers Entra ID, RBAC, virtual networking, storage, backup and recovery",

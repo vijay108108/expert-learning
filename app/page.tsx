@@ -334,7 +334,7 @@ export default function Home() {
                   <span className="font-bold text-[#DC2626]">Batch: 15 July 2026</span>
                   <span className="text-[#94A3B8]">·</span>
                   <span className="font-semibold text-[#16A34A]">
-                    ₹20,000 <span className="font-normal text-[#94A3B8] line-through">₹30,000</span>
+                    ₹23,600 <span className="font-normal text-[#94A3B8] line-through">₹30,000</span>
                   </span>
                   <span className="rounded-full bg-[#FFE4E6] px-2 py-0.5 font-bold text-[#E11D48]">33% off</span>
                 </div>
