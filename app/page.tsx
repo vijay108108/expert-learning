@@ -263,7 +263,7 @@ export default function Home() {
       ))}
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[linear-gradient(160deg,#FFFFFF_0%,#F5F0FF_45%,#E0F2FE_100%)] px-4 pb-16 pt-10 sm:px-6 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-16">
+      <section className="relative overflow-hidden bg-[linear-gradient(160deg,#FFFFFF_0%,#F5F0FF_45%,#E0F2FE_100%)] px-4 pb-16 pt-4 sm:px-6 sm:pt-6 lg:px-8 lg:pb-24 lg:pt-8">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(147,51,234,0.1)_0%,transparent_65%)]" />
           <div className="absolute -bottom-20 -left-20 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.09)_0%,transparent_65%)]" />
@@ -331,12 +331,14 @@ export default function Home() {
                   Identity · Compute · Networking · Storage · Monitoring · 8 Weeks
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
-                  <span className="font-bold text-[#DC2626]">Batch: 15 July 2026</span>
+                  <span className="font-bold text-[#DC2626]">New Batch Start: 15 July 2026</span>
                   <span className="text-[#94A3B8]">·</span>
-                  <span className="font-semibold text-[#16A34A]">
-                    ₹23,600 <span className="font-normal text-[#94A3B8] line-through">₹30,000</span>
+                  <span className="inline-flex items-center gap-2">
+                    <span className="font-semibold text-[#16A34A]">
+                      ₹23,600 <span className="font-normal text-[#94A3B8] line-through">₹30,000</span>
+                    </span>
+                    <span className="rounded-full bg-[#FFE4E6] px-2 py-0.5 font-bold text-[#E11D48]">33% off</span>
                   </span>
-                  <span className="rounded-full bg-[#FFE4E6] px-2 py-0.5 font-bold text-[#E11D48]">33% off</span>
                 </div>
               </div>
               <span className="mt-0.5 shrink-0 rounded-xl bg-[linear-gradient(135deg,#0078D4,#2563EB)] px-3 py-2 text-[11px] font-bold text-white transition group-hover:brightness-95">

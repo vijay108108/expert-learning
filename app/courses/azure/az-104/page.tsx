@@ -1,4 +1,4 @@
-import { CheckCircle2, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Download, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CourseCheckoutGuard } from "@/components/enroll/course-checkout-guard";
@@ -115,6 +115,7 @@ export default function AzureAdministratorCoursePage() {
                 rel="noopener noreferrer"
                 className="inline-flex w-full items-center justify-center rounded-2xl border border-[#BFDBFE] bg-[linear-gradient(135deg,#EFF6FF,#DBEAFE)] px-5 py-3.5 text-sm font-semibold text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.10)] transition hover:border-[#60A5FA] hover:bg-[linear-gradient(135deg,#DBEAFE,#BFDBFE)]"
               >
+                <Download className="mr-2 h-4 w-4" />
                 Download Syllabus
               </Link>
             </div>
