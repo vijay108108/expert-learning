@@ -28,8 +28,10 @@ export function Brand({
         height={56}
         priority={mode === "header"}
         className={cn(
-          "w-auto object-contain drop-shadow-[0_2px_8px_rgba(15,23,42,0.12)]",
-          mode === "header" ? "h-10 sm:h-12 lg:h-14" : "h-12 sm:h-14 lg:h-16 opacity-95",
+          "object-contain drop-shadow-[0_2px_8px_rgba(15,23,42,0.12)]",
+          mode === "header"
+            ? "h-[42px] w-[185px] sm:h-[52px] sm:w-[229px] lg:h-[60px] lg:w-[264px] lg:max-w-[280px]"
+            : "h-[46px] w-[203px] sm:h-[52px] sm:w-[229px] lg:h-[56px] lg:w-[247px] opacity-95",
           imageClassName,
         )}
       />

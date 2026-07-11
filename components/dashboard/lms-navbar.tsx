@@ -31,7 +31,6 @@ function LmsBrand() {
       <Brand
         href="/dashboard/courses"
         className="min-h-0 py-0"
-        imageClassName="h-8 sm:h-9 lg:h-10"
       />
       <span className="flex flex-col leading-none">
         <span className="mt-0.5 text-[9px] text-[#64748B]">Learning Portal</span>

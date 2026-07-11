@@ -93,7 +93,6 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
             <Brand
               href="/admin"
               className="min-h-0 py-0"
-              imageClassName="h-8 w-auto"
             />
           </span>
           <div className="leading-none">
