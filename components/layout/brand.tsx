@@ -24,14 +24,14 @@ export function Brand({
       <Image
         src="/genznext-navbar-logo.png"
         alt="GenZNext AI & Cloud Academy"
-        width={240}
-        height={56}
+        width={657}
+        height={245}
         priority={mode === "header"}
         className={cn(
-          "object-contain drop-shadow-[0_2px_8px_rgba(15,23,42,0.12)]",
+          "drop-shadow-[0_2px_8px_rgba(15,23,42,0.12)]",
           mode === "header"
-            ? "h-[42px] w-[185px] sm:h-[52px] sm:w-[229px] lg:h-[60px] lg:w-[264px] lg:max-w-[280px]"
-            : "h-[46px] w-[203px] sm:h-[52px] sm:w-[229px] lg:h-[56px] lg:w-[247px] opacity-95",
+            ? "h-[40px] w-auto sm:h-[48px] lg:h-[58px]"
+            : "h-[42px] w-auto sm:h-[48px] lg:h-[54px] opacity-95",
           imageClassName,
         )}
       />
