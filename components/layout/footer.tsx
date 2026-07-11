@@ -119,7 +119,13 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
 
         {/* Brand + description */}
         <div>
-          <Brand mode="footer" />
+          <div className="inline-flex rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2">
+            <Brand
+              mode="footer"
+              className="min-h-0"
+              imageClassName="opacity-100 brightness-[1.35] contrast-[1.08] saturate-[1.08] drop-shadow-[0_2px_10px_rgba(255,255,255,0.22)]"
+            />
+          </div>
           <p className="mt-4 max-w-[240px] text-[13px] leading-6 text-[#64748B]">
             From zero to job-ready — mentor-led Cloud, AI & DevOps programs built for the next generation of tech professionals.
           </p>
