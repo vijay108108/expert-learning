@@ -291,6 +291,21 @@ export default function Home() {
                 Talk to Admissions
               </Link>
             </div>
+            <Link
+              href="/workshops/ai-developer-launch-lab"
+              className="group mt-5 flex max-w-xl items-start justify-between gap-4 rounded-2xl border border-[#FFEDD5] bg-[linear-gradient(135deg,#FFF7ED_0%,#EFF6FF_100%)] p-4 shadow-[0_10px_24px_rgba(249,115,22,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(37,99,235,0.16)]"
+            >
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#EA580C]">AI + Cloud Quick Learning</p>
+                <p className="mt-1 text-sm font-semibold text-[#0F172A]">
+                  Live Workshop: Build, Launch &amp; Host Your First AI Website on Azure
+                </p>
+                <p className="mt-1 text-[12px] text-[#475569]">18 July • 6 PM - 8 PM • Fee: Rs. 99</p>
+              </div>
+              <span className="shrink-0 rounded-lg bg-[linear-gradient(135deg,#F97316,#FB923C)] px-3 py-1.5 text-[11px] font-bold text-white group-hover:brightness-95">
+                Reserve
+              </span>
+            </Link>
             <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-[#64748B]">
               {["AWS & Azure Certified Mentors", "Live Batches Every Month", "LMS Access for Life"].map((item) => (
                 <span key={item} className="flex items-center gap-1.5">
