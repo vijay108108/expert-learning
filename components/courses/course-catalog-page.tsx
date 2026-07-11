@@ -99,7 +99,7 @@ export function CourseCatalogPage({ initialCourses }: { initialCourses: Course[]
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search courses..."
+              placeholder="Search by course, skill, or tool..."
               className="h-9 w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] py-2 pl-9 pr-3 text-sm text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition focus:border-[#0B2E6B] focus:bg-white focus:ring-2 focus:ring-[#0B2E6B]/10"
             />
           </label>

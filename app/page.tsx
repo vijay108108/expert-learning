@@ -43,7 +43,7 @@ const reviews = [
     company: "TCS",
     avatar: "PS",
     rating: 5,
-    text: "Cleared my AZ-104 in the first attempt thanks to GenZNext's structured roadmap and mock exams. The Azure content is the best I've seen — better than official Microsoft courses.",
+    text: "Cleared my AZ-104 in the first attempt thanks to GenZNext's structured roadmap and mock exams. The Azure content is among the most practical I've seen, including official Microsoft learning resources.",
   },
   {
     name: "Arjun Kapoor",
@@ -303,7 +303,7 @@ export default function Home() {
                 <p className="mt-1 text-[12px] text-[#475569]">18 July • 6 PM - 8 PM • Fee: Rs. 99</p>
               </div>
               <span className="shrink-0 rounded-lg bg-[linear-gradient(135deg,#F97316,#FB923C)] px-3 py-1.5 text-[11px] font-bold text-white group-hover:brightness-95">
-                Reserve
+                Reserve Seat
               </span>
             </Link>
             <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-[#64748B]">
@@ -347,7 +347,7 @@ export default function Home() {
                   Identity · Compute · Networking · Storage · Monitoring · 8 Weeks
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
-                  <span className="font-bold text-[#DC2626]">New Batch Start: 15 July 2026</span>
+                  <span className="font-bold text-[#DC2626]">New Batch Starts: 15 July 2026</span>
                   <span className="text-[#94A3B8]">·</span>
                   <span className="inline-flex items-center gap-2">
                     <span className="font-semibold text-[#16A34A]">
@@ -388,7 +388,7 @@ export default function Home() {
                 <div className="flex items-center justify-center gap-0.5">
                   {[...Array(5)].map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-[#F59E0B] text-[#F59E0B]" />)}
                 </div>
-                <p className="mt-0.5 text-[11px] text-[#64748B]">4.9 / 5 Rating</p>
+                <p className="mt-0.5 text-[11px] text-[#64748B]">Rated 4.9/5</p>
               </div>
             </div>
           </div>

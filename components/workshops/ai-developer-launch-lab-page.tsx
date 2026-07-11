@@ -122,9 +122,9 @@ const faqs = [
       "Yes. Every paid participant gets workshop recording access after the live session.",
   },
   {
-    question: "Will I receive certificate?",
+    question: "Will I receive a certificate?",
     answer:
-      "Yes. Every paid participant receives a workshop participation certificate after session completion.",
+      "Yes. Every paid participant receives a participation certificate after the session.",
   },
 ];
 
@@ -201,14 +201,14 @@ export function AiDeveloperLaunchLabPage() {
               className="mt-5 max-w-2xl text-[15px] leading-7 text-[#CED7F0] sm:text-[17px]"
             >
               In just 2 hours, you will build a real website using AI, launch it on Microsoft Azure, and publish a live URL.
-              No fluff, no theory overload - just a guided, job-relevant implementation flow.
+              No fluff, no theory overload, just a guided, job-relevant implementation flow.
             </motion.p>
 
             <div className="mt-6 flex flex-wrap gap-2.5 text-[12px] text-[#A9B6DA]">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><CalendarDays className="h-3.5 w-3.5" />18 July</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Clock3 className="h-3.5 w-3.5" />6 PM - 8 PM</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Globe className="h-3.5 w-3.5" />Live Online</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/15 px-3 py-1.5 font-semibold text-[#FFC48C]">Limited Seat Offer: Rs. 99</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/15 px-3 py-1.5 font-semibold text-[#FFC48C]">Limited-time offer: Rs. 99</span>
             </div>
 
             <div className="mt-7 max-w-xl rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xl sm:p-5">
@@ -359,7 +359,7 @@ export function AiDeveloperLaunchLabPage() {
             </div>
             <div>
               <p className="text-xl font-semibold text-white">Vijay Vishwakarma</p>
-              <p className="mt-1 text-sm text-[#DBE7FF]">Founder, GenZNext | Enterprise Cloud Architect | 10+ Years Experience</p>
+              <p className="mt-1 text-sm text-[#DBE7FF]">Founder, GenZNext | Enterprise Cloud Architect | 10+ years of experience</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {[
                   "Enterprise Cloud Architect",

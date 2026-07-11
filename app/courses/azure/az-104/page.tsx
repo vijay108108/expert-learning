@@ -10,23 +10,23 @@ const keyFeatures = [
   "Live virtual classes led by industry experts",
   "Practice labs and projects with Azure labs",
   "Access to official Microsoft content aligned to the AZ-104 exam",
-  "Simulation Test to get you exam ready",
+  "Simulation tests to help you get exam-ready",
   "24/7 support with dedicated mentoring sessions",
 ];
 
 const skillsCovered = [
-  "Administer Azure AD users and groups",
+  "Administer Microsoft Entra ID users and groups",
   "Oversee Azure subscriptions and governance",
   "Account configuration and storage management",
   "Automate resource provisioning using either Azure Resource Manager ARM templates or Bicep files",
-  "Containers provisioning and management on Azure",
+  "Container provisioning and management on Azure",
   "Configure and administer virtual networks within Azure",
   "Azure Resource Monitoring",
   "Azure resources access management",
   "Configure storage access, Azure Storage firewalls, and virtual networks",
   "Set up Azure Files and Azure Blob Storage",
   "Build and configure an Azure App Service",
-  "Virtual Machines creation and Configuration",
+  "Virtual machine creation and configuration",
   "Implement backup and recovery",
   "Configure name resolution and load balancing",
 ];

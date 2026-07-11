@@ -157,8 +157,7 @@ const combinedMasterProgram = {
 };
 
 export const metadata = buildMetadata({
-  description: "Cloud, DevOps and AIOps career programs with certifications, live mentorship, projects and placement support.",
-  description: "Cloud, AI, DevOps & AI Tools programs with real tool logos, certifications, live mentorship and placement support.",
+  description: "Cloud, AI, DevOps and AIOps career programs with certifications, live mentorship, projects and placement support.",
   path: "/programs",
 });
 
