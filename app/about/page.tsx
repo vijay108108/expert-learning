@@ -15,7 +15,7 @@ import { buildMetadata } from "@/lib/metadata";
 export const metadata = buildMetadata({
   title: "About Us | GenZNext Research & Training",
   description:
-    "GenZNext Research & Training — founded by IIT Jodhpur alumni with 8+ years in Cloud, AI and enterprise technology. Building industry-ready careers for students and professionals across India.",
+    "GenZNext Research & Training — founded by an IIT Jodhpur alumna and enterprise practitioners with 8+ years in Cloud, AI and modern platform engineering. Building industry-ready careers for students and professionals across India.",
   path: "/about",
 });
 
@@ -98,14 +98,14 @@ const values = [
 
 const milestones = [
   { year: "2018", event: "Vijay Vishwakarma begins career in enterprise cloud & DevOps infrastructure" },
-  { year: "2018", event: "Preeti Vishwakarma completes B.Tech in 2018 and M.Tech from IIT Jodhpur, joins enterprise AI research" },
+  { year: "2018-2019", event: "Preeti Vishwakarma completes B.Tech, pursues M.Tech at IIT Jodhpur, and contributes to enterprise AI research" },
   { year: "2020", event: "NetSeems Ventures Pvt. Ltd. incorporated in Pune, Maharashtra" },
   { year: "2021", event: "GenZNext brand launched — first batch of 40 Azure and AWS learners" },
   { year: "2022", event: "Expanded to DevOps, AI & GenAI tracks; 500+ learners trained" },
   { year: "2023", event: "Corporate training division launched; partnered with 15+ companies" },
   { year: "2024", event: "2,000+ learners milestone; LMS portal and full program suite launched" },
   { year: "2025", event: "AI Tools & Generative AI programs launched; 4,000+ learners" },
-  { year: "2026", event: "6,000+ learners trained across India; 6 flagship career programs" },
+  { year: "2026", event: "6,000+ learners trained across India; multiple flagship career programs and guided tracks" },
 ];
 
 export default function AboutPage() {
@@ -125,7 +125,7 @@ export default function AboutPage() {
             </span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-[16px] leading-7 text-[#475569]">
-            GenZNext was founded by IIT Jodhpur alumni and industry veterans with 8+ years of enterprise experience — on a mission to give every ambitious learner in India access to world-class Cloud, AI and DevOps education.
+            GenZNext was founded by an IIT Jodhpur alumna and industry practitioners with 8+ years of enterprise experience — on a mission to give every ambitious learner in India access to world-class Cloud, AI and DevOps education.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(147,51,234,0.28)] transition hover:scale-[1.02]">
@@ -159,7 +159,7 @@ export default function AboutPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-[#F58220]">Leadership</p>
             <h2 className="mt-2 text-3xl font-extrabold text-[#0F172A]">Meet the Founders</h2>
             <p className="mx-auto mt-3 max-w-xl text-[15px] leading-7 text-[#475569]">
-              GenZNext is built by people who&apos;ve been in the industry — not just academic theorists. Every course, every lab and every mentor session reflects 8+ years of real enterprise experience.
+              GenZNext is built by people who&apos;ve worked in real delivery environments. Every course, lab and mentor session reflects practical enterprise experience.
             </p>
           </div>
 
