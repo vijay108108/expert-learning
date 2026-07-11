@@ -286,7 +286,7 @@ export default function SyllabusPage() {
         <div className="mt-8 border-t border-[#E2E8F0] pt-5 text-center text-[11px] text-[#94A3B8]">
           <p className="font-semibold text-[#0F172A]">GenZNext Research & Training · NETSEEMS VENTURES PRIVATE LIMITED</p>
           <p>A19, Bungalow, Sai Jyot Park, Rahatani, Pune, Maharashtra – 411017</p>
-          <p>📞 +91 8421056291 · ✉ info@genznext.com · 🌐 expertlearning.in</p>
+          <p>📞 +91 8867359208 · ✉ info@genznext.com · 🌐 expertlearning.in</p>
           <p className="mt-1">GST: 27AAHCN4778J1ZU</p>
         </div>
       </div>

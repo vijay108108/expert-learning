@@ -9,7 +9,7 @@ const SELLER = {
   brand: "GenZNext Research & Training",
   address: "A19, Om Bungalow, Sai Jyot Park",
   city: "Rahatani, Pune, Maharashtra - 411017",
-  phone: "+91 8421056291",
+  phone: "+91 8867359208",
   email: "info@genznext.com",
   gstin: "27AAHCN4778J1ZU",
   pan: "AAHCN4778J",
