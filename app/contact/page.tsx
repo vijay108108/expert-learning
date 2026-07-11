@@ -29,12 +29,12 @@ export default function ContactPage() {
                 Contact GenZNext
               </div>
               <h1 className="mt-4 max-w-[13ch] text-4xl font-bold leading-[1.1] tracking-[-0.02em] text-[#0F172A] sm:text-[42px] lg:text-5xl">
-                Connect with our admissions and learning team
+                Connect with our admissions team
               </h1>
               <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#475569] sm:text-[17px] sm:leading-8 lg:text-lg">
                 Whether you&apos;re exploring Cloud, AI, DevOps, or enterprise
-                training, our team is here to guide you with the right learning
-                path and career-focused support.
+                training, we&apos;ll help you choose the right path based on your
+                goals, timeline, and current experience.
               </p>
             </div>
           </Reveal>
@@ -46,7 +46,7 @@ export default function ContactPage() {
             <SectionHeading
               eyebrow="Reach Us"
               title="Prefer direct support?"
-              description="Connect with our team through phone, email, or WhatsApp for quick answers and personalized guidance."
+              description="Reach us via phone, email, or WhatsApp for quick answers and personalized guidance."
             />
             <div className="mt-8 space-y-4">
               {[
@@ -75,7 +75,7 @@ export default function ContactPage() {
             <div className="surface-form p-5 sm:p-7">
               <LeadForm
                 includeMessage
-                submitLabel="Get Free Career Consultation"
+                submitLabel="Book Free Career Consultation"
                 source="Admissions Inquiry"
               />
             </div>

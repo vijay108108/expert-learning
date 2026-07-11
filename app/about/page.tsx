@@ -15,7 +15,7 @@ import { buildMetadata } from "@/lib/metadata";
 export const metadata = buildMetadata({
   title: "About Us | GenZNext Research & Training",
   description:
-    "GenZNext Research & Training — founded by an IIT Jodhpur alumna and enterprise practitioners with 8+ years in Cloud, AI and modern platform engineering. Building industry-ready careers for students and professionals across India.",
+    "GenZNext Research & Training is founded by an IIT Jodhpur alumna and enterprise practitioners with 8+ years in Cloud, AI, and modern platform engineering. Helping students and professionals build industry-ready careers across India.",
   path: "/about",
 });
 
@@ -230,7 +230,7 @@ export default function AboutPage() {
                 Generic YouTube courses and overpriced bootcamps weren&apos;t solving it. So in 2021, under <strong className="text-[#0F172A]">NetSeems Ventures Pvt. Ltd.</strong>, we launched GenZNext — combining Preeti&apos;s IIT-grade curriculum design with Vijay&apos;s 8+ years of enterprise engineering experience into a single, cohesive platform.
               </p>
               <p className="mt-4 text-[15px] leading-7 text-[#475569]">
-                Today, 6,000+ learners across India trust GenZNext for their cloud and AI careers — from fresh graduates landing their first job to senior professionals earning 40–60% salary hikes.
+                Today, 6,000+ learners across India trust GenZNext for their cloud and AI careers — from fresh graduates landing their first roles to professionals reporting meaningful salary growth.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5">
@@ -305,7 +305,7 @@ export default function AboutPage() {
         <div className="mx-auto max-w-3xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764_0%,#0B2E6B_50%,#0369A1_100%)] px-8 py-12 text-center shadow-[0_24px_60px_rgba(147,51,234,0.3)]">
           <p className="text-xs font-bold uppercase tracking-widest text-[#C084FC]">Join the Community</p>
           <h2 className="mt-3 text-3xl font-extrabold text-white">
-            Learn from those who&apos;ve done it
+            Learn from mentors who&apos;ve built in production
           </h2>
           <p className="mx-auto mt-3 max-w-md text-[14px] leading-6 text-[#C8D7EE]">
             Get mentored by IIT alumni and enterprise practitioners. Join 6,000+ learners already building the next generation of cloud careers.
