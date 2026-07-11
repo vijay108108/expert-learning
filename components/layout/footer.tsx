@@ -3,7 +3,6 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 import { ArrowRight, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
-import { Brand } from "@/components/layout/brand";
 import { socialLinks } from "@/data/site";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
@@ -119,13 +118,14 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
 
         {/* Brand + description */}
         <div>
-          <div className="inline-flex rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2">
-            <Brand
-              mode="footer"
-              className="min-h-0"
-              imageClassName="opacity-100 brightness-[1.35] contrast-[1.08] saturate-[1.08] drop-shadow-[0_2px_10px_rgba(255,255,255,0.22)]"
-            />
-          </div>
+          <Link
+            href="/"
+            className="inline-flex items-baseline text-[48px] font-extrabold leading-none tracking-[-0.03em]"
+            aria-label="GenZNext"
+          >
+            <span className="text-white">GenZ</span>
+            <span className="text-[#F58220]">Next</span>
+          </Link>
           <p className="mt-4 max-w-[240px] text-[13px] leading-6 text-[#64748B]">
             From zero to job-ready — mentor-led Cloud, AI & DevOps programs built for the next generation of tech professionals.
           </p>
