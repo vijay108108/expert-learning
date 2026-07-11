@@ -48,13 +48,13 @@ export function Header() {
         scrolled && "shadow-[0_4px_20px_rgba(15,23,42,0.08)]",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-6 lg:px-8">
 
         {/* Brand */}
-        <Brand />
+        <Brand className="pr-0" />
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-0.5 md:flex" aria-label="Main navigation">
+        <nav className="hidden items-center gap-0.5 md:ml-10 md:flex" aria-label="Main navigation">
           {navItems.map((item) => {
             const active = isActive(pathname, item.prefixes);
             return (

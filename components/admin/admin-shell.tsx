@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { Brand } from "@/components/layout/brand";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -87,26 +88,18 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
     <div className="flex h-full flex-col bg-[#0D1117] text-white">
       {/* Brand */}
       <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
-        <Link href="/admin" className="flex items-center gap-2.5">
-          <div style={{
-            width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-            background: "linear-gradient(135deg,#9333EA 0%,#4F46E5 52%,#0EA5E9 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <svg width="20" height="20" viewBox="0 0 38 38" fill="none" aria-hidden="true">
-              <path d="M 9.5 28.5 L 9.5 19 L 19 19 L 19 9.5 L 28.5 9.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.4" fill="none" />
-              <circle cx="9.5"  cy="28.5" r="3"   fill="white" opacity="0.52" />
-              <circle cx="19"   cy="19"   r="4"   fill="white" opacity="0.72" />
-              <circle cx="28.5" cy="9.5"  r="4.5" fill="white" />
-              <circle cx="9.5"  cy="19"   r="1.1" fill="white" opacity="0.5" />
-              <circle cx="19"   cy="9.5"  r="1.1" fill="white" opacity="0.5" />
-            </svg>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <span className="rounded-lg bg-white/95 px-1.5 py-1">
+            <Brand
+              href="/admin"
+              className="min-h-0 py-0"
+              imageClassName="h-8 w-auto"
+            />
+          </span>
           <div className="leading-none">
-            <p className="text-[13px] font-bold text-white">GenZNext</p>
             <p className="text-[10px] text-[#9333EA]">Admin Panel</p>
           </div>
-        </Link>
+        </div>
         {onClose && (
           <button onClick={onClose} className="text-[#64748B] hover:text-white md:hidden">
             <X className="h-5 w-5" />

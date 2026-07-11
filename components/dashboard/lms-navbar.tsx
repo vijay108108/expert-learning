@@ -13,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { Brand } from "@/components/layout/brand";
 import { useAuth } from "@/hooks/use-auth";
 import { getUserProfile } from "@/lib/firebase/user-profiles";
 import { cn, getInitials } from "@/lib/utils";
@@ -26,31 +27,16 @@ const navLinks = [
 
 function LmsBrand() {
   return (
-    <Link href="/dashboard/courses" className="flex shrink-0 items-center gap-2.5" aria-label="GenZNext Learning Portal">
-      {/* Inline gradient background — no SVG gradient id needed */}
-      <div style={{
-        width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-        background: "linear-gradient(135deg,#9333EA 0%,#4F46E5 52%,#0EA5E9 100%)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <svg width="20" height="20" viewBox="0 0 38 38" fill="none" aria-hidden="true">
-          <path d="M 9.5 28.5 L 9.5 19 L 19 19 L 19 9.5 L 28.5 9.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.4" fill="none" />
-          <circle cx="9.5"  cy="28.5" r="3"   fill="white" opacity="0.52" />
-          <circle cx="19"   cy="19"   r="4"   fill="white" opacity="0.72" />
-          <circle cx="28.5" cy="9.5"  r="4.5" fill="white" />
-          <circle cx="9.5"  cy="19"   r="1.1" fill="white" opacity="0.5" />
-          <circle cx="19"   cy="9.5"  r="1.1" fill="white" opacity="0.5" />
-        </svg>
-      </div>
+    <div className="flex shrink-0 items-center gap-2.5" aria-label="GenZNext Learning Portal">
+      <Brand
+        href="/dashboard/courses"
+        className="min-h-0 py-0"
+        imageClassName="h-8 sm:h-9 lg:h-10"
+      />
       <span className="flex flex-col leading-none">
-        <span className="text-[13px] font-bold text-[#0F172A]">
-          Gen
-          <span style={{ background: "linear-gradient(135deg,#9333EA,#4F46E5)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Z</span>
-          Next
-        </span>
         <span className="mt-0.5 text-[9px] text-[#64748B]">Learning Portal</span>
       </span>
-    </Link>
+    </div>
   );
 }
 
