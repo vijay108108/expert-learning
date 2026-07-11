@@ -38,6 +38,13 @@ const modeIcon: Record<Course["mode"], React.ElementType> = {
   hybrid: MonitorPlay,
 };
 
+const modeLabel: Record<Course["mode"], string> = {
+  live: "Live",
+  recorded: "Recorded",
+  "self-paced": "Self-Paced",
+  hybrid: "Hybrid",
+};
+
 export function CourseCatalogCard({ course }: { course: Course }) {
   const { user } = useAuth();
   const { enrolledCourseIds, enrolledMetaByCourseId } = useEnrolledCourseIds();
@@ -93,7 +100,7 @@ export function CourseCatalogCard({ course }: { course: Course }) {
           </span>
           <span className="h-3 w-px bg-[#E2E8F0]" />
           <span className="flex items-center gap-1">
-            <ModeIcon className="h-3 w-3 text-[#94A3B8]" />{course.mode}
+            <ModeIcon className="h-3 w-3 text-[#94A3B8]" />{modeLabel[course.mode]}
           </span>
           <span className="h-3 w-px bg-[#E2E8F0]" />
           <span className="uppercase">{course.category}</span>

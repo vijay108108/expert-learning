@@ -75,10 +75,10 @@ export function CourseCatalogPage({ initialCourses }: { initialCourses: Course[]
             GenZNext Course Catalog
           </span>
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[#0F172A] sm:text-4xl">
-            Cloud, AI &amp; DevOps Courses
+            Cloud, AI, GenAI &amp; DevSecOps Courses
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#475569]">
-            Mentor-led programs in AWS, Azure, DevSecOps, AI, Generative AI and Agentic AI with live labs, projects and certification support.
+            Mentor-led programs across AWS, Azure, DevSecOps, AI, Generative AI and Agentic AI with live labs, projects, and certification support.
           </p>
           <div className="mt-7 flex flex-wrap gap-4">
             {stats.map((stat) => (

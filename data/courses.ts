@@ -183,11 +183,15 @@ function buildFaqs(certification: string): CourseFaq[] {
   return [
     {
       question: "Is this course suitable for working professionals?",
-      answer: "Yes. The course includes flexible recorded support and assignment windows for working learners.",
+      answer: "Yes. The learning flow is structured for both students and working professionals, with guided modules, assignment checkpoints, and mentor support.",
     },
     {
       question: "Do I get certification preparation support?",
       answer: `Yes. This program includes structured guidance for ${certification} with revision plans and mock checkpoints.`,
+    },
+    {
+      question: "Will I build practical projects in this course?",
+      answer: "Yes. Every track includes project work so you can apply concepts in practical scenarios and build portfolio-ready outcomes.",
     },
   ];
 }

@@ -7,6 +7,13 @@ import { buildMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
+const modeLabel: Record<"live" | "self-paced" | "recorded" | "hybrid", string> = {
+  live: "Live",
+  "self-paced": "Self-Paced",
+  recorded: "Recorded",
+  hybrid: "Hybrid",
+};
+
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -75,7 +82,7 @@ export default async function CourseSyllabusPage({ params }: PageProps) {
             <div className="surface-card p-6">
               <div className="section-label">Syllabus &amp; Modules</div>
               <h2 className="mt-2 text-[20px] font-bold text-brand-text">What you&apos;ll learn, module by module</h2>
-              <p className="mt-1 text-[12px] text-[#94A3B8]">Updated June 2026</p>
+              <p className="mt-1 text-[12px] text-[#94A3B8]">Updated regularly</p>
               <ol className="mt-5 space-y-4">
                 {course.syllabusModules.map((module, index) => (
                   <li key={module} className="flex gap-3 rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] p-4">
@@ -157,7 +164,7 @@ export default async function CourseSyllabusPage({ params }: PageProps) {
                 </p>
               )}
               <div className="mt-5 space-y-2.5 text-sm text-[#475569]">
-                <p className="flex items-center gap-2"><Clock3 className="h-4 w-4 text-[#0B2E6B]" />{course.duration} · Self-Paced</p>
+                <p className="flex items-center gap-2"><Clock3 className="h-4 w-4 text-[#0B2E6B]" />{course.duration} · {modeLabel[course.mode]}</p>
                 <p className="flex items-center gap-2"><GraduationCap className="h-4 w-4 text-[#0B2E6B]" />{course.level}</p>
                 <p className="flex items-center gap-2"><Layers className="h-4 w-4 text-[#0B2E6B]" />{course.syllabusModules.length} Modules</p>
                 <p className="flex items-center gap-2"><Award className="h-4 w-4 text-[#0B2E6B]" />{course.certificate}</p>

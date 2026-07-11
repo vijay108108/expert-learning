@@ -11,19 +11,19 @@ const keyFeatures = [
   "Practice labs and projects with Azure labs",
   "Access to official Microsoft content aligned to the AZ-104 exam",
   "Simulation Test to get you exam ready",
-  "24*7 support with dedicated mentoring sessions",
+  "24/7 support with dedicated mentoring sessions",
 ];
 
 const skillsCovered = [
   "Administer Azure AD users and groups",
   "Oversee Azure subscriptions and governance",
-  "Account configuration and Storage Management",
+  "Account configuration and storage management",
   "Automate resource provisioning using either Azure Resource Manager ARM templates or Bicep files",
   "Containers provisioning and management on Azure",
   "Configure and administer virtual networks within Azure",
   "Azure Resource Monitoring",
   "Azure resources access management",
-  "Configure storage access Azure Storage firewalls and virtual networks",
+  "Configure storage access, Azure Storage firewalls, and virtual networks",
   "Set up Azure Files and Azure Blob Storage",
   "Build and configure an Azure App Service",
   "Virtual Machines creation and Configuration",
@@ -71,7 +71,7 @@ export default function AzureAdministratorCoursePage() {
               Microsoft Certified: Azure Administrator Associate AZ-104
             </h1>
             <p className="mt-4 text-[17px] font-medium text-[#15407E]">
-              Learn to configure and manage cloud with AZ 104 Certification
+              Learn to configure and manage cloud environments with AZ-104 certification-aligned training
             </p>
             <p className="mt-4 max-w-4xl text-[15px] leading-8 text-[#475569]">
               In this course, you will learn how to manage Azure subscriptions, secure identities, administer the
