@@ -65,7 +65,7 @@ export function FirebaseModuleManager() {
         <input value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} placeholder="Module title" className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white" required />
         <input value={form.description} onChange={(e) => setForm((c) => ({ ...c, description: e.target.value }))} placeholder="Description" className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white" required />
         <input type="number" value={form.order} onChange={(e) => setForm((c) => ({ ...c, order: Number(e.target.value) }))} placeholder="Order" className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white" />
-        <button type="submit" className="rounded-md bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white">Add Module</button>
+        <button type="submit" className="rounded-md bg-[#0B2E6B] px-4 py-2 text-sm font-semibold text-white">Add Module</button>
       </form>
       <div className="space-y-2 rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.8)] p-5">
         {modules.map((module) => (
@@ -73,7 +73,7 @@ export function FirebaseModuleManager() {
             <p className="text-sm font-medium text-white">{module.order}. {module.title}</p>
             <p className="mt-1 text-xs text-[#94A3B8]">{module.description}</p>
             <div className="mt-2 flex gap-3 text-xs">
-              <button type="button" onClick={async () => { await updateModule(module.id, { status: module.status === "published" ? "draft" : "published" }); await loadModules(courseSlug); }} className="text-[#4F46E5]">Toggle Status</button>
+              <button type="button" onClick={async () => { await updateModule(module.id, { status: module.status === "published" ? "draft" : "published" }); await loadModules(courseSlug); }} className="text-[#0B2E6B]">Toggle Status</button>
               <button type="button" onClick={async () => { await deleteModule(module.id); await loadModules(courseSlug); }} className="text-rose-400">Delete</button>
             </div>
           </article>

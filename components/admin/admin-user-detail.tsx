@@ -112,7 +112,7 @@ export function AdminUserDetail({ uid }: { uid: string }) {
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="rounded-2xl border border-white/8 bg-[#0D1117] p-5">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#4F46E5]/15 text-[#818CF8]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0B2E6B]/15 text-[#818CF8]">
               <UserRound className="h-6 w-6" />
             </div>
             <div className="min-w-0 flex-1">

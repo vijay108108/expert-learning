@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import {
@@ -172,7 +172,7 @@ export function FirebaseLessonManager() {
         </button>
 
         <button onClick={openNew}
-          className="flex h-9 items-center gap-2 rounded-xl bg-[#4F46E5] px-4 text-[13px] font-semibold text-white hover:bg-[#4338CA]">
+          className="flex h-9 items-center gap-2 rounded-xl bg-[#0B2E6B] px-4 text-[13px] font-semibold text-white hover:bg-[#092552]">
           <Plus className="h-4 w-4" /> Add Lesson
         </button>
 
@@ -202,7 +202,7 @@ export function FirebaseLessonManager() {
                       onClick={() => setForm(p => ({ ...p, lessonType: t.value }))}
                       className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-[12px] font-semibold transition ${
                         form.lessonType === t.value
-                          ? "border-[#4F46E5] bg-[#4F46E5]/20 text-[#818CF8]"
+                          ? "border-[#0B2E6B] bg-[#0B2E6B]/20 text-[#818CF8]"
                           : "border-white/10 bg-white/5 text-[#64748B] hover:text-white"
                       }`}>
                       <t.icon className={`h-3.5 w-3.5 ${form.lessonType === t.value ? "text-[#818CF8]" : t.color}`} />
@@ -233,7 +233,7 @@ export function FirebaseLessonManager() {
                 <textarea rows={2} value={form.description || ""}
                   onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
                   placeholder="Brief description of what this lesson covers"
-                  className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50" />
+                  className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50" />
               </div>
 
               {/* URL field — label changes by type */}
@@ -281,7 +281,7 @@ export function FirebaseLessonManager() {
                   <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#475569]">Order</label>
                   <input type="number" min={1} value={form.order}
                     onChange={e => setForm(p => ({ ...p, order: Number(e.target.value) }))}
-                    className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white outline-none focus:border-[#4F46E5]/50" />
+                    className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white outline-none focus:border-[#0B2E6B]/50" />
                 </div>
               </div>
 
@@ -314,7 +314,7 @@ export function FirebaseLessonManager() {
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving || !form.title.trim()}
-                className="flex items-center gap-2 rounded-xl bg-[#4F46E5] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#4338CA] disabled:opacity-60">
+                className="flex items-center gap-2 rounded-xl bg-[#0B2E6B] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#092552] disabled:opacity-60">
                 <Save className="h-4 w-4" />
                 {saving ? "Saving…" : editingId ? "Update Lesson" : "Add Lesson"}
               </button>
@@ -327,7 +327,7 @@ export function FirebaseLessonManager() {
       <div className="overflow-hidden rounded-2xl border border-white/8">
         {filteredLessons.length === 0 ? (
           <div className="px-4 py-8 text-center text-[#334155]">
-            No lessons yet. Click <strong className="text-[#4F46E5]">Add Lesson</strong> to create the first one.
+            No lessons yet. Click <strong className="text-[#0B2E6B]">Add Lesson</strong> to create the first one.
           </div>
         ) : (
           <table className="w-full text-[13px]">
@@ -352,7 +352,7 @@ export function FirebaseLessonManager() {
                       <p className="font-semibold text-white">{lesson.title}</p>
                       {lesson.url && (
                         <a href={lesson.url} target="_blank" rel="noreferrer"
-                          className="flex items-center gap-1 text-[11px] text-[#4F46E5] hover:underline">
+                          className="flex items-center gap-1 text-[11px] text-[#0B2E6B] hover:underline">
                           <ExternalLink className="h-3 w-3" />
                           {lesson.lessonType === "live" ? "Meeting Link" : "Open Link"}
                         </a>
@@ -377,7 +377,7 @@ export function FirebaseLessonManager() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button onClick={() => openEdit(lesson)}
-                          className="rounded-lg p-1.5 text-[#64748B] hover:bg-white/8 hover:text-[#4F46E5]">
+                          className="rounded-lg p-1.5 text-[#64748B] hover:bg-white/8 hover:text-[#0B2E6B]">
                           <Edit2 className="h-3.5 w-3.5" />
                         </button>
                         <button onClick={() => toggleLock(lesson)}
@@ -417,7 +417,7 @@ function Field({
     <div>
       <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#475569]">{label}</label>
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50" />
+        className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50" />
     </div>
   );
 }

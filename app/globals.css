@@ -2,23 +2,23 @@
 
 :root {
   /* ── Core brand colours ── */
-  --brand-primary:   #4F46E5;           /* indigo 600 — base */
-  --brand-violet:    #9333EA;           /* purple 600 — warm end of gradient */
-  --brand-sky:       #0EA5E9;           /* sky 500 — cool accent / AI elements */
-  --brand-secondary: #6D28D9;           /* violet 700 — deep violet */
-  --brand-accent:    #0EA5E9;           /* sky — actively used for AI/tech highlights */
-  --brand-hover:     #4338CA;           /* indigo 700 — hover state */
+  --brand-primary:   #0B2E6B;           /* logo navy */
+  --brand-violet:    #F58220;           /* logo orange (kept token name for compatibility) */
+  --brand-sky:       #1E5AA8;           /* supportive blue accent */
+  --brand-secondary: #15407E;           /* deep blue secondary */
+  --brand-accent:    #F58220;           /* active accent */
+  --brand-hover:     #092552;           /* darker navy hover */
 
   /* ── Signature 3-stop gradient ── */
-  --brand-gradient:  linear-gradient(135deg, #9333EA 0%, #4F46E5 55%, #0EA5E9 100%);
-  --brand-gradient-cta: linear-gradient(135deg, #9333EA 0%, #4F46E5 100%);
-  --brand-gradient-hero: linear-gradient(160deg, #ffffff 0%, #F5F0FF 55%, #E0F2FE 100%);
+  --brand-gradient:  linear-gradient(135deg, #F58220 0%, #0B2E6B 55%, #1E5AA8 100%);
+  --brand-gradient-cta: linear-gradient(135deg, #F58220 0%, #0B2E6B 100%);
+  --brand-gradient-hero: linear-gradient(160deg, #ffffff 0%, #FFF3E8 55%, #EEF4FB 100%);
 
   /* ── Surface tokens ── */
-  --brand-dark-bg:      #0A0614;
+  --brand-dark-bg:      #08172F;
   --brand-background:   #ffffff;
   --brand-section:      #F8FAFC;
-  --brand-section-soft: #F5F0FF;        /* soft violet tint — new */
+  --brand-section-soft: #FFF3E8;        /* soft violet tint — new */
   --brand-card:         #ffffff;
 
   /* ── Typography tokens ── */
@@ -31,11 +31,11 @@
   --shadow-soft:  0 8px 22px rgba(17, 24, 39, 0.06);
   --shadow-card:  0 10px 26px rgba(17, 24, 39, 0.07);
   --shadow-hero:  0 16px 36px rgba(17, 24, 39, 0.08);
-  --shadow-brand: 0 12px 32px rgba(147, 51, 234, 0.18);   /* violet glow */
-  --shadow-sky:   0 8px 24px rgba(14, 165, 233, 0.18);    /* sky glow */
+  --shadow-brand: 0 12px 32px rgba(245, 130, 32, 0.2);    /* orange glow */
+  --shadow-sky:   0 8px 24px rgba(11, 46, 107, 0.18);      /* navy glow */
 
   /* ── Decorative ── */
-  --grid-line: rgba(147, 51, 234, 0.05);
+  --grid-line: rgba(11, 46, 107, 0.06);
 }
 
 @theme inline {
@@ -113,12 +113,12 @@ textarea {
 }
 
 ::selection {
-  background: rgba(79, 70, 229, 0.18);
+  background: rgba(11, 46, 107, 0.18);
 }
 
 /* ── Focus ring ── */
 :focus-visible {
-  outline: 2px solid #4F46E5;
+  outline: 2px solid #0B2E6B;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -236,7 +236,7 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
 
 .surface-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(79, 70, 229, 0.3);
+  border-color: rgba(11, 46, 107, 0.3);
   box-shadow: 0 18px 34px rgba(15, 23, 42, 0.11);
 }
 
@@ -251,8 +251,8 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at top right, rgba(79, 70, 229, 0.08), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.05), transparent 35%),
+    radial-gradient(circle at top right, rgba(11, 46, 107, 0.1), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(245, 130, 32, 0.08), transparent 35%),
     linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
@@ -264,7 +264,7 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   width: 380px;
   height: 380px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.14) 0%, rgba(79, 70, 229, 0.04) 38%, transparent 70%);
+  background: radial-gradient(circle, rgba(11, 46, 107, 0.14) 0%, rgba(11, 46, 107, 0.04) 38%, transparent 70%);
   filter: blur(8px);
   pointer-events: none;
 }
@@ -277,7 +277,7 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   width: 280px;
   height: 280px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0.03) 42%, transparent 72%);
+  background: radial-gradient(circle, rgba(245, 130, 32, 0.12) 0%, rgba(245, 130, 32, 0.03) 42%, transparent 72%);
   filter: blur(10px);
   pointer-events: none;
 }
@@ -319,7 +319,7 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
 
 .form-field:focus {
   border-color: var(--brand-primary);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+  box-shadow: 0 0 0 4px rgba(11, 46, 107, 0.12);
 }
 
 .form-field::placeholder {
@@ -371,11 +371,11 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
 @keyframes pulse-border {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.2);
+    box-shadow: 0 0 0 0 rgba(11, 46, 107, 0.2);
   }
 
   50% {
-    box-shadow: 0 0 0 8px rgba(79, 70, 229, 0);
+    box-shadow: 0 0 0 8px rgba(11, 46, 107, 0);
   }
 }
 

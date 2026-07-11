@@ -96,7 +96,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
             />
           </span>
           <div className="leading-none">
-            <p className="text-[10px] text-[#9333EA]">Admin Panel</p>
+            <p className="text-[10px] text-[#F58220]">Admin Panel</p>
           </div>
         </div>
         {onClose && (
@@ -123,7 +123,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
                   className={cn(
                     "flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium transition-all",
                     active
-                      ? "bg-[#4F46E5]/20 text-[#818CF8]"
+                      ? "bg-[#0B2E6B]/20 text-[#818CF8]"
                       : "text-[#64748B] hover:bg-white/5 hover:text-[#E2E8F0]",
                   )}
                 >
@@ -236,7 +236,7 @@ export function AdminShell({
           </div>
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1.5 text-[11px] text-[#334155]">
-              <ShieldCheck className="h-3.5 w-3.5 text-[#4F46E5]" />
+              <ShieldCheck className="h-3.5 w-3.5 text-[#0B2E6B]" />
               Admin
             </span>
             <button

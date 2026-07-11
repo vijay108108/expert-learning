@@ -58,15 +58,15 @@ function AdminLoginScreen() {
       <div
         className={`w-full max-w-sm overflow-hidden rounded-[24px] border border-white/10 bg-[#0D1117] shadow-[0_32px_80px_rgba(0,0,0,0.5)] transition-transform ${shaking ? "animate-[shake_0.4s_ease]" : ""}`}
       >
-        <div className="h-1 w-full bg-[linear-gradient(90deg,#9333EA,#4F46E5,#0EA5E9)]" />
+        <div className="h-1 w-full bg-[linear-gradient(90deg,#F58220,#0B2E6B,#1E5AA8)]" />
 
         <div className="p-8">
           {/* Icon */}
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)]">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)]">
             <ShieldCheck className="h-8 w-8 text-white" />
           </div>
 
-          <p className="text-center text-[11px] font-bold uppercase tracking-widest text-[#9333EA]">GenZNext</p>
+          <p className="text-center text-[11px] font-bold uppercase tracking-widest text-[#F58220]">GenZNext</p>
           <h1 className="mt-1 text-center text-[22px] font-extrabold text-white">Admin Panel</h1>
           <p className="mt-2 text-center text-[13px] text-[#64748B]">Sign in with your admin account to continue</p>
 
@@ -81,7 +81,7 @@ function AdminLoginScreen() {
               placeholder="admin@genznext.com"
               autoFocus
               disabled={pending}
-              className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-3 text-[14px] text-white placeholder:text-[#334155] outline-none focus:border-[#9333EA] focus:ring-2 focus:ring-[#9333EA]/20"
+              className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-3 text-[14px] text-white placeholder:text-[#334155] outline-none focus:border-[#F58220] focus:ring-2 focus:ring-[#F58220]/20"
             />
           </div>
 
@@ -95,7 +95,7 @@ function AdminLoginScreen() {
               onKeyDown={(e) => e.key === "Enter" && void attemptEmailLogin()}
               placeholder="Password"
               disabled={pending}
-              className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-10 text-[14px] text-white placeholder:text-[#334155] outline-none focus:border-[#9333EA] focus:ring-2 focus:ring-[#9333EA]/20"
+              className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-10 text-[14px] text-white placeholder:text-[#334155] outline-none focus:border-[#F58220] focus:ring-2 focus:ring-[#F58220]/20"
             />
             <button
               type="button"
@@ -114,7 +114,7 @@ function AdminLoginScreen() {
             type="button"
             onClick={() => void attemptEmailLogin()}
             disabled={pending}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] py-3 text-[14px] font-bold text-white shadow-[0_8px_24px_rgba(147,51,234,0.3)] transition hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] py-3 text-[14px] font-bold text-white shadow-[0_8px_24px_rgba(147,51,234,0.3)] transition hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
           >
             <ShieldCheck className="h-4 w-4" /> {pending ? "Signing in..." : "Sign In"}
           </button>

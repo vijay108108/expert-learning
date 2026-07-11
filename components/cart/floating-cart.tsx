@@ -18,11 +18,11 @@ export function FloatingCart() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed right-6 bottom-40 z-50 inline-flex h-[56px] w-[56px] items-center justify-center rounded-[18px] border border-[#2563EB]/28 bg-[linear-gradient(180deg,rgba(7,20,43,0.94),rgba(11,28,52,0.96))] text-white shadow-[0_18px_34px_rgba(2,8,28,0.34),0_0_26px_rgba(249,115,22,0.18)] backdrop-blur-xl transition-all duration-200 hover:-translate-y-1 hover:border-[#2563EB]/44 hover:shadow-[0_22px_40px_rgba(2,8,28,0.38),0_0_30px_rgba(249,115,22,0.24)] md:bottom-[5.5rem]"
+        className="fixed right-6 bottom-40 z-50 inline-flex h-[56px] w-[56px] items-center justify-center rounded-[18px] border border-[#15407E]/28 bg-[linear-gradient(180deg,rgba(7,20,43,0.94),rgba(11,28,52,0.96))] text-white shadow-[0_18px_34px_rgba(2,8,28,0.34),0_0_26px_rgba(249,115,22,0.18)] backdrop-blur-xl transition-all duration-200 hover:-translate-y-1 hover:border-[#15407E]/44 hover:shadow-[0_22px_40px_rgba(2,8,28,0.38),0_0_30px_rgba(249,115,22,0.24)] md:bottom-[5.5rem]"
         aria-label="Open cart"
       >
-        <ShoppingCart className="h-5 w-5 text-[#7C3AED]" />
-        <span className="absolute -top-1.5 -right-1.5 inline-flex min-w-[24px] items-center justify-center rounded-full border border-[#7C3AED]/24 bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-1.5 py-1 text-[11px] font-semibold text-white shadow-[0_10px_20px_rgba(249,115,22,0.26)]">
+        <ShoppingCart className="h-5 w-5 text-[#E56F12]" />
+        <span className="absolute -top-1.5 -right-1.5 inline-flex min-w-[24px] items-center justify-center rounded-full border border-[#E56F12]/24 bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-1.5 py-1 text-[11px] font-semibold text-white shadow-[0_10px_20px_rgba(249,115,22,0.26)]">
           {count}
         </span>
       </button>
@@ -49,7 +49,7 @@ export function FloatingCart() {
             >
               <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-5">
                 <div>
-                  <div className="section-label text-[#7C3AED]">My Cart</div>
+                  <div className="section-label text-[#E56F12]">My Cart</div>
                   <h2 className="mt-2 text-[24px] font-bold text-white">Course checkout</h2>
                   <p className="mt-2 text-sm leading-6 text-[#CBD5E1]">
                     {hydrated ? `${count} selected course${count === 1 ? "" : "s"}` : "Loading cart..."}
@@ -58,7 +58,7 @@ export function FloatingCart() {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/6 text-white/70 transition hover:border-[#2563EB]/40 hover:bg-white/10 hover:text-[#7C3AED]"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/6 text-white/70 transition hover:border-[#15407E]/40 hover:bg-white/10 hover:text-[#E56F12]"
                   aria-label="Close cart panel"
                 >
                   <X className="h-4.5 w-4.5" />
@@ -72,7 +72,7 @@ export function FloatingCart() {
                   </div>
                 ) : courses.length === 0 ? (
                   <div className="rounded-[24px] border border-white/10 bg-white/[0.04] px-6 py-8 text-center">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] border border-[#2563EB]/20 bg-[rgba(249,115,22,0.12)] text-[#7C3AED] shadow-[0_16px_30px_rgba(249,115,22,0.12)]">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] border border-[#15407E]/20 bg-[rgba(249,115,22,0.12)] text-[#E56F12] shadow-[0_16px_30px_rgba(249,115,22,0.12)]">
                       <ShoppingBag className="h-7 w-7" />
                     </div>
                     <h3 className="mt-5 text-[22px] font-semibold text-white">Your cart is empty</h3>
@@ -95,10 +95,10 @@ export function FloatingCart() {
                       return (
                         <article
                           key={course.slug}
-                          className="rounded-[22px] border border-white/10 bg-white/[0.04] p-4 transition-all duration-200 hover:border-[#2563EB]/30 hover:bg-white/[0.06]"
+                          className="rounded-[22px] border border-white/10 bg-white/[0.04] p-4 transition-all duration-200 hover:border-[#15407E]/30 hover:bg-white/[0.06]"
                         >
                           <div className="flex gap-4">
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[rgba(249,115,22,0.14)] text-[#4F46E5]">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[rgba(249,115,22,0.14)] text-[#0B2E6B]">
                               <Icon className="h-5 w-5" />
                             </div>
                             <div className="min-w-0 flex-1">
@@ -108,11 +108,11 @@ export function FloatingCart() {
                                 <span className="rounded-[8px] border border-white/12 bg-white/[0.04] px-2.5 py-1">{course.level}</span>
                               </div>
                               <div className="mt-3 flex items-center justify-between gap-3">
-                                <div className="mono-meta text-[16px] font-semibold text-[#7C3AED]">{course.price}</div>
+                                <div className="mono-meta text-[16px] font-semibold text-[#E56F12]">{course.price}</div>
                                 <button
                                   type="button"
                                   onClick={() => removeCourse(course.slug)}
-                                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2 text-xs font-medium text-[#CBD5E1] transition hover:border-[#2563EB]/40 hover:text-[#7C3AED]"
+                                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2 text-xs font-medium text-[#CBD5E1] transition hover:border-[#15407E]/40 hover:text-[#E56F12]"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
                                   Remove
@@ -131,7 +131,7 @@ export function FloatingCart() {
                 <div className="mb-4 rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-4">
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-sm text-[#CBD5E1]">Total Amount</span>
-                    <span className={cn("mono-meta text-[18px] font-semibold", courses.length ? "text-[#7C3AED]" : "text-white/60")}>
+                    <span className={cn("mono-meta text-[18px] font-semibold", courses.length ? "text-[#E56F12]" : "text-white/60")}>
                       {courses.length ? totalLabel : "₹0"}
                     </span>
                   </div>

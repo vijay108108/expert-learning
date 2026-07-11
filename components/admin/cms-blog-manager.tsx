@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { Edit2, Plus, RefreshCw, Trash2, X } from "lucide-react";
@@ -110,7 +110,7 @@ export function CmsBlogManager() {
           <button onClick={load} className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-[12px] text-[#64748B] hover:text-white">
             <RefreshCw className="h-3.5 w-3.5" />
           </button>
-          <button onClick={openNew} className="flex h-9 items-center gap-2 rounded-xl bg-[#4F46E5] px-4 text-[13px] font-semibold text-white transition hover:bg-[#4338CA]">
+          <button onClick={openNew} className="flex h-9 items-center gap-2 rounded-xl bg-[#0B2E6B] px-4 text-[13px] font-semibold text-white transition hover:bg-[#092552]">
             <Plus className="h-4 w-4" /> New Post
           </button>
         </div>
@@ -124,7 +124,7 @@ export function CmsBlogManager() {
       ) : posts.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center">
           <p className="text-[#334155]">No blog posts yet.</p>
-          <button onClick={openNew} className="mt-3 text-[13px] text-[#4F46E5] hover:underline">Create your first post →</button>
+          <button onClick={openNew} className="mt-3 text-[13px] text-[#0B2E6B] hover:underline">Create your first post →</button>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -177,7 +177,7 @@ export function CmsBlogManager() {
                     value={form[f.key]}
                     onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
                     placeholder={f.placeholder}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
                   />
                 </div>
               ))}
@@ -188,7 +188,7 @@ export function CmsBlogManager() {
                   value={form.excerpt}
                   onChange={(e) => setForm((p) => ({ ...p, excerpt: e.target.value }))}
                   placeholder="Short description shown on listing page…"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50 resize-none"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50 resize-none"
                 />
               </div>
               <div>
@@ -198,7 +198,7 @@ export function CmsBlogManager() {
                   value={form.content}
                   onChange={(e) => setForm((p) => ({ ...p, content: e.target.value }))}
                   placeholder="Full post content in Markdown…"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 font-mono text-[12px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50 resize-y"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 font-mono text-[12px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50 resize-y"
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -208,7 +208,7 @@ export function CmsBlogManager() {
                     value={form.tags}
                     onChange={(e) => setForm((p) => ({ ...p, tags: e.target.value }))}
                     placeholder="aws, cloud, devops"
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
                   />
                 </div>
                 <div>
@@ -216,7 +216,7 @@ export function CmsBlogManager() {
                   <select
                     value={form.status}
                     onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as Post["status"] }))}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white outline-none focus:border-[#4F46E5]/50"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-[13px] text-white outline-none focus:border-[#0B2E6B]/50"
                   >
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
@@ -229,7 +229,7 @@ export function CmsBlogManager() {
               <button onClick={() => setOpen(false)} className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-[13px] text-[#64748B] hover:text-white">
                 Cancel
               </button>
-              <button onClick={save} disabled={saving} className="rounded-xl bg-[#4F46E5] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#4338CA] disabled:opacity-60">
+              <button onClick={save} disabled={saving} className="rounded-xl bg-[#0B2E6B] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#092552] disabled:opacity-60">
                 {saving ? "Saving…" : editId ? "Update Post" : "Publish Post"}
               </button>
             </div>

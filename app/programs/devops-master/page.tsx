@@ -96,7 +96,7 @@ const data: ProgramPageData = {
       label: "Phase 2",
       title: "Docker & Containerisation",
       duration: "3 Weeks",
-      color: "bg-[#EFF6FF] text-[#1E40AF] border-[#BFDBFE]",
+      color: "bg-[#EEF4FB] text-[#1E40AF] border-[#C8D7EE]",
       icon: Server,
       objective: "Learn how to containerise applications using Docker, build production-ready images, manage multi-container applications with Docker Compose, and push to container registries.",
       modules: [
@@ -220,7 +220,7 @@ const data: ProgramPageData = {
       label: "Phase 4",
       title: "CI/CD Pipeline Engineering",
       duration: "4 Weeks",
-      color: "bg-[#F5F3FF] text-[#4C1D95] border-[#DDD6FE]",
+      color: "bg-[#F5F3FF] text-[#4C1D95] border-[#E8DCCF]",
       icon: Code2,
       objective: "Design and implement production-grade CI/CD pipelines using Jenkins, GitHub Actions and Azure DevOps. Automate build, test, security scan and deployment workflows.",
       modules: [
@@ -429,11 +429,11 @@ const data: ProgramPageData = {
   ],
   careerTiers: [
     { level: "Entry-Level (0–1 yr)", roles: ["Junior DevOps Engineer", "Build & Release Engineer", "Cloud Operations Analyst", "CI/CD Engineer"], color: "border-[#BBF7D0] bg-[#F0FDF4]" },
-    { level: "Mid-Level (1–3 yr)", roles: ["DevOps Engineer", "Platform Engineer", "Cloud DevOps Engineer", "Kubernetes Engineer"], color: "border-[#BFDBFE] bg-[#EFF6FF]" },
+    { level: "Mid-Level (1–3 yr)", roles: ["DevOps Engineer", "Platform Engineer", "Cloud DevOps Engineer", "Kubernetes Engineer"], color: "border-[#C8D7EE] bg-[#EEF4FB]" },
     { level: "Advanced (3+ yr)", roles: ["Senior DevOps Engineer", "Site Reliability Engineer", "DevSecOps Engineer", "Principal Platform Engineer"], color: "border-[#FED7AA] bg-[#FFF7ED]" },
   ],
   idealFor: [
-    { icon: GraduationCap, title: "Students & Freshers", desc: "No prior DevOps experience needed. Build 15 real projects in 5 months and land a DevOps role at an MNC or product company.", color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
+    { icon: GraduationCap, title: "Students & Freshers", desc: "No prior DevOps experience needed. Build 15 real projects in 5 months and land a DevOps role at an MNC or product company.", color: "text-[#0B2E6B]", bg: "bg-[#EAF0FA]" },
     { icon: Briefcase, title: "Software Developers", desc: "Own the deployment process. Add Docker, Kubernetes, CI/CD and Terraform to your developer skillset and command a 40-60% salary premium.", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
     { icon: Users2, title: "Sysadmins & IT Engineers", desc: "Modernise your infrastructure skills. Replace manual server management with automated, cloud-native DevOps workflows that scale.", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
   ],

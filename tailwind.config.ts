@@ -5,15 +5,15 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          primary: "#4F46E5",
-          secondary: "#2563EB",
-          accent: "#7C3AED",
+          primary: "#0B2E6B",
+          secondary: "#15407E",
+          accent: "#E56F12",
           background: "#F8FAFC",
           card: "#FFFFFF",
           text: "#111827",
           muted: "#6B7280",
           border: "#E5E7EB",
-          hover: "#4338CA",
+          hover: "#092552",
         },
       },
       fontFamily: {

@@ -88,7 +88,7 @@ export function AdminInvoiceDetail({ invoiceNumber }: { invoiceNumber: string })
             <Download className="h-3.5 w-3.5" />
             Export CSV
           </button>
-          <button onClick={() => window.print()} className="inline-flex h-9 items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-3 text-xs font-semibold text-white">
+          <button onClick={() => window.print()} className="inline-flex h-9 items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-3 text-xs font-semibold text-white">
             <Printer className="h-3.5 w-3.5" />
             Print invoice
           </button>
@@ -123,7 +123,7 @@ export function AdminInvoiceDetail({ invoiceNumber }: { invoiceNumber: string })
 
         <div className="rounded-2xl border border-white/8 bg-[#0D1117] p-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#4F46E5]/15 text-[#818CF8]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0B2E6B]/15 text-[#818CF8]">
               <UserRound className="h-5 w-5" />
             </div>
             <div>

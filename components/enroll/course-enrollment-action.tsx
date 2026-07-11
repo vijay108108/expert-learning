@@ -22,7 +22,7 @@ const baseButtonClasses =
   "inline-flex min-h-[48px] w-full items-center justify-center rounded-[14px] px-5 py-3 text-sm font-semibold transition-all duration-200";
 
 const checkoutButtonClasses =
-  "bg-[linear-gradient(135deg,#4F46E5,#4338CA)] text-white shadow-[0_16px_34px_rgba(249,115,22,0.22),0_0_20px_rgba(249,115,22,0.12)] hover:shadow-[0_20px_42px_rgba(249,115,22,0.28),0_0_24px_rgba(249,115,22,0.16)]";
+  "bg-[linear-gradient(135deg,#0B2E6B,#092552)] text-white shadow-[0_16px_34px_rgba(249,115,22,0.22),0_0_20px_rgba(249,115,22,0.12)] hover:shadow-[0_20px_42px_rgba(249,115,22,0.28),0_0_24px_rgba(249,115,22,0.16)]";
 
 const enrolledButtonClasses =
   "border border-[rgba(96,165,250,0.38)] bg-[linear-gradient(135deg,rgba(37,99,235,0.92),rgba(59,130,246,0.88))] text-white shadow-[0_16px_34px_rgba(37,99,235,0.2),0_0_20px_rgba(96,165,250,0.12)] hover:shadow-[0_20px_42px_rgba(37,99,235,0.26),0_0_24px_rgba(96,165,250,0.16)]";

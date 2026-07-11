@@ -79,7 +79,7 @@ export function FirebaseCourseManager() {
         </div>
         <input value={form.shortDescription} onChange={(e) => setForm((c) => ({ ...c, shortDescription: e.target.value }))} placeholder="Short description" className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white" />
         <textarea value={form.longDescription} onChange={(e) => setForm((c) => ({ ...c, longDescription: e.target.value }))} placeholder="Long description" className="min-h-24 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white" />
-        <button type="submit" className="rounded-md bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white">{editingId ? "Update" : "Create"}</button>
+        <button type="submit" className="rounded-md bg-[#0B2E6B] px-4 py-2 text-sm font-semibold text-white">{editingId ? "Update" : "Create"}</button>
       </form>
 
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.8)]">
@@ -94,7 +94,7 @@ export function FirebaseCourseManager() {
                 <td className="px-4 py-3">{course.track}</td>
                 <td className="px-4 py-3">
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => { setEditingId(course.id); setForm(course); }} className="text-[#4F46E5]">Edit</button>
+                    <button type="button" onClick={() => { setEditingId(course.id); setForm(course); }} className="text-[#0B2E6B]">Edit</button>
                     <button type="button" onClick={async () => { await deleteCourse(course.id); await load(); }} className="text-rose-400">Delete</button>
                     <Link href={`/courses/${course.category}`} className="text-cyan-300">View</Link>
                   </div>

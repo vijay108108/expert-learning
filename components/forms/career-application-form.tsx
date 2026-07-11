@@ -226,7 +226,7 @@ export function CareerApplicationForm({
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {pending ? "Submitting..." : "Submit Application"}
           </button>

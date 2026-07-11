@@ -30,7 +30,7 @@ export default function AdminCmsProgramsPage() {
                   <ExternalLink className="h-3.5 w-3.5" /> Preview
                 </Link>
                 <Link href={p.edit}
-                  className="flex items-center gap-1.5 rounded-xl bg-[#4F46E5]/20 px-3 py-2 text-[12px] font-semibold text-[#818CF8] hover:bg-[#4F46E5]/30">
+                  className="flex items-center gap-1.5 rounded-xl bg-[#0B2E6B]/20 px-3 py-2 text-[12px] font-semibold text-[#818CF8] hover:bg-[#0B2E6B]/30">
                   Manage LMS →
                 </Link>
               </div>

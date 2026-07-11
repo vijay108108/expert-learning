@@ -28,7 +28,7 @@ export function CtaBand({
             <p className="mt-3 text-sm leading-7 text-[#475569]">{description}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <AuthActionButton className="inline-flex touch-manipulation items-center justify-center gap-2 rounded-lg bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]" href={primaryHref}>
+            <AuthActionButton className="inline-flex touch-manipulation items-center justify-center gap-2 rounded-lg bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]" href={primaryHref}>
               Apply Now
             </AuthActionButton>
             {secondaryDemoCourse || secondaryDemoMessage ? (

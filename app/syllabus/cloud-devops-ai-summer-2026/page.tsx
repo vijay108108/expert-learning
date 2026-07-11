@@ -162,10 +162,10 @@ export default function SyllabusPage() {
       <div className="mx-auto max-w-4xl px-6 py-8 print:px-8 print:py-6">
 
         {/* Header */}
-        <div className="border-b-2 border-[#4F46E5] pb-6">
+        <div className="border-b-2 border-[#0B2E6B] pb-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-[#9333EA]">GenZNext Research & Training</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[#F58220]">GenZNext Research & Training</p>
               <h1 className="mt-2 text-[26px] font-extrabold leading-tight text-[#0F172A]">
                 Cloud, DevOps & AI Engineering<br />Professional Program
               </h1>
@@ -199,14 +199,14 @@ export default function SyllabusPage() {
         {/* Batch schedules */}
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {/* Weekday */}
-          <div className="rounded-xl border-2 border-[#4F46E5] p-4">
-            <p className="text-[12px] font-bold uppercase tracking-wider text-[#4F46E5]">⚡ Weekday Batch</p>
+          <div className="rounded-xl border-2 border-[#0B2E6B] p-4">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#0B2E6B]">⚡ Weekday Batch</p>
             <p className="mt-1 text-[13px] font-bold text-[#0F172A]">Tuesday – Friday · 6:00 PM – 9:00 PM IST</p>
             <p className="mt-1 text-[11px] text-[#64748B]">3 hours/day · 4 days/week · 8 weeks</p>
             <div className="mt-3 space-y-1">
               {weekdaySchedule.map((s) => (
                 <div key={s.week} className="flex gap-2 text-[11px]">
-                  <span className="w-14 shrink-0 font-bold text-[#4F46E5]">{s.week}</span>
+                  <span className="w-14 shrink-0 font-bold text-[#0B2E6B]">{s.week}</span>
                   <span className="text-[#475569]">{s.title}</span>
                 </div>
               ))}
@@ -214,14 +214,14 @@ export default function SyllabusPage() {
           </div>
 
           {/* Weekend */}
-          <div className="rounded-xl border-2 border-[#9333EA] p-4">
-            <p className="text-[12px] font-bold uppercase tracking-wider text-[#9333EA]">🗓 Weekend Batch</p>
+          <div className="rounded-xl border-2 border-[#F58220] p-4">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#F58220]">🗓 Weekend Batch</p>
             <p className="mt-1 text-[13px] font-bold text-[#0F172A]">Saturday – Sunday · 10:00 AM – 1:00 PM IST</p>
             <p className="mt-1 text-[11px] text-[#64748B]">3 hours/day · 2 days/week · 8 weeks</p>
             <div className="mt-3 space-y-1">
               {weekendSchedule.map((s) => (
                 <div key={s.week} className="flex gap-2 text-[11px]">
-                  <span className="w-14 shrink-0 font-bold text-[#9333EA]">{s.week}</span>
+                  <span className="w-14 shrink-0 font-bold text-[#F58220]">{s.week}</span>
                   <span className="text-[#475569]">{s.title}</span>
                 </div>
               ))}
@@ -236,17 +236,17 @@ export default function SyllabusPage() {
             {modules.map((mod) => (
               <div key={mod.week} className="rounded-xl border border-[#E2E8F0] p-5 print:break-inside-avoid">
                 <div className="flex items-start gap-3">
-                  <span className="shrink-0 rounded-lg bg-[#EEF2FF] px-2.5 py-1 text-[11px] font-bold text-[#4F46E5]">{mod.week}</span>
+                  <span className="shrink-0 rounded-lg bg-[#EAF0FA] px-2.5 py-1 text-[11px] font-bold text-[#0B2E6B]">{mod.week}</span>
                   <h3 className="text-[15px] font-bold text-[#0F172A]">{mod.title}</h3>
                 </div>
                 <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">
                   {mod.topics.map((t) => (
                     <li key={t} className="flex items-start gap-2 text-[12px] text-[#475569]">
-                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />{t}
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B2E6B]" />{t}
                     </li>
                   ))}
                 </ul>
-                <div className="mt-3 rounded-lg border border-[#DBEAFE] bg-[#EFF6FF] px-3 py-2 text-[12px] font-medium text-[#1E40AF]">
+                <div className="mt-3 rounded-lg border border-[#DBEAFE] bg-[#EEF4FB] px-3 py-2 text-[12px] font-medium text-[#1E40AF]">
                   🧪 Lab: {mod.lab}
                 </div>
               </div>
@@ -272,7 +272,7 @@ export default function SyllabusPage() {
             <p className="text-[13px] font-bold text-[#0F172A]">🏆 Certificate</p>
             <p className="mt-1 text-[12px] text-[#64748B]">GenZNext Professional Certificate — Industry recognized, valid for internship & job applications, can be listed on LinkedIn & resume.</p>
           </div>
-          <div className="rounded-xl border border-[#DDD6FE] bg-[#F5F0FF] p-4">
+          <div className="rounded-xl border border-[#E8DCCF] bg-[#FFF3E8] p-4">
             <p className="text-[13px] font-bold text-[#0F172A]">💼 Career Outcomes</p>
             <ul className="mt-1.5 space-y-1 text-[12px] text-[#64748B]">
               {["Azure Administrator", "Cloud Engineer", "Infrastructure Engineer", "Junior DevOps Engineer", "Platform Operations Engineer", "Cloud Support Engineer"].map(o => (

@@ -79,7 +79,7 @@ export function OrderSuccessPage() {
           </p>
           <Link
             href={dashboardPath}
-            className="mt-6 inline-flex rounded-xl bg-[#4F46E5] px-5 py-2.5 text-sm font-semibold text-white"
+            className="mt-6 inline-flex rounded-xl bg-[#0B2E6B] px-5 py-2.5 text-sm font-semibold text-white"
           >
             Go to Dashboard
           </Link>
@@ -118,7 +118,7 @@ export function OrderSuccessPage() {
           <div className="flex flex-wrap gap-3">
             <Link
               href={dashboardPath}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#4F46E5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA]"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0B2E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#092552]"
             >
               Open LMS Portal
             </Link>

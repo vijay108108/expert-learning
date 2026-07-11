@@ -34,7 +34,7 @@ type CorporateProgram = {
 
 const badgeToneClasses: Record<BadgeTone, string> = {
   green: "border-[rgba(52,211,153,0.2)] bg-[rgba(16,185,129,0.12)] text-[#34D399]",
-  orange: "border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.12)] text-[#2563EB]",
+  orange: "border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.12)] text-[#15407E]",
   blue: "border-[rgba(96,165,250,0.2)] bg-[rgba(59,130,246,0.12)] text-[#60A5FA]",
   purple: "border-[rgba(167,139,250,0.2)] bg-[rgba(139,92,246,0.12)] text-[#A78BFA]",
 };
@@ -130,11 +130,11 @@ const selectClass =
 function SectionList({ title, items }: { title: string; items: string[] }) {
   return (
     <div className="rounded-[18px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
-      <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7C3AED]">{title}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">{title}</div>
       <div className="mt-3 space-y-2.5">
         {items.map((item) => (
           <div key={item} className="flex gap-2 text-[13px] leading-6 text-[#CBD5E1]">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B2E6B]" />
             <span>{item}</span>
           </div>
         ))}
@@ -280,9 +280,9 @@ export function CorporateProgramsSection() {
 
               return (
                 <Reveal key={program.title} delay={index * 0.06} className="h-full">
-                  <article className="relative flex h-full flex-col gap-3 rounded-[18px] border border-[#1E2D42] bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(15,23,42,0.92))] p-[18px] shadow-[0_20px_44px_rgba(2,8,28,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-[#4F46E5] hover:shadow-[0_28px_54px_rgba(2,8,28,0.38),0_0_24px_rgba(249,115,22,0.12)]">
+                  <article className="relative flex h-full flex-col gap-3 rounded-[18px] border border-[#1E2D42] bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(15,23,42,0.92))] p-[18px] shadow-[0_20px_44px_rgba(2,8,28,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-[#0B2E6B] hover:shadow-[0_28px_54px_rgba(2,8,28,0.38),0_0_24px_rgba(249,115,22,0.12)]">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-[rgba(249,115,22,0.25)] bg-[rgba(249,115,22,0.1)] text-[#4F46E5]">
+                      <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-[rgba(249,115,22,0.25)] bg-[rgba(249,115,22,0.1)] text-[#0B2E6B]">
                         <Icon className="h-[18px] w-[18px]" />
                       </div>
                       <span className={cn("whitespace-nowrap rounded-full border px-[10px] py-[3px] text-[10px] font-medium", badgeToneClasses[program.badgeTone])}>
@@ -369,21 +369,21 @@ export function CorporateProgramsSection() {
               </div>
 
               <div className="p-5 sm:p-6">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7C3AED]">Enterprise Program</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">Enterprise Program</div>
                 <h2 className="mt-3 text-[28px] font-bold leading-[1.08] text-white sm:text-[34px]">{activeProgram.title}</h2>
                 <p className="mt-3 max-w-[56ch] text-[14px] leading-7 text-[#CBD5E1]">{activeProgram.overview}</p>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
                   <div className="rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7C3AED]">Training Delivery</div>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">Training Delivery</div>
                     <div className="mt-2 text-[13px] font-medium leading-6 text-white">{activeProgram.level}</div>
                   </div>
                   <div className="rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7C3AED]">Duration</div>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">Duration</div>
                     <div className="mt-2 text-[13px] font-medium leading-6 text-white">{activeProgram.duration}</div>
                   </div>
                   <div className="rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7C3AED]">{activeProgram.supportLabel}</div>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">{activeProgram.supportLabel}</div>
                     <div className="mt-2 text-[13px] font-medium leading-6 text-white">{activeProgram.badgeLabel}</div>
                   </div>
                 </div>
@@ -455,7 +455,7 @@ export function CorporateProgramsSection() {
               </div>
 
               <div className="p-5 sm:p-6">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7C3AED]">Enterprise Consultation</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">Enterprise Consultation</div>
                 <h2 className="mt-3 text-[28px] font-bold leading-[1.08] text-white sm:text-[32px]">Talk to our enterprise team</h2>
                 <p className="mt-3 max-w-[48ch] text-[14px] leading-7 text-[#CBD5E1]">
                   Share a few details about your team, program interest, and goals. We will follow up with a tailored consultation.
@@ -464,7 +464,7 @@ export function CorporateProgramsSection() {
                 <form className="mt-5" onSubmit={handleInquirySubmit}>
                   <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">Full Name</label>
+                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E56F12]">Full Name</label>
                     <input
                       className={fieldClass}
                       value={form.fullName}
@@ -473,7 +473,7 @@ export function CorporateProgramsSection() {
                     />
                   </div>
                   <div>
-                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">Company Name</label>
+                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E56F12]">Company Name</label>
                     <input
                       className={fieldClass}
                       value={form.companyName}
@@ -482,7 +482,7 @@ export function CorporateProgramsSection() {
                     />
                   </div>
                   <div>
-                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">Work Email</label>
+                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E56F12]">Work Email</label>
                     <input
                       type="email"
                       className={fieldClass}
@@ -492,7 +492,7 @@ export function CorporateProgramsSection() {
                     />
                   </div>
                   <div>
-                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">Phone Number</label>
+                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E56F12]">Phone Number</label>
                     <input
                       type="tel"
                       className={fieldClass}
@@ -502,7 +502,7 @@ export function CorporateProgramsSection() {
                     />
                   </div>
                   <div>
-                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">Interested Program</label>
+                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E56F12]">Interested Program</label>
                     <select
                       className={selectClass}
                       value={form.interestedProgram || inquiryProgram}
@@ -527,7 +527,7 @@ export function CorporateProgramsSection() {
                   </div>
 
                   <div className="mt-3">
-                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">Message</label>
+                    <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#E56F12]">Message</label>
                     <textarea
                       className={`${fieldClass} min-h-[128px] resize-y`}
                       value={form.message}

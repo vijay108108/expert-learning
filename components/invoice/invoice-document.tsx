@@ -70,7 +70,7 @@ export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess | Per
       <div className="border-b border-[#1E2D42] px-7 py-6 print:border-[#E2E8F0]">
         <div className="flex items-start justify-between gap-6">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-[#4F46E5] print:text-[#4F46E5]">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-[#0B2E6B] print:text-[#0B2E6B]">
               {SELLER.brand}
             </p>
             <p className="mt-1 text-[15px] font-bold text-white print:text-[#0F172A]">{SELLER.legalName}</p>
@@ -87,7 +87,7 @@ export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess | Per
             <p className="text-[22px] font-extrabold tracking-tight text-white print:text-[#0F172A]">
               {showTaxInvoice ? "TAX INVOICE" : "INVOICE"}
             </p>
-            <p className="mt-1 font-mono text-[15px] font-semibold text-[#818CF8] print:text-[#4F46E5]">
+            <p className="mt-1 font-mono text-[15px] font-semibold text-[#818CF8] print:text-[#0B2E6B]">
               {invoice.invoiceNumber}
             </p>
             <p className="mt-1 text-[12px] text-[#64748B] print:text-[#475569]">
@@ -115,7 +115,7 @@ export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess | Per
           )}
           {invoice.customer.gstNumber && (
             <InvoiceVal>
-              GSTIN: <span className="font-mono text-[#818CF8] print:text-[#4F46E5]">{invoice.customer.gstNumber}</span>
+              GSTIN: <span className="font-mono text-[#818CF8] print:text-[#0B2E6B]">{invoice.customer.gstNumber}</span>
             </InvoiceVal>
           )}
         </div>
@@ -231,7 +231,7 @@ export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess | Per
           <div className="border-t border-[#1E2D42] pt-3 print:border-[#E2E8F0]">
             <div className="flex items-center justify-between">
               <span className="text-[14px] font-bold text-white print:text-[#0F172A]">Total Paid</span>
-              <span className="text-[18px] font-extrabold text-[#818CF8] print:text-[#4F46E5]">
+              <span className="text-[18px] font-extrabold text-[#818CF8] print:text-[#0B2E6B]">
                 {formatCurrencyInrFromPaise(invoice.totalPaidPaise)}
               </span>
             </div>

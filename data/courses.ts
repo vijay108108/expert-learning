@@ -1048,28 +1048,28 @@ export const courseCategories = [
     title: "AWS Certifications",
     description: "Role-based AWS certification learning tracks from foundation to professional level.",
     href: "/courses/aws",
-    gradient: "from-[#7C2D12] via-[#4F46E5] to-[#7C3AED]",
+    gradient: "from-[#7C2D12] via-[#0B2E6B] to-[#E56F12]",
   },
   {
     key: "azure",
     title: "Azure Certifications",
     description: "Microsoft-aligned certification pathways for administrators, developers, architects, and DevSecOps engineers.",
     href: "/courses/azure",
-    gradient: "from-[#7C2D12] via-[#4F46E5] to-[#7C3AED]",
+    gradient: "from-[#7C2D12] via-[#0B2E6B] to-[#E56F12]",
   },
   {
     key: "ai",
     title: "AI, Generative AI & Agentic AI",
     description: "Practical AI tracks with project-based, certification-focused, and production-oriented outcomes.",
     href: "/courses/ai",
-    gradient: "from-[#7C2D12] via-[#4F46E5] to-[#7C3AED]",
+    gradient: "from-[#7C2D12] via-[#0B2E6B] to-[#E56F12]",
   },
   {
     key: "devops",
     title: "DevSecOps",
     description: "Secure CI/CD, cloud-native operations, Kubernetes hardening, and enterprise automation pathways.",
     href: "/courses/devops",
-    gradient: "from-[#7C2D12] via-[#4F46E5] to-[#7C3AED]",
+    gradient: "from-[#7C2D12] via-[#0B2E6B] to-[#E56F12]",
   },
 ] as const;
 

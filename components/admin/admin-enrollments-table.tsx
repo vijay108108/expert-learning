@@ -63,7 +63,7 @@ export function AdminEnrollmentsTable() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, course or phone..."
-            className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+            className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
           />
         </div>
         <button onClick={load} className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-[12px] text-[#64748B] hover:text-white">

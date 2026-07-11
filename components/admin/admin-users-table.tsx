@@ -84,9 +84,9 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
             onChange={(e) => setName(e.target.value)}
             placeholder="Full name"
             disabled={pending}
-            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
           />
-          <div className="flex h-10 overflow-hidden rounded-xl border border-white/10 bg-white/5 focus-within:border-[#4F46E5]/50">
+          <div className="flex h-10 overflow-hidden rounded-xl border border-white/10 bg-white/5 focus-within:border-[#0B2E6B]/50">
             <span className="inline-flex items-center border-r border-white/10 px-3 text-[13px] text-[#64748B]">+91</span>
             <input
               value={phone}
@@ -103,7 +103,7 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email (optional if phone is set)"
             disabled={pending}
-            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
           />
           <input
             value={password}
@@ -111,13 +111,13 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
             placeholder="Password (min 8 characters)"
             type="text"
             disabled={pending}
-            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
           />
           <select
             value={role}
             onChange={(e) => setRole(e.target.value as "admin" | "student")}
             disabled={pending}
-            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white outline-none focus:border-[#4F46E5]/50"
+            className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white outline-none focus:border-[#0B2E6B]/50"
           >
             <option value="student">Student</option>
             <option value="admin">Admin</option>
@@ -128,7 +128,7 @@ function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
           <button
             onClick={() => void submit()}
             disabled={pending}
-            className="h-10 w-full rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] text-[13px] font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-10 w-full rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] text-[13px] font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
           >
             {pending ? "Creating..." : "Create User"}
           </button>
@@ -204,13 +204,13 @@ function ResetPasswordModal({
               placeholder="New password (min 8 characters)"
               type="text"
               disabled={pending}
-              className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+              className="h-10 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
             />
             {error ? <p className="text-[12px] text-rose-400">{error}</p> : null}
             <button
               onClick={() => void submit()}
               disabled={pending}
-              className="h-10 w-full rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] text-[13px] font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-10 w-full rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] text-[13px] font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               {pending ? "Resetting..." : "Reset Password"}
             </button>
@@ -343,7 +343,7 @@ export function AdminUsersTable() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, phone or email..."
-            className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+            className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
           />
         </div>
         <button onClick={load} className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-[12px] text-[#64748B] transition hover:text-white">
@@ -354,7 +354,7 @@ export function AdminUsersTable() {
         </button>
         <button
           onClick={() => setShowAddUser(true)}
-          className="flex h-9 items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-3 text-[12px] font-semibold text-white transition hover:scale-[1.02]"
+          className="flex h-9 items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-3 text-[12px] font-semibold text-white transition hover:scale-[1.02]"
         >
           <UserPlus className="h-3.5 w-3.5" /> Add User
         </button>
@@ -412,7 +412,7 @@ export function AdminUsersTable() {
                         disabled={saving === uid}
                         onChange={(e) => changeRole(uid, e.target.value as "admin" | "student")}
                         className={`rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[12px] text-white outline-none transition ${
-                          saving === uid ? "opacity-50" : "hover:border-[#4F46E5]/40"
+                          saving === uid ? "opacity-50" : "hover:border-[#0B2E6B]/40"
                         }`}
                       >
                         <option value="student">Student</option>
@@ -425,7 +425,7 @@ export function AdminUsersTable() {
                         <button
                           onClick={() => setResetTarget(user)}
                           title="Reset password"
-                          className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-[#64748B] transition hover:border-[#4F46E5]/40 hover:text-white"
+                          className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-[#64748B] transition hover:border-[#0B2E6B]/40 hover:text-white"
                         >
                           <KeyRound className="h-3.5 w-3.5" />
                         </button>

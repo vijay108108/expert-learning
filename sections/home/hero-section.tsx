@@ -15,7 +15,7 @@ export function HeroSection() {
         <Reveal>
           <div className="rounded-2xl bg-[rgba(255,255,255,0.58)] p-1 backdrop-blur-[2px]">
             <p className="inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-white/85 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">
-              <span className="h-2 w-2 rounded-full bg-[#4F46E5]" />
+              <span className="h-2 w-2 rounded-full bg-[#0B2E6B]" />
               GenZNext Research & Training
             </p>
             <h1 className="mt-5 max-w-[18ch] text-[36px] font-extrabold leading-[1.08] tracking-[-0.04em] text-[#0F172A] sm:text-5xl lg:text-[64px]">
@@ -36,7 +36,7 @@ export function HeroSection() {
             <div className="mt-7 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-3">
               <ButtonLink
                 href="/courses"
-                className="min-h-12 w-full rounded-xl bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition duration-200 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.36)] sm:w-auto"
+                className="min-h-12 w-full rounded-xl bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition duration-200 hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.36)] sm:w-auto"
               >
                 Explore Courses
                 <ArrowRight className="h-4 w-4" />
@@ -58,9 +58,9 @@ export function HeroSection() {
               <h2 className="text-lg font-semibold text-[#0F172A]">Learning Experience Stack</h2>
               <div className="mt-4 space-y-3">
                 {[
-                  { icon: GraduationCap, label: "Certification Tracks", tone: "text-[#4F46E5]" },
-                  { icon: Layers3, label: "LMS Portal", tone: "text-[#2563EB]" },
-                  { icon: BookOpen, label: "YouTube Lessons", tone: "text-[#7C3AED]" },
+                  { icon: GraduationCap, label: "Certification Tracks", tone: "text-[#0B2E6B]" },
+                  { icon: Layers3, label: "LMS Portal", tone: "text-[#15407E]" },
+                  { icon: BookOpen, label: "YouTube Lessons", tone: "text-[#E56F12]" },
                   { icon: CheckCircle2, label: "Official Microsoft/AWS Resources", tone: "text-[#16A34A]" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2.5 transition duration-200 hover:bg-[#F8FAFC] hover:shadow-[0_10px_25px_rgba(15,23,42,0.06)]">

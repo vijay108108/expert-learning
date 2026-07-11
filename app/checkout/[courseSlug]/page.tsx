@@ -22,7 +22,7 @@ export default async function CourseCheckoutPage({ params }: PageProps) {
         <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.94fr_1.06fr]">
           <aside className="surface-card p-5 sm:p-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue-light/25 bg-brand-blue/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-blue-light">
-              <span className="h-2 w-2 rounded-full bg-[#4F46E5]" />
+              <span className="h-2 w-2 rounded-full bg-[#0B2E6B]" />
               {course.tagLabel}
             </div>
             <h2 className="mt-3 text-[28px] font-bold leading-tight text-brand-text">{course.title}</h2>

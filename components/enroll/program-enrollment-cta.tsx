@@ -41,7 +41,7 @@ export function ProgramEnrollmentCta({
       <Link
         href={continueHref}
         className={cn(
-          "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(79,70,229,0.30)]",
+          "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(79,70,229,0.30)]",
           className,
         )}
       >
@@ -57,7 +57,7 @@ export function ProgramEnrollmentCta({
         href={`/checkout/${courseSlug}`}
         aria-disabled={loading}
         className={cn(
-          "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(79,70,229,0.30)]",
+          "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(79,70,229,0.30)]",
           loading && "pointer-events-none opacity-70",
         )}
       >

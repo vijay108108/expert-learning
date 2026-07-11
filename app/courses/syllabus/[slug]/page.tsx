@@ -79,7 +79,7 @@ export default async function CourseSyllabusPage({ params }: PageProps) {
               <ol className="mt-5 space-y-4">
                 {course.syllabusModules.map((module, index) => (
                   <li key={module} className="flex gap-3 rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] p-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#4F46E5] text-[12px] font-bold text-white">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0B2E6B] text-[12px] font-bold text-white">
                       {index + 1}
                     </span>
                     <p className="text-sm font-medium leading-6 text-[#1F2937]">{module}</p>
@@ -94,7 +94,7 @@ export default async function CourseSyllabusPage({ params }: PageProps) {
               <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
                 {course.skillsYouWillLearn.map((skill) => (
                   <p key={skill} className="flex items-start gap-2 text-sm leading-6 text-[#374151]">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#0B2E6B]" />
                     {skill}
                   </p>
                 ))}
@@ -107,7 +107,7 @@ export default async function CourseSyllabusPage({ params }: PageProps) {
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {course.projects.map((project) => (
                   <div key={project} className="flex items-start gap-2 rounded-[12px] border border-[#E2E8F0] bg-white p-3">
-                    <FolderKanban className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
+                    <FolderKanban className="mt-0.5 h-4 w-4 shrink-0 text-[#0B2E6B]" />
                     <p className="text-sm leading-6 text-[#374151]">{project}</p>
                   </div>
                 ))}
@@ -119,7 +119,7 @@ export default async function CourseSyllabusPage({ params }: PageProps) {
               <div className="section-label">Tools &amp; Technologies</div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {course.toolsCovered.map((tool) => (
-                  <span key={tool} className="rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-1.5 text-[12px] font-semibold text-[#4338CA]">
+                  <span key={tool} className="rounded-full border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-1.5 text-[12px] font-semibold text-[#092552]">
                     {tool}
                   </span>
                 ))}
@@ -157,21 +157,21 @@ export default async function CourseSyllabusPage({ params }: PageProps) {
                 </p>
               )}
               <div className="mt-5 space-y-2.5 text-sm text-[#475569]">
-                <p className="flex items-center gap-2"><Clock3 className="h-4 w-4 text-[#4F46E5]" />{course.duration} · Self-Paced</p>
-                <p className="flex items-center gap-2"><GraduationCap className="h-4 w-4 text-[#4F46E5]" />{course.level}</p>
-                <p className="flex items-center gap-2"><Layers className="h-4 w-4 text-[#4F46E5]" />{course.syllabusModules.length} Modules</p>
-                <p className="flex items-center gap-2"><Award className="h-4 w-4 text-[#4F46E5]" />{course.certificate}</p>
+                <p className="flex items-center gap-2"><Clock3 className="h-4 w-4 text-[#0B2E6B]" />{course.duration} · Self-Paced</p>
+                <p className="flex items-center gap-2"><GraduationCap className="h-4 w-4 text-[#0B2E6B]" />{course.level}</p>
+                <p className="flex items-center gap-2"><Layers className="h-4 w-4 text-[#0B2E6B]" />{course.syllabusModules.length} Modules</p>
+                <p className="flex items-center gap-2"><Award className="h-4 w-4 text-[#0B2E6B]" />{course.certificate}</p>
               </div>
               <div className="mt-6 space-y-3">
                 <Link
                   href={`/enroll/${course.slug}`}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(11,46,107,0.3)] transition hover:scale-[1.02]"
                 >
                   Enroll Now <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/contact"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C8D7EE] hover:text-[#0B2E6B]"
                 >
                   Talk to Admissions
                 </Link>
@@ -183,7 +183,7 @@ export default async function CourseSyllabusPage({ params }: PageProps) {
               <ul className="mt-3 space-y-2">
                 {course.targetAudience.map((audience) => (
                   <li key={audience} className="flex items-start gap-2 text-sm leading-6 text-[#374151]">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#0B2E6B]" />
                     {audience}
                   </li>
                 ))}

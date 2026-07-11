@@ -305,7 +305,7 @@ export function EnrollmentForm({
           contact: form.phone,
         },
         theme: {
-          color: "#4F46E5",
+          color: "#0B2E6B",
         },
         handler: async (response: Record<string, string>) => {
           try {
@@ -426,17 +426,17 @@ export function EnrollmentForm({
             required
           />
         </div>
-        <div className={cn("rounded-[22px] border border-[#C7D2FE] bg-[linear-gradient(135deg,rgba(239,246,255,0.98),rgba(245,243,255,0.96)_55%,rgba(248,250,252,0.95))] shadow-[0_14px_32px_rgba(79,70,229,0.10)]", compact ? "mt-3.5 p-3.5 sm:p-4" : "mt-4 p-4 sm:p-5")}>
+        <div className={cn("rounded-[22px] border border-[#C8D7EE] bg-[linear-gradient(135deg,rgba(239,246,255,0.98),rgba(245,243,255,0.96)_55%,rgba(248,250,252,0.95))] shadow-[0_14px_32px_rgba(79,70,229,0.10)]", compact ? "mt-3.5 p-3.5 sm:p-4" : "mt-4 p-4 sm:p-5")}>
           <label className="form-label" htmlFor="enroll-coupon">
             🎁 Apply Coupon & Save More
           </label>
-          <p className={cn("text-[12.5px] font-medium leading-5 text-[#4F46E5] sm:text-[13px]", compact ? "mb-3" : "mb-4")}>
+          <p className={cn("text-[12.5px] font-medium leading-5 text-[#0B2E6B] sm:text-[13px]", compact ? "mb-3" : "mb-4")}>
             Have a coupon code? Enter below to unlock your discount.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
               id="enroll-coupon"
-              className="form-field min-w-0 border-[#BFDBFE] bg-white/95 px-4 py-3 shadow-[0_8px_20px_rgba(37,99,235,0.08)] transition focus:border-[#6366F1] focus:ring-4 focus:ring-[#C7D2FE]/50"
+              className="form-field min-w-0 border-[#C8D7EE] bg-white/95 px-4 py-3 shadow-[0_8px_20px_rgba(37,99,235,0.08)] transition focus:border-[#1B4C92] focus:ring-4 focus:ring-[#C8D7EE]/50"
               placeholder="Enter coupon code"
               value={couponCode}
               onChange={(event) => {
@@ -456,7 +456,7 @@ export function EnrollmentForm({
               type="button"
               onClick={handleApplyCoupon}
               disabled={couponPending || pending || isPaying}
-              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#7C3AED,#4F46E5,#2563EB)] px-5 py-3 text-sm font-bold text-white shadow-[0_14px_28px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_32px_rgba(79,70,229,0.30)] disabled:opacity-70 sm:min-w-[128px]"
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#E56F12,#0B2E6B,#15407E)] px-5 py-3 text-sm font-bold text-white shadow-[0_14px_28px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_32px_rgba(79,70,229,0.30)] disabled:opacity-70 sm:min-w-[128px]"
             >
               {couponPending ? "Applying..." : "Apply"}
             </button>
@@ -500,7 +500,7 @@ export function EnrollmentForm({
         <button
           type="submit"
           disabled={pending || isPaying}
-          className={cn("inline-flex w-full items-center justify-center rounded-lg bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:opacity-70", compact ? "mt-4 py-3" : "mt-5 py-[13px]")}
+          className={cn("inline-flex w-full items-center justify-center rounded-lg bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:opacity-70", compact ? "mt-4 py-3" : "mt-5 py-[13px]")}
         >
           {pending || isPaying ? "Processing..." : submitLabel}
         </button>

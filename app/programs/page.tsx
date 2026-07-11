@@ -35,11 +35,11 @@ const programs: Program[] = [
     credentialDuration: "2 Months",
     syllabusHref: "/syllabus/az-104-official-syllabus.pdf",
     syllabusButtonClassName:
-      "border-[#BFDBFE] bg-[linear-gradient(135deg,#EFF6FF,#DBEAFE)] text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.10)] hover:border-[#60A5FA] hover:text-[#1E40AF]",
+      "border-[#C8D7EE] bg-[linear-gradient(135deg,#EEF4FB,#DBEAFE)] text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.10)] hover:border-[#60A5FA] hover:text-[#1E40AF]",
     slug: "azure-administrator",
     badge: "Microsoft Azure Admin",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
-    stripColor: "from-[#0078D4] via-[#3B82F6] to-[#0EA5E9]",
+    stripColor: "from-[#0078D4] via-[#3B82F6] to-[#1E5AA8]",
     hot: true,
     tagline: "Azure identity, compute, networking, storage, and monitoring administration",
     description:
@@ -64,11 +64,11 @@ const programs: Program[] = [
     credentialDuration: "1 Month",
     syllabusHref: "/syllabus/az-400-official-syllabus.pdf",
     syllabusButtonClassName:
-      "border-[#DDD6FE] bg-[linear-gradient(135deg,#F5F3FF,#EDE9FE)] text-[#6D28D9] shadow-[0_10px_24px_rgba(124,58,237,0.10)] hover:border-[#A78BFA] hover:text-[#5B21B6]",
+      "border-[#FCD7B6] bg-[linear-gradient(135deg,#FFF3E8,#FFE7CC)] text-[#C65A0D] shadow-[0_10px_24px_rgba(229,111,18,0.14)] hover:border-[#F4A261] hover:text-[#A84A07]",
     slug: "azure-devops-engineer",
     badge: "Microsoft DevOps",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
-    stripColor: "from-[#2563EB] via-[#4F46E5] to-[#7C3AED]",
+    stripColor: "from-[#15407E] via-[#0B2E6B] to-[#E56F12]",
     hot: true,
     tagline: "CI/CD, release governance, IaC, DevSecOps, and observability on Azure",
     description:
@@ -97,7 +97,7 @@ const programs: Program[] = [
     slug: "aiops-engineering",
     badge: "Cloud Operations AI",
     badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
-    stripColor: "from-[#0EA5E9] via-[#4F46E5] to-[#9333EA]",
+    stripColor: "from-[#1E5AA8] via-[#0B2E6B] to-[#F58220]",
     hot: true,
     tagline: "Observability, incident intelligence, automation, and reliability engineering",
     description:
@@ -166,7 +166,7 @@ function ProgramCard({ program }: { program: Program }) {
   return (
     <article
       className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[20px] border bg-white shadow-[0_6px_20px_rgba(15,23,42,0.07)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(79,70,229,0.13)] ${
-        program.hot ? "border-[#DDD6FE]" : "border-[#E2E8F0]"
+        program.hot ? "border-[#E8DCCF]" : "border-[#E2E8F0]"
       }`}
     >
       {program.hot && (
@@ -206,7 +206,7 @@ function ProgramCard({ program }: { program: Program }) {
           </div>
         </div>
 
-        <p className="mt-3 text-[10.5px] font-semibold uppercase tracking-wider text-[#4F46E5]">
+        <p className="mt-3 text-[10.5px] font-semibold uppercase tracking-wider text-[#0B2E6B]">
           {program.tagline}
         </p>
 
@@ -215,7 +215,7 @@ function ProgramCard({ program }: { program: Program }) {
         </p>
 
         <div className="mt-4">
-          <p className="mb-2 text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#9333EA]">
+          <p className="mb-2 text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#F58220]">
             Tools & Technologies
           </p>
           <TechStackGrid slug={program.slug} max={14} />
@@ -225,7 +225,7 @@ function ProgramCard({ program }: { program: Program }) {
           <ul className="space-y-1.5">
             {program.highlights.map((highlight) => (
               <li key={highlight} className="flex items-start gap-2 text-[11.5px] font-medium !text-[#334155]">
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4F46E5]" />
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0B2E6B]" />
                 {highlight}
               </li>
             ))}
@@ -244,9 +244,9 @@ function ProgramCard({ program }: { program: Program }) {
 
         <div className="mt-4 border-t border-[#F1F5F9] pt-4">
           <div className="mb-3 flex flex-wrap gap-3 text-[11px] text-[#64748B]">
-            <span className="flex items-center gap-1"><Clock3 className="h-3 w-3 text-[#4F46E5]" />{program.duration}</span>
-            <span className="flex items-center gap-1"><FolderKanban className="h-3 w-3 text-[#4F46E5]" />{program.projects}</span>
-            <span className="flex items-center gap-1"><Award className="h-3 w-3 text-[#4F46E5]" />{program.certification}</span>
+            <span className="flex items-center gap-1"><Clock3 className="h-3 w-3 text-[#0B2E6B]" />{program.duration}</span>
+            <span className="flex items-center gap-1"><FolderKanban className="h-3 w-3 text-[#0B2E6B]" />{program.projects}</span>
+            <span className="flex items-center gap-1"><Award className="h-3 w-3 text-[#0B2E6B]" />{program.certification}</span>
           </div>
           <div className="flex items-center justify-between">
             <div>
@@ -255,7 +255,7 @@ function ProgramCard({ program }: { program: Program }) {
             </div>
             <Link
               href={program.href}
-              className="inline-flex items-center gap-1.5 rounded-[12px] bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-2.5 text-[12.5px] font-bold text-white shadow-[0_6px_16px_rgba(79,70,229,0.22)] transition group-hover:scale-[1.02] group-hover:shadow-[0_12px_28px_rgba(79,70,229,0.32)]"
+              className="inline-flex items-center gap-1.5 rounded-[12px] bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-2.5 text-[12.5px] font-bold text-white shadow-[0_6px_16px_rgba(79,70,229,0.22)] transition group-hover:scale-[1.02] group-hover:shadow-[0_12px_28px_rgba(79,70,229,0.32)]"
             >
               Enroll Now <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -278,9 +278,9 @@ function ProgramCard({ program }: { program: Program }) {
 export default function ProgramsPage() {
   return (
     <main className="bg-white">
-      <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#F5F0FF_50%,#E0F2FE_100%)] px-4 pb-8 pt-10 sm:px-6 lg:px-8">
+      <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#FFF3E8_50%,#E0F2FE_100%)] px-4 pb-8 pt-10 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
-          <span className="inline-flex items-center rounded-full border border-[#DDD6FE] bg-[#F5F0FF] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7C3AED]">
+          <span className="inline-flex items-center rounded-full border border-[#E8DCCF] bg-[#FFF3E8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#E56F12]">
             GenZNext Career Tracks
           </span>
           <h1 className="mt-4 text-[34px] font-extrabold leading-[1.1] tracking-[-0.02em] !text-[#0F172A] sm:text-[42px]">
@@ -297,7 +297,7 @@ export default function ProgramsPage() {
               { icon: Award, label: "Certification Prep Included" },
             ].map(({ icon: Icon, label }) => (
               <span key={label} className="flex items-center gap-1.5">
-                <Icon className="h-4 w-4 text-[#4F46E5]" />{label}
+                <Icon className="h-4 w-4 text-[#0B2E6B]" />{label}
               </span>
             ))}
           </div>
@@ -312,10 +312,10 @@ export default function ProgramsPage() {
             ))}
           </div>
 
-          <div className="mt-10 rounded-[28px] bg-[linear-gradient(160deg,#FFFFFF_0%,#EEF2FF_55%,#F8FAFC_100%)] p-4 sm:p-6">
+          <div className="mt-10 rounded-[28px] bg-[linear-gradient(160deg,#FFFFFF_0%,#EAF0FA_55%,#F8FAFC_100%)] p-4 sm:p-6">
             <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <span className="inline-flex items-center rounded-full border border-[#DDD6FE] bg-[#F5F0FF] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7C3AED]">
+                <span className="inline-flex items-center rounded-full border border-[#E8DCCF] bg-[#FFF3E8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#E56F12]">
                   Combined Master Program
                 </span>
                 <p className="mt-2 text-sm font-medium text-[#64748B]">
@@ -356,7 +356,7 @@ export default function ProgramsPage() {
                   </div>
                 </div>
 
-                <p className="mt-4 text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">
+                <p className="mt-4 text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">
                   {combinedMasterProgram.tagline}
                 </p>
                 <h2 className="mt-2 text-3xl font-extrabold leading-[1.15] tracking-[-0.03em] text-[#0F172A] sm:text-4xl lg:text-[40px]">
@@ -380,7 +380,7 @@ export default function ProgramsPage() {
                 <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {combinedMasterProgram.stats.map(({ icon: Icon, label }) => (
                     <div key={label} className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
-                      <Icon className="h-4 w-4 shrink-0 text-[#4F46E5]" />
+                      <Icon className="h-4 w-4 shrink-0 text-[#0B2E6B]" />
                       <span className="text-[13px] font-semibold text-[#0F172A]">{label}</span>
                     </div>
                   ))}
@@ -404,14 +404,14 @@ export default function ProgramsPage() {
                 <div className="mt-5 space-y-2 text-sm text-[#475569]">
                   {combinedMasterProgram.features.map(({ icon: Icon, text }) => (
                     <p key={text} className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-[#4F46E5]" />
+                      <Icon className="h-4 w-4 text-[#0B2E6B]" />
                       {text}
                     </p>
                   ))}
                 </div>
 
-                <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-2.5">
-                  <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-2.5">
+                  <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#0B2E6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m10-4H9a2 2 0 00-2 2v0a2 2 0 002 2h6a2 2 0 002-2v0a2 2 0 00-2-2z" />
                   </svg>
                   <p className="text-[12px] font-medium leading-5 text-[#3730A3]">1-on-1 support available after every live class session</p>
@@ -420,7 +420,7 @@ export default function ProgramsPage() {
                 <div className="mt-5 space-y-3">
                   <Link
                     href={combinedMasterProgram.enrollHref}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
                   >
                     Enroll Now <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -428,7 +428,7 @@ export default function ProgramsPage() {
                     href={combinedMasterProgram.syllabusHref}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDD6FE] bg-[linear-gradient(135deg,#F5F3FF,#EDE9FE)] px-4 py-2.5 text-sm font-semibold text-[#6D28D9] shadow-[0_10px_24px_rgba(124,58,237,0.12)] transition hover:-translate-y-0.5 hover:border-[#A78BFA] hover:bg-[linear-gradient(135deg,#EDE9FE,#DDD6FE)] hover:text-[#5B21B6]"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#FCD7B6] bg-[linear-gradient(135deg,#FFF3E8,#FFE7CC)] px-4 py-2.5 text-sm font-semibold text-[#C65A0D] shadow-[0_10px_24px_rgba(229,111,18,0.14)] transition hover:-translate-y-0.5 hover:border-[#F4A261] hover:bg-[linear-gradient(135deg,#FFE7CC,#FCD7B6)] hover:text-[#A84A07]"
                   >
                     <Download className="h-4 w-4" />
                     Download Syllabus
@@ -444,16 +444,16 @@ export default function ProgramsPage() {
 
       <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl rounded-[24px] border border-[#E2E8F0] bg-white p-8 text-center shadow-sm">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-[#9333EA]">Not Sure Which to Pick?</p>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-[#F58220]">Not Sure Which to Pick?</p>
           <h2 className="mt-2 text-2xl font-bold !text-[#0F172A]">Talk to our admissions team</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#64748B]">
             We&apos;ll match you to the right program based on your background, goals and timeline.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02]">
+            <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02]">
               Talk to Admissions <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold !text-[#0F172A] transition hover:border-[#C7D2FE]">
+            <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold !text-[#0F172A] transition hover:border-[#C8D7EE]">
               Browse All Courses
             </Link>
           </div>

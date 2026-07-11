@@ -64,13 +64,13 @@ export function Header() {
                 className={cn(
                   "relative rounded-lg px-3.5 py-2 text-[13.5px] font-medium transition-all duration-150",
                   active
-                    ? "text-[#4F46E5]"
+                    ? "text-[#0B2E6B]"
                     : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]",
                 )}
               >
                 {item.label}
                 {active && (
-                  <span className="absolute bottom-0.5 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-[#4F46E5]" />
+                  <span className="absolute bottom-0.5 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-[#0B2E6B]" />
                 )}
               </Link>
             );
@@ -105,7 +105,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => openAuthModal("signup", "/")}
-                className="rounded-lg bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_4px_12px_rgba(99,102,241,0.3)] transition hover:shadow-[0_6px_20px_rgba(99,102,241,0.38)] hover:scale-[1.02]"
+                className="rounded-lg bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_4px_12px_rgba(99,102,241,0.3)] transition hover:shadow-[0_6px_20px_rgba(99,102,241,0.38)] hover:scale-[1.02]"
               >
                 Get Started
               </button>
@@ -151,7 +151,7 @@ export function Header() {
                 className={cn(
                   "flex items-center rounded-xl px-3 py-2.5 text-sm transition-all",
                   active
-                    ? "bg-[#EEF2FF] font-semibold text-[#4F46E5]"
+                    ? "bg-[#EAF0FA] font-semibold text-[#0B2E6B]"
                     : "font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]",
                 )}
               >
@@ -181,7 +181,7 @@ export function Header() {
                 <button
                   type="button"
                   onClick={() => { openAuthModal("signup", "/"); setMobileOpen(false); }}
-                  className="rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-3 py-2.5 text-sm font-semibold text-white"
+                  className="rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-3 py-2.5 text-sm font-semibold text-white"
                 >
                   Get Started
                 </button>

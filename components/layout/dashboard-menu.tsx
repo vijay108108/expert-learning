@@ -135,12 +135,12 @@ export function DashboardMenu({
                     className={cn(
                       "relative z-10 flex h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-[12px] px-[14px] text-left text-sm text-[#0F172A] transition-all duration-200 ease-out pointer-events-auto",
                       active
-                        ? "bg-[rgba(99,102,241,0.10)] font-semibold text-[#4F46E5]"
-                        : "hover:bg-[rgba(99,102,241,0.08)] hover:text-[#4F46E5]",
+                        ? "bg-[rgba(99,102,241,0.10)] font-semibold text-[#0B2E6B]"
+                        : "hover:bg-[rgba(99,102,241,0.08)] hover:text-[#0B2E6B]",
                     )}
                   >
                     <span className="inline-flex items-center gap-2.5">
-                      <Icon className={cn("h-[15px] w-[15px] transition-colors duration-200", active ? "text-[#4F46E5]" : "text-[#64748B]")} />
+                      <Icon className={cn("h-[15px] w-[15px] transition-colors duration-200", active ? "text-[#0B2E6B]" : "text-[#64748B]")} />
                       {item.label}
                     </span>
                     <span className="h-1.5 w-1.5 rounded-full bg-current opacity-55" />

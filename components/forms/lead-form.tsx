@@ -67,7 +67,7 @@ export function LeadForm({
     : "rounded-xl px-4 py-3 text-[13px]";
   const buttonClass = lightTone
     ? "mt-5 inline-flex w-full items-center justify-center rounded-[16px] bg-[linear-gradient(135deg,#f97316,#fb923c)] px-5 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(249,115,22,0.26)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_40px_rgba(249,115,22,0.3)] disabled:cursor-not-allowed disabled:opacity-70"
-    : `inline-flex w-full items-center justify-center bg-[linear-gradient(135deg,#4F46E5,#2563EB)] text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:cursor-not-allowed disabled:opacity-70 ${compact ? "mt-4 rounded-2xl px-5 py-3.5" : "mt-5 rounded-lg px-5 py-[13px]"}`;
+    : `inline-flex w-full items-center justify-center bg-[linear-gradient(135deg,#0B2E6B,#15407E)] text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.34),0_0_24px_rgba(251,146,60,0.16)] disabled:cursor-not-allowed disabled:opacity-70 ${compact ? "mt-4 rounded-2xl px-5 py-3.5" : "mt-5 rounded-lg px-5 py-[13px]"}`;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

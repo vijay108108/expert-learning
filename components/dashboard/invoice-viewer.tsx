@@ -66,7 +66,7 @@ export function InvoiceViewer({ invoiceNumber }: { invoiceNumber: string }) {
     return (
       <section className="flex min-h-[50vh] items-center justify-center px-4">
         <div className="inline-flex items-center gap-3 rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4 text-sm text-[#475569] shadow-sm">
-          <LoaderCircle className="h-4 w-4 animate-spin text-[#4F46E5]" />
+          <LoaderCircle className="h-4 w-4 animate-spin text-[#0B2E6B]" />
           Loading invoice...
         </div>
       </section>
@@ -82,7 +82,7 @@ export function InvoiceViewer({ invoiceNumber }: { invoiceNumber: string }) {
           <button
             type="button"
             onClick={() => openAuthModal("login", `/dashboard/invoices/${encodeURIComponent(invoiceNumber)}`)}
-            className="mt-6 inline-flex rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-5 py-2.5 text-sm font-semibold text-white"
+            className="mt-6 inline-flex rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-semibold text-white"
           >
             Sign In
           </button>
@@ -120,7 +120,7 @@ export function InvoiceViewer({ invoiceNumber }: { invoiceNumber: string }) {
             <button
               type="button"
               onClick={() => window.print()}
-              className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-4 py-2.5 text-sm font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-4 py-2.5 text-sm font-semibold text-white"
             >
               <Download className="h-4 w-4" />
               Download / Print PDF

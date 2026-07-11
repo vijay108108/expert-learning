@@ -6,7 +6,7 @@ export default function NotFound() {
     <section className="flex min-h-[70vh] items-center px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-2xl text-center">
         {/* 404 badge */}
-        <span className="inline-flex items-center rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#4F46E5]">
+        <span className="inline-flex items-center rounded-full border border-[#C8D7EE] bg-[#EAF0FA] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0B2E6B]">
           404 — Page Not Found
         </span>
 
@@ -22,19 +22,19 @@ export default function NotFound() {
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.28)] transition hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.28)] transition hover:scale-[1.02]"
           >
             <Home className="h-4 w-4" /> Back to Home
           </Link>
           <Link
             href="/courses"
-            className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#4F46E5]/30 hover:text-[#4F46E5]"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#0B2E6B]/30 hover:text-[#0B2E6B]"
           >
             <BookOpenCheck className="h-4 w-4" /> Browse Courses
           </Link>
           <Link
             href="/programs"
-            className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#4F46E5]/30 hover:text-[#4F46E5]"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#0B2E6B]/30 hover:text-[#0B2E6B]"
           >
             <Search className="h-4 w-4" /> View Programs
           </Link>
@@ -44,7 +44,7 @@ export default function NotFound() {
         <div className="mx-auto mt-10 h-px max-w-xs bg-[#E2E8F0]" />
         <p className="mt-6 text-sm text-[#64748B]">
           Still can&apos;t find what you need?{" "}
-          <Link href="/contact" className="font-semibold text-[#4F46E5] hover:underline">
+          <Link href="/contact" className="font-semibold text-[#0B2E6B] hover:underline">
             Contact our team
           </Link>
           {" "}and we&apos;ll help.

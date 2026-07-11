@@ -169,7 +169,7 @@ export function SummerTrainingForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-[14px] text-sm font-semibold text-white shadow-[0_14px_32px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(249,115,22,0.34),0_0_22px_rgba(251,146,60,0.18)] disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 py-[14px] text-sm font-semibold text-white shadow-[0_14px_32px_rgba(249,115,22,0.28),0_0_18px_rgba(251,146,60,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(249,115,22,0.34),0_0_22px_rgba(251,146,60,0.18)] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {pending ? "Submitting..." : "Apply for Summer Training"}
       </button>

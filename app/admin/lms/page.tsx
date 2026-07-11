@@ -31,7 +31,7 @@ export default function AdminLmsPage() {
             className={cn(
               "flex-1 rounded-lg px-4 py-2 text-[13px] font-semibold transition",
               activeTab === tab.key
-                ? "bg-[#4F46E5] text-white"
+                ? "bg-[#0B2E6B] text-white"
                 : "text-[#94A3B8] hover:bg-white/5 hover:text-white",
             )}
           >

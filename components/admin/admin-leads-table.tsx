@@ -59,7 +59,7 @@ export function AdminLeadsTable() {
         <div className="relative min-w-[200px] flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-[#475569]" />
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name, phone or course…"
-            className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50" />
+            className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50" />
         </div>
         <select value={filter} onChange={(e) => setFilter(e.target.value)}
           className="h-9 rounded-xl border border-white/10 bg-white/5 px-3 text-[13px] text-white outline-none">

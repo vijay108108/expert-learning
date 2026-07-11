@@ -99,14 +99,14 @@ export function AdminInvoicesTable() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search by invoice, learner or payment ID..."
-            className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#4F46E5]/50"
+            className="h-9 w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 text-[13px] text-white placeholder:text-[#334155] outline-none focus:border-[#0B2E6B]/50"
           />
         </div>
         <button onClick={() => void load()} className="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-[12px] text-[#64748B] hover:text-white">
           <RefreshCw className="h-3.5 w-3.5" />
           Refresh
         </button>
-        <button onClick={exportCsv} className="flex h-9 items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-3 text-[12px] font-semibold text-white">
+        <button onClick={exportCsv} className="flex h-9 items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-3 text-[12px] font-semibold text-white">
           <Download className="h-3.5 w-3.5" />
           Export CSV
         </button>

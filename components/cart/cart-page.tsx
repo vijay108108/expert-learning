@@ -26,7 +26,7 @@ export function CartPage() {
       <section className="px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <div className="surface-form rounded-[28px] px-6 py-10 text-center sm:px-10 sm:py-12">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[22px] border border-[#2563EB]/20 bg-[rgba(249,115,22,0.12)] text-[#7C3AED] shadow-[0_18px_36px_rgba(249,115,22,0.12)]">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[22px] border border-[#15407E]/20 bg-[rgba(249,115,22,0.12)] text-[#E56F12] shadow-[0_18px_36px_rgba(249,115,22,0.12)]">
               <ShoppingBag className="h-9 w-9" />
             </div>
             <h2 className="mt-6 text-[30px] font-bold text-white">Your cart is empty</h2>
@@ -50,13 +50,13 @@ export function CartPage() {
         <div className="surface-form rounded-[28px] p-5 sm:p-6">
           <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#4F46E5]">MY CART</div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#0B2E6B]">MY CART</div>
               <h2 className="mt-2 text-[28px] font-bold text-white">Review your selected programs</h2>
               <p className="mt-2 text-sm leading-7 text-[#CBD5E1]">
                 {count} course{count > 1 ? "s" : ""} ready for a secure checkout.
               </p>
             </div>
-            <div className="shrink-0 rounded-[10px] border border-[rgba(249,115,22,0.3)] bg-[rgba(249,115,22,0.1)] px-4 py-2 text-[14px] font-semibold text-[#4F46E5]">
+            <div className="shrink-0 rounded-[10px] border border-[rgba(249,115,22,0.3)] bg-[rgba(249,115,22,0.1)] px-4 py-2 text-[14px] font-semibold text-[#0B2E6B]">
               {totalLabel}
             </div>
           </div>
@@ -68,10 +68,10 @@ export function CartPage() {
               return (
                 <article
                   key={course.slug}
-                  className="surface-card flex flex-col gap-4 rounded-[22px] border border-white/10 p-4 transition-all duration-200 hover:border-[#2563EB]/30 hover:shadow-[0_16px_34px_rgba(2,8,28,0.22)] sm:flex-row sm:items-start sm:justify-between"
+                  className="surface-card flex flex-col gap-4 rounded-[22px] border border-white/10 p-4 transition-all duration-200 hover:border-[#15407E]/30 hover:shadow-[0_16px_34px_rgba(2,8,28,0.22)] sm:flex-row sm:items-start sm:justify-between"
                 >
                   <div className="flex min-w-0 gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-[rgba(249,115,22,0.14)] text-[#4F46E5]">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-[rgba(249,115,22,0.14)] text-[#0B2E6B]">
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="min-w-0">
@@ -96,7 +96,7 @@ export function CartPage() {
                     </div>
                   </div>
                   <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
-                    <div className="mono-meta text-[18px] font-semibold text-[#7C3AED]">{course.price}</div>
+                    <div className="mono-meta text-[18px] font-semibold text-[#E56F12]">{course.price}</div>
                     <button
                       type="button"
                       onClick={() => removeCourse(course.slug)}
@@ -118,7 +118,7 @@ export function CartPage() {
             </div>
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 rounded-[8px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.08)] px-4 py-2 text-sm font-medium text-[#4F46E5] transition hover:bg-[rgba(249,115,22,0.12)]"
+              className="inline-flex items-center gap-2 rounded-[8px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.08)] px-4 py-2 text-sm font-medium text-[#0B2E6B] transition hover:bg-[rgba(249,115,22,0.12)]"
             >
               Explore Courses
               <ArrowRight className="h-4 w-4" />
@@ -127,7 +127,7 @@ export function CartPage() {
 
           <Link
             href="/checkout"
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#4F46E5] px-5 py-[13px] text-[15px] font-semibold text-white transition hover:bg-[#4338CA]"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#0B2E6B] px-5 py-[13px] text-[15px] font-semibold text-white transition hover:bg-[#092552]"
           >
             <LockKeyhole className="h-4.5 w-4.5" />
             Proceed to Checkout — ₹{Math.round(totalPaise / 100).toLocaleString("en-IN")}

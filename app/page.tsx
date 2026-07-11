@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import {
   Award,
   BookOpenCheck,
@@ -209,8 +209,8 @@ type Review = (typeof reviews)[number];
 function ReviewCard({ review }: { review: Review }) {
   const isB2B = review.b2b === true;
   return (
-    <div className="mx-2 w-[320px] shrink-0 rounded-[18px] border border-[#E2E8F0] bg-[#F8FAFC] p-5 shadow-sm transition hover:border-[#C7D2FE] hover:shadow-[0_8px_24px_rgba(79,70,229,0.1)]">
-      <Quote className="h-4 w-4 text-[#C7D2FE]" />
+    <div className="mx-2 w-[320px] shrink-0 rounded-[18px] border border-[#E2E8F0] bg-[#F8FAFC] p-5 shadow-sm transition hover:border-[#C8D7EE] hover:shadow-[0_8px_24px_rgba(79,70,229,0.1)]">
+      <Quote className="h-4 w-4 text-[#C8D7EE]" />
       <p className="mt-3 line-clamp-4 text-[13px] leading-[1.65] text-[#374151]">{review.text}</p>
       <div className="mt-3 flex items-center gap-0.5">
         {[...Array(review.rating)].map((_, i) => (
@@ -219,7 +219,7 @@ function ReviewCard({ review }: { review: Review }) {
       </div>
       <div className="mt-3 flex items-center gap-3">
         <div
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#9333EA,#4F46E5)] text-[11px] font-bold text-white"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#F58220,#0B2E6B)] text-[11px] font-bold text-white"
           style={isB2B ? { filter: "blur(4px)", userSelect: "none" } : undefined}
         >
           {review.avatar.slice(0, 2)}
@@ -233,7 +233,7 @@ function ReviewCard({ review }: { review: Review }) {
           </p>
           <p className="text-[11px] text-[#64748B]">{review.role}</p>
           <p
-            className="text-[11px] font-medium text-[#4F46E5]"
+            className="text-[11px] font-medium text-[#0B2E6B]"
             style={isB2B ? { filter: "blur(5px)", userSelect: "none" } : undefined}
           >
             {review.company}
@@ -245,8 +245,8 @@ function ReviewCard({ review }: { review: Review }) {
 }
 
 const tracks = [
-  { icon: Cloud, label: "Cloud (AWS & Azure)", color: "text-[#2563EB]", bg: "bg-[#EFF6FF]" },
-  { icon: Zap, label: "DevSecOps & SRE", color: "text-[#7C3AED]", bg: "bg-[#F5F3FF]" },
+  { icon: Cloud, label: "Cloud (AWS & Azure)", color: "text-[#15407E]", bg: "bg-[#EEF4FB]" },
+  { icon: Zap, label: "DevSecOps & SRE", color: "text-[#E56F12]", bg: "bg-[#F5F3FF]" },
   { icon: Sparkles, label: "Generative & Agentic AI", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
   { icon: Code2, label: "Data Engineering", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
   { icon: Briefcase, label: "Corporate Training (B2B)", color: "text-[#DC2626]", bg: "bg-[#FEF2F2]" },
@@ -263,20 +263,20 @@ export default function Home() {
       ))}
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[linear-gradient(160deg,#FFFFFF_0%,#F5F0FF_45%,#E0F2FE_100%)] px-4 pb-16 pt-4 sm:px-6 sm:pt-6 lg:px-8 lg:pb-24 lg:pt-8">
+      <section className="relative overflow-hidden bg-[linear-gradient(160deg,#FFFFFF_0%,#FFF3E8_45%,#E0F2FE_100%)] px-4 pb-16 pt-4 sm:px-6 sm:pt-6 lg:px-8 lg:pb-24 lg:pt-8">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(147,51,234,0.1)_0%,transparent_65%)]" />
           <div className="absolute -bottom-20 -left-20 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.09)_0%,transparent_65%)]" />
         </div>
         <div className="relative mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-1 text-xs font-semibold tracking-wide text-[#4F46E5]">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#4F46E5]" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-1 text-xs font-semibold tracking-wide text-[#0B2E6B]">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#0B2E6B]" />
               #1 Cloud, DevOps &amp; AI Training — India
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.18] tracking-[-0.02em] text-[#0F172A] sm:text-5xl lg:text-[52px]">
               Master AI, Cloud &amp; DevOps —<br className="hidden sm:block" />
-              <span className="bg-[linear-gradient(135deg,#9333EA,#4F46E5,#0EA5E9)] bg-clip-text text-transparent">
+              <span className="bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] bg-clip-text text-transparent">
                 {" "}Build a Career That Scales
               </span>
             </h1>
@@ -284,7 +284,7 @@ export default function Home() {
               Structured learning paths, live mentorship, real-world projects and LMS access for students, working professionals and enterprise teams.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5,#0EA5E9)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]">
+              <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]">
                 Explore Courses <ChevronRight className="h-4 w-4" />
               </Link>
               <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-[#CBD5E1] bg-white px-6 py-3 text-sm font-semibold text-[#0F172A] shadow-sm transition hover:border-[#A5B4FC] hover:bg-[#F8FAFC]">
@@ -293,7 +293,7 @@ export default function Home() {
             </div>
             <Link
               href="/workshops/ai-developer-launch-lab"
-              className="group mt-5 flex max-w-xl items-start justify-between gap-4 rounded-2xl border border-[#FFEDD5] bg-[linear-gradient(135deg,#FFF7ED_0%,#EFF6FF_100%)] p-4 shadow-[0_10px_24px_rgba(249,115,22,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(37,99,235,0.16)]"
+              className="group mt-5 flex max-w-xl items-start justify-between gap-4 rounded-2xl border border-[#FFEDD5] bg-[linear-gradient(135deg,#FFF7ED_0%,#EEF4FB_100%)] p-4 shadow-[0_10px_24px_rgba(249,115,22,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(37,99,235,0.16)]"
             >
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#EA580C]">AI + Cloud Quick Learning</p>
@@ -309,7 +309,7 @@ export default function Home() {
             <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-[#64748B]">
               {["AWS & Azure Certified Mentors", "Live Batches Every Month", "LMS Access for Life"].map((item) => (
                 <span key={item} className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-[#4F46E5]" />{item}
+                  <CheckCircle2 className="h-4 w-4 text-[#0B2E6B]" />{item}
                 </span>
               ))}
             </div>
@@ -319,7 +319,7 @@ export default function Home() {
 
             {/* Summer Training Notification */}            <Link
               href="/courses/azure/az-104"
-              className="group flex items-start justify-between gap-4 rounded-2xl border border-[#BFDBFE] bg-[linear-gradient(135deg,#F8FBFF_0%,#F2F8FF_42%,#EEF4FF_100%)] p-4 shadow-[0_8px_22px_rgba(37,99,235,0.10)] transition hover:shadow-[0_14px_30px_rgba(37,99,235,0.16)]"
+              className="group flex items-start justify-between gap-4 rounded-2xl border border-[#C8D7EE] bg-[linear-gradient(135deg,#F8FBFF_0%,#F2F8FF_42%,#EEF4FF_100%)] p-4 shadow-[0_8px_22px_rgba(37,99,235,0.10)] transition hover:shadow-[0_14px_30px_rgba(37,99,235,0.16)]"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2.5">
@@ -356,13 +356,13 @@ export default function Home() {
                   </span>
                 </div>
               </div>
-              <span className="mt-0.5 shrink-0 rounded-xl bg-[linear-gradient(135deg,#0078D4,#2563EB)] px-3 py-2 text-[11px] font-bold text-white transition group-hover:brightness-95">
+              <span className="mt-0.5 shrink-0 rounded-xl bg-[linear-gradient(135deg,#0078D4,#15407E)] px-3 py-2 text-[11px] font-bold text-white transition group-hover:brightness-95">
                 Register →
               </span>
             </Link>
 
             <div className="rounded-2xl border border-[#E2E8F0] bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.07)] backdrop-blur">
-              <p className="text-sm font-semibold text-[#2563EB]">What you get with every program</p>
+              <p className="text-sm font-semibold text-[#15407E]">What you get with every program</p>
               <div className="mt-4 space-y-2.5">
                 {[
                   "Structured roadmap with mentor checkpoints",
@@ -371,8 +371,8 @@ export default function Home() {
                   "LMS-based learning continuity after enrollment",
                   "Career guidance & mock interview sessions",
                 ].map((item) => (
-                  <div key={item} className="flex items-start gap-2 rounded-lg border border-[#EEF2FF] bg-[#F8FAFC] p-2.5 text-[13px] text-[#475569]">
-                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4F46E5]" />
+                  <div key={item} className="flex items-start gap-2 rounded-lg border border-[#EAF0FA] bg-[#F8FAFC] p-2.5 text-[13px] text-[#475569]">
+                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0B2E6B]" />
                     {item}
                   </div>
                 ))}
@@ -411,7 +411,7 @@ export default function Home() {
       <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Programs</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Programs</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">6 High-Demand Learning Tracks</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#64748B]">
               From students entering the industry to enterprises upskilling teams — we have a track for every ambition.
@@ -419,13 +419,13 @@ export default function Home() {
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {tracks.map((track) => (
-              <Link key={track.label} href="/courses" className="group flex items-center gap-4 rounded-[18px] border border-[#E2E8F0] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#C7D2FE] hover:shadow-[0_12px_24px_rgba(79,70,229,0.1)]">
+              <Link key={track.label} href="/courses" className="group flex items-center gap-4 rounded-[18px] border border-[#E2E8F0] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:shadow-[0_12px_24px_rgba(79,70,229,0.1)]">
                 <div className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${track.bg}`}>
                   <track.icon className={`h-5 w-5 ${track.color}`} />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[#0F172A]">{track.label}</p>
-                  <p className="mt-0.5 text-[12px] text-[#64748B] group-hover:text-[#4F46E5]">View curriculum →</p>
+                  <p className="mt-0.5 text-[12px] text-[#64748B] group-hover:text-[#0B2E6B]">View curriculum →</p>
                 </div>
               </Link>
             ))}
@@ -437,7 +437,7 @@ export default function Home() {
       <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Why Us</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Why Us</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Built for Real Careers, Not Just Certificates</h2>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -448,8 +448,8 @@ export default function Home() {
               { title: "Portfolio projects", icon: Sparkles, desc: "Enterprise-grade projects that get you noticed in interviews and LinkedIn." },
             ].map((item) => (
               <article key={item.title} className="rounded-[18px] border border-[#E2E8F0] bg-white p-7 shadow-[0_8px_20px_rgba(15,23,42,0.04)] transition hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.08)]">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF]">
-                  <item.icon className="h-5 w-5 text-[#4F46E5]" />
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF0FA]">
+                  <item.icon className="h-5 w-5 text-[#0B2E6B]" />
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-[#0F172A]">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-[#64748B]">{item.desc}</p>
@@ -463,7 +463,7 @@ export default function Home() {
       <section className="overflow-hidden bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Student Reviews</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Student Reviews</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Loved by 6,000+ Learners Across India</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#64748B]">
               Students, working professionals, entrepreneurs and enterprise teams share their GenZNext experience.
@@ -507,7 +507,7 @@ export default function Home() {
       <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Who It&apos;s For</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Who It&apos;s For</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Learning Designed For You</h2>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-3">
@@ -515,8 +515,8 @@ export default function Home() {
               {
                 icon: GraduationCap,
                 title: "Students & Freshers",
-                color: "text-[#4F46E5]",
-                bg: "bg-[#EEF2FF]",
+                color: "text-[#0B2E6B]",
+                bg: "bg-[#EAF0FA]",
                 desc: "Build a cloud or AI career from scratch. Land your first job with real projects and certification-backed skills that employers actually look for.",
                 cta: "Start Learning",
                 href: "/courses",
@@ -546,7 +546,7 @@ export default function Home() {
                 </div>
                 <h3 className="mt-5 text-xl font-bold text-[#0F172A]">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-[#64748B]">{item.desc}</p>
-                <Link href={item.href} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[#4F46E5] hover:underline">
+                <Link href={item.href} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[#0B2E6B] hover:underline">
                   {item.cta} <ChevronRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -557,7 +557,7 @@ export default function Home() {
 
       {/* CTA */}
       <section className="bg-white px-4 pb-16 pt-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764_0%,#4F46E5_50%,#0369A1_100%)] px-8 py-14 text-center shadow-[0_24px_60px_rgba(147,51,234,0.35)] sm:px-14">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764_0%,#0B2E6B_50%,#0369A1_100%)] px-8 py-14 text-center shadow-[0_24px_60px_rgba(147,51,234,0.35)] sm:px-14">
           {/* Label */}
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C084FC]">Start Today</p>
 
@@ -575,7 +575,7 @@ export default function Home() {
           {/* CTAs */}
           <div className="mt-9 flex flex-wrap justify-center gap-4">
             <Link href="/programs"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-bold text-[#4F46E5] shadow-[0_8px_24px_rgba(255,255,255,0.2)] transition hover:scale-[1.02] hover:shadow-[0_12px_30px_rgba(255,255,255,0.28)]">
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-bold text-[#0B2E6B] shadow-[0_8px_24px_rgba(255,255,255,0.2)] transition hover:scale-[1.02] hover:shadow-[0_12px_30px_rgba(255,255,255,0.28)]">
               Explore Programs <ChevronRight className="h-4 w-4" />
             </Link>
             <Link href="/contact"

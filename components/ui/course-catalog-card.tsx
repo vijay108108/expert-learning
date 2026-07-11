@@ -17,12 +17,12 @@ const trackLabel: Record<Course["track"], string> = {
 };
 
 const trackColor: Record<Course["track"], string> = {
-  "ai": "bg-[#F5F3FF] text-[#6D28D9] border-[#DDD6FE]",
+  "ai": "bg-[#FFF3E8] text-[#C65A0D] border-[#FCD7B6]",
   "generative-ai": "bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]",
   "agentic-ai": "bg-[#ECFDF5] text-[#065F46] border-[#A7F3D0]",
-  "devsecops": "bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]",
+  "devsecops": "bg-[#EEF4FB] text-[#1D4ED8] border-[#C8D7EE]",
   "aws-certifications": "bg-[#FEFCE8] text-[#854D0E] border-[#FDE68A]",
-  "azure-certifications": "bg-[#EFF6FF] text-[#1E40AF] border-[#BFDBFE]",
+  "azure-certifications": "bg-[#EEF4FB] text-[#1E40AF] border-[#C8D7EE]",
 };
 
 const levelColor: Record<Course["level"], string> = {
@@ -53,11 +53,11 @@ export function CourseCatalogCard({ course }: { course: Course }) {
 
   return (
     <article className={`group flex h-full flex-col rounded-2xl border bg-white shadow-[0_4px_16px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(15,23,42,0.12)] ${
-      isEnrolled ? "border-[#C7D2FE]" : "border-[#E2E8F0]"
+      isEnrolled ? "border-[#C8D7EE]" : "border-[#E2E8F0]"
     }`}>
 
       {/* ── Top accent bar ── */}
-      <div className={`h-1 w-full rounded-t-2xl ${isEnrolled ? "bg-[linear-gradient(90deg,#6366F1,#4F46E5)]" : "bg-[linear-gradient(90deg,#E2E8F0,#F1F5F9)]"}`} />
+      <div className={`h-1 w-full rounded-t-2xl ${isEnrolled ? "bg-[linear-gradient(90deg,#1B4C92,#0B2E6B)]" : "bg-[linear-gradient(90deg,#E2E8F0,#F1F5F9)]"}`} />
 
       <div className="flex flex-1 flex-col p-5">
 
@@ -72,7 +72,7 @@ export function CourseCatalogCard({ course }: { course: Course }) {
         </div>
 
         {/* ── Certification label ── */}
-        <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[#4F46E5]">
+        <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[#0B2E6B]">
           {course.certification}
         </p>
 
@@ -103,7 +103,7 @@ export function CourseCatalogCard({ course }: { course: Course }) {
         <div className="mt-3.5 space-y-1.5">
           {highlights.map((item) => (
             <p key={item} className="flex items-start gap-1.5 text-[12px] leading-[1.5] text-[#374151]">
-              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4F46E5]" />
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0B2E6B]" />
               <span className="line-clamp-1">{item}</span>
             </p>
           ))}
@@ -115,9 +115,9 @@ export function CourseCatalogCard({ course }: { course: Course }) {
         {/* ── Footer ── */}
         {isEnrolled ? (
           <div className="mt-4 space-y-3">
-            <div className="rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-2.5">
+            <div className="rounded-xl border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-2.5">
               <div className="flex items-center justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[#4F46E5]">Enrolled</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#0B2E6B]">Enrolled</p>
                 {enrolledMetaByCourseId[course.slug]?.enrolledAt && (
                   <p className="text-[10px] text-[#64748B]">
                     {new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })
@@ -125,14 +125,14 @@ export function CourseCatalogCard({ course }: { course: Course }) {
                   </p>
                 )}
               </div>
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#C7D2FE]">
-                <div className="h-full w-[25%] rounded-full bg-[#4F46E5]" />
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#C8D7EE]">
+                <div className="h-full w-[25%] rounded-full bg-[#0B2E6B]" />
               </div>
-              <p className="mt-1 text-[10px] text-[#4338CA]">25% completed</p>
+              <p className="mt-1 text-[10px] text-[#092552]">25% completed</p>
             </div>
             <Link
               href={`/dashboard/${course.slug}`}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0B2E6B] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#092552]"
             >
               Continue Learning <ArrowRight className="h-4 w-4" />
             </Link>
@@ -151,7 +151,7 @@ export function CourseCatalogCard({ course }: { course: Course }) {
             </div>
             <Link
               href={`/courses/syllabus/${course.slug}`}
-              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-2.5 text-[13px] font-semibold text-[#4F46E5] transition hover:bg-[#E0E7FF]"
+              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-2.5 text-[13px] font-semibold text-[#0B2E6B] transition hover:bg-[#DCE7F7]"
             >
               View Syllabus <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -167,7 +167,7 @@ export function CourseCatalogCard({ course }: { course: Course }) {
               />
               <Link
                 href={`/contact?course=${encodeURIComponent(course.title)}`}
-                className="flex items-center justify-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-[13px] font-medium text-[#475569] transition hover:border-[#4F46E5] hover:text-[#4F46E5]"
+                className="flex items-center justify-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-[13px] font-medium text-[#475569] transition hover:border-[#0B2E6B] hover:text-[#0B2E6B]"
               >
                 Enquire
               </Link>

@@ -118,8 +118,8 @@ function PaymentProcessingOverlay() {
         {/* Spinner */}
         <div className="flex flex-col items-center text-center">
           <div className="relative flex h-20 w-20 items-center justify-center">
-            <div className="absolute inset-0 animate-spin rounded-full border-4 border-[#1E293B] border-t-[#9333EA]" />
-            <div className="absolute inset-3 animate-spin rounded-full border-4 border-[#1E293B] border-t-[#4F46E5]" style={{ animationDirection: "reverse", animationDuration: "0.8s" }} />
+            <div className="absolute inset-0 animate-spin rounded-full border-4 border-[#1E293B] border-t-[#F58220]" />
+            <div className="absolute inset-3 animate-spin rounded-full border-4 border-[#1E293B] border-t-[#0B2E6B]" style={{ animationDirection: "reverse", animationDuration: "0.8s" }} />
             <ShieldCheck className="h-7 w-7 text-[#34D399]" />
           </div>
           <p className="mt-5 text-[17px] font-bold text-white">Processing Payment</p>
@@ -137,7 +137,7 @@ function PaymentProcessingOverlay() {
                     <CheckCircle2 className="h-4 w-4 text-[#34D399]" />
                   </div>
                 ) : i === steps.findIndex(s => !s.done) ? (
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4F46E5]/20">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0B2E6B]/20">
                     <Loader2 className="h-3.5 w-3.5 animate-spin text-[#818CF8]" />
                   </div>
                 ) : (
@@ -485,7 +485,7 @@ export function CartCheckoutForm() {
           contact: payload.phone,
         },
         theme: {
-          color: "#4F46E5",
+          color: "#0B2E6B",
         },
         handler: async (response: Record<string, string>) => {
           try {
@@ -576,7 +576,7 @@ export function CartCheckoutForm() {
         </p>
         <Link
           href="/courses"
-          className="mt-5 inline-flex rounded-[8px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.08)] px-4 py-2 text-sm font-medium text-[#4F46E5] transition hover:bg-[rgba(249,115,22,0.12)]"
+          className="mt-5 inline-flex rounded-[8px] border border-[rgba(249,115,22,0.2)] bg-[rgba(249,115,22,0.08)] px-4 py-2 text-sm font-medium text-[#0B2E6B] transition hover:bg-[rgba(249,115,22,0.12)]"
         >
           Explore Courses
         </Link>
@@ -594,7 +594,7 @@ export function CartCheckoutForm() {
         <button
           type="button"
           onClick={() => openAuthModal("login", "/checkout")}
-          className="mt-5 inline-flex rounded-[8px] bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA]"
+          className="mt-5 inline-flex rounded-[8px] bg-[#0B2E6B] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#092552]"
         >
           Continue with Login
         </button>
@@ -662,7 +662,7 @@ export function CartCheckoutForm() {
                     addGstDetails: event.target.checked,
                   }))
                 }
-                className="mt-1 h-4 w-4 rounded border border-[#2D3F55] bg-transparent accent-[#4F46E5]"
+                className="mt-1 h-4 w-4 rounded border border-[#2D3F55] bg-transparent accent-[#0B2E6B]"
               />
               <span>
                 <span className="block text-sm font-medium text-[#F1F5F9]">
@@ -831,7 +831,7 @@ export function CartCheckoutForm() {
           )}
           <div className="flex items-center justify-between border-t border-[#1A2537] pt-3">
             <span className="text-[15px] font-semibold text-[#F1F5F9]">Total Payable</span>
-            <span className="text-[18px] font-semibold text-[#4F46E5]">{formatCurrencyInrFromPaise(totalPaidPaise)}</span>
+            <span className="text-[18px] font-semibold text-[#0B2E6B]">{formatCurrencyInrFromPaise(totalPaidPaise)}</span>
           </div>
         </div>
 
@@ -850,7 +850,7 @@ export function CartCheckoutForm() {
           type="submit"
           form={checkoutFormId}
           disabled={pending || isPaying}
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#4F46E5] px-4 py-[13px] text-[15px] font-semibold text-white transition hover:bg-[#4338CA] disabled:cursor-not-allowed disabled:opacity-70"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#0B2E6B] px-4 py-[13px] text-[15px] font-semibold text-white transition hover:bg-[#092552] disabled:cursor-not-allowed disabled:opacity-70"
         >
           {pending || isPaying ? (
             "Processing..."

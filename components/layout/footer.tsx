@@ -98,7 +98,7 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
           <div className="flex flex-wrap gap-3">
             <Link
               href="/programs"
-              className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA]"
+              className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#092552]"
             >
               Explore Programs <ArrowRight className="h-4 w-4" />
             </Link>
@@ -133,7 +133,7 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={item.label}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#1E293B] bg-[#1E293B] text-[#64748B] transition hover:border-[#4F46E5] hover:bg-[linear-gradient(135deg,#9333EA,#4F46E5)] hover:text-white"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#1E293B] bg-[#1E293B] text-[#64748B] transition hover:border-[#0B2E6B] hover:bg-[linear-gradient(135deg,#F58220,#0B2E6B)] hover:text-white"
                 >
                   {Icon ? <Icon className="h-4 w-4" /> : item.label.slice(0, 1)}
                 </a>
@@ -171,7 +171,7 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
                 className="flex items-center gap-2.5 text-[13px] text-[#64748B] transition hover:text-[#E2E8F0]"
               >
                 <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#1E293B]">
-                  <Phone className="h-3.5 w-3.5 text-[#4F46E5]" />
+                  <Phone className="h-3.5 w-3.5 text-[#0B2E6B]" />
                 </span>
                 {siteConfig.phone}
               </a>
@@ -182,7 +182,7 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
                 className="flex items-start gap-2.5 text-[13px] text-[#64748B] transition hover:text-[#E2E8F0]"
               >
                 <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#1E293B]">
-                  <Mail className="h-3.5 w-3.5 text-[#4F46E5]" />
+                  <Mail className="h-3.5 w-3.5 text-[#0B2E6B]" />
                 </span>
                 {siteConfig.email}
               </a>
@@ -190,7 +190,7 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
             <li>
               <div className="flex items-start gap-2.5 text-[13px] text-[#64748B]">
                 <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#1E293B]">
-                  <MapPin className="h-3.5 w-3.5 text-[#4F46E5]" />
+                  <MapPin className="h-3.5 w-3.5 text-[#0B2E6B]" />
                 </span>
                 <span>
                   {siteConfig.addressLines.map((line) => (

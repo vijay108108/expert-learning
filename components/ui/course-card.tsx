@@ -10,20 +10,20 @@ import { RefinedProgramCard } from "@/components/ui/refined-program-card";
 
 const categoryStyles = {
   aws: {
-    bar: "from-[#4F46E5] via-[#2563EB] to-[#7C3AED]",
-    icon: "bg-[#4F46E5]/18 text-[#7C3AED]",
+    bar: "from-[#0B2E6B] via-[#15407E] to-[#E56F12]",
+    icon: "bg-[#0B2E6B]/18 text-[#E56F12]",
   },
   azure: {
-    bar: "from-[#4F46E5] via-[#2563EB] to-[#7C3AED]",
-    icon: "bg-[#4F46E5]/18 text-[#7C3AED]",
+    bar: "from-[#0B2E6B] via-[#15407E] to-[#E56F12]",
+    icon: "bg-[#0B2E6B]/18 text-[#E56F12]",
   },
   ai: {
-    bar: "from-[#4F46E5] via-[#2563EB] to-[#7C3AED]",
-    icon: "bg-[#4F46E5]/18 text-[#7C3AED]",
+    bar: "from-[#0B2E6B] via-[#15407E] to-[#E56F12]",
+    icon: "bg-[#0B2E6B]/18 text-[#E56F12]",
   },
   devops: {
-    bar: "from-[#4F46E5] via-[#2563EB] to-[#7C3AED]",
-    icon: "bg-[#4F46E5]/18 text-[#7C3AED]",
+    bar: "from-[#0B2E6B] via-[#15407E] to-[#E56F12]",
+    icon: "bg-[#0B2E6B]/18 text-[#E56F12]",
   },
 } as const;
 
@@ -115,7 +115,7 @@ export function CourseCard({
     <article
       className={cn(
         "surface-card group relative flex h-full flex-col overflow-hidden rounded-[16px] p-5 transition-all duration-300",
-        "border border-[rgba(226,232,240,0.8)] bg-[rgba(255,255,255,0.96)] shadow-[0_10px_30px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:border-[#4F46E5]/30 hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]",
+        "border border-[rgba(226,232,240,0.8)] bg-[rgba(255,255,255,0.96)] shadow-[0_10px_30px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:border-[#0B2E6B]/30 hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]",
         featured && "pulse-border",
       )}
     >
@@ -132,7 +132,7 @@ export function CourseCard({
         <span
           className={cn(
             "rounded-full border px-2.5 py-1 text-[10px] font-semibold",
-            popular ? "border-[#4F46E5]/30 bg-[#EEF2FF] text-[#4F46E5]" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]",
+            popular ? "border-[#0B2E6B]/30 bg-[#EAF0FA] text-[#0B2E6B]" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]",
           )}
         >
           {course.highlight}
@@ -140,11 +140,11 @@ export function CourseCard({
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-[#475569]">
         <span className="mono-meta inline-flex items-center gap-1">
-          <Star className="h-3.5 w-3.5 fill-[#4F46E5] text-[#4F46E5]" />
+          <Star className="h-3.5 w-3.5 fill-[#0B2E6B] text-[#0B2E6B]" />
           {course.rating}
         </span>
         <span className="mono-meta inline-flex items-center gap-1">
-          <Clock3 className="h-3.5 w-3.5 text-[#4F46E5]" />
+          <Clock3 className="h-3.5 w-3.5 text-[#0B2E6B]" />
           {course.duration}
         </span>
         <span className="mono-meta">{course.level}</span>
@@ -167,7 +167,7 @@ export function CourseCard({
             🏷 Launch Offer
           </div>
           <div className="mono-meta mt-2 text-[12px] text-[#94A3B8] line-through">{course.originalPrice}</div>
-          <div className="mono-meta mt-1 text-[18px] font-bold text-[#4F46E5]">{course.price}</div>
+          <div className="mono-meta mt-1 text-[18px] font-bold text-[#0B2E6B]">{course.price}</div>
         </div>
         <div className="mono-meta text-[11px] text-[#475569]">{course.duration}</div>
       </div>
@@ -188,12 +188,12 @@ export function CourseCard({
             href={course.officialSyllabusUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-[12px] font-semibold text-[#4F46E5] shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#4F46E5] hover:bg-[#EEF2FF] hover:text-[#4338CA] sm:flex-initial"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-[12px] font-semibold text-[#0B2E6B] shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#0B2E6B] hover:bg-[#EAF0FA] hover:text-[#092552] sm:flex-initial"
           >
             View Syllabus
             <ExternalLink className="h-3.5 w-3.5" />
           </a>
-          <ArrowUpRight className="hidden h-[18px] w-[18px] text-[#4F46E5] transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:block" />
+          <ArrowUpRight className="hidden h-[18px] w-[18px] text-[#0B2E6B] transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:block" />
         </div>
       </div>
     </article>

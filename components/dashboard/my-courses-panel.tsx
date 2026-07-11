@@ -369,7 +369,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
     return (
       <div className="flex min-h-full items-center justify-center bg-[#F8FAFC] px-4 py-10">
         <div className="inline-flex items-center gap-3 rounded-[18px] border border-[#E2E8F0] bg-white px-5 py-4 text-sm text-[#475569] shadow-[0_12px_28px_rgba(15,23,42,0.08)]">
-          <LoaderCircle className="h-4 w-4 animate-spin text-[#4F46E5]" />
+          <LoaderCircle className="h-4 w-4 animate-spin text-[#0B2E6B]" />
           Loading your enrolled programs...
         </div>
       </div>
@@ -393,10 +393,10 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
           ) : null}
         </AnimatePresence>
 
-        <section className="rounded-[28px] border border-[#E2E8F0] bg-[linear-gradient(135deg,#EEF2FF,#F8FAFC)] p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-7">
+        <section className="rounded-[28px] border border-[#E2E8F0] bg-[linear-gradient(135deg,#EAF0FA,#F8FAFC)] p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-7">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(249,115,22,0.18)] bg-[rgba(249,115,22,0.08)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(249,115,22,0.18)] bg-[rgba(249,115,22,0.08)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#E56F12]">
                 <Sparkles className="h-3.5 w-3.5" />
                 Student Dashboard
               </div>
@@ -407,7 +407,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
             </div>
             {dashboardCourses.length ? (
               <div className="inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] text-[#64748B] shadow-[0_6px_20px_rgba(15,23,42,0.05)]">
-                <Layers3 className="h-3.5 w-3.5 text-[#4F46E5]" />
+                <Layers3 className="h-3.5 w-3.5 text-[#0B2E6B]" />
                 {dashboardCourses.length} enrolled program{dashboardCourses.length === 1 ? "" : "s"}
               </div>
             ) : null}
@@ -429,7 +429,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                   courseCardRefs.current[course.id] = node;
                 }}
                 className={cn(
-                  "group rounded-[24px] border border-[#E5E7EB] bg-white p-6 shadow-[0_10px_28px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-[#C7D2FE] hover:shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
+                  "group rounded-[24px] border border-[#E5E7EB] bg-white p-6 shadow-[0_10px_28px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:border-[#C8D7EE] hover:shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
                   (highlightedCourseSlug === course.courseSlug || highlightedCourseSlug === course.primaryCourseSlug) &&
                     "border-[#A7F3D0] shadow-[0_18px_36px_rgba(16,185,129,0.14)]",
                 )}
@@ -467,7 +467,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                   <button
                     type="button"
                     onClick={() => router.push(`/dashboard/${encodeURIComponent(course.primaryCourseSlug || course.courseSlug)}`)}
-                    className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-3.5 py-2.5 text-[14px] font-semibold text-white shadow-[0_10px_20px_rgba(79,70,229,0.20)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_rgba(79,70,229,0.28)]"
+                    className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-3.5 py-2.5 text-[14px] font-semibold text-white shadow-[0_10px_20px_rgba(79,70,229,0.20)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_rgba(79,70,229,0.28)]"
                   >
                     Continue Learning
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -475,7 +475,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                   <button
                     type="button"
                     onClick={() => setSelectedSyllabusSlug(course.primaryCourseSlug || course.courseSlug)}
-                    className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] border border-[#E5E7EB] bg-white px-3.5 py-2.5 text-[14px] font-semibold text-[#111827] transition hover:-translate-y-0.5 hover:border-[#C7D2FE] hover:bg-[#F9FAFB] hover:shadow-[0_8px_16px_rgba(99,102,241,0.12)]"
+                    className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] border border-[#E5E7EB] bg-white px-3.5 py-2.5 text-[14px] font-semibold text-[#111827] transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:bg-[#F9FAFB] hover:shadow-[0_8px_16px_rgba(99,102,241,0.12)]"
                   >
                     📖 Syllabus
                     <BookOpen className="h-3.5 w-3.5" />
@@ -498,13 +498,13 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
             <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/courses"
-                className="inline-flex items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(79,70,229,0.2)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(79,70,229,0.26)]"
+                className="inline-flex items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(79,70,229,0.2)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(79,70,229,0.26)]"
               >
                 Browse Courses
               </Link>
               <Link
                 href="/programs"
-                className="inline-flex items-center justify-center rounded-[14px] border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-semibold text-[#111827] transition hover:-translate-y-0.5 hover:border-[#C7D2FE] hover:bg-[#F9FAFB]"
+                className="inline-flex items-center justify-center rounded-[14px] border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-semibold text-[#111827] transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:bg-[#F9FAFB]"
               >
                 View Programs
               </Link>
@@ -530,10 +530,10 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
               className="w-full max-w-3xl overflow-hidden rounded-[26px] border border-[#E2E8F0] bg-white shadow-[0_24px_60px_rgba(15,23,42,0.14)]"
             >
               {/* Modal header */}
-              <div className="border-b border-[#F1F5F9] bg-[linear-gradient(135deg,#EEF2FF,#F8FAFC)] px-6 py-5">
+              <div className="border-b border-[#F1F5F9] bg-[linear-gradient(135deg,#EAF0FA,#F8FAFC)] px-6 py-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <span className="inline-flex items-center rounded-full border border-[#C7D2FE] bg-[#EEF2FF] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#4F46E5]">
+                    <span className="inline-flex items-center rounded-full border border-[#C8D7EE] bg-[#EAF0FA] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#0B2E6B]">
                       Course Syllabus
                     </span>
                     <h2 className="mt-2 text-[22px] font-bold leading-snug text-[#0F172A]">{selectedSyllabusCourse.title}</h2>
@@ -559,11 +559,11 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                     { label: "Career Outcomes",    items: selectedSyllabusCourse.outcomes },
                   ].map((col) => (
                     <div key={col.label} className="rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] p-4">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#4F46E5]">{col.label}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#0B2E6B]">{col.label}</p>
                       <ul className="mt-3 space-y-1.5">
                         {col.items.map((item) => (
                           <li key={item} className="flex items-start gap-2 text-[12.5px] text-[#374151]">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />{item}
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B2E6B]" />{item}
                           </li>
                         ))}
                       </ul>
@@ -578,7 +578,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                       setSelectedSyllabusSlug(null);
                       router.push(`/dashboard/${encodeURIComponent(selectedSyllabusCourse.slug)}`);
                     }}
-                    className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(135deg,#4F46E5,#2563EB)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.25)] transition hover:scale-[1.02]"
+                    className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.25)] transition hover:scale-[1.02]"
                   >
                     Continue Learning <ArrowRight className="h-4 w-4" />
                   </button>
@@ -587,7 +587,7 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                       href={selectedSyllabusCourse.officialSyllabusUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center gap-2 rounded-[14px] border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#4F46E5]/30 hover:text-[#4F46E5]"
+                      className="inline-flex items-center justify-center gap-2 rounded-[14px] border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#0B2E6B]/30 hover:text-[#0B2E6B]"
                     >
                       Official Syllabus <ExternalLink className="h-4 w-4" />
                     </Link>

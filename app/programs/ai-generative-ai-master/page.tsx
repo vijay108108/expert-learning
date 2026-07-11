@@ -10,7 +10,7 @@ export const metadata = buildMetadata({
 
 const data: ProgramPageData = {
   badge: "AI & Generative AI Track",
-  badgeColor: "border-[#C7D2FE] bg-[#EEF2FF] text-[#4338CA]",
+  badgeColor: "border-[#C8D7EE] bg-[#EAF0FA] text-[#092552]",
   tagline: "Become a Job-Ready AI Engineer",
   title: "Master AI & Generative AI Program",
   description:
@@ -41,7 +41,7 @@ const data: ProgramPageData = {
       label: "Phase 1",
       title: "Python & AI Foundations",
       duration: "4 Weeks",
-      color: "bg-[#EEF2FF] text-[#4338CA] border-[#C7D2FE]",
+      color: "bg-[#EAF0FA] text-[#092552] border-[#C8D7EE]",
       icon: Code2,
       objective:
         "Build the Python and data science foundations required for AI engineering. Learn how to work with data, train basic ML models, and understand how AI pipelines are structured before touching LLMs.",
@@ -411,13 +411,13 @@ const data: ProgramPageData = {
   ],
 
   careerTiers: [
-    { level: "Entry-Level (0–1 yr) · ₹4–8 LPA",    roles: ["Junior AI Engineer", "Prompt Engineer", "AI Application Developer", "ML Operations Analyst"],               color: "border-[#BFDBFE] bg-[#EFF6FF]" },
+    { level: "Entry-Level (0–1 yr) · ₹4–8 LPA",    roles: ["Junior AI Engineer", "Prompt Engineer", "AI Application Developer", "ML Operations Analyst"],               color: "border-[#C8D7EE] bg-[#EEF4FB]" },
     { level: "Mid-Level (1–3 yr) · ₹10–18 LPA",    roles: ["AI Engineer", "Generative AI Developer", "LLM Application Engineer", "AI Solutions Architect"],             color: "border-[#BBF7D0] bg-[#F0FDF4]" },
     { level: "Advanced (3+ yr) · ₹20–40 LPA",      roles: ["AI Platform Engineer", "Head of AI Engineering", "AI Product Lead", "GenAI Consultant"],                    color: "border-[#FED7AA] bg-[#FFF7ED]" },
   ],
 
   idealFor: [
-    { icon: GraduationCap, title: "Students & Fresh Graduates", desc: "Enter the fastest-growing tech field with 12 real AI projects. No prior ML or AI experience needed.", color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
+    { icon: GraduationCap, title: "Students & Fresh Graduates", desc: "Enter the fastest-growing tech field with 12 real AI projects. No prior ML or AI experience needed.", color: "text-[#0B2E6B]", bg: "bg-[#EAF0FA]" },
     { icon: Briefcase,     title: "Software Developers",        desc: "Add LLM, RAG and AI agent skills on top of your existing programming background. Commands a 40–60% salary jump.", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
     { icon: Users2,        title: "Business & Product Professionals", desc: "Understand how to build, evaluate and deploy AI products. Bridge the gap between business needs and AI engineering.", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
   ],

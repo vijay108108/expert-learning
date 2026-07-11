@@ -45,9 +45,9 @@ function actionClassName(tone: MyLearningCardAction["tone"] = "ghost", disabled?
   return cn(
     "inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2.5 text-[12.5px] font-medium transition",
     tone === "primary" &&
-      "bg-[linear-gradient(135deg,#4F46E5,#2563EB)] text-white shadow-[0_12px_30px_rgba(249,115,22,0.22)] hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(249,115,22,0.28)]",
+      "bg-[linear-gradient(135deg,#0B2E6B,#15407E)] text-white shadow-[0_12px_30px_rgba(249,115,22,0.22)] hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(249,115,22,0.28)]",
     tone === "secondary" &&
-      "border border-[rgba(249,115,22,0.22)] bg-[rgba(249,115,22,0.08)] text-[#7C3AED] hover:border-[rgba(249,115,22,0.34)] hover:bg-[rgba(249,115,22,0.12)]",
+      "border border-[rgba(249,115,22,0.22)] bg-[rgba(249,115,22,0.08)] text-[#E56F12] hover:border-[rgba(249,115,22,0.34)] hover:bg-[rgba(249,115,22,0.12)]",
     tone === "ghost" &&
       "border border-white/10 bg-white/6 text-[#D9E2F2] hover:border-white/15 hover:bg-white/10",
     disabled && "cursor-not-allowed opacity-55 hover:translate-y-0 hover:shadow-none",
@@ -67,7 +67,7 @@ export function MyLearningCard({
   return (
     <article className="group rounded-[24px] border border-[rgba(255,255,255,0.1)] bg-[linear-gradient(180deg,rgba(15,23,42,0.9),rgba(15,23,42,0.74))] p-5 shadow-[0_18px_42px_rgba(2,6,23,0.34)] transition hover:border-[rgba(249,115,22,0.24)] hover:shadow-[0_22px_48px_rgba(15,23,42,0.44),0_0_32px_rgba(249,115,22,0.08)]">
       <div className="flex items-start gap-3">
-        <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[rgba(249,115,22,0.22)] bg-[rgba(249,115,22,0.12)] text-[12px] font-bold tracking-[0.08em] text-[#7C3AED]">
+        <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[rgba(249,115,22,0.22)] bg-[rgba(249,115,22,0.12)] text-[12px] font-bold tracking-[0.08em] text-[#E56F12]">
           {badge}
         </div>
         <div className="min-w-0 flex-1">
@@ -87,11 +87,11 @@ export function MyLearningCard({
       <div className="mt-5">
         <div className="mb-2 flex items-center justify-between text-[12px]">
           <span className="text-[#8FA1BF]">Progress</span>
-          <span className="font-semibold text-[#7C3AED]">{progressLabel}</span>
+          <span className="font-semibold text-[#E56F12]">{progressLabel}</span>
         </div>
         <div className="h-2 rounded-full bg-[rgba(255,255,255,0.08)]">
           <div
-            className="h-full rounded-full bg-[linear-gradient(90deg,#4F46E5,#7C3AED)]"
+            className="h-full rounded-full bg-[linear-gradient(90deg,#0B2E6B,#E56F12)]"
             style={{ width: `${progress}%` }}
           />
         </div>

@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
   other: {
     "mobile-web-app-capable": "yes",
-    "msapplication-TileColor": "#4F46E5",
+    "msapplication-TileColor": "#0B2E6B",
     "msapplication-tap-highlight": "no",
   },
 };
@@ -48,8 +48,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#4F46E5" },
-    { media: "(prefers-color-scheme: dark)",  color: "#4F46E5" },
+    { media: "(prefers-color-scheme: light)", color: "#0B2E6B" },
+    { media: "(prefers-color-scheme: dark)",  color: "#0B2E6B" },
   ],
 };
 
@@ -73,7 +73,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="GenZNext" />
         {/* Splash colors */}
-        <meta name="msapplication-TileColor" content="#4F46E5" />
+        <meta name="msapplication-TileColor" content="#0B2E6B" />
         <meta name="msapplication-TileImage" content="/icon-512.png" />
       </head>
       <body className="min-h-full bg-background text-foreground">

@@ -86,7 +86,7 @@ export function AdminOverview() {
             <Link
               key={l.href}
               href={l.href}
-              className="rounded-xl border border-white/8 bg-white/5 px-3 py-2 text-[12px] font-medium text-[#94A3B8] transition hover:border-[#4F46E5]/40 hover:bg-[#4F46E5]/10 hover:text-[#818CF8]"
+              className="rounded-xl border border-white/8 bg-white/5 px-3 py-2 text-[12px] font-medium text-[#94A3B8] transition hover:border-[#0B2E6B]/40 hover:bg-[#0B2E6B]/10 hover:text-[#818CF8]"
             >
               {l.label}
             </Link>
@@ -100,7 +100,7 @@ export function AdminOverview() {
         <div className="rounded-2xl border border-white/8 bg-[#0D1117] p-5">
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-semibold text-white">Recent Leads</p>
-            <Link href="/admin/leads" className="text-[11px] text-[#4F46E5] hover:underline">View all →</Link>
+            <Link href="/admin/leads" className="text-[11px] text-[#0B2E6B] hover:underline">View all →</Link>
           </div>
           {recentLeads.length === 0 ? (
             <p className="text-[13px] text-[#334155]">{loading ? "Loading…" : "No leads yet."}</p>
@@ -127,7 +127,7 @@ export function AdminOverview() {
         <div className="rounded-2xl border border-white/8 bg-[#0D1117] p-5">
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-semibold text-white">Recent Users</p>
-            <Link href="/admin/users" className="text-[11px] text-[#4F46E5] hover:underline">View all →</Link>
+            <Link href="/admin/users" className="text-[11px] text-[#0B2E6B] hover:underline">View all →</Link>
           </div>
           {recentUsers.length === 0 ? (
             <p className="text-[13px] text-[#334155]">{loading ? "Loading…" : "No users yet."}</p>

@@ -98,7 +98,7 @@ const data: ProgramPageData = {
       title: "SAA-C03 — Solutions Architect Associate",
       duration: "8 Weeks",
       cert: "SAA-C03",
-      color: "bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]",
+      color: "bg-[#EEF4FB] text-[#1D4ED8] border-[#C8D7EE]",
       icon: Layers,
       objective: "The most sought-after AWS certification. Learn how to architect resilient, scalable, cost-optimised cloud solutions across all major AWS service families.",
       modules: [
@@ -349,12 +349,12 @@ const data: ProgramPageData = {
     { code: "AIP-C01", title: "AWS Certified Generative AI Developer – Professional (new 2026)", emoji: "🤖" },
   ],
   careerTiers: [
-    { level: "Entry-Level (0–1 yr)", roles: ["AWS Cloud Support Engineer", "Junior Cloud Administrator", "Cloud Operations Analyst", "AWS Practitioner"], color: "border-[#BFDBFE] bg-[#EFF6FF]" },
+    { level: "Entry-Level (0–1 yr)", roles: ["AWS Cloud Support Engineer", "Junior Cloud Administrator", "Cloud Operations Analyst", "AWS Practitioner"], color: "border-[#C8D7EE] bg-[#EEF4FB]" },
     { level: "Mid-Level (1–3 yr)", roles: ["AWS Solutions Architect", "Cloud Engineer", "DevOps Engineer (AWS)", "Cloud Developer"], color: "border-[#BBF7D0] bg-[#F0FDF4]" },
     { level: "Advanced (3+ yr)", roles: ["AWS Principal Architect", "Cloud Platform Lead", "Site Reliability Engineer", "Cloud Security Architect"], color: "border-[#FED7AA] bg-[#FFF7ED]" },
   ],
   idealFor: [
-    { icon: GraduationCap, title: "Students & Freshers", desc: "Get all 4 AWS associate certifications and 12 real projects in 5 months. Land your first cloud job with a verified skillset.", color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
+    { icon: GraduationCap, title: "Students & Freshers", desc: "Get all 4 AWS associate certifications and 12 real projects in 5 months. Land your first cloud job with a verified skillset.", color: "text-[#0B2E6B]", bg: "bg-[#EAF0FA]" },
     { icon: Briefcase, title: "IT & Software Professionals", desc: "Add AWS cloud skills to your existing IT career. Transition into cloud engineering or architecture with proven certifications.", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
     { icon: Users2, title: "Developers & SysAdmins", desc: "Migrate your on-premise skills to AWS. Learn the cloud equivalents of the infrastructure and development tools you already know.", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
   ],

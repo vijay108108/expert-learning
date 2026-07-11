@@ -310,14 +310,14 @@ export function PhoneAuthFlow({
   const fieldClass = cn(
     "w-full h-[50px] rounded-[14px] border px-3 text-[14px] outline-none transition",
     isModal
-      ? "border-[#CBD5E1] bg-white text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#4F46E5] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]"
-      : "border-[#cbd5e1] bg-white text-[#0f172a] placeholder:text-[#94a3b8] focus:border-[#4F46E5] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]",
+      ? "border-[#CBD5E1] bg-white text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#0B2E6B] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]"
+      : "border-[#cbd5e1] bg-white text-[#0f172a] placeholder:text-[#94a3b8] focus:border-[#0B2E6B] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]",
   );
   const prefixShellClass = cn(
     "flex h-[50px] overflow-hidden rounded-[14px] border transition",
     isModal
-      ? "border-[#CBD5E1] bg-white focus-within:border-[#4F46E5] focus-within:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]"
-      : "border-[#cbd5e1] bg-white focus-within:border-[#4F46E5] focus-within:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]",
+      ? "border-[#CBD5E1] bg-white focus-within:border-[#0B2E6B] focus-within:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]"
+      : "border-[#cbd5e1] bg-white focus-within:border-[#0B2E6B] focus-within:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]",
   );
   const prefixLabelClass = cn(
     "inline-flex items-center border-r px-3 text-[13px] font-medium",
@@ -1583,7 +1583,7 @@ export function PhoneAuthFlow({
             onClick={onToggle}
             className={cn(
               "absolute top-1/2 right-3 -translate-y-1/2 transition",
-              isModal ? "text-[#64748B] hover:text-[#4F46E5]" : "text-[#64748B] hover:text-[#0F172A]",
+              isModal ? "text-[#64748B] hover:text-[#0B2E6B]" : "text-[#64748B] hover:text-[#0F172A]",
             )}
             aria-label={visible ? "Hide password" : "Show password"}
           >
@@ -1620,7 +1620,7 @@ export function PhoneAuthFlow({
                   isModal
                     ? "border-[#CBD5E1] bg-white text-[#0F172A]"
                     : "border-[#cbd5e1] bg-white text-[#0f172a]",
-                  "focus:border-[#4F46E5] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]",
+                  "focus:border-[#0B2E6B] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.10)]",
                 )}
                 inputMode="numeric"
                 autoComplete={index === 0 ? "one-time-code" : "off"}
@@ -1672,7 +1672,7 @@ export function PhoneAuthFlow({
                   "transition",
                   resendTimer > 0 || pending
                     ? "cursor-not-allowed text-[#475569]"
-                    : "cursor-pointer font-medium text-[#4F46E5] hover:text-[#2563EB]",
+                    : "cursor-pointer font-medium text-[#0B2E6B] hover:text-[#15407E]",
                 )}
               >
                 {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
@@ -1681,7 +1681,7 @@ export function PhoneAuthFlow({
                 type="button"
                 onClick={resetOtpStep}
                 disabled={pending}
-                className="text-[#64748B] transition hover:text-[#4F46E5] disabled:cursor-not-allowed disabled:opacity-60"
+                className="text-[#64748B] transition hover:text-[#0B2E6B] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Change number
               </button>
@@ -1696,7 +1696,7 @@ export function PhoneAuthFlow({
             disabled={pending || otpCode.length !== otpLength || otpRemainingSeconds <= 0}
             className={cn(
               isModal
-                ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
+                ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
                 : buttonLinkClasses("primary", "w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"),
             )}
           >
@@ -1793,8 +1793,8 @@ export function PhoneAuthFlow({
         <div>
           {isModal ? (
             <>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-[10px] py-[3px] text-[11px] text-[#4F46E5]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#4F46E5]" />
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-[10px] py-[3px] text-[11px] text-[#0B2E6B]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#0B2E6B]" />
                 Free to join
               </div>
               <h2 className="text-[22px] font-bold text-[#0F172A]">{titleText}</h2>
@@ -1802,7 +1802,7 @@ export function PhoneAuthFlow({
             </>
           ) : (
             <>
-              <div className="section-label text-[#7C3AED]">
+              <div className="section-label text-[#E56F12]">
                 {activeTab === "signup" ? "Sign Up" : isForgotPasswordMode ? "Reset Password" : "Login"}
               </div>
               <h2 className="mt-2 text-[26px] font-bold leading-[1.2] text-white">{titleText}</h2>
@@ -1813,7 +1813,7 @@ export function PhoneAuthFlow({
       </div>
 
       {!firebaseReady && (
-        <div className="mt-6 rounded-[18px] border border-[#C7D2FE] bg-[#EEF2FF] px-4 py-4 text-sm text-[#4338CA]">
+        <div className="mt-6 rounded-[18px] border border-[#C8D7EE] bg-[#EAF0FA] px-4 py-4 text-sm text-[#092552]">
           <div className="font-semibold">Firebase setup required</div>
           <p className="mt-1 leading-6">
             Sign up and password login both depend on the Firebase public configuration being available in the
@@ -1822,7 +1822,7 @@ export function PhoneAuthFlow({
           <p className="mt-3 text-[12px] leading-5 text-[#4C1D95]">
             Add these keys to your local `.env.local` or the VM app env file, then restart the app:
           </p>
-          <div className="mt-3 grid gap-1 rounded-[14px] border border-[#DDD6FE] bg-white/70 p-3 text-[12px] font-mono text-[#312E81] sm:grid-cols-2">
+          <div className="mt-3 grid gap-1 rounded-[14px] border border-[#E8DCCF] bg-white/70 p-3 text-[12px] font-mono text-[#312E81] sm:grid-cols-2">
             {firebaseSetupKeys.map((key) => (
               <div key={key}>{key}</div>
             ))}
@@ -1833,7 +1833,7 @@ export function PhoneAuthFlow({
       {user && activeTab !== "signup" && !isForgotPasswordMode && !showGooglePhoneState ? (
         <div className="mt-6 rounded-[18px] border border-[#E2E8F0] bg-[#F8FAFC] p-4">
           <div className="flex items-start gap-3">
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF0FA] text-[#0B2E6B]">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
@@ -1861,8 +1861,8 @@ export function PhoneAuthFlow({
                 className={cn(
                   "flex h-[50px] flex-1 items-center justify-center rounded-[14px] px-3 text-center text-[17px] font-medium tracking-[-0.01em] transition-all duration-250 ease-in-out",
                   active
-                    ? "bg-[linear-gradient(135deg,#6366F1,#4F46E5)] text-white font-semibold shadow-[0_8px_20px_rgba(99,102,241,0.18)] -translate-y-[1px]"
-                    : "bg-transparent text-[#64748B] hover:bg-[rgba(99,102,241,0.06)] hover:text-[#4F46E5]",
+                    ? "bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] text-white font-semibold shadow-[0_8px_20px_rgba(99,102,241,0.18)] -translate-y-[1px]"
+                    : "bg-transparent text-[#64748B] hover:bg-[rgba(99,102,241,0.06)] hover:text-[#0B2E6B]",
                 )}
               >
                 {tab.label}
@@ -1908,7 +1908,7 @@ export function PhoneAuthFlow({
                 disabled={pending || !firebaseReady}
                 className={cn(
                   isModal
-                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
+                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
                     : buttonLinkClasses("primary", "w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"),
                 )}
               >
@@ -1929,7 +1929,7 @@ export function PhoneAuthFlow({
               <button
                 type="button"
                 onClick={beginForgotPassword}
-                className="text-[12px] font-medium text-[#4F46E5] transition hover:underline"
+                className="text-[12px] font-medium text-[#0B2E6B] transition hover:underline"
               >
                 Forgot Password?
               </button>
@@ -2016,7 +2016,7 @@ export function PhoneAuthFlow({
                 className="flex w-full items-center justify-between text-[12px] font-semibold text-[#475569]"
               >
                 <span className="flex items-center gap-1.5">
-                  <span className="rounded bg-[#EEF2FF] px-1.5 py-0.5 text-[10px] text-[#4F46E5]">Optional</span>
+                  <span className="rounded bg-[#EAF0FA] px-1.5 py-0.5 text-[10px] text-[#0B2E6B]">Optional</span>
                   Add GST / Billing Details for Tax Invoice
                 </span>
                 <span className="text-[#94A3B8]">{showBilling ? "▲" : "▼"}</span>
@@ -2077,7 +2077,7 @@ export function PhoneAuthFlow({
                 >
                   <div className="rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-sm text-[#475569]">
                     <div className="flex items-center gap-2 font-medium text-[#334155]">
-                      <ShieldCheck className="h-4 w-4 text-[#6366F1]" />
+                      <ShieldCheck className="h-4 w-4 text-[#1B4C92]" />
                       Secure verification
                     </div>
                     <p className="mt-1 text-[13px]">OTP sent to: {maskedPhone}</p>
@@ -2101,7 +2101,7 @@ export function PhoneAuthFlow({
                         className={cn(
                           "h-14 w-[52px] rounded-[14px] border text-center text-[20px] font-semibold outline-none transition",
                           isModal ? "border-[#CBD5E1] bg-white text-[#0F172A]" : "border-[#cbd5e1] bg-white text-[#0f172a]",
-                          "focus:border-[#6366F1] focus:shadow-[0_0_0_4px_rgba(99,102,241,0.10)]",
+                          "focus:border-[#1B4C92] focus:shadow-[0_0_0_4px_rgba(99,102,241,0.10)]",
                         )}
                         inputMode="numeric"
                         autoComplete={index === 0 ? "one-time-code" : "off"}
@@ -2139,7 +2139,7 @@ export function PhoneAuthFlow({
                       className={cn(
                         resendTimer > 0 || pending
                           ? "cursor-not-allowed text-[#94A3B8]"
-                          : "cursor-pointer font-medium text-[#4F46E5] hover:text-[#6366F1]",
+                          : "cursor-pointer font-medium text-[#0B2E6B] hover:text-[#1B4C92]",
                       )}
                     >
                       {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
@@ -2171,7 +2171,7 @@ export function PhoneAuthFlow({
                 }
                 className={cn(
                   isModal
-                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
+                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
                     : buttonLinkClasses("primary", "w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"),
                 )}
               >
@@ -2213,7 +2213,7 @@ export function PhoneAuthFlow({
                 disabled={pending || !firebaseReady || rateLimitSeconds > 0}
                 className={cn(
                   isModal
-                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
+                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
                     : buttonLinkClasses("primary", "w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"),
                 )}
               >
@@ -2233,7 +2233,7 @@ export function PhoneAuthFlow({
               </button>
             </div>
             <div className="text-center text-[12px]">
-              <button type="button" onClick={exitForgotPassword} className="font-medium text-[#4F46E5] hover:underline">
+              <button type="button" onClick={exitForgotPassword} className="font-medium text-[#0B2E6B] hover:underline">
                 Back to Log In
               </button>
             </div>
@@ -2284,7 +2284,7 @@ export function PhoneAuthFlow({
                 disabled={pending || !firebaseReady}
                 className={cn(
                   isModal
-                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
+                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
                     : buttonLinkClasses("primary", "w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"),
                 )}
               >
@@ -2341,7 +2341,7 @@ export function PhoneAuthFlow({
                 disabled={pending}
                 className={cn(
                   isModal
-                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
+                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border-0 bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)] disabled:cursor-not-allowed disabled:opacity-70"
                     : buttonLinkClasses("primary", "w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"),
                 )}
               >
@@ -2432,7 +2432,7 @@ export function PhoneAuthFlow({
             <button
               type="button"
               onClick={() => handleTabChange(activeTab === "signup" ? "password-login" : "signup")}
-              className="font-medium text-[#4F46E5] hover:underline"
+              className="font-medium text-[#0B2E6B] hover:underline"
             >
               {activeTab === "signup" ? "Log in" : "Sign Up"}
             </button>

@@ -111,7 +111,7 @@ export function LmsNavbar() {
                 className={cn(
                   "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition-all",
                   active
-                    ? "bg-[#EEF2FF] text-[#4F46E5]"
+                    ? "bg-[#EAF0FA] text-[#0B2E6B]"
                     : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A]",
                 )}
               >
@@ -130,7 +130,7 @@ export function LmsNavbar() {
               <button
                 type="button"
                 onClick={() => setUserMenuOpen((v) => !v)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366F1,#4F46E5)] text-[12px] font-bold text-white transition hover:scale-105"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] text-[12px] font-bold text-white transition hover:scale-105"
                 aria-label="User menu"
               >
                 {getInitials(resolvedIdentity, "U")}
@@ -208,10 +208,10 @@ export function LmsNavbar() {
               href={link.href}
               className={cn(
                 "flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-medium transition",
-                active ? "text-[#4F46E5]" : "text-[#94A3B8]",
+                active ? "text-[#0B2E6B]" : "text-[#94A3B8]",
               )}
             >
-              <link.icon className={cn("h-4.5 w-4.5", active && "text-[#4F46E5]")} />
+              <link.icon className={cn("h-4.5 w-4.5", active && "text-[#0B2E6B]")} />
               {link.label}
             </Link>
           );

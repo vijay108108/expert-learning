@@ -86,11 +86,11 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-[12px] font-medium text-[#475569]">
-            <Clock3 className="h-3.5 w-3.5 text-[#4F46E5]" />{phase.duration}
+            <Clock3 className="h-3.5 w-3.5 text-[#0B2E6B]" />{phase.duration}
           </span>
           {phase.cert && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-[12px] font-medium text-[#475569]">
-              <Award className="h-3.5 w-3.5 text-[#4F46E5]" />{phase.cert}
+              <Award className="h-3.5 w-3.5 text-[#0B2E6B]" />{phase.cert}
             </span>
           )}
         </div>
@@ -105,7 +105,7 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5">
                 <div className="min-w-0 flex items-center gap-3">
                   {mod.week && (
-                    <span className="shrink-0 rounded-lg bg-[#EEF2FF] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#4F46E5]">
+                    <span className="shrink-0 rounded-lg bg-[#EAF0FA] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#0B2E6B]">
                       {mod.week}
                     </span>
                   )}
@@ -117,11 +117,11 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
                 </div>
               </summary>
               <div className="border-t border-[#E2E8F0] px-4 pb-5 pt-4">
-                <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#4F46E5]">Topics Covered</p>
+                <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#0B2E6B]">Topics Covered</p>
                 <ul className="grid gap-2 sm:grid-cols-2">
                   {mod.topics.map((topic) => (
                     <li key={topic} className="flex items-start gap-2 text-[12.5px] leading-[1.5] text-[#374151]">
-                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4F46E5]" />{topic}
+                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0B2E6B]" />{topic}
                     </li>
                   ))}
                 </ul>
@@ -131,14 +131,14 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
                     <div className="flex flex-wrap gap-1.5">
                       {mod.tools.map((tool) => (
                         <span key={tool} className="inline-flex items-center gap-1 rounded-full border border-[#E2E8F0] bg-white px-2.5 py-1 text-[11px] font-medium text-[#334155]">
-                          <Terminal className="h-3 w-3 text-[#4F46E5]" />{tool}
+                          <Terminal className="h-3 w-3 text-[#0B2E6B]" />{tool}
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
                 {mod.lab && (
-                  <div className="mt-4 rounded-xl border border-[#DBEAFE] bg-[#EFF6FF] p-3">
+                  <div className="mt-4 rounded-xl border border-[#DBEAFE] bg-[#EEF4FB] p-3">
                     <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#1E40AF]">
                       <FolderKanban className="h-3.5 w-3.5" /> Hands-On Lab
                     </p>
@@ -154,14 +154,14 @@ function PhaseCard({ phase }: { phase: ProgramPhase }) {
         </div>
 
         {phase.capstone && (
-          <div className="mt-5 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] p-4">
-            <p className="flex items-center gap-2 text-sm font-bold text-[#4338CA]">
+          <div className="mt-5 rounded-xl border border-[#C8D7EE] bg-[#EAF0FA] p-4">
+            <p className="flex items-center gap-2 text-sm font-bold text-[#092552]">
               <Award className="h-4 w-4" />{phase.capstone.title}
             </p>
             <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">
               {phase.capstone.deliverables.map((deliverable) => (
                 <li key={deliverable} className="flex items-start gap-2 text-[12px] text-[#334155]">
-                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4338CA]" />{deliverable}
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#092552]" />{deliverable}
                 </li>
               ))}
             </ul>
@@ -180,7 +180,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
 
   return (
     <main className="bg-white">
-      <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#EEF2FF_55%,#F8FAFC_100%)] px-4 pb-12 pt-12 sm:px-6 lg:px-8">
+      <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#EAF0FA_55%,#F8FAFC_100%)] px-4 pb-12 pt-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(300px,0.6fr)] lg:items-start">
           <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-8">
             <div className="flex flex-wrap items-center gap-2">
@@ -193,7 +193,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
                 </span>
               )}
             </div>
-            <p className="mt-4 text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">{data.tagline}</p>
+            <p className="mt-4 text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">{data.tagline}</p>
             <h1 className="mt-2 text-3xl font-extrabold leading-[1.15] tracking-[-0.03em] text-[#0F172A] sm:text-4xl lg:text-[40px]">
               {data.title}
             </h1>
@@ -217,7 +217,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {data.stats.map((stat) => (
                 <div key={stat.label} className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
-                  <stat.icon className="h-4 w-4 shrink-0 text-[#4F46E5]" />
+                  <stat.icon className="h-4 w-4 shrink-0 text-[#0B2E6B]" />
                   <span className="text-[13px] font-semibold text-[#0F172A]">{stat.label}</span>
                 </div>
               ))}
@@ -239,11 +239,11 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
               <p className="mt-1.5 text-sm font-semibold text-[#16A34A]">{data.priceLabel}</p>
               <div className="mt-5 space-y-2 text-sm text-[#475569]">
                 {data.enrollFeatures.map(({ icon: Icon, text }) => (
-                  <p key={text} className="flex items-center gap-2"><Icon className="h-4 w-4 text-[#4F46E5]" />{text}</p>
+                  <p key={text} className="flex items-center gap-2"><Icon className="h-4 w-4 text-[#0B2E6B]" />{text}</p>
                 ))}
               </div>
-              <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-3 py-2.5">
-                <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#4F46E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-2.5">
+                <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#0B2E6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m10-4H9a2 2 0 00-2 2v0a2 2 0 002 2h6a2 2 0 002-2v0a2 2 0 00-2-2z" />
                 </svg>
                 <p className="text-[12px] font-medium leading-5 text-[#3730A3]">1-on-1 support available after every live class session</p>
@@ -251,7 +251,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
               <div className="mt-5 space-y-3">
                 <Link
                   href={checkoutHref}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#9333EA,#4F46E5)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
                 >
                   Enroll Now <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -260,21 +260,21 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
                     href={syllabusHref}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C8D7EE] hover:text-[#0B2E6B]"
                   >
                     {syllabusLabel}
                   </a>
                 ) : (
                   <Link
                     href={syllabusHref}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C8D7EE] hover:text-[#0B2E6B]"
                   >
                     {syllabusLabel}
                   </Link>
                 )}
                 <Link
                   href="/contact"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C7D2FE] hover:text-[#4F46E5]"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-medium text-[#475569] transition hover:border-[#C8D7EE] hover:text-[#0B2E6B]"
                 >
                   Talk to Admissions
                 </Link>
@@ -293,7 +293,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
               {data.roadmap.map((step, index) => (
                 <div key={step} className="flex items-center gap-3">
                   <div className="rounded-xl border border-[#334155] bg-[#1E293B] px-4 py-2.5 text-sm font-semibold text-white">{step}</div>
-                  {index < data.roadmap!.length - 1 && <ArrowRight className="h-4 w-4 shrink-0 text-[#4F46E5]" />}
+                  {index < data.roadmap!.length - 1 && <ArrowRight className="h-4 w-4 shrink-0 text-[#0B2E6B]" />}
                 </div>
               ))}
             </div>
@@ -304,7 +304,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
       <section id="syllabus" className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Full Syllabus</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Full Syllabus</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Complete Curriculum</h2>
             <p className="mx-auto mt-2 max-w-lg text-sm text-[#64748B]">
               Click any module to expand topics. Every phase ends with a real-world project.
@@ -320,13 +320,13 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         <div className="mx-auto w-full max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Hands-On</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Hands-On</p>
               <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Real-World Projects</h2>
               <p className="mt-2 text-sm text-[#64748B]">Portfolio-ready projects that employers recognise.</p>
               <div className="mt-6 space-y-3">
                 {data.projects.map((project, index) => (
                   <div key={project.title} className="flex gap-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
-                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EEF2FF] text-xs font-bold text-[#4F46E5]">
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EAF0FA] text-xs font-bold text-[#0B2E6B]">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <div>
@@ -340,12 +340,12 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
 
             <div className="space-y-10">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Tech Stack</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Tech Stack</p>
                 <h2 className="mt-2 text-2xl font-bold text-[#0F172A]">Tools & Technologies</h2>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {data.technologies.map((technology) => (
                     <span key={technology} className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-medium text-[#334155] shadow-sm">
-                      <Code2 className="h-3 w-3 text-[#4F46E5]" />{technology}
+                      <Code2 className="h-3 w-3 text-[#0B2E6B]" />{technology}
                     </span>
                   ))}
                 </div>
@@ -353,7 +353,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
 
               {data.certifications && (
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">You Prepare For</p>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">You Prepare For</p>
                   <h2 className="mt-2 text-2xl font-bold text-[#0F172A]">Certifications</h2>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     {data.certifications.map((certification) => (
@@ -377,20 +377,20 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl">
             <div className="text-center">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Bonus — Included Free</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Bonus — Included Free</p>
               <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Bonus Learning Tracks</h2>
             </div>
             <div className="mt-8 grid gap-5 sm:grid-cols-3">
               {data.bonusTracks.map((track) => (
                 <div key={track.title} className="rounded-[18px] border border-[#E2E8F0] bg-white p-5">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF]">
-                    <track.icon className="h-5 w-5 text-[#4F46E5]" />
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF0FA]">
+                    <track.icon className="h-5 w-5 text-[#0B2E6B]" />
                   </div>
                   <h3 className="mt-3 text-base font-bold text-[#0F172A]">{track.title}</h3>
                   <ul className="mt-3 space-y-1.5">
                     {track.topics.map((topic) => (
                       <li key={topic} className="flex items-start gap-2 text-[12px] text-[#64748B]">
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#4F46E5]" />{topic}
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B2E6B]" />{topic}
                       </li>
                     ))}
                   </ul>
@@ -404,7 +404,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
       <section className="border-t border-[#E2E8F0] bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">After This Program</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">After This Program</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Career Outcomes</h2>
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
@@ -414,7 +414,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
                 <ul className="mt-4 space-y-2.5">
                   {tier.roles.map((role) => (
                     <li key={role} className="flex items-center gap-2 text-[13px] font-semibold text-[#0F172A]">
-                      <Briefcase className="h-4 w-4 shrink-0 text-[#4F46E5]" />{role}
+                      <Briefcase className="h-4 w-4 shrink-0 text-[#0B2E6B]" />{role}
                     </li>
                   ))}
                 </ul>
@@ -427,7 +427,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
       <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">Ideal For</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Ideal For</p>
             <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Who Should Enroll</h2>
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
@@ -448,7 +448,7 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
         <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-4xl">
             <div className="text-center">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#4F46E5]">FAQ</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">FAQ</p>
               <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Frequently Asked Questions</h2>
             </div>
             <div className="mt-8 space-y-3">
@@ -469,14 +469,14 @@ export function ProgramPageLayout({ data }: { data: ProgramPageData }) {
       )}
 
       <section className="border-t border-[#E2E8F0] bg-white px-4 pb-16 pt-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764,#4F46E5_50%,#0369A1)] px-8 py-12 text-center shadow-[0_24px_60px_rgba(79,70,229,0.3)]">
+        <div className="mx-auto max-w-3xl overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#3B0764,#0B2E6B_50%,#0369A1)] px-8 py-12 text-center shadow-[0_24px_60px_rgba(79,70,229,0.3)]">
           <p className="text-xs font-semibold uppercase tracking-widest text-[#A5B4FC]">Join the Next Batch</p>
           <h2 className="mt-3 text-3xl font-bold text-white">Ready to start your journey?</h2>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#C7D2FE]">
+          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#C8D7EE]">
             Live batches start every month. Only 20 seats per batch — enroll early to secure your spot.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link href={checkoutHref} className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-[#4F46E5] shadow-lg transition hover:scale-[1.02]">
+            <Link href={checkoutHref} className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-[#0B2E6B] shadow-lg transition hover:scale-[1.02]">
               Enroll Now <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-[rgba(255,255,255,0.25)] bg-[rgba(255,255,255,0.1)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[rgba(255,255,255,0.18)]">

@@ -1062,7 +1062,7 @@ export function LmsPortal({
                 ? "border border-[#BBF7D0] bg-[#F0FDF4] text-[#16A34A]"
                 : noteSaving
                   ? "border border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B]"
-                  : "border border-[#C7D2FE] bg-[#EEF2FF] text-[#4F46E5] hover:bg-[#E0E7FF]",
+                  : "border border-[#C8D7EE] bg-[#EAF0FA] text-[#0B2E6B] hover:bg-[#DCE7F7]",
             )}
           >
             {noteSaving ? (
@@ -1085,7 +1085,7 @@ export function LmsPortal({
             setNoteError(null);
           }}
           placeholder="Write your notes for this lesson… (auto-saved as you type)"
-          className="min-h-[260px] w-full resize-y rounded-xl border border-[#E2E8F0] bg-white p-4 text-[13px] leading-6 text-[#1E293B] outline-none placeholder:text-[#94A3B8] focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+          className="min-h-[260px] w-full resize-y rounded-xl border border-[#E2E8F0] bg-white p-4 text-[13px] leading-6 text-[#1E293B] outline-none placeholder:text-[#94A3B8] focus:border-[#0B2E6B] focus:ring-2 focus:ring-[#0B2E6B]/10"
         />
 
         {/* Status */}

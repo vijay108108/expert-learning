@@ -11,7 +11,7 @@ export const metadata = buildMetadata({
 
 const data: ProgramPageData = {
   badge: "Microsoft Azure Track",
-  badgeColor: "border-[#BFDBFE] bg-[#EFF6FF] text-[#1E40AF]",
+  badgeColor: "border-[#C8D7EE] bg-[#EEF4FB] text-[#1E40AF]",
   tagline: "Become a Job-Ready Azure Cloud Professional",
   title: "Microsoft Cloud Master Program",
   description:
@@ -42,7 +42,7 @@ const data: ProgramPageData = {
       title: "AZ-900 — Azure Fundamentals",
       duration: "3 Weeks",
       cert: "AZ-900",
-      color: "bg-[#EFF6FF] text-[#1E40AF] border-[#BFDBFE]",
+      color: "bg-[#EEF4FB] text-[#1E40AF] border-[#C8D7EE]",
       icon: Sparkles,
       objective: "Build foundational knowledge of Azure cloud services, core architectural components, security, compliance, pricing and support. Ideal starting point for cloud beginners.",
       modules: [
@@ -249,7 +249,7 @@ const data: ProgramPageData = {
       title: "AZ-305 — Azure Solutions Architect",
       duration: "4 Weeks",
       cert: "AZ-305",
-      color: "bg-[#F5F3FF] text-[#4C1D95] border-[#DDD6FE]",
+      color: "bg-[#F5F3FF] text-[#4C1D95] border-[#E8DCCF]",
       icon: Layers,
       objective: "Develop the expertise to design enterprise-grade Azure solutions covering identity, data storage, compute, networking, security, compliance and business continuity. Become an Azure architect.",
       modules: [
@@ -323,12 +323,12 @@ const data: ProgramPageData = {
     { code: "AZ-305", title: "Microsoft Azure Solutions Architect Expert", emoji: "🏗️" },
   ],
   careerTiers: [
-    { level: "Entry-Level (0–1 yr)", roles: ["Azure Cloud Administrator", "Cloud Support Engineer", "Azure Operations Engineer", "Junior Cloud Developer"], color: "border-[#BFDBFE] bg-[#EFF6FF]" },
+    { level: "Entry-Level (0–1 yr)", roles: ["Azure Cloud Administrator", "Cloud Support Engineer", "Azure Operations Engineer", "Junior Cloud Developer"], color: "border-[#C8D7EE] bg-[#EEF4FB]" },
     { level: "Mid-Level (1–3 yr)", roles: ["Azure Developer", "Cloud Engineer", "DevOps Engineer (Azure)", "Azure Platform Engineer"], color: "border-[#BBF7D0] bg-[#F0FDF4]" },
-    { level: "Advanced (3+ yr)", roles: ["Azure Solutions Architect", "Cloud Architect", "Principal Azure Engineer", "Cloud Security Architect"], color: "border-[#DDD6FE] bg-[#F5F3FF]" },
+    { level: "Advanced (3+ yr)", roles: ["Azure Solutions Architect", "Cloud Architect", "Principal Azure Engineer", "Cloud Security Architect"], color: "border-[#E8DCCF] bg-[#F5F3FF]" },
   ],
   idealFor: [
-    { icon: GraduationCap, title: "Students & Freshers", desc: "Get all 4 Microsoft Azure certifications in 5 months. The AZ-104 alone commands a 30–50% salary premium at most MNCs.", color: "text-[#4F46E5]", bg: "bg-[#EEF2FF]" },
+    { icon: GraduationCap, title: "Students & Freshers", desc: "Get all 4 Microsoft Azure certifications in 5 months. The AZ-104 alone commands a 30–50% salary premium at most MNCs.", color: "text-[#0B2E6B]", bg: "bg-[#EAF0FA]" },
     { icon: Briefcase, title: "IT Professionals & Sysadmins", desc: "Migrate your on-premise Windows Server and Active Directory skills directly to Azure. Familiar technologies, new cloud context.", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
     { icon: Users2, title: ".NET / Java Developers", desc: "Learn to build AI-integrated cloud applications on Azure. AZ-204 retires Jul 2026 — we prepare you for its replacement, AI-200 Azure AI Cloud Developer.", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
   ],

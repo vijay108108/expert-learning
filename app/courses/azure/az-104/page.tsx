@@ -60,8 +60,8 @@ export default function AzureAdministratorCoursePage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
           <div className="rounded-[32px] border border-[#DBEAFE] bg-white p-6 shadow-[0_18px_50px_rgba(37,99,235,0.08)] sm:p-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">
-              <span className="h-2 w-2 rounded-full bg-[#2563EB]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#C8D7EE] bg-[#EEF4FB] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#15407E]">
+              <span className="h-2 w-2 rounded-full bg-[#15407E]" />
               Certification Aligned To
             </div>
             <div className="mt-6">
@@ -70,7 +70,7 @@ export default function AzureAdministratorCoursePage() {
             <h1 className="mt-7 max-w-4xl text-[28px] font-bold leading-[1.16] tracking-[-0.04em] text-[#0F172A] sm:text-[38px]">
               Microsoft Certified: Azure Administrator Associate AZ-104
             </h1>
-            <p className="mt-4 text-[17px] font-medium text-[#2563EB]">
+            <p className="mt-4 text-[17px] font-medium text-[#15407E]">
               Learn to configure and manage cloud with AZ 104 Certification
             </p>
             <p className="mt-4 max-w-4xl text-[15px] leading-8 text-[#475569]">
@@ -113,7 +113,7 @@ export default function AzureAdministratorCoursePage() {
                 href={course.officialSyllabusUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center rounded-2xl border border-[#BFDBFE] bg-[linear-gradient(135deg,#EFF6FF,#DBEAFE)] px-5 py-3.5 text-sm font-semibold text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.10)] transition hover:border-[#60A5FA] hover:bg-[linear-gradient(135deg,#DBEAFE,#BFDBFE)]"
+                className="inline-flex w-full items-center justify-center rounded-2xl border border-[#C8D7EE] bg-[linear-gradient(135deg,#EEF4FB,#DBEAFE)] px-5 py-3.5 text-sm font-semibold text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.10)] transition hover:border-[#60A5FA] hover:bg-[linear-gradient(135deg,#DBEAFE,#C8D7EE)]"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Download Syllabus
@@ -158,7 +158,7 @@ export default function AzureAdministratorCoursePage() {
             <div className="rounded-[24px] border border-[#DBEAFE] bg-[#F8FBFF] p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[#64748B]">Designation</p>
               <div className="mt-6 rounded-2xl bg-white px-5 py-10 text-center shadow-[0_12px_28px_rgba(15,23,42,0.06)]">
-                <p className="text-[24px] font-bold text-[#2563EB]">Azure Administrator</p>
+                <p className="text-[24px] font-bold text-[#15407E]">Azure Administrator</p>
               </div>
             </div>
 

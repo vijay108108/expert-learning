@@ -183,11 +183,11 @@ export function CatalogCourseManager() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search courses..."
-          className="h-9 w-64 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white placeholder:text-[#475569] outline-none focus:border-[#4F46E5]"
+          className="h-9 w-64 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white placeholder:text-[#475569] outline-none focus:border-[#0B2E6B]"
         />
         <button
           onClick={openCreate}
-          className="flex items-center gap-1.5 rounded-xl bg-[#4F46E5] px-4 py-2 text-[13px] font-semibold text-white hover:bg-[#4338CA]"
+          className="flex items-center gap-1.5 rounded-xl bg-[#0B2E6B] px-4 py-2 text-[13px] font-semibold text-white hover:bg-[#092552]"
         >
           <Plus className="h-4 w-4" /> New Course
         </button>
@@ -219,7 +219,7 @@ export function CatalogCourseManager() {
                   <td className="px-4 py-2.5 text-[12px]">{course.price.replace("INR", "₹")}</td>
                   <td className="px-4 py-2.5 text-[12px]">
                     {isOverridden ? (
-                      <span className="rounded-full bg-[#4F46E5]/20 px-2 py-0.5 text-[#818CF8]">Customized</span>
+                      <span className="rounded-full bg-[#0B2E6B]/20 px-2 py-0.5 text-[#818CF8]">Customized</span>
                     ) : (
                       <span className="rounded-full bg-white/5 px-2 py-0.5 text-[#64748B]">Default</span>
                     )}
@@ -253,7 +253,7 @@ export function CatalogCourseManager() {
             {Array.from(hiddenSlugs).map((slug) => (
               <span key={slug} className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-[#94A3B8]">
                 {slug}
-                <button onClick={() => void onRestore(slug)} className="text-[#4F46E5] hover:text-[#818CF8]" title="Restore">
+                <button onClick={() => void onRestore(slug)} className="text-[#0B2E6B] hover:text-[#818CF8]" title="Restore">
                   <Eye className="h-3.5 w-3.5" />
                 </button>
                 <button onClick={() => void onDeleteNew(slug)} className="text-[#EF4444] hover:text-red-400" title="Delete permanently">
@@ -422,7 +422,7 @@ export function CatalogCourseManager() {
                 <button type="button" onClick={() => setShowForm(false)} className="rounded-xl border border-white/10 px-4 py-2 text-sm font-medium text-[#94A3B8] hover:bg-white/5">
                   Cancel
                 </button>
-                <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-xl bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4338CA] disabled:opacity-60">
+                <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-xl bg-[#0B2E6B] px-4 py-2 text-sm font-semibold text-white hover:bg-[#092552] disabled:opacity-60">
                   {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                   {editingSlug ? "Save Changes" : "Create Course"}
                 </button>
@@ -435,7 +435,7 @@ export function CatalogCourseManager() {
   );
 }
 
-const inputClass = "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#4F46E5]";
+const inputClass = "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#0B2E6B]";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

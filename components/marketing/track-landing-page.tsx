@@ -32,7 +32,7 @@ export function TrackLandingPage({
     <section className="bg-[#0D1117] px-4 py-8 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <header className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.82)] p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F46E5]">Learning Track</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#0B2E6B]">Learning Track</p>
           <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">{title}</h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-[#B7C3D9]">{subtitle}</p>
         </header>
@@ -85,7 +85,7 @@ export function TrackLandingPage({
                   ))}
                 </div>
                 <div className="mt-3 flex gap-3">
-                  <Link href={`/checkout/${course.slug}`} className="inline-flex text-sm font-semibold text-[#4F46E5]">
+                  <Link href={`/checkout/${course.slug}`} className="inline-flex text-sm font-semibold text-[#0B2E6B]">
                     Enroll Now
                   </Link>
                   <Link href={`/lms/course/${course.slug}`} className="inline-flex text-sm font-semibold text-[#93C5FD]">
@@ -120,7 +120,7 @@ export function TrackLandingPage({
         <article className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.86)] p-6 text-center">
           <h2 className="text-2xl font-semibold">Ready to start with {title}?</h2>
           <p className="mt-2 text-sm text-[#B7C3D9]">Talk to admissions and choose the right role-focused learning path.</p>
-          <Link href={ctaHref} className="mt-4 inline-flex rounded-lg bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white">
+          <Link href={ctaHref} className="mt-4 inline-flex rounded-lg bg-[#0B2E6B] px-4 py-2.5 text-sm font-semibold text-white">
             {ctaLabel}
           </Link>
         </article>

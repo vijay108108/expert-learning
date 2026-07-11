@@ -40,7 +40,7 @@ export default function LmsResourcesPage() {
                         href={item.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="block rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2 text-sm text-[#0F172A] transition hover:border-[#4F46E5]/30 hover:bg-white"
+                        className="block rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2 text-sm text-[#0F172A] transition hover:border-[#0B2E6B]/30 hover:bg-white"
                       >
                         {item.title}
                       </a>

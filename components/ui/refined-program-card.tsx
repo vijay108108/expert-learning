@@ -25,8 +25,8 @@ type BadgeTone = "green" | "orange" | "blue" | "purple";
 
 const badgeToneClasses: Record<BadgeTone, string> = {
   green: "border-[rgba(52,211,153,0.2)] bg-[rgba(16,185,129,0.12)] text-[#34D399]",
-  orange: "border-[rgba(79,70,229,0.2)] bg-[rgba(79,70,229,0.1)] text-[#4F46E5]",
-  blue: "border-[rgba(37,99,235,0.2)] bg-[rgba(37,99,235,0.1)] text-[#2563EB]",
+  orange: "border-[rgba(79,70,229,0.2)] bg-[rgba(79,70,229,0.1)] text-[#0B2E6B]",
+  blue: "border-[rgba(37,99,235,0.2)] bg-[rgba(37,99,235,0.1)] text-[#15407E]",
   purple: "border-[rgba(6,182,212,0.2)] bg-[rgba(6,182,212,0.1)] text-[#0891B2]",
 };
 
@@ -107,7 +107,7 @@ export function RefinedProgramCard({
   return (
     <article
       className={cn(
-        "relative flex h-full flex-col gap-3 rounded-[16px] border border-[rgba(226,232,240,0.8)] bg-[rgba(255,255,255,0.96)] p-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-[#4F46E5]/30 hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]",
+        "relative flex h-full flex-col gap-3 rounded-[16px] border border-[rgba(226,232,240,0.8)] bg-[rgba(255,255,255,0.96)] p-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-[#0B2E6B]/30 hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]",
         featured && "border-[rgba(79,70,229,0.4)]",
         className,
       )}
@@ -126,7 +126,7 @@ export function RefinedProgramCard({
       </div>
 
       <div className="flex items-start justify-between">
-        <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-[rgba(79,70,229,0.2)] bg-[rgba(79,70,229,0.08)] text-[#4F46E5]">
+        <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-[rgba(79,70,229,0.2)] bg-[rgba(79,70,229,0.08)] text-[#0B2E6B]">
           <Icon size={18} strokeWidth={1.8} />
         </div>
       </div>
@@ -156,7 +156,7 @@ export function RefinedProgramCard({
             🏷 Launch Offer
           </div>
           {originalPrice ? <div className="mono-meta mt-2 text-[12px] text-[#94A3B8] line-through">{originalPrice}</div> : null}
-          <div className="mono-meta mt-1 text-[18px] font-semibold text-[#4F46E5]">{price}</div>
+          <div className="mono-meta mt-1 text-[18px] font-semibold text-[#0B2E6B]">{price}</div>
         </div>
         <div className="text-[11px] text-[#475569]">{duration}</div>
       </div>
@@ -169,13 +169,13 @@ export function RefinedProgramCard({
             isEnrolled={isEnrolled}
             className={cn(
               "inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[10px] border-0 px-0 py-[10px] text-[13px] font-medium text-white transition-all duration-200",
-              isEnrolled ? "bg-[#16a34a] hover:bg-[#15803d]" : "bg-[#4F46E5] hover:bg-[#4338CA]",
+              isEnrolled ? "bg-[#16a34a] hover:bg-[#15803d]" : "bg-[#0B2E6B] hover:bg-[#092552]",
             )}
           />
         ) : (
           <Link
             href={isEnrolled ? purchasedCourseHref : primaryHref || "/courses"}
-            className="inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[10px] border-0 bg-[#4F46E5] px-0 py-[10px] text-[13px] font-medium text-white transition-all duration-200 hover:bg-[#4338CA]"
+            className="inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[10px] border-0 bg-[#0B2E6B] px-0 py-[10px] text-[13px] font-medium text-white transition-all duration-200 hover:bg-[#092552]"
           >
             {isEnrolled ? "View Course" : "Purchase"}
           </Link>
@@ -185,7 +185,7 @@ export function RefinedProgramCard({
             href={secondaryHref}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[10px] border border-[#E2E8F0] bg-white px-0 py-[10px] text-[13px] text-[#475569] transition-all duration-200 hover:border-[#4F46E5] hover:text-[#4F46E5]"
+            className="inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[10px] border border-[#E2E8F0] bg-white px-0 py-[10px] text-[13px] text-[#475569] transition-all duration-200 hover:border-[#0B2E6B] hover:text-[#0B2E6B]"
           >
             <IconExternalLink size={13} />
             {secondaryLabel}
@@ -193,7 +193,7 @@ export function RefinedProgramCard({
         ) : (
           <a
             href={secondaryHref}
-            className="inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[10px] border border-[#E2E8F0] bg-white px-0 py-[10px] text-[13px] text-[#475569] transition-all duration-200 hover:border-[#4F46E5] hover:text-[#4F46E5]"
+            className="inline-flex flex-1 items-center justify-center gap-[6px] whitespace-nowrap rounded-[10px] border border-[#E2E8F0] bg-white px-0 py-[10px] text-[13px] text-[#475569] transition-all duration-200 hover:border-[#0B2E6B] hover:text-[#0B2E6B]"
           >
             <IconExternalLink size={13} />
             {secondaryLabel}

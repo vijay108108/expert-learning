@@ -83,7 +83,7 @@ export function CourseCatalogPage({ initialCourses }: { initialCourses: Course[]
           <div className="mt-7 flex flex-wrap gap-4">
             {stats.map((stat) => (
               <div key={stat.label} className="flex items-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
-                <stat.icon className="h-4 w-4 text-[#4F46E5]" />
+                <stat.icon className="h-4 w-4 text-[#0B2E6B]" />
                 <span className="text-sm font-bold text-[#0F172A]">{stat.value}</span>
                 <span className="text-sm text-[#64748B]">{stat.label}</span>
               </div>
@@ -100,14 +100,14 @@ export function CourseCatalogPage({ initialCourses }: { initialCourses: Course[]
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search courses..."
-              className="h-9 w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] py-2 pl-9 pr-3 text-sm text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition focus:border-[#4F46E5] focus:bg-white focus:ring-2 focus:ring-[#4F46E5]/10"
+              className="h-9 w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] py-2 pl-9 pr-3 text-sm text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition focus:border-[#0B2E6B] focus:bg-white focus:ring-2 focus:ring-[#0B2E6B]/10"
             />
           </label>
 
           <select
             value={track}
             onChange={(event) => setTrack(event.target.value as LearningTrackKey | "all")}
-            className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+            className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#0B2E6B] focus:ring-2 focus:ring-[#0B2E6B]/10"
           >
             {trackOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
@@ -115,7 +115,7 @@ export function CourseCatalogPage({ initialCourses }: { initialCourses: Course[]
           <select
             value={level}
             onChange={(event) => setLevel(event.target.value as typeof level)}
-            className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+            className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#0B2E6B] focus:ring-2 focus:ring-[#0B2E6B]/10"
           >
             {levelOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
@@ -123,7 +123,7 @@ export function CourseCatalogPage({ initialCourses }: { initialCourses: Course[]
           <select
             value={mode}
             onChange={(event) => setMode(event.target.value as typeof mode)}
-            className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10"
+            className="h-9 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#0F172A] outline-none transition focus:border-[#0B2E6B] focus:ring-2 focus:ring-[#0B2E6B]/10"
           >
             {modeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
@@ -183,7 +183,7 @@ export function CourseCatalogPage({ initialCourses }: { initialCourses: Course[]
             <p className="mt-1 text-sm text-[#64748B]">Try adjusting your search or clearing the filters.</p>
             <button
               onClick={resetFilters}
-              className="mt-5 rounded-lg bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4338CA]"
+              className="mt-5 rounded-lg bg-[#0B2E6B] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#092552]"
             >
               Clear all filters
             </button>

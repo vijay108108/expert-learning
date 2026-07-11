@@ -63,7 +63,7 @@ export function DemoModalRoot() {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(255,255,255,0.65)] bg-white/88 text-[#7C2D12] shadow-[0_10px_24px_rgba(148,64,0,0.14)] transition hover:border-[#2563EB] hover:bg-[#FFF7ED] hover:text-[#4338CA]"
+              className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(255,255,255,0.65)] bg-white/88 text-[#7C2D12] shadow-[0_10px_24px_rgba(148,64,0,0.14)] transition hover:border-[#15407E] hover:bg-[#FFF7ED] hover:text-[#092552]"
               aria-label="Close demo booking modal"
             >
               <X className="h-4.5 w-4.5" />
@@ -71,7 +71,7 @@ export function DemoModalRoot() {
 
             <div className="relative grid gap-4 lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] lg:items-stretch">
               <div className="rounded-[26px] border border-[rgba(255,255,255,0.1)] bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.24),rgba(251,146,60,0)_28%),linear-gradient(180deg,#111827,#172554)] p-6 text-white shadow-[0_24px_50px_rgba(15,23,42,0.28)] sm:p-7">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(253,186,116,0.32)] bg-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(253,186,116,0.32)] bg-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#E56F12]">
                   <CalendarRange className="h-3.5 w-3.5" />
                   Free Demo & Consultation
                 </div>

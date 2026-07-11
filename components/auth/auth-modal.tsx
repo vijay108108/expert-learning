@@ -80,7 +80,7 @@ export function AuthModal() {
               <X className="h-3.5 w-3.5" />
             </button>
             {isAuthBusy ? (
-              <div className="pointer-events-none absolute top-4 left-4 z-20 rounded-full border border-[#E2E8F0] bg-white/90 px-3 py-1 text-[11px] font-medium text-[#4F46E5]">
+              <div className="pointer-events-none absolute top-4 left-4 z-20 rounded-full border border-[#E2E8F0] bg-white/90 px-3 py-1 text-[11px] font-medium text-[#0B2E6B]">
                 Verification in progress...
               </div>
             ) : null}
@@ -104,7 +104,7 @@ export function AuthModal() {
                         <button
                           type="button"
                           onClick={() => openAuthModal("signup", redirectAfterAuth)}
-                          className="inline-flex h-[50px] items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)]"
+                          className="inline-flex h-[50px] items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)]"
                         >
                           Sign Up
                         </button>
@@ -125,11 +125,11 @@ export function AuthModal() {
               </div>
 
               <aside className="relative hidden h-full overflow-hidden lg:block">
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,#EEF2FF_0%,#E0E7FF_45%,#F8FAFC_100%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,#EAF0FA_0%,#DCE7F7_45%,#F8FAFC_100%)]" />
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(79,70,229,0.18),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.12),transparent_35%)]" />
 
                 <div className="relative flex h-full flex-col justify-between px-10 py-10">
-                  <div className="inline-flex w-fit items-center rounded-full border border-[#E2E8F0] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#4F46E5]">
+                  <div className="inline-flex w-fit items-center rounded-full border border-[#E2E8F0] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#0B2E6B]">
                     GenZNext Learning
                   </div>
 
@@ -149,7 +149,7 @@ export function AuthModal() {
                         "Real-world projects",
                       ].map((item) => (
                         <div key={item} className="flex items-center gap-3 rounded-[14px] border border-[rgba(226,232,240,0.8)] bg-[rgba(255,255,255,0.72)] px-4 py-2.5 text-[#334155] shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-0.5">
-                          <CheckCircle2 className="h-4 w-4 text-[#4F46E5]" />
+                          <CheckCircle2 className="h-4 w-4 text-[#0B2E6B]" />
                           <span className="text-sm">{item}</span>
                         </div>
                       ))}

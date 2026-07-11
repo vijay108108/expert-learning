@@ -72,7 +72,7 @@ export function AzureSummerEnrollmentFlow({ course, savingsLabel }: AzureSummerE
                   type={field.type}
                   value={form[field.key as keyof typeof form]}
                   onChange={(event) => updateField(field.key as keyof typeof form, event.target.value)}
-                  className="h-[50px] w-full rounded-[12px] border border-[#D1D5DB] bg-white px-3 text-sm text-[#111827] outline-none transition focus:border-[#6366F1] focus:shadow-[0_0_0_4px_rgba(99,102,241,0.10)]"
+                  className="h-[50px] w-full rounded-[12px] border border-[#D1D5DB] bg-white px-3 text-sm text-[#111827] outline-none transition focus:border-[#1B4C92] focus:shadow-[0_0_0_4px_rgba(99,102,241,0.10)]"
                   placeholder={field.placeholder}
                 />
               </label>
@@ -84,14 +84,14 @@ export function AzureSummerEnrollmentFlow({ course, savingsLabel }: AzureSummerE
           <button
             type="button"
             onClick={handleProceedToPayment}
-            className="mt-5 inline-flex h-[52px] w-full items-center justify-center rounded-xl bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(79,70,229,0.3)]"
+            className="mt-5 inline-flex h-[52px] w-full items-center justify-center rounded-xl bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(79,70,229,0.3)]"
           >
             Proceed to Payment
           </button>
         </>
       ) : (
         <>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F46E5]">Payment Summary</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#0B2E6B]">Payment Summary</p>
           <h2 className="mt-2 text-[24px] font-bold text-[#111827]">Confirm and Pay</h2>
           <div className="mt-4 rounded-[16px] border border-[#E5E7EB] bg-[#F8FAFC] p-4">
             <p className="text-sm text-[#374151]">{course.title}</p>
@@ -106,7 +106,7 @@ export function AzureSummerEnrollmentFlow({ course, savingsLabel }: AzureSummerE
           <button
             type="button"
             onClick={handleMakePayment}
-            className="mt-5 inline-flex h-[52px] w-full items-center justify-center rounded-xl bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-4 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(79,70,229,0.3)]"
+            className="mt-5 inline-flex h-[52px] w-full items-center justify-center rounded-xl bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(79,70,229,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(79,70,229,0.3)]"
           >
             Make Payment
           </button>

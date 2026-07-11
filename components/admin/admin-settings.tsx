@@ -237,7 +237,7 @@ export function AdminSettings() {
         <div className="grid gap-3 sm:grid-cols-2">
           {envLinks.map((l) => (
             <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-xl border border-white/8 bg-white/4 px-4 py-3 transition hover:border-[#4F46E5]/30 hover:bg-[#4F46E5]/8">
+              className="group flex items-center justify-between rounded-xl border border-white/8 bg-white/4 px-4 py-3 transition hover:border-[#0B2E6B]/30 hover:bg-[#0B2E6B]/8">
               <div>
                 <p className="text-[13px] font-semibold text-white">{l.label}</p>
                 <p className="text-[11px] text-[#475569]">{l.desc}</p>

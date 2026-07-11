@@ -163,8 +163,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             transition={{ duration: 0.18, ease: "easeOut" }}
             className="pointer-events-none fixed right-4 bottom-4 z-[90] sm:right-6 sm:bottom-6"
           >
-            <div className="pointer-events-auto flex items-center gap-3 rounded-[18px] border border-[#2563EB]/24 bg-[linear-gradient(135deg,rgba(7,20,43,0.96),rgba(11,28,52,0.96))] px-4 py-3 text-sm text-white shadow-[0_18px_36px_rgba(2,8,28,0.32),0_0_22px_rgba(249,115,22,0.12)] backdrop-blur-xl">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(249,115,22,0.16)] text-[#7C3AED]">
+            <div className="pointer-events-auto flex items-center gap-3 rounded-[18px] border border-[#15407E]/24 bg-[linear-gradient(135deg,rgba(7,20,43,0.96),rgba(11,28,52,0.96))] px-4 py-3 text-sm text-white shadow-[0_18px_36px_rgba(2,8,28,0.32),0_0_22px_rgba(249,115,22,0.12)] backdrop-blur-xl">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(249,115,22,0.16)] text-[#E56F12]">
                 {toast.tone === "success" ? <CheckCircle2 className="h-4.5 w-4.5" /> : <ShoppingCart className="h-4.5 w-4.5" />}
               </div>
               <div className="pr-2 text-[13px] font-medium">{toast.message}</div>

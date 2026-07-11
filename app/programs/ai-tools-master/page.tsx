@@ -14,7 +14,7 @@ export const metadata = buildMetadata({
 
 const data: ProgramPageData = {
   badge: "AI Tools Mastery Track",
-  badgeColor: "border-[#DDD6FE] bg-[#F5F3FF] text-[#6D28D9]",
+  badgeColor: "border-[#FCD7B6] bg-[#FFF3E8] text-[#C65A0D]",
   tag: "🚫 Zero Coding · Zero Tech Background Needed",
   tagline: "Master 25+ AI Tools in 8 Weeks — Anyone Can Join",
   title: "Practical AI Tools Master Program",
@@ -59,7 +59,7 @@ const data: ProgramPageData = {
       label: "Week 1–2",
       title: "Conversational AI — ChatGPT, Claude & Gemini",
       duration: "2 Weeks",
-      color: "bg-[#F5F3FF] text-[#6D28D9] border-[#DDD6FE]",
+      color: "bg-[#FFF3E8] text-[#C65A0D] border-[#FCD7B6]",
       icon: Bot,
       objective:
         "Master the three dominant AI assistants used by 500M+ people. Learn how to write prompts that get results, use advanced features, and apply these tools to real work — writing, research, analysis, coding and decision-making.",
@@ -266,7 +266,7 @@ const data: ProgramPageData = {
       label: "Week 5",
       title: "AI Coding, Development & Productivity",
       duration: "1 Week",
-      color: "bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]",
+      color: "bg-[#EEF4FB] text-[#1D4ED8] border-[#C8D7EE]",
       icon: Code2,
       objective:
         "Use AI to write code, build websites and automate tasks even if you're not a developer. GitHub Copilot, Cursor and Bolt.new have made building software accessible to everyone — learn how in one week.",
@@ -585,7 +585,7 @@ const data: ProgramPageData = {
     {
       level: "Professional — Any Role",
       roles: ["AI-augmented marketer", "AI-powered analyst", "AI-enhanced developer", "AI-first entrepreneur"],
-      color: "border-[#DDD6FE] bg-[#F5F3FF]",
+      color: "border-[#E8DCCF] bg-[#F5F3FF]",
     },
     {
       level: "Freelancer / Creator",
@@ -611,7 +611,7 @@ const data: ProgramPageData = {
       icon: Briefcase,
       title: "Working Professionals",
       desc: "Doctor, teacher, marketer, HR, finance, sales — every role benefits. Use AI to finish your daily work in half the time and stand out in your company.",
-      color: "text-[#6D28D9]",
+      color: "text-[#C65A0D]",
       bg: "bg-[#F5F3FF]",
     },
     {

@@ -223,7 +223,7 @@ export function LmsMyLearningClient() {
     return (
       <div className="flex min-h-[50vh] items-center justify-center bg-[#F8FAFC] px-4">
         <div className="inline-flex items-center gap-3 rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4 text-sm text-[#475569] shadow-sm">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#4F46E5] border-t-transparent" />
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#0B2E6B] border-t-transparent" />
           Loading your learning dashboard…
         </div>
       </div>
@@ -249,7 +249,7 @@ export function LmsMyLearningClient() {
           <h1 className="mt-4 text-xl font-bold text-[#0F172A]">No active enrollments yet</h1>
           <p className="mt-2 text-sm text-[#475569]">Enroll in a course or program to unlock LMS access, lessons, and progress tracking.</p>
           <div className="mt-5 flex justify-center gap-3">
-            <Link href="/courses" className="rounded-xl bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4338CA]">
+            <Link href="/courses" className="rounded-xl bg-[#0B2E6B] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#092552]">
               Browse Courses
             </Link>
             <Link href="/programs" className="rounded-xl border border-[#E2E8F0] bg-white px-4 py-2 text-sm font-semibold text-[#0F172A] transition hover:bg-[#F8FAFC]">
@@ -276,11 +276,11 @@ export function LmsMyLearningClient() {
                 {row.completedLessons}/{row.totalLessons} lessons complete
               </p>
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#E2E8F0]">
-                <div className="h-full rounded-full bg-[linear-gradient(90deg,#4F46E5,#2563EB)]" style={{ width: `${row.progressPercent}%` }} />
+                <div className="h-full rounded-full bg-[linear-gradient(90deg,#0B2E6B,#15407E)]" style={{ width: `${row.progressPercent}%` }} />
               </div>
               <p className="mt-2 text-sm text-[#475569]">{row.progressPercent}% complete</p>
               <div className="mt-4 flex gap-2">
-                <Link href={`/lms/course/${row.enrollment.courseId}`} className="rounded-xl bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-3 py-2 text-xs font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)]">
+                <Link href={`/lms/course/${row.enrollment.courseId}`} className="rounded-xl bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-3 py-2 text-xs font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)]">
                   Continue Learning
                 </Link>
                 <Link href={`/lms/player?course=${row.enrollment.courseId}`} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-xs font-medium text-[#0F172A]">
@@ -387,7 +387,7 @@ export function LmsCourseDetailClient({ courseId }: { courseId: string }) {
             {bundle.completedLessons}/{bundle.totalLessons} lessons complete ({bundle.progressPercent}%)
           </p>
           <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#E2E8F0]">
-            <div className="h-full rounded-full bg-[linear-gradient(90deg,#4F46E5,#2563EB)]" style={{ width: `${bundle.progressPercent}%` }} />
+            <div className="h-full rounded-full bg-[linear-gradient(90deg,#0B2E6B,#15407E)]" style={{ width: `${bundle.progressPercent}%` }} />
           </div>
         </header>
 
@@ -410,7 +410,7 @@ export function LmsCourseDetailClient({ courseId }: { courseId: string }) {
                         {locked ? (
                           <span className="text-xs text-[#64748B]">Locked</span>
                         ) : (
-                          <Link href={`/lms/player?course=${bundle.enrollment.courseId}&lessonId=${lesson.id}`} className="text-xs text-[#4F46E5]">
+                          <Link href={`/lms/player?course=${bundle.enrollment.courseId}&lessonId=${lesson.id}`} className="text-xs text-[#0B2E6B]">
                             Open Lesson
                           </Link>
                         )}
@@ -548,7 +548,7 @@ export function LmsPlayerClient({ courseSlug, lessonId }: { courseSlug: string; 
           <h1 className="text-2xl font-semibold">{enrollment.courseName} Player</h1>
           <p className="mt-2 text-sm text-[#475569]">{completedLessons}/{totalLessons} lessons complete ({progressPercent}%)</p>
           <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#E2E8F0]">
-            <div className="h-full rounded-full bg-[linear-gradient(90deg,#4F46E5,#2563EB)]" style={{ width: `${progressPercent}%` }} />
+            <div className="h-full rounded-full bg-[linear-gradient(90deg,#0B2E6B,#15407E)]" style={{ width: `${progressPercent}%` }} />
           </div>
         </header>
 
@@ -565,7 +565,7 @@ export function LmsPlayerClient({ courseSlug, lessonId }: { courseSlug: string; 
               type="button"
               onClick={markCompleted}
               disabled={marking || completedIds.has(activeLesson.id)}
-              className="mt-3 rounded-xl bg-[linear-gradient(135deg,#6366F1,#4F46E5)] px-3 py-2 text-xs font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-3 rounded-xl bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-3 py-2 text-xs font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {completedIds.has(activeLesson.id) ? "Completed" : marking ? "Updating..." : "Mark as Completed"}
             </button>

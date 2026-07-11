@@ -70,7 +70,7 @@ const data: ProgramPageData = {
       title: "AZ-104 – Microsoft Azure Administrator",
       duration: "8 Weeks",
       cert: "₹20,000",
-      color: "bg-[#EFF6FF] text-[#1E40AF] border-[#BFDBFE]",
+      color: "bg-[#EEF4FB] text-[#1E40AF] border-[#C8D7EE]",
       icon: Server,
       objective:
         "Phase 1 builds your Azure operations foundation. You learn how to provision, secure, monitor and support Azure resources so you can confidently handle the responsibilities covered in AZ-104 and work like a real Azure administrator from day one.",
@@ -143,7 +143,7 @@ const data: ProgramPageData = {
       title: "AZ-400 – Microsoft DevOps Engineer",
       duration: "8 Weeks",
       cert: "₹30,000",
-      color: "bg-[#EEF2FF] text-[#4338CA] border-[#C7D2FE]",
+      color: "bg-[#EAF0FA] text-[#092552] border-[#C8D7EE]",
       icon: Layers,
       objective:
         "Phase 2 takes you from administration into delivery engineering. You learn how teams plan work, manage code, automate builds, ship releases and standardize environments across Azure using modern DevOps practices aligned with AZ-400.",
@@ -376,7 +376,7 @@ const data: ProgramPageData = {
     {
       level: "Entry-Level (0-1 yr) · ₹4-7 LPA",
       roles: ["Azure Administrator", "Cloud Operations Engineer", "Junior DevOps Engineer", "Azure Support Engineer"],
-      color: "border-[#BFDBFE] bg-[#EFF6FF]",
+      color: "border-[#C8D7EE] bg-[#EEF4FB]",
     },
     {
       level: "Mid-Level (1-3 yr) · ₹8-16 LPA",
@@ -394,8 +394,8 @@ const data: ProgramPageData = {
       icon: GraduationCap,
       title: "Students & Fresh Graduates",
       desc: "A clear Microsoft cloud path for learners who want Azure administration first, DevOps second, and operations engineering as the final specialization.",
-      color: "text-[#4F46E5]",
-      bg: "bg-[#EEF2FF]",
+      color: "text-[#0B2E6B]",
+      bg: "bg-[#EAF0FA]",
     },
     {
       icon: Briefcase,
