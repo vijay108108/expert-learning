@@ -23,7 +23,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const lmsRoute = isLmsRoute(pathname);
   const marketingRoute =
-    /^\/(?:about|contact|career|corporate-training|summer-training|blog)(?:\/|$)/.test(pathname);
+    /^\/(?:about|contact|career|corporate-training|summer-training|blog|workshops)(?:\/|$)/.test(pathname);
   const showShellEnhancements = marketingRoute;
   const showMobileStickyCta = marketingRoute;
 
