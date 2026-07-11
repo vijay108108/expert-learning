@@ -155,14 +155,15 @@ function CountdownTile({ label, value }: { label: string; value: number }) {
 
 export function AiDeveloperLaunchLabPage() {
   const reducedMotion = useReducedMotion();
-  const [now, setNow] = useState<number>(() => Date.now());
+  const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
+    setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
 
-  const countdown = useMemo(() => buildCountdown(now), [now]);
+  const countdown = useMemo(() => (now === null ? null : buildCountdown(now)), [now]);
 
   return (
     <div className="relative overflow-x-clip bg-[#050816] text-white">
@@ -213,7 +214,7 @@ export function AiDeveloperLaunchLabPage() {
             <div className="mt-7 max-w-xl rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xl sm:p-5">
               <p className="text-[11px] uppercase tracking-[0.16em] text-[#9CB4E8]">Workshop Starts In</p>
               <AnimatePresence mode="wait">
-                {countdown.ended ? (
+                {countdown?.ended ? (
                   <motion.p
                     key="live"
                     initial={reducedMotion ? false : { opacity: 0 }}
@@ -229,10 +230,10 @@ export function AiDeveloperLaunchLabPage() {
                     animate={reducedMotion ? undefined : { opacity: 1 }}
                     className="mt-3 grid grid-cols-4 gap-2"
                   >
-                    <CountdownTile label="Days" value={countdown.days} />
-                    <CountdownTile label="Hours" value={countdown.hours} />
-                    <CountdownTile label="Mins" value={countdown.minutes} />
-                    <CountdownTile label="Secs" value={countdown.seconds} />
+                    <CountdownTile label="Days" value={countdown?.days ?? 0} />
+                    <CountdownTile label="Hours" value={countdown?.hours ?? 0} />
+                    <CountdownTile label="Mins" value={countdown?.minutes ?? 0} />
+                    <CountdownTile label="Secs" value={countdown?.seconds ?? 0} />
                   </motion.div>
                 )}
               </AnimatePresence>
