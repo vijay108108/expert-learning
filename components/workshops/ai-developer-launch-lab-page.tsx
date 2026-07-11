@@ -158,9 +158,13 @@ export function AiDeveloperLaunchLabPage() {
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
-    setNow(Date.now());
-    const timer = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(timer);
+    const tick = () => setNow(Date.now());
+    const kickoff = window.setTimeout(tick, 0);
+    const timer = window.setInterval(tick, 1000);
+    return () => {
+      window.clearTimeout(kickoff);
+      window.clearInterval(timer);
+    };
   }, []);
 
   const countdown = useMemo(() => (now === null ? null : buildCountdown(now)), [now]);
