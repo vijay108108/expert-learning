@@ -134,7 +134,7 @@ const reviews = [
     company: "Mphasis",
     avatar: "PN",
     rating: 5,
-    text: "The Generative AI course content is up-to-date with GPT-4, Claude, LangChain and vector DBs. I've been recommending it to everyone in my team. Practical over theoretical — love it.",
+    text: "The Generative AI course content is up-to-date with modern LLM stacks, Claude, LangChain and vector databases. I've been recommending it to everyone in my team. Practical over theoretical — love it.",
   },
   {
     name: "Suresh Babu",
@@ -159,7 +159,7 @@ const reviews = [
     company: "Tech Mahindra",
     avatar: "GC",
     rating: 5,
-    text: "Cleared AWS SAA-C03 in 6 weeks following the GenZNext roadmap. The practice question bank is excellent and the doubt-clearing sessions are priceless. Best investment of 2024.",
+    text: "Cleared AWS SAA-C03 in 6 weeks following the GenZNext roadmap. The practice question bank is excellent and the doubt-clearing sessions are priceless. Best investment for my career.",
   },
   {
     name: "Swati Agrawal",
@@ -272,7 +272,7 @@ export default function Home() {
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-1 text-xs font-semibold tracking-wide text-[#0B2E6B]">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#0B2E6B]" />
-              #1 Cloud, DevOps &amp; AI Training — India
+              Trusted Cloud, DevOps &amp; AI Training in India
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.18] tracking-[-0.02em] text-[#0F172A] sm:text-5xl lg:text-[52px]">
               Master AI, Cloud &amp; DevOps —<br className="hidden sm:block" />
@@ -281,7 +281,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-5 max-w-xl text-[17px] leading-7 text-[#475569]">
-              Structured learning paths, live mentorship, real-world projects and LMS access for students, working professionals and enterprise teams.
+              Structured learning paths, live mentorship, real-world projects, and LMS access for students, working professionals, and enterprise teams.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]">
@@ -307,7 +307,7 @@ export default function Home() {
               </span>
             </Link>
             <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-[#64748B]">
-              {["AWS & Azure Certified Mentors", "Live Batches Every Month", "LMS Access for Life"].map((item) => (
+              {["AWS & Azure Certified Mentors", "Live Batches Every Month", "LMS Access with Continuous Updates"].map((item) => (
                 <span key={item} className="flex items-center gap-1.5">
                   <CheckCircle2 className="h-4 w-4 text-[#0B2E6B]" />{item}
                 </span>
@@ -317,7 +317,8 @@ export default function Home() {
 
           <div className="space-y-3">
 
-            {/* Summer Training Notification */}            <Link
+            {/* Summer Training Notification */}
+            <Link
               href="/courses/azure/az-104"
               className="group flex items-start justify-between gap-4 rounded-2xl border border-[#C8D7EE] bg-[linear-gradient(135deg,#F8FBFF_0%,#F2F8FF_42%,#EEF4FF_100%)] p-4 shadow-[0_8px_22px_rgba(37,99,235,0.10)] transition hover:shadow-[0_14px_30px_rgba(37,99,235,0.16)]"
             >
