@@ -61,7 +61,7 @@ const programs: Program[] = [
     title: "AZ-400 – Microsoft DevOps Engineer",
     href: "/checkout/azure-devops-engineer",
     credentialTitle: "Microsoft Certified DevOps Engineer Expert AZ-400",
-    credentialDuration: "1 Month",
+    credentialDuration: "2 Months",
     syllabusHref: "/syllabus/az-400-official-syllabus.pdf",
     syllabusButtonClassName:
       "border-[#FCD7B6] bg-[linear-gradient(135deg,#FFF3E8,#FFE7CC)] text-[#C65A0D] shadow-[0_10px_24px_rgba(229,111,18,0.14)] hover:border-[#F4A261] hover:text-[#A84A07]",
@@ -134,7 +134,7 @@ const combinedMasterProgram = {
     "AIOps Engineering",
     "Azure Monitor + KQL",
     "Automation Playbooks",
-    "LMS Access",
+    "LMS Access with Updates",
     "Placement Support",
   ],
   stats: [
@@ -152,12 +152,12 @@ const combinedMasterProgram = {
     { icon: Award, text: "AZ-104 + AZ-400 exam-aligned prep" },
     { icon: Layers, text: "Azure Admin → DevOps → AIOps journey" },
     { icon: FolderKanban, text: "3 capstones + guided labs" },
-    { icon: Users2, text: "Live sessions + LMS access for life" },
+    { icon: Users2, text: "Live sessions + LMS access with updates" },
   ],
 };
 
 export const metadata = buildMetadata({
-  title: "Career Programs | GenZNext Research & Training",
+  description: "Cloud, DevOps and AIOps career programs with certifications, live mentorship, projects and placement support.",
   description: "Cloud, AI, DevOps & AI Tools programs with real tool logos, certifications, live mentorship and placement support.",
   path: "/programs",
 });
@@ -287,11 +287,11 @@ export default function ProgramsPage() {
             Career Programs
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#64748B]">
-            Industry-ready Cloud, AI, DevOps &amp; AI Tools programs — with the actual tools employers use, live mentorship and placement support.
+            Industry-ready Cloud, DevOps and AIOps programs with live mentorship, real project practice, certification prep, and placement support.
           </p>
           <div className="mt-5 flex flex-wrap gap-4 text-sm text-[#475569]">
             {[
-              { icon: GraduationCap, label: "3 Programs" },
+              { icon: GraduationCap, label: "3 Core Programs + 1 Master Track" },
               { icon: Clock3, label: "8 Week Tracks" },
               { icon: FolderKanban, label: "Job-Ready Projects" },
               { icon: Award, label: "Certification Prep Included" },
@@ -319,7 +319,7 @@ export default function ProgramsPage() {
                   Combined Master Program
                 </span>
                 <p className="mt-2 text-sm font-medium text-[#64748B]">
-                  Want all three tracks in one guided roadmap? This bundle keeps the same premium master-program layout.
+                  Want all three tracks in one guided roadmap? This bundle combines them into one structured progression.
                 </p>
               </div>
             </div>
