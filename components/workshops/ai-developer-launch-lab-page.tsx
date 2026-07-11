@@ -18,9 +18,13 @@ import {
   Sparkles,
   Workflow,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CourseEnrollmentAction } from "@/components/enroll/course-enrollment-action";
+import { useAuth } from "@/hooks/use-auth";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { trackWorkshopViewContent } from "@/lib/client-analytics";
+import { getWorkshopConfigBySlug, type WorkshopConfig } from "@/lib/firebase";
 
 type CountdownState = {
   days: number;
@@ -30,7 +34,10 @@ type CountdownState = {
   ended: boolean;
 };
 
-const workshopTarget = new Date("2026-07-18T18:00:00+05:30").getTime();
+const defaultWorkshopStartIso = "2026-07-18T18:00:00+05:30";
+const defaultWorkshopEndIso = "2026-07-18T20:00:00+05:30";
+const defaultWorkshopTitle = "Build, Launch & Host Your First AI-Generated Website on Microsoft Azure";
+const defaultWorkshopFeeLabel = "Rs. 99";
 
 const attendReasons = [
   "Build a production-style website using AI prompts",
@@ -128,8 +135,8 @@ const faqs = [
   },
 ];
 
-function buildCountdown(nowMs: number): CountdownState {
-  const diff = Math.max(0, workshopTarget - nowMs);
+function buildCountdown(nowMs: number, targetMs: number): CountdownState {
+  const diff = Math.max(0, targetMs - nowMs);
   const ended = diff === 0;
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -149,9 +156,50 @@ function CountdownTile({ label, value }: { label: string; value: number }) {
   );
 }
 
-export function AiDeveloperLaunchLabPage() {
+export function AiDeveloperLaunchLabPage({
+  initialWorkshopConfig = null,
+}: {
+  initialWorkshopConfig?: WorkshopConfig | null;
+}) {
   const reducedMotion = useReducedMotion();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, isAuthReady } = useAuth();
+  const trackedViewRef = useRef(false);
   const [now, setNow] = useState<number | null>(null);
+  const [workshopConfig, setWorkshopConfig] = useState<WorkshopConfig | null>(initialWorkshopConfig);
+
+  useEffect(() => {
+    const timer = window.setTimeout(async () => {
+      try {
+        const config = await getWorkshopConfigBySlug("ai-developer-launch-lab");
+        setWorkshopConfig(config);
+      } catch {
+        setWorkshopConfig(null);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [initialWorkshopConfig]);
+
+  useEffect(() => {
+    if (trackedViewRef.current) {
+      return;
+    }
+
+    trackedViewRef.current = true;
+    trackWorkshopViewContent();
+  }, []);
+
+  useEffect(() => {
+    const shouldAutoCheckout = searchParams.get("autocheckout") === "1";
+
+    if (!shouldAutoCheckout || !isAuthReady || !user) {
+      return;
+    }
+
+    router.replace("/checkout/ai-developer-launch-lab");
+  }, [isAuthReady, router, searchParams, user]);
 
   useEffect(() => {
     const tick = () => setNow(Date.now());
@@ -163,7 +211,27 @@ export function AiDeveloperLaunchLabPage() {
     };
   }, []);
 
-  const countdown = useMemo(() => (now === null ? null : buildCountdown(now)), [now]);
+  const workshopTitle = workshopConfig?.title?.trim() || defaultWorkshopTitle;
+  const workshopStatus = workshopConfig?.status || "published";
+  const workshopCapacity = workshopConfig?.capacity || 500;
+  const workshopStartIso = workshopConfig?.startAtIso || defaultWorkshopStartIso;
+  const workshopEndIso = workshopConfig?.endAtIso || defaultWorkshopEndIso;
+  const workshopStartDate = new Date(workshopStartIso);
+  const workshopEndDate = new Date(workshopEndIso);
+  const workshopDateLabel = Number.isNaN(workshopStartDate.getTime())
+    ? "18 July"
+    : new Intl.DateTimeFormat("en-IN", {
+      day: "2-digit",
+      month: "short",
+      timeZone: "Asia/Kolkata",
+    }).format(workshopStartDate);
+  const workshopTimeLabel = Number.isNaN(workshopStartDate.getTime()) || Number.isNaN(workshopEndDate.getTime())
+    ? "6 PM - 8 PM"
+    : `${new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(workshopStartDate)} - ${new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(workshopEndDate)} IST`;
+  const countdownTarget = Number.isNaN(workshopStartDate.getTime()) ? new Date(defaultWorkshopStartIso).getTime() : workshopStartDate.getTime();
+  const isWorkshopPublished = workshopStatus === "published";
+
+  const countdown = useMemo(() => (now === null ? null : buildCountdown(now, countdownTarget)), [countdownTarget, now]);
 
   return (
     <div className="relative overflow-x-clip bg-[#050816] text-white">
@@ -182,7 +250,7 @@ export function AiDeveloperLaunchLabPage() {
               className="inline-flex items-center gap-2 rounded-full border border-[#1D7CFF]/40 bg-[#1D7CFF]/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8CC3FF]"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E]" />
-              Live Workshop
+              {workshopStatus === "published" ? "Live Workshop" : `Status: ${workshopStatus}`}
             </motion.div>
 
             <motion.h1
@@ -191,7 +259,7 @@ export function AiDeveloperLaunchLabPage() {
               transition={{ delay: 0.05, duration: 0.5 }}
               className="mt-4 text-[34px] font-semibold leading-[1.08] tracking-[-0.03em] text-white sm:text-[44px] lg:text-[56px]"
             >
-              Build, Launch &amp; Host Your First AI-Generated Website on Microsoft Azure
+              {workshopTitle}
             </motion.h1>
 
             <motion.p
@@ -205,10 +273,11 @@ export function AiDeveloperLaunchLabPage() {
             </motion.p>
 
             <div className="mt-6 flex flex-wrap gap-2.5 text-[12px] text-[#A9B6DA]">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><CalendarDays className="h-3.5 w-3.5" />18 July</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Clock3 className="h-3.5 w-3.5" />6 PM - 8 PM</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><CalendarDays className="h-3.5 w-3.5" />{workshopDateLabel}</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Clock3 className="h-3.5 w-3.5" />{workshopTimeLabel}</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Globe className="h-3.5 w-3.5" />Live Online</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/15 px-3 py-1.5 font-semibold text-[#FFC48C]">Limited-time offer: Rs. 99</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/15 px-3 py-1.5 font-semibold text-[#FFC48C]">Limited-time offer: {defaultWorkshopFeeLabel}</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#22C55E]/35 bg-[#22C55E]/15 px-3 py-1.5 font-semibold text-[#BBF7D0]">Seats: {workshopCapacity}</span>
             </div>
 
             <div className="mt-7 max-w-xl rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xl sm:p-5">
@@ -240,12 +309,22 @@ export function AiDeveloperLaunchLabPage() {
             </div>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <CourseEnrollmentAction
-                courseSlug="ai-developer-launch-lab"
-                checkoutLabel="Reserve My Seat - Rs. 99"
-                checkoutButtonClassName="h-12 px-7 text-[14px] rounded-xl border border-[#FF7A00]/40 bg-[linear-gradient(135deg,#FF7A00,#FF9A3C)] text-[#1E1408] shadow-[0_16px_34px_rgba(255,122,0,0.32)]"
-                helperClassName="hidden"
-              />
+              {isWorkshopPublished ? (
+                <CourseEnrollmentAction
+                  courseSlug="ai-developer-launch-lab"
+                  checkoutLabel={`Reserve My Seat - ${defaultWorkshopFeeLabel}`}
+                  checkoutButtonClassName="h-12 px-7 text-[14px] rounded-xl border border-[#FF7A00]/40 bg-[linear-gradient(135deg,#FF7A00,#FF9A3C)] text-[#1E1408] shadow-[0_16px_34px_rgba(255,122,0,0.32)]"
+                  helperClassName="hidden"
+                />
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex h-12 items-center justify-center rounded-xl border border-white/15 bg-white/10 px-7 text-[14px] font-semibold text-[#94A3B8]"
+                >
+                  Registrations Paused ({workshopStatus})
+                </button>
+              )}
               <a
                 href="#workshop-journey"
                 className="inline-flex h-12 items-center justify-center rounded-xl border border-[#1D7CFF]/45 bg-[#1D7CFF]/10 px-6 text-sm font-semibold text-[#A7D0FF] transition hover:bg-[#1D7CFF]/16"
@@ -283,7 +362,7 @@ export function AiDeveloperLaunchLabPage() {
               <div className="mt-5 grid grid-cols-2 gap-3">
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.12em] text-[#9CB4E8]">Workshop Fee</p>
-                  <p className="mt-1 text-2xl font-semibold text-white">Rs. 99</p>
+                  <p className="mt-1 text-2xl font-semibold text-white">{defaultWorkshopFeeLabel}</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.12em] text-[#9CB4E8]">Outcome</p>

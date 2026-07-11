@@ -27,6 +27,16 @@ type EnrollmentEmailPayload = {
   paymentId: string;
   amountLabel: string;
   enrolledAt?: string;
+  workshop?: {
+    name: string;
+    date: string;
+    time: string;
+    meetingUrl?: string;
+    lmsUrl?: string;
+    invoiceUrl?: string;
+    whatsappUrl?: string;
+    supportEmail?: string;
+  };
 };
 
 type CareerApplicationEmailPayload = {
@@ -293,6 +303,31 @@ export async function sendEnrollmentEmail(payload: EnrollmentEmailPayload) {
     courseTitles.length > 1 ? `${primaryCourse} + ${courseTitles.length - 1} more` : primaryCourse;
   const courseLine = courseTitles.length ? courseTitles.join(", ") : primaryCourse;
   const enrolledAt = formatSubmissionTimestamp(payload.enrolledAt);
+  const workshop = payload.workshop;
+  const workshopHtml = workshop
+    ? `
+      <p><strong>Workshop:</strong> ${escapeHtml(workshop.name)}</p>
+      <p><strong>Date:</strong> ${escapeHtml(workshop.date)}</p>
+      <p><strong>Time:</strong> ${escapeHtml(workshop.time)}</p>
+      <p><strong>Meeting Link:</strong> ${escapeHtml(workshop.meetingUrl || "Will be shared soon")}</p>
+      <p><strong>LMS Access:</strong> ${escapeHtml(workshop.lmsUrl || `${siteConfig.url}/dashboard/courses`)}</p>
+      <p><strong>Invoice:</strong> ${escapeHtml(workshop.invoiceUrl || "Available on success page")}</p>
+      <p><strong>WhatsApp Group:</strong> ${escapeHtml(workshop.whatsappUrl || "Will be shared soon")}</p>
+      <p><strong>Support:</strong> ${escapeHtml(workshop.supportEmail || recipient)}</p>
+    `
+    : "";
+  const workshopText = workshop
+    ? [
+      `Workshop: ${workshop.name}`,
+      `Date: ${workshop.date}`,
+      `Time: ${workshop.time}`,
+      `Meeting Link: ${workshop.meetingUrl || "Will be shared soon"}`,
+      `LMS Access: ${workshop.lmsUrl || `${siteConfig.url}/dashboard/courses`}`,
+      `Invoice: ${workshop.invoiceUrl || "Available on success page"}`,
+      `WhatsApp Group: ${workshop.whatsappUrl || "Will be shared soon"}`,
+      `Support: ${workshop.supportEmail || recipient}`,
+    ]
+    : [];
 
   await sendEmailOrThrow({
     to: recipient,
@@ -307,6 +342,7 @@ export async function sendEnrollmentEmail(payload: EnrollmentEmailPayload) {
         <p><strong>Amount Paid:</strong> ${escapeHtml(payload.amountLabel)}</p>
         <p><strong>Razorpay ID:</strong> ${escapeHtml(payload.paymentId || "-")}</p>
         <p><strong>Enrolled at:</strong> ${escapeHtml(enrolledAt)}</p>
+        ${workshopHtml}
       </div>
     `,
     text: [
@@ -316,6 +352,7 @@ export async function sendEnrollmentEmail(payload: EnrollmentEmailPayload) {
       `Amount Paid: ${payload.amountLabel}`,
       `Razorpay ID: ${payload.paymentId || "-"}`,
       `Enrolled at: ${enrolledAt}`,
+      ...workshopText,
     ].join("\n"),
     context: "enrollment notification",
   });
@@ -336,6 +373,12 @@ export async function sendEnrollmentEmail(payload: EnrollmentEmailPayload) {
           <p><strong>Amount:</strong> ${escapeHtml(payload.amountLabel)}</p>
           <p><strong>Payment ID:</strong> ${escapeHtml(payload.paymentId || "-")}</p>
           <p>Our team will share your onboarding instructions shortly.</p>
+          ${workshop ? `<p><strong>Workshop Date/Time:</strong> ${escapeHtml(workshop.date)} · ${escapeHtml(workshop.time)}</p>` : ""}
+          ${workshop?.meetingUrl ? `<p><a href="${escapeHtml(workshop.meetingUrl)}">Join workshop meeting</a></p>` : ""}
+          ${workshop?.lmsUrl ? `<p><a href="${escapeHtml(workshop.lmsUrl)}">Open LMS access</a></p>` : ""}
+          ${workshop?.invoiceUrl ? `<p><a href="${escapeHtml(workshop.invoiceUrl)}">View invoice</a></p>` : ""}
+          ${workshop?.whatsappUrl ? `<p><a href="${escapeHtml(workshop.whatsappUrl)}">Join WhatsApp group</a></p>` : ""}
+          <p>Support: ${escapeHtml(workshop?.supportEmail || recipient)}</p>
         </div>
       `,
       text: [
@@ -344,6 +387,16 @@ export async function sendEnrollmentEmail(payload: EnrollmentEmailPayload) {
         `Amount: ${payload.amountLabel}`,
         `Payment ID: ${payload.paymentId || "-"}`,
         "Our team will share your onboarding instructions shortly.",
+        ...(workshop
+          ? [
+            `Workshop Date/Time: ${workshop.date} · ${workshop.time}`,
+            `Meeting Link: ${workshop.meetingUrl || "Will be shared soon"}`,
+            `LMS Access: ${workshop.lmsUrl || `${siteConfig.url}/dashboard/courses`}`,
+            `Invoice: ${workshop.invoiceUrl || "Available on success page"}`,
+            `WhatsApp Group: ${workshop.whatsappUrl || "Will be shared soon"}`,
+            `Support: ${workshop.supportEmail || recipient}`,
+          ]
+          : []),
       ].join("\n"),
       context: "enrollment confirmation",
     });

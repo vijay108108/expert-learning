@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { InvoiceDocument } from "@/components/invoice/invoice-document";
+import { trackJoinWhatsapp, trackLmsOpen } from "@/lib/client-analytics";
 import {
   getInvoiceDashboardPath,
   latestOrderStorageKey,
@@ -20,6 +21,9 @@ export function OrderSuccessPage() {
   const [countdown, setCountdown] = useState(12);
 
   const dashboardPath = useMemo(() => getInvoiceDashboardPath(invoice, { paymentCompleted: true }), [invoice]);
+  const isWorkshopEnrollment = Boolean(invoice?.courses.some((course) => course.slug === "ai-developer-launch-lab"));
+  const workshopWhatsappUrl = process.env.NEXT_PUBLIC_WORKSHOP_WHATSAPP_URL || "";
+  const workshopMeetingUrl = process.env.NEXT_PUBLIC_WORKSHOP_MEETING_URL || "";
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -118,10 +122,35 @@ export function OrderSuccessPage() {
           <div className="flex flex-wrap gap-3">
             <Link
               href={dashboardPath}
+              onClick={() => {
+                const slug = invoice.courses[0]?.slug || "dashboard";
+                trackLmsOpen(slug);
+              }}
               className="inline-flex items-center gap-2 rounded-xl bg-[#0B2E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#092552]"
             >
               Open LMS Portal
             </Link>
+            {isWorkshopEnrollment && workshopWhatsappUrl ? (
+              <a
+                href={workshopWhatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackJoinWhatsapp()}
+                className="inline-flex items-center gap-2 rounded-xl border border-[#16A34A]/50 bg-[#16A34A]/15 px-5 py-2.5 text-sm font-semibold text-[#DCFCE7] transition hover:bg-[#16A34A]/25"
+              >
+                Join WhatsApp Group
+              </a>
+            ) : null}
+            {isWorkshopEnrollment && workshopMeetingUrl ? (
+              <a
+                href={workshopMeetingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#1D7CFF]/50 bg-[#1D7CFF]/15 px-5 py-2.5 text-sm font-semibold text-[#BFDBFE] transition hover:bg-[#1D7CFF]/25"
+              >
+                Open Workshop Meeting
+              </a>
+            ) : null}
             <Link
               href="/courses"
               className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-[#94A3B8] transition hover:text-white"

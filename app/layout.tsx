@@ -1,10 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Sora } from "next/font/google";
+import Script from "next/script";
+import { ClientAnalyticsProvider } from "@/components/analytics/client-analytics-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { DemoModalRoot } from "@/components/demo/demo-modal-root";
 import { AppChrome } from "@/components/layout/app-chrome";
 import { PwaProvider } from "@/components/pwa/pwa-provider";
+import { env } from "@/lib/env";
 import { buildMetadata } from "@/lib/metadata";
 import "./globals.css";
 
@@ -65,6 +68,33 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <head>
+        {env.nextPublicGaMeasurementId ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${env.nextPublicGaMeasurementId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+window.gtag = gtag;
+gtag('js', new Date());
+gtag('config', '${env.nextPublicGaMeasurementId}', { send_page_view: false });`}
+            </Script>
+          </>
+        ) : null}
+        {env.nextPublicMetaPixelId ? (
+          <Script id="meta-pixel-init" strategy="afterInteractive">
+            {`!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');`}
+          </Script>
+        ) : null}
         {/* PWA / Apple icons */}
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <link rel="apple-touch-icon" sizes="152x152" href="/icon-192.png" />
@@ -80,6 +110,7 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <div className="relative min-h-screen overflow-x-clip">
+              <ClientAnalyticsProvider />
               <AppChrome>{children}</AppChrome>
               <DemoModalRoot />
               <PwaProvider />

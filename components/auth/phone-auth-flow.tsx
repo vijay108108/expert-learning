@@ -51,6 +51,7 @@ import {
   checkSignupPhoneAvailability,
   upsertGoogleUserProfile,
 } from "@/lib/firebase";
+import { trackLoginEvent } from "@/lib/client-analytics";
 import { cn } from "@/lib/utils";
 
 const otpLength = 6;
@@ -497,6 +498,11 @@ export function PhoneAuthFlow({
     setSuccessMessage(message);
     clearRecaptcha(recaptchaHostRef.current);
     recaptchaVerifierRef.current = null;
+
+    const loginSource = redirectTo.includes("workshops/ai-developer-launch-lab")
+      ? "workshop_launch_lab"
+      : "auth";
+    trackLoginEvent(loginSource);
 
     window.setTimeout(async () => {
       const handledRedirect = await onSuccess?.();

@@ -26,6 +26,12 @@ function readCsvEnvValues(value: string | undefined) {
 
 export const env = {
   nextPublicSiteUrl: process.env.NEXT_PUBLIC_SITE_URL || siteConfig.url,
+  nextPublicGaMeasurementId: readEnvValue(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID)
+    || readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID)
+    || "",
+  nextPublicMetaPixelId: readEnvValue(process.env.NEXT_PUBLIC_META_PIXEL_ID) || "",
+  nextPublicWorkshopWhatsappUrl: readEnvValue(process.env.NEXT_PUBLIC_WORKSHOP_WHATSAPP_URL) || "",
+  nextPublicWorkshopMeetingUrl: readEnvValue(process.env.NEXT_PUBLIC_WORKSHOP_MEETING_URL) || "",
   nextPublicFirebaseApiKey: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
   nextPublicFirebaseAuthDomain: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN),
   nextPublicFirebaseProjectId: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),

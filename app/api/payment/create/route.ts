@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { allocatePaiseProportionally, GENZ100_COUPON_CODE, getCouponPricing } from "@/lib/coupons";
 import { formatPaiseToPrice } from "@/lib/course-catalog";
 import { createInvoiceNumber, getInclusiveGstBreakup, type StoredOrderSuccess } from "@/lib/order-success";
@@ -10,7 +10,10 @@ import { saveInvoiceRecordAdmin } from "@/lib/firebase/invoices-admin";
 import { upsertUserProfileAdminFromPayment } from "@/lib/firebase/user-profiles-admin";
 import type { PersistedInvoiceRecord } from "@/lib/invoices";
 import { verifyFirebaseBearerToken } from "@/lib/server/firebase-auth";
+import { captureServerEvent } from "@/lib/services/analytics";
+import { sendEnrollmentEmail } from "@/lib/services/email";
 import { getRazorpayClient } from "@/lib/services/payments";
+import { sendWhatsAppNotification } from "@/lib/services/whatsapp";
 import { paymentCreateSchema } from "@/lib/validations";
 
 function resolveEnrollmentMetaForOffering(offering: CheckoutOffering): {
@@ -222,6 +225,49 @@ export async function POST(request: Request) {
           logFirestoreIssue("[Payment Create] Free coupon invoice persistence skipped because enrollment save failed", error);
         }
       }
+
+      const hasWorkshop = offerings.some((offering) => offering.slug === "ai-developer-launch-lab");
+      const workshopDate = new Intl.DateTimeFormat("en-IN", {
+        dateStyle: "medium",
+        timeZone: "Asia/Kolkata",
+      }).format(new Date("2026-07-18T18:00:00+05:30"));
+      const workshopTime = "6:00 PM - 8:00 PM IST";
+
+      after(async () => {
+        await Promise.allSettled([
+          sendEnrollmentEmail({
+            name: body.name,
+            email: body.email,
+            phone: body.phone,
+            courseTitles: offerings.map((offering) => offering.title),
+            paymentId: "free-coupon",
+            amountLabel: formatPaiseToPrice(totalPaidPaise),
+            enrolledAt: paidAtIso,
+            workshop: hasWorkshop
+              ? {
+                name: "AI Developer Launch Lab",
+                date: workshopDate,
+                time: workshopTime,
+                meetingUrl: env.nextPublicWorkshopMeetingUrl || undefined,
+                lmsUrl: `${env.nextPublicSiteUrl}/dashboard/courses?payment=success`,
+                invoiceUrl: `${env.nextPublicSiteUrl}/payment/success?orderId=${encodeURIComponent(invoice.orderId)}`,
+                whatsappUrl: env.nextPublicWorkshopWhatsappUrl || undefined,
+                supportEmail: env.admissionsEmail,
+              }
+              : undefined,
+          }),
+          sendWhatsAppNotification({
+            phone: body.phone,
+            body: `Hi ${body.name}, your enrollment for ${offerings.length > 1 ? `${offerings.length} programs` : offerings[0]?.title || "your program"} is confirmed. Payment ID: FREE-COUPON`,
+          }),
+          captureServerEvent(body.email, "payment_success", {
+            courseSlugs: offerings.map((offering) => offering.slug),
+            paymentId: "free-coupon",
+            orderId: invoice.orderId,
+            amountPaise: totalPaidPaise,
+          }),
+        ]);
+      });
 
       return NextResponse.json({
         success: true,

@@ -14,11 +14,11 @@ import {
 } from "@/lib/firebase";
 import { syncMyLearningFromInvoice } from "@/lib/my-learning";
 import {
-  getInvoiceDashboardPath,
   latestOrderStorageKey,
   type StoredOrderSuccess,
 } from "@/lib/order-success";
 import { ensureRazorpayScript } from "@/lib/razorpay-browser";
+import { trackPaymentFailed, trackPaymentStarted, trackPaymentSuccess } from "@/lib/client-analytics";
 import { cn } from "@/lib/utils";
 
 const initialState = {
@@ -223,6 +223,7 @@ export function EnrollmentForm({
 
     setPending(true);
     setIsPaying(true);
+    trackPaymentStarted(course.slug, Math.round(pricing.finalAmountPaise / 100));
     const profilePhone = formatPhoneForProfile(form.phone);
 
     try {
@@ -256,16 +257,21 @@ export function EnrollmentForm({
       };
 
       if (!createResponse.ok) {
+        trackPaymentFailed("payment_order_create_failed");
         throw new Error(createPayload.message || "Unable to start payment.");
       }
 
       if (createPayload.freeEnrollment && createPayload.invoice) {
-        const dashboardPath = getInvoiceDashboardPath(createPayload.invoice, {
-          paymentCompleted: true,
-        });
+        const successPath = `/payment/success?orderId=${encodeURIComponent(createPayload.invoice.orderId)}`;
 
         window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(createPayload.invoice));
         syncMyLearningFromInvoice(createPayload.invoice);
+
+        trackPaymentSuccess({
+          value: Math.round(createPayload.invoice.totalPaidPaise / 100),
+          paymentId: createPayload.invoice.paymentId || "free-coupon",
+          orderId: createPayload.invoice.orderId,
+        });
 
         await syncVerifiedPurchase(
           createPayload.invoice,
@@ -274,7 +280,7 @@ export function EnrollmentForm({
         );
 
         setIsPaying(false);
-        router.replace(dashboardPath);
+  router.replace(successPath);
 
         void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
           logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
@@ -283,12 +289,14 @@ export function EnrollmentForm({
       }
 
       if (!createPayload.order || !createPayload.keyId) {
+        trackPaymentFailed("payment_order_missing");
         throw new Error(createPayload.message || "Unable to start payment.");
       }
 
       const scriptLoaded = await ensureRazorpayScript();
 
       if (!scriptLoaded || !window.Razorpay) {
+        trackPaymentFailed("razorpay_script_unavailable");
         throw new Error("Razorpay checkout could not be loaded.");
       }
 
@@ -330,17 +338,22 @@ export function EnrollmentForm({
 
             if (!verifyResponse.ok || !verifyPayload.invoice) {
               setMessage(verifyPayload.message || "Payment verification failed.");
+              trackPaymentFailed("payment_verification_failed");
               setIsPaying(false);
               return;
             }
 
             const profilePhone = formatPhoneForProfile(form.phone);
-            const dashboardPath = getInvoiceDashboardPath(verifyPayload.invoice, {
-              paymentCompleted: true,
-            });
+            const successPath = `/payment/success?orderId=${encodeURIComponent(verifyPayload.invoice.orderId)}`;
 
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             syncMyLearningFromInvoice(verifyPayload.invoice);
+
+            trackPaymentSuccess({
+              value: Math.round(verifyPayload.invoice.totalPaidPaise / 100),
+              paymentId: response.razorpay_payment_id || verifyPayload.invoice.paymentId || "",
+              orderId: response.razorpay_order_id || verifyPayload.invoice.orderId,
+            });
 
             await syncVerifiedPurchase(
               verifyPayload.invoice,
@@ -349,18 +362,20 @@ export function EnrollmentForm({
             );
 
             setIsPaying(false);
-            router.replace(dashboardPath);
+            router.replace(successPath);
 
             void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
               logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
             });
           } catch (error) {
             setMessage(error instanceof Error ? error.message : "Unable to complete enrollment after payment.");
+            trackPaymentFailed("payment_post_verify_exception");
             setIsPaying(false);
           }
         },
         modal: {
           ondismiss: () => {
+            trackPaymentFailed("checkout_dismissed");
             setIsPaying(false);
           },
         },
@@ -369,6 +384,7 @@ export function EnrollmentForm({
       razorpay.open();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to create enrollment.");
+      trackPaymentFailed("payment_create_exception");
       setIsPaying(false);
     } finally {
       setPending(false);

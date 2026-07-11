@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useEnrolledCourseIds } from "@/hooks/use-enrolled-course-ids";
+import { trackRegisterClick } from "@/lib/client-analytics";
 import { expandRequestedCourseSlugs } from "@/lib/offering-catalog";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +40,7 @@ export function CourseEnrollmentAction({
   checkoutHelperText = "You'll complete your details and payment on a dedicated secure checkout page.",
   enrolledHelperText = "You are already enrolled in this program. Continue from your learning dashboard.",
 }: CourseEnrollmentActionProps) {
+  const router = useRouter();
   const { openAuthModal, user, isAuthReady } = useAuth();
   const { enrolledCourseIds, enrolledMetaByCourseId, loading } = useEnrolledCourseIds();
   const requiredCourseSlugs = expandRequestedCourseSlugs([courseSlug]);
@@ -69,6 +72,27 @@ export function CourseEnrollmentAction({
         : checkoutLabel;
   const enrollmentTarget = checkoutHref || `/checkout/${encodeURIComponent(courseSlug)}`;
   const shouldPromptAuthChoice = !isEnrolled && !user;
+  const isWorkshopLaunchLab = courseSlug === "ai-developer-launch-lab";
+  const workshopLoginRedirect = "/workshops/ai-developer-launch-lab?autocheckout=1";
+
+  function handleRegisterClick() {
+    if (!isWorkshopLaunchLab) {
+      return;
+    }
+
+    trackRegisterClick();
+  }
+
+  function handleUnauthedAction() {
+    handleRegisterClick();
+
+    if (isWorkshopLaunchLab) {
+      router.push(`/login?redirect=${encodeURIComponent(workshopLoginRedirect)}`);
+      return;
+    }
+
+    openAuthModal("choice", enrollmentTarget);
+  }
 
   return (
     <div>
@@ -86,7 +110,7 @@ export function CourseEnrollmentAction({
       {shouldPromptAuthChoice ? (
         <button
           type="button"
-          onClick={() => openAuthModal("choice", enrollmentTarget)}
+          onClick={handleUnauthedAction}
           disabled={!isAuthReady}
           className={cn(
             baseButtonClasses,
@@ -100,6 +124,11 @@ export function CourseEnrollmentAction({
       ) : (
         <Link
           href={targetHref}
+          onClick={() => {
+            if (!isEnrolled) {
+              handleRegisterClick();
+            }
+          }}
           aria-disabled={Boolean(user && (!isAuthReady || loading && !isEnrolled))}
           className={cn(
             baseButtonClasses,

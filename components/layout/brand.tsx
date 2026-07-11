@@ -30,7 +30,7 @@ export function Brand({
         className={cn(
           "drop-shadow-[0_2px_8px_rgba(15,23,42,0.12)]",
           mode === "header"
-            ? "h-[40px] w-auto sm:h-[48px] lg:h-[58px]"
+            ? "h-[32px] w-auto sm:h-[38px] lg:h-[46px]"
             : "h-[42px] w-auto sm:h-[48px] lg:h-[54px] opacity-95",
           imageClassName,
         )}

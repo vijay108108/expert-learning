@@ -4,6 +4,7 @@ import { allocatePaiseProportionally, getCouponPricing } from "@/lib/coupons";
 import type { CheckoutOffering } from "@/lib/offering-catalog";
 import { getCanonicalCourseIdBySlug, getCourseSlugByCourseId, resolveCheckoutOfferings } from "@/lib/offering-catalog";
 import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
+import { captureServerEvent } from "@/lib/services/analytics";
 import { env } from "@/lib/env";
 import { getRazorpayOrderDetails, getRazorpayPaymentDetails } from "@/lib/services/payments";
 
@@ -150,6 +151,14 @@ export async function POST(request: Request) {
         });
       }),
     );
+
+    await captureServerEvent(email || userId, "payment_success", {
+      courseSlugs: offerings.map((offering) => offering.slug),
+      paymentId: entity.id,
+      orderId: entity.order_id,
+      amountPaise: pricing.finalAmountPaise,
+      source: "webhook",
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

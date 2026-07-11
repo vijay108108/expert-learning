@@ -309,6 +309,13 @@ export async function POST(request: Request) {
     }
 
     after(async () => {
+      const hasWorkshop = offerings.some((offering) => offering.slug === "ai-developer-launch-lab");
+      const workshopDate = new Intl.DateTimeFormat("en-IN", {
+        dateStyle: "medium",
+        timeZone: "Asia/Kolkata",
+      }).format(new Date("2026-07-18T18:00:00+05:30"));
+      const workshopTime = "6:00 PM - 8:00 PM IST";
+
       await Promise.allSettled([
         sendEnrollmentEmail({
           name: trustedName,
@@ -318,14 +325,27 @@ export async function POST(request: Request) {
           paymentId: body.razorpay_payment_id,
           amountLabel: formatPaiseToPrice(totalPaidPaise),
           enrolledAt: paidAtIso,
+          workshop: hasWorkshop
+            ? {
+              name: "AI Developer Launch Lab",
+              date: workshopDate,
+              time: workshopTime,
+              meetingUrl: process.env.NEXT_PUBLIC_WORKSHOP_MEETING_URL || undefined,
+              lmsUrl: `${process.env.NEXT_PUBLIC_SITE_URL || ""}/dashboard/courses?payment=success`,
+              invoiceUrl: `${process.env.NEXT_PUBLIC_SITE_URL || ""}/payment/success?orderId=${encodeURIComponent(body.razorpay_order_id)}`,
+              whatsappUrl: process.env.NEXT_PUBLIC_WORKSHOP_WHATSAPP_URL || undefined,
+            }
+            : undefined,
         }),
         sendWhatsAppNotification({
           phone: trustedPhone,
           body: `Hi ${trustedName}, your enrollment for ${offerings.length > 1 ? `${offerings.length} programs` : resolveDisplayValuesForOffering(offerings[0]).title} is confirmed. Payment ID: ${body.razorpay_payment_id}`,
         }),
-        captureServerEvent(trustedEmail, "payment_verified", {
+        captureServerEvent(trustedEmail, "payment_success", {
           courseSlugs: offerings.map((offering) => offering.slug),
           paymentId: body.razorpay_payment_id,
+          orderId: body.razorpay_order_id,
+          amountPaise: totalPaidPaise,
         }),
       ]);
     });

@@ -96,3 +96,4 @@ export * from "./firebase/signup-validation";
 export * from "./firebase/progress";
 export * from "./firebase/resources";
 export * from "./firebase/user-profiles";
+export * from "./firebase/workshop-config";
