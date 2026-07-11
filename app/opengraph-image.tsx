@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export const size = {
   width: 1200,
@@ -7,7 +9,13 @@ export const size = {
 
 export const contentType = "image/png";
 
-export default function OpenGraphImage() {
+export const runtime = "nodejs";
+
+export default async function OpenGraphImage() {
+  const logoPath = join(process.cwd(), "public", "genznext-navbar-logo.png");
+  const logoBuffer = await readFile(logoPath);
+  const logoDataUrl = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -31,21 +39,19 @@ export default function OpenGraphImage() {
             gap: "20px",
           }}
         >
-          <div
+          <img
+            src={logoDataUrl}
+            width={84}
+            height={84}
+            alt="GenZNext logo"
             style={{
               width: "84px",
               height: "84px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "28px",
-              background: "linear-gradient(135deg, #2563eb 0%, #06b6d4 55%, #7c3aed 100%)",
-              fontSize: "36px",
-              fontWeight: 700,
+              borderRadius: "18px",
+              objectFit: "cover",
+              boxShadow: "0 8px 24px rgba(2, 6, 23, 0.45)",
             }}
-          >
-            GZ
-          </div>
+          />
           <div style={{ fontSize: 24, letterSpacing: "0.14em" }}>GENZNEXT RESEARCH &amp; TRAINING</div>
         </div>
         <div style={{ maxWidth: "860px", display: "flex", flexDirection: "column", gap: "18px" }}>
