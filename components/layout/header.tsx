@@ -26,7 +26,7 @@ function isActive(pathname: string, prefixes: readonly string[]) {
 
 export function Header() {
   const pathname = usePathname() ?? "";
-  const { isAuthReady, openAuthModal, user } = useAuth();
+  const { isAuthReady, user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileMenuPath, setMobileMenuPath] = useState(pathname);
   const [scrolled, setScrolled] = useState(false);
@@ -95,20 +95,18 @@ export function Header() {
             <DashboardMenu />
           ) : (
             <>
-              <button
-                type="button"
-                onClick={() => openAuthModal("login", "/")}
+              <Link
+                href="/login"
                 className="inline-flex h-10 items-center rounded-lg px-4 text-[14px] font-semibold text-[#475569] transition-colors duration-200 ease-out hover:bg-[#F8FAFC] hover:text-[#0F172A]"
               >
-                Login
-              </button>
-              <button
-                type="button"
-                onClick={() => openAuthModal("signup", "/")}
+                SignIn
+              </Link>
+              <Link
+                href="/signup"
                 className="inline-flex h-[46px] items-center rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(11,46,107,0.28)] transition-[box-shadow,transform] duration-200 ease-out hover:scale-[1.02] hover:shadow-[0_10px_24px_rgba(11,46,107,0.34)]"
               >
-                Get Started
-              </button>
+                Signup
+              </Link>
             </>
           )}
         </div>
@@ -171,20 +169,20 @@ export function Header() {
             </a>
             {!isAuthed ? (
               <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => { openAuthModal("login", "/"); setMobileOpen(false); }}
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
                   className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-2.5 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC]"
                 >
-                  Login
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { openAuthModal("signup", "/"); setMobileOpen(false); }}
+                  SignIn
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileOpen(false)}
                   className="rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-3 py-2.5 text-sm font-semibold text-white"
                 >
-                  Get Started
-                </button>
+                  Signup
+                </Link>
               </div>
             ) : (
               <DashboardMenu />
