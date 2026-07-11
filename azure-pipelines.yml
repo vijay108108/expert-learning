@@ -23,7 +23,7 @@ stages:
       inputs:
         versionSpec: '22.x'
 
-    - script: npm install
+    - script: npm ci
       displayName: Install dependencies
 
     - script: npm run build
@@ -58,10 +58,11 @@ stages:
           git checkout main
           git pull origin main
 
-          npm install
+          rm -rf .next
+          npm ci
           npm run build
 
-          pm2 restart genznext
+          pm2 restart genznext --update-env
           pm2 save
 
           echo "===== DEPLOY DONE ====="
