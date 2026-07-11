@@ -44,17 +44,17 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-[#E2E8F0] bg-white/95 backdrop-blur-md transition-shadow duration-200",
-        scrolled && "shadow-[0_4px_20px_rgba(15,23,42,0.08)]",
+        "sticky top-0 z-50 border-b border-[#E2E8F0] bg-white/95 backdrop-blur-sm transition-[background-color,box-shadow,backdrop-filter,border-color] duration-200 ease-out",
+        scrolled && "bg-white/95 backdrop-blur-md shadow-[0_8px_24px_rgba(15,23,42,0.08)]",
       )}
     >
-      <div className="mx-auto grid h-[84px] max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 pl-6 pr-4 sm:pr-6 lg:pr-8">
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 pl-4 pr-4 sm:pl-5 sm:pr-5 md:h-[74px] md:pl-6 md:pr-6 lg:h-[82px] lg:pl-6 lg:pr-8">
 
         {/* Brand */}
         <Brand className="items-center" />
 
         {/* Desktop nav */}
-        <nav className="hidden items-center justify-center gap-0.5 pl-10 md:flex" aria-label="Main navigation">
+        <nav className="hidden items-center justify-center gap-1 pl-4 md:flex" aria-label="Main navigation">
           {navItems.map((item) => {
             const active = isActive(pathname, item.prefixes);
             return (
@@ -62,7 +62,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative rounded-lg px-3.5 py-2 text-[13.5px] font-medium transition-all duration-150",
+                  "relative rounded-lg px-3 py-2 text-[16px] font-semibold transition-colors duration-200 ease-out lg:text-[17px]",
                   active
                     ? "text-[#0B2E6B]"
                     : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]",
@@ -78,13 +78,13 @@ export function Header() {
         </nav>
 
         {/* Desktop right */}
-        <div className="hidden items-center justify-end gap-2 md:flex">
+        <div className="hidden items-center justify-end gap-2.5 md:flex">
           {/* WhatsApp quick link */}
           <a
             href={`https://wa.me/${siteConfig.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-1.5 text-[12px] font-semibold text-[#16A34A] transition hover:border-[#16A34A]/30 hover:bg-[#F0FDF4]"
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3.5 text-[13px] font-semibold text-[#16A34A] transition-colors duration-200 ease-out hover:border-[#16A34A]/30 hover:bg-[#F0FDF4]"
             aria-label="Chat on WhatsApp"
           >
             <MessageCircle className="h-3.5 w-3.5" />
@@ -98,14 +98,14 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => openAuthModal("login", "/")}
-                className="rounded-lg px-4 py-2 text-[13px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+                className="inline-flex h-10 items-center rounded-lg px-4 text-[14px] font-semibold text-[#475569] transition-colors duration-200 ease-out hover:bg-[#F8FAFC] hover:text-[#0F172A]"
               >
                 Login
               </button>
               <button
                 type="button"
                 onClick={() => openAuthModal("signup", "/")}
-                className="rounded-lg bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_4px_12px_rgba(99,102,241,0.3)] transition hover:shadow-[0_6px_20px_rgba(99,102,241,0.38)] hover:scale-[1.02]"
+                className="inline-flex h-[46px] items-center rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(11,46,107,0.28)] transition-[box-shadow,transform] duration-200 ease-out hover:scale-[1.02] hover:shadow-[0_10px_24px_rgba(11,46,107,0.34)]"
               >
                 Get Started
               </button>
