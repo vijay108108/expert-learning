@@ -12,12 +12,10 @@ import {
   Cpu,
   FileCode2,
   Globe,
-  GraduationCap,
   Layers3,
   Rocket,
   Server,
   Sparkles,
-  Users,
   Workflow,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -35,46 +33,44 @@ type CountdownState = {
 const workshopTarget = new Date("2026-07-18T18:00:00+05:30").getTime();
 
 const attendReasons = [
-  "Build Website using AI",
-  "Create Azure Virtual Machine",
-  "Host Website Live",
-  "AI Assisted Coding",
-  "Azure Deployment",
-  "Real Industry Workflow",
+  "Build a production-style website using AI prompts",
+  "Provision your first Azure Virtual Machine confidently",
+  "Deploy and publish a live URL during the session",
+  "Follow a real AI-assisted developer workflow",
+  "Understand cloud deployment decisions that matter in interviews",
+  "Leave with a repeatable launch framework you can reuse",
 ];
 
 const journeySteps = [
-  "Introduction",
-  "AI Website Development",
-  "Microsoft Azure",
-  "Create Cloud VM",
-  "Deploy Website",
-  "Live URL",
-  "Career Roadmap",
+  "Outcome-first kickoff",
+  "AI-powered website build",
+  "Azure fundamentals in plain English",
+  "Create and secure your cloud VM",
+  "Deploy your site end-to-end",
+  "Go live with your public URL",
+  "Career and next-project roadmap",
 ];
 
 const workshopPerks = [
-  "Live Workshop",
-  "Recording",
-  "Certificate",
-  "Source Code",
-  "Azure Setup Guide",
-  "Community Access",
-  "Career Roadmap",
+  "2-hour live implementation workshop",
+  "Full recording access",
+  "Participation certificate",
+  "Starter source code pack",
+  "Step-by-step Azure setup guide",
+  "Community Q&A access",
+  "90-day learning roadmap",
 ];
 
 const audience = [
-  "Engineering Students",
-  "B.Tech",
-  "M.Tech",
-  "BCA",
-  "MCA",
-  "MBA",
-  "BBA",
+  "Engineering students",
+  "B.Tech / M.Tech",
+  "BCA / MCA",
+  "MBA / BBA",
   "Freshers",
-  "Developers",
-  "Working Professionals",
-  "Career Switchers",
+  "Software developers",
+  "Working professionals",
+  "Career switchers",
+  "Founders and freelancers",
 ];
 
 const stack = [
@@ -128,7 +124,7 @@ const faqs = [
   {
     question: "Will I receive certificate?",
     answer:
-      "Yes. A participation certificate is shared after the workshop completion workflow is finalized.",
+      "Yes. Every paid participant receives a workshop participation certificate after session completion.",
   },
 ];
 
@@ -204,15 +200,15 @@ export function AiDeveloperLaunchLabPage() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="mt-5 max-w-2xl text-[15px] leading-7 text-[#CED7F0] sm:text-[17px]"
             >
-              Learn. Build. Deploy. Discover how modern developers use AI to build websites, provision Microsoft Azure cloud
-              servers, and deploy applications in just two hours.
+              In just 2 hours, you will build a real website using AI, launch it on Microsoft Azure, and publish a live URL.
+              No fluff, no theory overload - just a guided, job-relevant implementation flow.
             </motion.p>
 
             <div className="mt-6 flex flex-wrap gap-2.5 text-[12px] text-[#A9B6DA]">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><CalendarDays className="h-3.5 w-3.5" />18 July</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Clock3 className="h-3.5 w-3.5" />6 PM - 8 PM</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Globe className="h-3.5 w-3.5" />Live Online</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/15 px-3 py-1.5 font-semibold text-[#FFC48C]">Fee: Rs. 99</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/15 px-3 py-1.5 font-semibold text-[#FFC48C]">Limited Seat Offer: Rs. 99</span>
             </div>
 
             <div className="mt-7 max-w-xl rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xl sm:p-5">
@@ -277,10 +273,10 @@ export function AiDeveloperLaunchLabPage() {
                   </span>
                 </div>
                 <div className="mt-4 space-y-3 text-sm text-[#CED7F0]">
-                  <p className="flex items-center gap-2"><Rocket className="h-4 w-4 text-[#1D7CFF]" />AI-built frontend in minutes</p>
-                  <p className="flex items-center gap-2"><Server className="h-4 w-4 text-[#1D7CFF]" />Azure VM provisioning workflow</p>
-                  <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-[#1D7CFF]" />Public live URL deployment</p>
-                  <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-[#1D7CFF]" />Career roadmap for cloud + AI</p>
+                  <p className="flex items-center gap-2"><Rocket className="h-4 w-4 text-[#1D7CFF]" />Build faster with AI-assisted coding</p>
+                  <p className="flex items-center gap-2"><Server className="h-4 w-4 text-[#1D7CFF]" />Set up Azure VM like a real project</p>
+                  <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-[#1D7CFF]" />Deploy and verify your live URL</p>
+                  <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-[#1D7CFF]" />Know what to build next for your portfolio</p>
                 </div>
               </div>
 
@@ -290,8 +286,8 @@ export function AiDeveloperLaunchLabPage() {
                   <p className="mt-1 text-2xl font-semibold text-white">Rs. 99</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                  <p className="text-[11px] uppercase tracking-[0.12em] text-[#9CB4E8]">Mode</p>
-                  <p className="mt-1 text-2xl font-semibold text-white">Live</p>
+                  <p className="text-[11px] uppercase tracking-[0.12em] text-[#9CB4E8]">Outcome</p>
+                  <p className="mt-1 text-xl font-semibold text-white">Go Live in 2 Hours</p>
                 </div>
               </div>
             </div>
@@ -301,7 +297,7 @@ export function AiDeveloperLaunchLabPage() {
 
       <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Why Attend</h2>
+          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Why This Workshop Converts Learning Into Results</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {attendReasons.map((reason) => (
               <div key={reason} className="rounded-2xl border border-white/12 bg-white/7 px-4 py-4 backdrop-blur-xl">
@@ -314,7 +310,7 @@ export function AiDeveloperLaunchLabPage() {
 
       <section id="workshop-journey" className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Workshop Journey</h2>
+          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Your 2-Hour Execution Plan</h2>
           <div className="mt-7 rounded-3xl border border-white/12 bg-white/6 p-5 backdrop-blur-xl sm:p-7">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {journeySteps.map((step, index) => (
@@ -331,7 +327,7 @@ export function AiDeveloperLaunchLabPage() {
       <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">What You Will Receive</h2>
+            <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">What You Get After Enrolling</h2>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {workshopPerks.map((perk) => (
                 <div key={perk} className="rounded-2xl border border-white/12 bg-white/7 px-4 py-4 text-sm text-[#DEE7FF] backdrop-blur-xl">
@@ -342,7 +338,7 @@ export function AiDeveloperLaunchLabPage() {
           </div>
 
           <div>
-            <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Who Should Join</h2>
+            <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Who This Is Perfect For</h2>
             <div className="mt-6 flex flex-wrap gap-2.5">
               {audience.map((item) => (
                 <span key={item} className="rounded-full border border-[#1D7CFF]/35 bg-[#1D7CFF]/12 px-3 py-1.5 text-xs font-semibold text-[#B6D6FF]">
@@ -362,8 +358,8 @@ export function AiDeveloperLaunchLabPage() {
               VV
             </div>
             <div>
-              <p className="text-xl font-semibold text-white">Enterprise Cloud Architect</p>
-              <p className="mt-1 text-sm text-[#DBE7FF]">Cloud Architect | 10+ Years Experience | Microsoft Azure Expert | AI Specialist</p>
+              <p className="text-xl font-semibold text-white">Vijay Vishwakarma</p>
+              <p className="mt-1 text-sm text-[#DBE7FF]">Founder, GenZNext | Enterprise Cloud Architect | 10+ Years Experience</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {[
                   "Enterprise Cloud Architect",
