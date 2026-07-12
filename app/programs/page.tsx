@@ -281,13 +281,13 @@ export default function ProgramsPage() {
       <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#FFF3E8_50%,#E0F2FE_100%)] px-4 pb-8 pt-10 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <span className="inline-flex items-center rounded-full border border-[#E8DCCF] bg-[#FFF3E8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#E56F12]">
-            GenZNext Career Tracks
+            GenZNext Builder Tracks
           </span>
           <h1 className="mt-4 text-[34px] font-extrabold leading-[1.1] tracking-[-0.02em] !text-[#0F172A] sm:text-[42px]">
-            Career Programs
+            Builder Programs
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#64748B]">
-            Industry-ready Cloud, DevOps and AIOps programs with live mentorship, real project practice, certification prep, and placement support.
+            Mission-driven programs designed to help builders ship real AI, Cloud, DevOps and AIOps systems with mentorship, capstones, and career outcomes.
           </p>
           <div className="mt-5 flex flex-wrap gap-4 text-sm text-[#475569]">
             {[
@@ -319,7 +319,7 @@ export default function ProgramsPage() {
                   Combined Master Program
                 </span>
                 <p className="mt-2 text-sm font-medium text-[#64748B]">
-                  Want all three tracks in one guided roadmap? This bundle combines them into one structured progression.
+                  Want one integrated institution-style journey? This master program combines all three tracks into one high-execution progression.
                 </p>
               </div>
             </div>

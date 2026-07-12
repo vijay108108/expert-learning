@@ -21,9 +21,9 @@ import { getOrganizationSchema } from "@/lib/schema";
 
 const stats = [
   { value: "21,000+", label: "Learning Hours Delivered", icon: BookOpenCheck },
-  { value: "6,000+", label: "Learners Trained", icon: GraduationCap },
+  { value: "6,000+", label: "Builders Mentored", icon: GraduationCap },
   { value: "167+", label: "Live Sessions Conducted", icon: Layers },
-  { value: "96%", label: "Placement Satisfaction", icon: TrendingUp },
+  { value: "96%", label: "Career Outcome Satisfaction", icon: TrendingUp },
   { value: "48+", label: "Live Batches", icon: Users2 },
   { value: "12+", label: "Industry Certifications", icon: Award },
 ];
@@ -288,7 +288,7 @@ export default function Home() {
                 Explore Courses <ChevronRight className="h-4 w-4" />
               </Link>
               <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-[#CBD5E1] bg-white px-6 py-3 text-sm font-semibold text-[#0F172A] shadow-sm transition hover:border-[#A5B4FC] hover:bg-[#F8FAFC]">
-                Talk to Admissions
+                Talk to Builder Team
               </Link>
             </div>
             <Link
@@ -363,7 +363,7 @@ export default function Home() {
             </Link>
 
             <div className="rounded-2xl border border-[#E2E8F0] bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.07)] backdrop-blur">
-              <p className="text-sm font-semibold text-[#15407E]">What you get with every program</p>
+              <p className="text-sm font-semibold text-[#15407E]">What you get in every builder journey</p>
               <div className="mt-4 space-y-2.5">
                 {[
                   "Structured roadmap with mentor checkpoints",
@@ -382,7 +382,7 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-[14px] border border-[#E2E8F0] bg-white p-3 text-center shadow-sm">
                 <p className="text-xl font-bold text-[#0F172A]">6,000+</p>
-                <p className="text-[11px] text-[#64748B]">Learners Trained</p>
+                <p className="text-[11px] text-[#64748B]">Builders Mentored</p>
               </div>
               <div className="rounded-[14px] border border-[#E2E8F0] bg-white p-3 text-center shadow-sm">
                 <div className="flex items-center justify-center gap-0.5">
@@ -412,10 +412,10 @@ export default function Home() {
       <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Programs</p>
-            <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">6 High-Demand Learning Tracks</h2>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Builder Tracks</p>
+            <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">6 High-Execution Tracks for Real Builders</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#64748B]">
-              From students entering the industry to enterprises upskilling teams — we have a track for every ambition.
+              From students entering tech to enterprise teams scaling capability, every track is designed for practical outcomes and real project delivery.
             </p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -563,8 +563,8 @@ export default function Home() {
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C084FC]">Start Today</p>
 
           {/* Heading forced white */}
-          <h2 className="mt-4 text-[30px] font-extrabold leading-tight tracking-tight !text-white sm:text-[42px]">
-            Join <span className="text-[#6EE7B7]">6,000+</span> learners<br className="hidden sm:block" /> building cloud careers
+            <h2 className="mt-4 text-[30px] font-extrabold leading-tight tracking-tight !text-white sm:text-[42px]">
+            Join <span className="text-[#6EE7B7]">6,000+</span> builders<br className="hidden sm:block" /> shaping AI and cloud careers
           </h2>
 
           {/* Subtitle high contrast white */}
@@ -581,13 +581,13 @@ export default function Home() {
             </Link>
             <Link href="/contact"
               className="inline-flex items-center gap-2 rounded-xl border-2 border-white/40 bg-white/10 px-7 py-3 text-sm font-bold text-white backdrop-blur-sm transition hover:border-white/70 hover:bg-white/20">
-              Talk to Admissions
+              Talk to Builder Team
             </Link>
           </div>
 
           {/* Trust signals */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[13px] text-white/70">
-            {["No-cost EMI options", "Live batches every month", "Placement assistance"].map((item) => (
+            {["No-cost EMI options", "Live batches every month", "Career acceleration support"].map((item) => (
               <span key={item} className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-[#6EE7B7]" />{item}
               </span>
