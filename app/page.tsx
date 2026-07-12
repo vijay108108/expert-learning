@@ -340,11 +340,17 @@ export default function Home() {
                     { day: "Day 3", value: 68 },
                     { day: "Day 4", value: 81 },
                     { day: "Day 5", value: 92 },
-                  ].map((point) => (
+                  ].map((point, index) => (
                     <div key={point.day} className="grid grid-cols-[44px_1fr_40px] items-center gap-2 text-[11px] text-[#475569]">
                       <span>{point.day}</span>
                       <div className="h-2 rounded-full bg-[#E2E8F0]">
-                        <div className="h-2 rounded-full bg-[linear-gradient(90deg,#F97316,#1D4ED8)]" style={{ width: `${point.value}%` }} />
+                        <div
+                          className="workshop-trend-fill h-2 rounded-full bg-[linear-gradient(90deg,#F97316,#1D4ED8)]"
+                          style={{
+                            width: `${point.value}%`,
+                            animationDelay: `${index * 120}ms`,
+                          }}
+                        />
                       </div>
                       <span className="text-right font-semibold">{point.value}%</span>
                     </div>
@@ -401,6 +407,25 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        <style jsx>{`
+          .workshop-trend-fill {
+            transform-origin: left center;
+            animation: workshopTrendGrow 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.22);
+          }
+
+          @keyframes workshopTrendGrow {
+            from {
+              transform: scaleX(0.06);
+              opacity: 0.65;
+            }
+            to {
+              transform: scaleX(1);
+              opacity: 1;
+            }
+          }
+        `}</style>
       </section>
 
       {/* Stats Bar */}
