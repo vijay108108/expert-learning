@@ -37,7 +37,7 @@ type CountdownState = {
 const defaultWorkshopStartIso = "2026-07-18T18:00:00+05:30";
 const defaultWorkshopEndIso = "2026-07-18T20:00:00+05:30";
 const defaultWorkshopTitle = "Build, Launch & Host Your First AI-Generated Website on Microsoft Azure";
-const defaultWorkshopFeeLabel = "Rs. 99";
+const defaultWorkshopFeeLabel = "Rs. 999";
 
 const attendReasons = [
   "Build a production-style website using AI prompts",

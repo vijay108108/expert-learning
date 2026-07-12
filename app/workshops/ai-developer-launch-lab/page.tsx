@@ -85,7 +85,7 @@ export default async function AiDeveloperLaunchLabWorkshopPage() {
     offers: {
       "@type": "Offer",
       url: `${siteConfig.url}/workshops/ai-developer-launch-lab`,
-      price: "99",
+      price: "999",
       priceCurrency: "INR",
       availability: mapOfferAvailability(workshop.status),
       validFrom: new Date().toISOString(),

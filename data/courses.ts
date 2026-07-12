@@ -238,7 +238,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       lmsResources: buildLmsResources("AI Developer Launch Lab Workshop"),
       faqs: buildFaqs("AI Developer Launch Lab Workshop"),
       rating: 4.9,
-      priceValue: 99,
+      priceValue: 999,
       originalPriceValue: 1999,
       highlight: "Live Workshop",
       tagLabel: "AI + Azure Launch Lab",
