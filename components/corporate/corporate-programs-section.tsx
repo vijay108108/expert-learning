@@ -270,8 +270,8 @@ export function CorporateProgramsSection() {
           <Reveal>
             <SectionHeading
               eyebrow="Enterprise Enablement"
-              title="Flexible training architecture for growing teams"
-              description="From cloud foundations to GenAI enablement, we help organizations create confident, certified, project-ready talent pipelines."
+              title="Builder capability architecture for modern enterprise teams"
+              description="From cloud foundations to GenAI execution, we help organizations build confident, certified, project-ready builder pipelines."
             />
           </Reveal>
           <div className="mt-12 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
@@ -328,7 +328,7 @@ export function CorporateProgramsSection() {
                           "flex-1 justify-center rounded-[10px] px-4 py-[10px] text-[13px]",
                         )}
                       >
-                        Talk to Us
+                        Talk to Team
                       </button>
                     </div>
                   </article>
@@ -402,7 +402,7 @@ export function CorporateProgramsSection() {
 
                 <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="text-[13px] leading-6 text-[#94A3B8]">
-                    Need a tailored consultation around this program? Our enterprise team can help scope the right delivery model.
+                    Need a tailored consultation around this program? Our enterprise builder team can help scope the right delivery model.
                   </div>
                   <button
                     type="button"
@@ -456,7 +456,7 @@ export function CorporateProgramsSection() {
 
               <div className="p-5 sm:p-6">
                 <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">Enterprise Consultation</div>
-                <h2 className="mt-3 text-[28px] font-bold leading-[1.08] text-white sm:text-[32px]">Talk to our enterprise team</h2>
+                <h2 className="mt-3 text-[28px] font-bold leading-[1.08] text-white sm:text-[32px]">Talk to our enterprise builder team</h2>
                 <p className="mt-3 max-w-[48ch] text-[14px] leading-7 text-[#CBD5E1]">
                   Share a few details about your team, program interest, and goals. We will follow up with a tailored consultation.
                 </p>
@@ -539,7 +539,7 @@ export function CorporateProgramsSection() {
 
                   <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-[12px] leading-6 text-[#94A3B8]">
-                      Your inquiry will be routed to our enterprise team for follow-up.
+                      Your inquiry will be routed to our enterprise builder team for follow-up.
                     </div>
                     <button
                       type="submit"
@@ -575,7 +575,7 @@ export function CorporateProgramsSection() {
           >
             <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#60A5FA]">Inquiry Submitted</div>
             <p className="mt-2 text-[13px] leading-6 text-[#E2E8F0]">
-              Your inquiry has been submitted successfully. Our enterprise team will contact you shortly.
+              Your inquiry has been submitted successfully. Our enterprise builder team will contact you shortly.
             </p>
           </motion.div>
         ) : null}

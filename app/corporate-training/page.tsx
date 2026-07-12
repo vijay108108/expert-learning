@@ -4,7 +4,7 @@ import { CorporateProgramsSection } from "@/components/corporate/corporate-progr
 export const metadata = buildMetadata({
   title: "Corporate Training | GenZNext Research & Training",
   description:
-    "Corporate cloud, AI, and DevOps training solutions for modern teams and enterprise capability building.",
+    "Mission-led cloud, AI, and DevOps capability programs for enterprise teams building long-term technical strength.",
   path: "/corporate-training",
 });
 

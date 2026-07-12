@@ -7,7 +7,7 @@ import { Reveal } from "@/components/ui/reveal";
 export const metadata = buildMetadata({
   title: "Blog | GenZNext Research & Training",
   description:
-    "Insights, career advice, and learning strategy for cloud, AI, and DevOps professionals.",
+    "Thought leadership, builder playbooks, and execution insights for AI, Cloud, and DevOps professionals.",
   path: "/blog",
 });
 
@@ -16,8 +16,8 @@ export default function BlogPage() {
     <>
       <PageHero
         eyebrow="Blog"
-        title="Insights for learners building modern cloud and AI careers"
-        description="A curated content space for certification strategy, portfolio thinking, hiring trends, and applied technology guidance."
+        title="Institutional insights for builders shaping modern AI and cloud careers"
+        description="A curated thought-leadership hub covering certification strategy, portfolio execution, hiring signals, and practical technology playbooks."
       />
       <section className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
