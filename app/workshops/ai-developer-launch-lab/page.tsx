@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 const defaultWorkshopTitle = "AI Developer Launch Lab";
 const defaultWorkshopStartIso = "2026-07-18T18:00:00+05:30";
 const defaultWorkshopEndIso = "2026-07-18T20:00:00+05:30";
-const workshopDescription = "Create AI-powered websites and deploy them live on Microsoft Azure in this hands-on workshop.";
+const workshopDescription = "Build and deploy an AI-powered website on Microsoft Azure in a mission-led, hands-on workshop designed for future builders.";
 
 async function getWorkshopSeoState() {
   try {

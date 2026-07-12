@@ -268,8 +268,8 @@ export function AiDeveloperLaunchLabPage({
               transition={{ delay: 0.1, duration: 0.5 }}
               className="mt-5 max-w-2xl text-[15px] leading-7 text-[#CED7F0] sm:text-[17px]"
             >
-              In just 2 hours, you will build a real website using AI, launch it on Microsoft Azure, and publish a live URL.
-              No fluff, no theory overload, just a guided, job-relevant implementation flow.
+              In just 2 hours, you will build a real AI-powered website, deploy it on Microsoft Azure, and walk away with a live URL.
+              This is a builder-first execution sprint, designed for real outcomes over passive watching.
             </motion.p>
 
             <div className="mt-6 flex flex-wrap gap-2.5 text-[12px] text-[#A9B6DA]">
@@ -345,7 +345,7 @@ export function AiDeveloperLaunchLabPage({
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.16em] text-[#A7D0FF]">Launch Lab</p>
-                    <h3 className="mt-1 text-lg font-semibold tracking-[-0.02em]">AI Developer Workshop</h3>
+                    <h3 className="mt-1 text-lg font-semibold tracking-[-0.02em]">AI Builder Workshop</h3>
                   </div>
                   <span className="rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/15 px-3 py-1 text-xs font-semibold text-[#FFC48C]">
                     LIVE
@@ -353,9 +353,9 @@ export function AiDeveloperLaunchLabPage({
                 </div>
                 <div className="mt-4 space-y-3 text-sm text-[#CED7F0]">
                   <p className="flex items-center gap-2"><Rocket className="h-4 w-4 text-[#1D7CFF]" />Build faster with AI-assisted coding</p>
-                  <p className="flex items-center gap-2"><Server className="h-4 w-4 text-[#1D7CFF]" />Set up Azure VM like a real project</p>
+                  <p className="flex items-center gap-2"><Server className="h-4 w-4 text-[#1D7CFF]" />Set up Azure infrastructure like a real project</p>
                   <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-[#1D7CFF]" />Deploy and verify your live URL</p>
-                  <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-[#1D7CFF]" />Know what to build next for your portfolio</p>
+                  <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-[#1D7CFF]" />Know what to build next for your builder portfolio</p>
                 </div>
               </div>
 
@@ -366,7 +366,7 @@ export function AiDeveloperLaunchLabPage({
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.12em] text-[#9CB4E8]">Outcome</p>
-                  <p className="mt-1 text-xl font-semibold text-white">Go Live in 2 Hours</p>
+                  <p className="mt-1 text-xl font-semibold text-white">Deploy Live in 2 Hours</p>
                 </div>
               </div>
             </div>
@@ -376,7 +376,7 @@ export function AiDeveloperLaunchLabPage({
 
       <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Why This Workshop Converts Learning Into Results</h2>
+          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Why This Workshop Turns Learning Into Builder Outcomes</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {attendReasons.map((reason) => (
               <div key={reason} className="rounded-2xl border border-white/12 bg-white/7 px-4 py-4 backdrop-blur-xl">
@@ -406,7 +406,7 @@ export function AiDeveloperLaunchLabPage({
       <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">What You Get After Enrolling</h2>
+            <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">What You Unlock After Enrolling</h2>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {workshopPerks.map((perk) => (
                 <div key={perk} className="rounded-2xl border border-white/12 bg-white/7 px-4 py-4 text-sm text-[#DEE7FF] backdrop-blur-xl">
@@ -431,7 +431,7 @@ export function AiDeveloperLaunchLabPage({
 
       <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl rounded-3xl border border-white/14 bg-[linear-gradient(135deg,rgba(29,124,255,0.18),rgba(255,122,0,0.15))] p-6 backdrop-blur-2xl sm:p-8">
-          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Trainer</h2>
+          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Mentor</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-[120px_1fr] sm:items-center">
             <div className="flex h-[112px] w-[112px] items-center justify-center rounded-3xl border border-white/25 bg-[#08142E] text-3xl font-bold text-[#FFB366]">
               VV

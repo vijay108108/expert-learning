@@ -20,10 +20,10 @@ export const metadata = buildMetadata({
 });
 
 const stats = [
-  { value: 6000, suffix: "+", label: "Learners Trained" },
+  { value: 6000, suffix: "+", label: "Builders Mentored" },
   { value: 48,   suffix: "+", label: "Live Batches Delivered" },
   { value: 8,    suffix: "+", label: "Years of Experience" },
-  { value: 4.9,  suffix: "/5", label: "Average Learner Rating" },
+  { value: 4.9,  suffix: "/5", label: "Average Builder Rating" },
 ];
 
 const founders = [
@@ -132,7 +132,7 @@ export default function AboutPage() {
               Explore Courses
             </Link>
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#F58220]/30">
-              Talk to Us
+              Talk to Builder Team
             </Link>
           </div>
         </div>
@@ -230,7 +230,7 @@ export default function AboutPage() {
                 Generic YouTube courses and overpriced bootcamps weren&apos;t solving it. So in 2021, under <strong className="text-[#0F172A]">NetSeems Ventures Pvt. Ltd.</strong>, we launched GenZNext — combining Preeti&apos;s IIT-grade curriculum design with Vijay&apos;s 8+ years of enterprise engineering experience into a single, cohesive platform.
               </p>
               <p className="mt-4 text-[15px] leading-7 text-[#475569]">
-                Today, 6,000+ learners across India trust GenZNext for their cloud and AI careers — from fresh graduates landing their first roles to professionals reporting meaningful salary growth.
+                Today, 6,000+ builders across India trust GenZNext for AI, Cloud, and engineering outcomes — from first-role launches to meaningful growth transitions.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5">
@@ -308,14 +308,14 @@ export default function AboutPage() {
             Learn from mentors who&apos;ve built in production
           </h2>
           <p className="mx-auto mt-3 max-w-md text-[14px] leading-6 text-[#C8D7EE]">
-            Get mentored by IIT alumni and enterprise practitioners. Join 6,000+ learners already building the next generation of cloud careers.
+            Get mentored by IIT alumni and enterprise practitioners. Join 6,000+ builders already shaping India&apos;s next generation of AI and cloud capability.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link href="/programs" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-[#0B2E6B] transition hover:scale-[1.02]">
               Explore Programs
             </Link>
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/18">
-              Talk to Admissions
+              Talk to Builder Team
             </Link>
           </div>
         </div>

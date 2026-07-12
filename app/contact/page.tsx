@@ -26,13 +26,13 @@ export default function ContactPage() {
             <div className="relative max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-[14px] py-1 text-[11px] font-medium text-[#64748B]">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-blue-bright" />
-                Contact GenZNext
+                Connect with GenZNext
               </div>
               <h1 className="mt-4 max-w-[13ch] text-4xl font-bold leading-[1.1] tracking-[-0.02em] text-[#0F172A] sm:text-[42px] lg:text-5xl">
-                Build with us, partner with us, grow with us
+                Build with us, partner with us, scale with us
               </h1>
               <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#475569] sm:text-[17px] sm:leading-8 lg:text-lg">
-                Whether you are a learner, working professional, mentor, startup founder, or enterprise team, we will help you map the right builder journey.
+                Whether you are a student, working professional, mentor, startup founder, or enterprise team, we will help you map the right builder pathway.
               </p>
             </div>
           </Reveal>
@@ -44,7 +44,7 @@ export default function ContactPage() {
             <SectionHeading
               eyebrow="Reach Us"
               title="Prefer direct support?"
-              description="Reach us via phone, email, or WhatsApp for admissions, mentoring, partnerships, and program guidance."
+              description="Reach us via phone, email, or WhatsApp for builder admissions, mentorship, partnerships, and enterprise upskilling."
             />
             <div className="mt-8 space-y-4">
               {[
@@ -73,8 +73,8 @@ export default function ContactPage() {
             <div className="surface-form p-5 sm:p-7">
               <LeadForm
                 includeMessage
-                submitLabel="Book Builder Consultation"
-                source="Admissions Inquiry"
+                submitLabel="Book Mission Consultation"
+                source="Builder Inquiry"
               />
             </div>
           </Reveal>
