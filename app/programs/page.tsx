@@ -453,8 +453,8 @@ export default function ProgramsPage() {
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02]">
               Talk to Admissions <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold !text-[#0F172A] transition hover:border-[#C8D7EE]">
-              Browse All Courses
+            <Link href="/workshops/ai-developer-launch-lab" className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold !text-[#0F172A] transition hover:border-[#C8D7EE]">
+              Join Builder Workshop
             </Link>
           </div>
         </div>

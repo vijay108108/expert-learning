@@ -21,14 +21,13 @@ const columns = [
     ],
   },
   {
-    heading: "Courses",
+    heading: "Workshops",
     links: [
-      { label: "All Courses",        href: "/courses" },
-      { label: "AWS Certifications", href: "/aws" },
-      { label: "Azure Certifications",href: "/azure" },
-      { label: "AI & GenAI",        href: "/ai" },
-      { label: "DevSecOps",         href: "/devsecops" },
-      { label: "Agentic AI",        href: "/agentic-ai" },
+      { label: "AI Developer Launch Lab", href: "/workshops/ai-developer-launch-lab" },
+      { label: "Reserve My Seat",         href: "/checkout/ai-developer-launch-lab" },
+      { label: "All Programs",            href: "/programs" },
+      { label: "Corporate Training",      href: "/corporate-training" },
+      { label: "Contact Team",            href: "/contact" },
     ],
   },
   {
@@ -216,7 +215,6 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
           <div className="flex flex-wrap items-center gap-4">
             <Link href="/about"   className="transition hover:text-[#94A3B8]">About</Link>
             <Link href="/contact" className="transition hover:text-[#94A3B8]">Contact</Link>
-            <Link href="/courses" className="transition hover:text-[#94A3B8]">Courses</Link>
             <Link href="/programs" className="transition hover:text-[#94A3B8]">Programs</Link>
           </div>
         </div>

@@ -27,10 +27,10 @@ export default function NotFound() {
             <Home className="h-4 w-4" /> Back to Home
           </Link>
           <Link
-            href="/courses"
+            href="/workshops/ai-developer-launch-lab"
             className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#0B2E6B]/30 hover:text-[#0B2E6B]"
           >
-            <BookOpenCheck className="h-4 w-4" /> Browse Courses
+            <BookOpenCheck className="h-4 w-4" /> Join Workshop
           </Link>
           <Link
             href="/programs"

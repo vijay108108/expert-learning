@@ -128,8 +128,8 @@ export default function AboutPage() {
             GenZNext exists to create people who build the future, not just consume technology. We combine deep mentorship, practical execution, and institutional thinking to help learners become builders, researchers, and founders.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
-            <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(147,51,234,0.28)] transition hover:scale-[1.02]">
-              Explore Courses
+            <Link href="/programs" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(147,51,234,0.28)] transition hover:scale-[1.02]">
+              Explore Programs
             </Link>
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition hover:border-[#F58220]/30">
               Talk to Builder Team

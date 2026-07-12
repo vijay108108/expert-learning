@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Home",     href: "/",                prefixes: ["/"] },
-  { label: "Courses",  href: "/courses",          prefixes: ["/courses", "/aws", "/azure", "/ai", "/genai", "/devsecops", "/agentic-ai"] },
   { label: "Programs", href: "/programs",         prefixes: ["/programs", "/corporate-training"] },
   { label: "About",    href: "/about",            prefixes: ["/about"] },
   { label: "Contact",  href: "/contact",          prefixes: ["/contact"] },

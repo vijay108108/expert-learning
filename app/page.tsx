@@ -284,8 +284,8 @@ export default function Home() {
               GenZNext is building an AI-native institution for India where learners become builders through live mentorship, shipping real projects, and career-linked execution tracks.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]">
-                Explore Courses <ChevronRight className="h-4 w-4" />
+              <Link href="/programs" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]">
+                Explore Programs <ChevronRight className="h-4 w-4" />
               </Link>
               <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-[#CBD5E1] bg-white px-6 py-3 text-sm font-semibold text-[#0F172A] shadow-sm transition hover:border-[#A5B4FC] hover:bg-[#F8FAFC]">
                 Talk to Builder Team
@@ -319,7 +319,7 @@ export default function Home() {
 
             {/* Summer Training Notification */}
             <Link
-              href="/courses/azure/az-104"
+              href="/programs/microsoft-cloud-master"
               className="group flex items-start justify-between gap-4 rounded-2xl border border-[#C8D7EE] bg-[linear-gradient(135deg,#F8FBFF_0%,#F2F8FF_42%,#EEF4FF_100%)] p-4 shadow-[0_8px_22px_rgba(37,99,235,0.10)] transition hover:shadow-[0_14px_30px_rgba(37,99,235,0.16)]"
             >
               <div className="min-w-0">
@@ -420,7 +420,7 @@ export default function Home() {
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {tracks.map((track) => (
-              <Link key={track.label} href="/courses" className="group flex items-center gap-4 rounded-[18px] border border-[#E2E8F0] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:shadow-[0_12px_24px_rgba(79,70,229,0.1)]">
+              <Link key={track.label} href="/programs" className="group flex items-center gap-4 rounded-[18px] border border-[#E2E8F0] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:shadow-[0_12px_24px_rgba(79,70,229,0.1)]">
                 <div className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${track.bg}`}>
                   <track.icon className={`h-5 w-5 ${track.color}`} />
                 </div>
@@ -520,7 +520,7 @@ export default function Home() {
                 bg: "bg-[#EAF0FA]",
                 desc: "Build a cloud or AI career from scratch. Land your first job with real projects and certification-backed skills that employers actually look for.",
                 cta: "Start Learning",
-                href: "/courses",
+                href: "/programs",
               },
               {
                 icon: Briefcase,
