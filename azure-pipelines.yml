@@ -51,7 +51,13 @@ stages:
           echo "===== DEPLOY START ====="
 
           whoami
-          cd /home/Mithilesh23/expert-learning
+
+          APP_DIR="/opt/expert-learning"
+          if [ ! -d "$APP_DIR" ]; then
+            APP_DIR="/home/Mithilesh23/expert-learning"
+          fi
+
+          cd "$APP_DIR"
           pwd
 
           git status
@@ -60,10 +66,11 @@ stages:
           git reset --hard origin/main
 
           rm -rf .next
-          npm install
+          npm ci
           npm run build
 
-          pm2 restart genznext --update-env
+          pm2 restart expert-learning --update-env || pm2 start npm --name expert-learning -- start -- -p 3000
+          pm2 status
           pm2 save
 
           echo "===== DEPLOY DONE ====="
