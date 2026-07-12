@@ -1,460 +1,296 @@
 import Link from "next/link";
-import { ArrowRight, Award, CheckCircle2, Clock3, Download, FolderKanban, GraduationCap, Layers, Users2 } from "lucide-react";
+import {
+  ArrowRight,
+  Award,
+  CheckCircle2,
+  Clock3,
+  Download,
+  GitBranch,
+  Quote,
+  Sparkles,
+  Target,
+  TrendingUp,
+} from "lucide-react";
 import { buildMetadata } from "@/lib/metadata";
-import { TechStackGrid } from "@/components/ui/tech-logo";
 
-type Program = {
-  title: string;
-  credentialTitle: string;
-  credentialDuration: string;
-  href: string;
-  syllabusHref: string;
-  syllabusButtonClassName: string;
-  slug: string;
-  badge: string;
-  badgeColor: string;
-  stripColor: string;
-  hot?: boolean;
-  tagline: string;
-  description: string;
-  duration: string;
-  level: string;
-  projects: string;
-  certification: string;
-  price: string;
-  originalPrice: string;
-  highlights: string[];
-  outcomes: string[];
-};
-
-const programs: Program[] = [
+const phases = [
   {
-    title: "AZ-104 – Microsoft Azure Administrator",
-    href: "/checkout/azure-administrator",
-    credentialTitle: "Microsoft Certified: Azure Administrator Associate AZ-104",
-    credentialDuration: "2 Months",
-    syllabusHref: "/syllabus/az-104-official-syllabus.pdf",
-    syllabusButtonClassName:
-      "border-[#C8D7EE] bg-[linear-gradient(135deg,#EEF4FB,#DBEAFE)] text-[#1D4ED8] shadow-[0_10px_24px_rgba(59,130,246,0.10)] hover:border-[#60A5FA] hover:text-[#1E40AF]",
-    slug: "azure-administrator",
-    badge: "Microsoft Azure Admin",
-    badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
-    stripColor: "from-[#0078D4] via-[#3B82F6] to-[#1E5AA8]",
-    hot: true,
-    tagline: "Azure identity, compute, networking, storage, and monitoring administration",
-    description:
-      "Build job-ready Azure administration capability aligned to AZ-104 with hands-on governance, infrastructure, backup, and monitoring practice for real enterprise environments.",
+    id: "01",
+    phase: "Phase 1",
+    code: "AZ-104",
+    title: "Azure Administrator Foundation",
+    story:
+      "Start by mastering real Azure operations: identity, compute, networking, storage, governance, and monitoring. This phase builds operational confidence from day one.",
     duration: "8 Weeks",
-    level: "Intermediate",
-    projects: "8-Module Admin Curriculum",
-    certification: "AZ-104 Certification Prep",
-    price: "₹23,600",
-    originalPrice: "",
-    highlights: [
-      "Covers Entra ID, RBAC, virtual networking, storage, backup and recovery",
-      "Hands-on Azure Monitor and Log Analytics operations labs",
-      "Built for cloud admins, support engineers, and infrastructure teams",
+    outcomeTitle: "You become Azure operations-ready",
+    outcomes: [
+      "Manage identity, access, and governance using enterprise patterns",
+      "Operate Azure compute, networking, storage, and backup workflows",
+      "Build an admin portfolio with practical cloud operations labs",
     ],
-    outcomes: ["Azure Ops Ready", "AZ-104 Ready", "Admin Lab Portfolio"],
+    ratings: [
+      { label: "Role Readiness", value: 92 },
+      { label: "Hands-on Depth", value: 95 },
+      { label: "Interview Relevance", value: 90 },
+    ],
+    checkoutHref: "/checkout/azure-administrator",
+    price: "INR 23,600",
   },
   {
-    title: "AZ-400 – Microsoft DevOps Engineer",
-    href: "/checkout/azure-devops-engineer",
-    credentialTitle: "Microsoft Certified DevOps Engineer Expert AZ-400",
-    credentialDuration: "2 Months",
-    syllabusHref: "/syllabus/az-400-official-syllabus.pdf",
-    syllabusButtonClassName:
-      "border-[#FCD7B6] bg-[linear-gradient(135deg,#FFF3E8,#FFE7CC)] text-[#C65A0D] shadow-[0_10px_24px_rgba(229,111,18,0.14)] hover:border-[#F4A261] hover:text-[#A84A07]",
-    slug: "azure-devops-engineer",
-    badge: "Microsoft DevOps",
-    badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
-    stripColor: "from-[#15407E] via-[#0B2E6B] to-[#E56F12]",
-    hot: true,
-    tagline: "CI/CD, release governance, IaC, DevSecOps, and observability on Azure",
-    description:
-      "Advance into Microsoft DevOps engineering with delivery pipelines, release controls, infrastructure as code, feedback loops, and secure platform automation aligned to AZ-400.",
+    id: "02",
+    phase: "Phase 2",
+    code: "AZ-400",
+    title: "DevOps Engineering and Delivery",
+    story:
+      "After admin foundations, move into engineering velocity: CI/CD, infrastructure as code, release governance, policy gates, and secure platform delivery.",
     duration: "8 Weeks",
-    level: "Advanced",
-    projects: "8-Module DevOps Curriculum",
-    certification: "AZ-400 Certification Prep",
-    price: "₹30,000",
-    originalPrice: "",
-    highlights: [
-      "Covers Azure Pipelines, GitHub Actions, Boards, Repos, and release governance",
-      "Includes Terraform, Bicep, policy automation, and security integration",
-      "Designed for DevOps engineers, platform teams, and release owners",
+    outcomeTitle: "You become DevOps delivery-ready",
+    outcomes: [
+      "Design and run secure CI/CD pipelines with release governance",
+      "Implement IaC and automation for repeatable cloud delivery",
+      "Ship a DevOps case study mapped to real production workflows",
     ],
-    outcomes: ["Pipeline Delivery", "AZ-400 Ready", "DevOps Case Study"],
+    ratings: [
+      { label: "Delivery Confidence", value: 94 },
+      { label: "Automation Strength", value: 93 },
+      { label: "Enterprise Fit", value: 91 },
+    ],
+    checkoutHref: "/checkout/azure-devops-engineer",
+    price: "INR 30,000",
   },
   {
-    title: "AIOps Engineering",
-    href: "/checkout/aiops-engineering",
-    credentialTitle: "Microsoft Azure AIOps Engineering Specialist",
-    credentialDuration: "2 Months",
-    syllabusHref: "/syllabus/aiops-engineer-official-syllabus.pdf",
-    syllabusButtonClassName:
-      "border-[#99F6E4] bg-[linear-gradient(135deg,#ECFEFF,#CCFBF1)] text-[#0F766E] shadow-[0_10px_24px_rgba(20,184,166,0.10)] hover:border-[#2DD4BF] hover:text-[#115E59]",
-    slug: "aiops-engineering",
-    badge: "Cloud Operations AI",
-    badgeColor: "border-[#FED7AA] bg-[#FFF7ED] text-[#9A3412]",
-    stripColor: "from-[#1E5AA8] via-[#0B2E6B] to-[#F58220]",
-    hot: true,
-    tagline: "Observability, incident intelligence, automation, and reliability engineering",
-    description:
-      "Learn production-focused AIOps engineering with telemetry correlation, KQL analysis, alert design, incident automation, and reliability workflows for modern cloud operations teams.",
+    id: "03",
+    phase: "Phase 3",
+    code: "AIOps",
+    title: "AIOps and Reliability Execution",
+    story:
+      "Finally, upgrade into modern operations intelligence: observability, incident response, automation playbooks, and reliability engineering at scale.",
     duration: "8 Weeks",
-    level: "Advanced",
-    projects: "10-Module AIOps Curriculum",
-    certification: "AIOps Capstone Portfolio",
-    price: "\u20B940,000",
-    originalPrice: "",
-    highlights: [
-      "Build observability workflows across Azure Monitor, Log Analytics, and dashboards",
-      "Practice incident triage, runbook automation, and service reliability response",
-      "Industry-focused for SRE, platform operations, and cloud support teams",
+    outcomeTitle: "You become reliability and AIOps-ready",
+    outcomes: [
+      "Build telemetry, KQL, dashboard, and alert intelligence workflows",
+      "Design incident triage, runbook automation, and SRE operations loops",
+      "Deliver an AIOps capstone with measurable reliability outcomes",
     ],
-    outcomes: ["AIOps Portfolio", "Incident Automation", "Reliability Ops"],
+    ratings: [
+      { label: "Ops Intelligence", value: 95 },
+      { label: "Automation Impact", value: 92 },
+      { label: "Leadership Visibility", value: 90 },
+    ],
+    checkoutHref: "/checkout/aiops-engineering",
+    price: "INR 40,000",
   },
-];
+] as const;
 
-const combinedMasterProgram = {
-  title: "Microsoft Cloud & AI DevOps Master Program",
-  href: "/programs/microsoft-cloud-ai-devops-master",
-  enrollHref: "/checkout/microsoft-cloud-ai-devops-master-program",
-  syllabusHref: "/syllabus/master-program-az104-az400-aiops-syllabus.pdf",
-  badge: "AZ-104 + AZ-400 + AIOps",
-  tag: "Focused Master Track",
-  tagline: "AZ-104 → AZ-400 → AIOps Engineering",
+const masterProgram = {
+  title: "Microsoft Cloud and AI DevOps Master Journey",
+  tagline: "Azure Admin -> DevOps -> AIOps",
   description:
-    "This master program is built around one clear journey: Azure administration, DevOps delivery, and AIOps-led operations. You first learn to run Microsoft Azure environments through AZ-104, then build modern CI/CD and platform workflows through AZ-400, and finally move into AIOps Engineering with observability, incident response, automation and reliability practices.",
-  chips: [
-    "Live Instructor-Led Sessions",
-    "AZ-104 Azure Administrator",
-    "AZ-400 DevOps Engineer",
-    "AIOps Engineering",
-    "Azure Monitor + KQL",
-    "Automation Playbooks",
-    "LMS Access with Updates",
-    "Career Outcomes Support",
-  ],
-  stats: [
-    { icon: Clock3, label: "24 Weeks" },
-    { icon: Layers, label: "3 Phases" },
-    { icon: FolderKanban, label: "3 Capstones" },
-    { icon: Award, label: "AZ-104 + AZ-400" },
-  ],
-  price: "\u20B979,000",
-  originalPrice: "\u20B990,000",
-  priceLabel: "Bundle offer: join all 3 tracks together and save \u20B911,000",
-  features: [
-    { icon: Clock3, text: "24 Weeks (3 focused phases)" },
-    { icon: GraduationCap, text: "Beginner to Advanced" },
-    { icon: Award, text: "AZ-104 + AZ-400 exam-aligned prep" },
-    { icon: Layers, text: "Azure Admin → DevOps → AIOps journey" },
-    { icon: FolderKanban, text: "3 capstones + guided labs" },
-    { icon: Users2, text: "Live sessions + LMS access with updates" },
-  ],
+    "This is one integrated builder journey. Each phase compounds into the next so you do not just collect certifications, you build real execution capability across administration, delivery, and intelligent operations.",
+  totalDuration: "24 Weeks",
+  oneTimePrice: "INR 79,000",
+  crossedPrice: "INR 90,000",
+  savingsLabel: "Save INR 11,000 with one-time enrollment",
+  fullCheckoutHref: "/checkout/microsoft-cloud-ai-devops-master-program",
+  syllabusHref: "/syllabus/master-program-az104-az400-aiops-syllabus.pdf",
 };
 
 export const metadata = buildMetadata({
-  title: "Builder Programs | AI, Cloud, DevOps, AIOps",
-  description: "Mission-driven builder programs designed to help builders ship real systems, earn high-trust credentials, and become industry-ready AI, Cloud, and DevOps practitioners.",
+  title: "Builder Programs | Azure Admin -> DevOps -> AIOps",
+  description:
+    "One mission-led builder journey: AZ-104 to AZ-400 to AIOps, with flexible phase-wise or one-time payment options and clear outcomes for every phase.",
   path: "/programs",
 });
 
-function ProgramCard({ program }: { program: Program }) {
+function RatingBar({ label, value }: { label: string; value: number }) {
   return (
-    <article
-      className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[20px] border bg-white shadow-[0_6px_20px_rgba(15,23,42,0.07)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(79,70,229,0.13)] ${
-        program.hot ? "border-[#E8DCCF]" : "border-[#E2E8F0]"
-      }`}
-    >
-      {program.hot && (
-        <span className="absolute -top-px left-1/2 -translate-x-1/2 rounded-b-xl border border-t-0 border-[#FED7AA] bg-[#FFF7ED] px-3 py-0.5 text-[10px] font-bold text-[#C2410C]">
-          Most In-Demand
-        </span>
-      )}
-
-      <div className={`h-1.5 w-full bg-gradient-to-r ${program.stripColor}`} />
-
-      <div className="flex flex-1 flex-col p-5 pt-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${program.badgeColor}`}>
-            {program.badge}
-          </span>
-        </div>
-        <div className="mt-3 rounded-[18px] border border-[#E2E8F0] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FBFF_100%)] p-3 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex min-w-0 items-start gap-3">
-              <div className="grid shrink-0 grid-cols-2 gap-[2px] rounded-[8px] bg-white p-1.5 shadow-sm">
-                <span className="h-4 w-4 rounded-[2px] bg-[#F25022]" />
-                <span className="h-4 w-4 rounded-[2px] bg-[#7FBA00]" />
-                <span className="h-4 w-4 rounded-[2px] bg-[#00A4EF]" />
-                <span className="h-4 w-4 rounded-[2px] bg-[#FFB900]" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-semibold leading-none text-[#737373]">Microsoft</p>
-                <p className="mt-0.5 text-[15px] font-semibold leading-none tracking-[-0.03em] text-[#8C8C8C]">Azure</p>
-                <p className="mt-2 text-[11px] font-medium leading-snug text-[#334155]">
-                  {program.credentialTitle}
-                </p>
-              </div>
-            </div>
-            <span className="shrink-0 pt-1 text-[10.5px] font-medium text-[#94A3B8]">
-              {program.credentialDuration}
-            </span>
-          </div>
-        </div>
-
-        <p className="mt-3 text-[10.5px] font-semibold uppercase tracking-wider text-[#0B2E6B]">
-          {program.tagline}
-        </p>
-
-        <p className="mt-1.5 text-[12px] leading-[1.6] text-[#64748B]">
-          {program.description}
-        </p>
-
-        <div className="mt-4">
-          <p className="mb-2 text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#F58220]">
-            Tools & Technologies
-          </p>
-          <TechStackGrid slug={program.slug} max={14} />
-        </div>
-
-        <div className="mt-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3">
-          <ul className="space-y-1.5">
-            {program.highlights.map((highlight) => (
-              <li key={highlight} className="flex items-start gap-2 text-[11.5px] font-medium !text-[#334155]">
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0B2E6B]" />
-                {highlight}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {program.outcomes.map((outcome) => (
-            <span key={outcome} className="rounded-full bg-[#F0FDF4] px-2.5 py-0.5 text-[10px] font-bold !text-[#166534]">
-              {outcome}
-            </span>
-          ))}
-        </div>
-
-        <div className="flex-1" />
-
-        <div className="mt-4 border-t border-[#F1F5F9] pt-4">
-          <div className="mb-3 flex flex-wrap gap-3 text-[11px] text-[#64748B]">
-            <span className="flex items-center gap-1"><Clock3 className="h-3 w-3 text-[#0B2E6B]" />{program.duration}</span>
-            <span className="flex items-center gap-1"><FolderKanban className="h-3 w-3 text-[#0B2E6B]" />{program.projects}</span>
-            <span className="flex items-center gap-1"><Award className="h-3 w-3 text-[#0B2E6B]" />{program.certification}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[17px] font-extrabold !text-[#0F172A]">{program.price}</p>
-              <p className="text-[10px] text-[#94A3B8] line-through">{program.originalPrice}</p>
-            </div>
-            <Link
-              href={program.href}
-              className="inline-flex items-center gap-1.5 rounded-[12px] bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-2.5 text-[12.5px] font-bold text-white shadow-[0_6px_16px_rgba(79,70,229,0.22)] transition group-hover:scale-[1.02] group-hover:shadow-[0_12px_28px_rgba(79,70,229,0.32)]"
-            >
-              Enroll Now <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <a
-            href={program.syllabusHref}
-            target="_blank"
-            rel="noreferrer"
-            className={`mt-3 inline-flex w-full items-center justify-center gap-2 rounded-[12px] border px-4 py-2.5 text-[12.5px] font-semibold transition ${program.syllabusButtonClassName}`}
-          >
-            <Download className="h-3.5 w-3.5" />
-            Download Syllabus
-          </a>
-        </div>
+    <div>
+      <div className="mb-1 flex items-center justify-between text-[11px] font-semibold text-[#334155]">
+        <span>{label}</span>
+        <span>{value}%</span>
       </div>
-    </article>
+      <div className="h-2 rounded-full bg-[#E2E8F0]">
+        <div
+          className="h-2 rounded-full bg-[linear-gradient(90deg,#F58220,#0B2E6B)]"
+          style={{ width: `${value}%` }}
+        />
+      </div>
+    </div>
   );
 }
 
 export default function ProgramsPage() {
   return (
     <main className="bg-white">
-      <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#FFF3E8_50%,#E0F2FE_100%)] px-4 pb-8 pt-10 sm:px-6 lg:px-8">
+      <section className="bg-[linear-gradient(160deg,#FFFFFF_0%,#FFF3E8_50%,#E0F2FE_100%)] px-4 pb-12 pt-10 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <span className="inline-flex items-center rounded-full border border-[#E8DCCF] bg-[#FFF3E8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#E56F12]">
-            GenZNext Builder Tracks
+            One Builder Journey
           </span>
-          <h1 className="mt-4 text-[34px] font-extrabold leading-[1.1] tracking-[-0.02em] !text-[#0F172A] sm:text-[42px]">
-            Builder Programs
+          <h1 className="mt-4 text-[34px] font-extrabold leading-[1.1] tracking-[-0.02em] text-[#0F172A] sm:text-[44px]">
+            Azure Admin -&gt; DevOps -&gt; AIOps
           </h1>
-          <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#64748B]">
-            Mission-led builder tracks designed to help you ship real AI, Cloud, DevOps and AIOps systems through structured mentorship, capstones, and career outcomes.
+          <p className="mt-3 max-w-3xl text-[15px] leading-7 text-[#64748B]">
+            We are intentionally building this as one story, not disconnected programs. Phase 1 gives cloud administration strength,
+            Phase 2 builds delivery engineering power, and Phase 3 upgrades you into intelligent, reliability-first operations.
           </p>
-          <div className="mt-5 flex flex-wrap gap-4 text-sm text-[#475569]">
-            {[
-              { icon: GraduationCap, label: "3 Core Programs + 1 Master Track" },
-              { icon: Clock3, label: "8 Week Tracks" },
-              { icon: FolderKanban, label: "Job-Ready Projects" },
-              { icon: Award, label: "Certification Prep Included" },
-            ].map(({ icon: Icon, label }) => (
-              <span key={label} className="flex items-center gap-1.5">
-                <Icon className="h-4 w-4 text-[#0B2E6B]" />{label}
-              </span>
-            ))}
+
+          <div className="mt-6 rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm">
+            <div className="flex items-start gap-3">
+              <Quote className="mt-1 h-5 w-5 shrink-0 text-[#0B2E6B]" />
+              <p className="text-[15px] font-semibold leading-7 text-[#0F172A]">
+                Don&apos;t find a job. Find a dream worth building, and become the engineer who can ship it.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="border-t border-[#E2E8F0] px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-7xl">
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {programs.map((program) => (
-              <ProgramCard key={program.slug} program={program} />
+        <div className="mx-auto max-w-7xl">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#F58220]">Journey Graph</p>
+          <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">How Capability Compounds Across 3 Phases</h2>
+
+          <div className="mt-7 grid gap-4 lg:grid-cols-3">
+            {phases.map((phase, index) => (
+              <article key={phase.id} className="relative rounded-[20px] border border-[#E2E8F0] bg-white p-5 shadow-sm">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-[#F58220]">{phase.phase}</p>
+                <h3 className="mt-2 text-xl font-bold text-[#0F172A]">{phase.code}</h3>
+                <p className="mt-1 text-sm font-semibold text-[#0B2E6B]">{phase.title}</p>
+                <p className="mt-3 text-[13px] leading-6 text-[#64748B]">{phase.story}</p>
+                {index < phases.length - 1 ? (
+                  <div className="pointer-events-none absolute -right-2 top-1/2 hidden -translate-y-1/2 lg:block">
+                    <GitBranch className="h-5 w-5 text-[#94A3B8]" />
+                  </div>
+                ) : null}
+              </article>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-10 rounded-[28px] bg-[linear-gradient(160deg,#FFFFFF_0%,#EAF0FA_55%,#F8FAFC_100%)] p-4 sm:p-6">
-            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <span className="inline-flex items-center rounded-full border border-[#E8DCCF] bg-[#FFF3E8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#E56F12]">
-                  Combined Master Program
-                </span>
-                <p className="mt-2 text-sm font-medium text-[#64748B]">
-                  Want one integrated institution-style journey? This master track combines all three phases into one high-execution progression.
-                </p>
+      <section className="bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl space-y-6">
+          {phases.map((phase) => (
+            <article key={phase.id} className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-sm">
+              <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-[#FED7AA] bg-[#FFF7ED] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#9A3412]">
+                      {phase.phase}
+                    </span>
+                    <span className="rounded-full border border-[#C8D7EE] bg-[#EAF0FA] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#0B2E6B]">
+                      {phase.duration}
+                    </span>
+                  </div>
+                  <h3 className="mt-3 text-2xl font-bold text-[#0F172A]">{phase.code} - {phase.title}</h3>
+                  <p className="mt-2 text-sm font-semibold text-[#166534]">{phase.outcomeTitle}</p>
+
+                  <ul className="mt-4 space-y-2.5">
+                    {phase.outcomes.map((outcome) => (
+                      <li key={outcome} className="flex items-start gap-2 text-[13px] text-[#334155]">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#0B2E6B]" />
+                        {outcome}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <aside className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-[#0B2E6B]">Rating Points</p>
+                  <div className="mt-3 space-y-3">
+                    {phase.ratings.map((rating) => (
+                      <RatingBar key={rating.label} label={rating.label} value={rating.value} />
+                    ))}
+                  </div>
+                  <div className="mt-5 border-t border-[#E2E8F0] pt-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-[#64748B]">Phase Fee</p>
+                    <p className="mt-1 text-2xl font-bold text-[#0F172A]">{phase.price}</p>
+                    <Link
+                      href={phase.checkoutHref}
+                      className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-2.5 text-sm font-semibold text-white"
+                    >
+                      Pay for {phase.code} <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </aside>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-t border-[#E2E8F0] px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-sm sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#F58220]">Payment Flexibility</p>
+          <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Choose How You Want to Build</h2>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[#64748B]">
+            You can enroll phase-by-phase as you progress, or join the full 24-week journey in one go.
+            Both paths lead to the same capability story: Azure Admin -&gt; DevOps -&gt; AIOps.
+          </p>
+
+          <div className="mt-7 grid gap-5 lg:grid-cols-2">
+            <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[#0B2E6B]">Option A</p>
+              <h3 className="mt-2 text-xl font-bold text-[#0F172A]">Pay Phase-by-Phase</h3>
+              <p className="mt-2 text-[13px] leading-6 text-[#64748B]">
+                Start with AZ-104, then unlock AZ-400, then AIOps as your readiness grows.
+              </p>
+              <div className="mt-4 space-y-2.5 text-sm text-[#334155]">
+                <p className="flex items-center gap-2"><Clock3 className="h-4 w-4 text-[#0B2E6B]" />Financially flexible progression</p>
+                <p className="flex items-center gap-2"><Target className="h-4 w-4 text-[#0B2E6B]" />Phase outcome clarity</p>
+                <p className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-[#0B2E6B]" />Milestone-based confidence growth</p>
               </div>
             </div>
 
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(300px,0.6fr)] lg:items-start">
-              <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-[0_12px_32px_rgba(15,23,42,0.06)] sm:p-8">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FED7AA] bg-[#FFF7ED] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9A3412]">
-                    {combinedMasterProgram.badge}
-                  </span>
-                  <span className="inline-flex items-center rounded-full border-2 border-[#DC2626] bg-[#FEF2F2] px-3 py-1 text-[11px] font-bold text-[#DC2626]">
-                    {combinedMasterProgram.tag}
-                  </span>
-                </div>
+            <div className="rounded-2xl border border-[#FED7AA] bg-[linear-gradient(135deg,#FFF7ED,#EEF4FB)] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[#9A3412]">Option B</p>
+              <h3 className="mt-2 text-xl font-bold text-[#0F172A]">Pay Once for Full Journey</h3>
+              <p className="mt-2 text-[13px] leading-6 text-[#64748B]">Best for builders who want one committed, end-to-end transformation plan.</p>
+              <p className="mt-4 text-3xl font-extrabold text-[#0F172A]">{masterProgram.oneTimePrice}</p>
+              <p className="text-sm text-[#94A3B8] line-through">{masterProgram.crossedPrice}</p>
+              <p className="mt-1 text-sm font-semibold text-[#166534]">{masterProgram.savingsLabel}</p>
 
-                <div className="mt-4 rounded-[20px] border border-[#E2E8F0] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FBFF_100%)] p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <div className="grid shrink-0 grid-cols-2 gap-[3px] rounded-[10px] bg-white p-1.5 shadow-sm">
-                        <span className="h-5 w-5 rounded-[3px] bg-[#F25022]" />
-                        <span className="h-5 w-5 rounded-[3px] bg-[#7FBA00]" />
-                        <span className="h-5 w-5 rounded-[3px] bg-[#00A4EF]" />
-                        <span className="h-5 w-5 rounded-[3px] bg-[#FFB900]" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[11px] font-semibold leading-none text-[#737373]">Microsoft</p>
-                        <p className="mt-0.5 text-[20px] font-semibold leading-none tracking-[-0.03em] text-[#8C8C8C]">Azure</p>
-                        <p className="mt-3 text-[13px] font-medium leading-snug text-[#334155]">
-                          Microsoft Certified Azure Administrator, DevOps Engineer Expert and Azure AIOps Engineering Specialist
-                        </p>
-                      </div>
-                    </div>
-                    <span className="shrink-0 pt-1 text-[12px] font-medium text-[#94A3B8]">24 Weeks</span>
-                  </div>
-                </div>
-
-                <p className="mt-4 text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">
-                  {combinedMasterProgram.tagline}
-                </p>
-                <h2 className="mt-2 text-3xl font-extrabold leading-[1.15] tracking-[-0.03em] text-[#0F172A] sm:text-4xl lg:text-[40px]">
-                  {combinedMasterProgram.title}
-                </h2>
-                <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#475569]">
-                  {combinedMasterProgram.description}
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {combinedMasterProgram.chips.map((chip) => (
-                    <span
-                      key={chip}
-                      className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-1 text-xs font-semibold text-[#334155]"
-                    >
-                      {chip}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  {combinedMasterProgram.stats.map(({ icon: Icon, label }) => (
-                    <div key={label} className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
-                      <Icon className="h-4 w-4 shrink-0 text-[#0B2E6B]" />
-                      <span className="text-[13px] font-semibold text-[#0F172A]">{label}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link
+                  href={masterProgram.fullCheckoutHref}
+                  className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-semibold text-white"
+                >
+                  Enroll Full Journey <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href={masterProgram.syllabusHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold text-[#0F172A]"
+                >
+                  <Download className="h-4 w-4" /> Download Syllabus
+                </Link>
               </div>
-
-              <aside className="rounded-[22px] border border-[#E2E8F0] bg-white p-6 shadow-[0_18px_42px_rgba(15,23,42,0.10)]">
-                <div className="mb-4 flex items-center gap-2 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] px-3 py-2.5">
-                  <span className="relative flex h-2.5 w-2.5 shrink-0">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F97316] opacity-75" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#F97316]" />
-                  </span>
-                  <p className="text-[13px] font-semibold text-[#9A3412]">Only 20 seats per batch — Limited enrollment</p>
-                </div>
-
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">Program Fee</p>
-                <p className="mt-2 text-3xl font-bold tracking-[-0.03em] text-[#111827]">{combinedMasterProgram.price}</p>
-                <p className="mt-0.5 text-sm text-[#94A3B8] line-through">{combinedMasterProgram.originalPrice}</p>
-                <p className="mt-1.5 text-sm font-semibold text-[#16A34A]">{combinedMasterProgram.priceLabel}</p>
-
-                <div className="mt-5 space-y-2 text-sm text-[#475569]">
-                  {combinedMasterProgram.features.map(({ icon: Icon, text }) => (
-                    <p key={text} className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-[#0B2E6B]" />
-                      {text}
-                    </p>
-                  ))}
-                </div>
-
-                <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-2.5">
-                  <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#0B2E6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m10-4H9a2 2 0 00-2 2v0a2 2 0 002 2h6a2 2 0 002-2v0a2 2 0 00-2-2z" />
-                  </svg>
-                  <p className="text-[12px] font-medium leading-5 text-[#3730A3]">1-on-1 builder support available after every live session</p>
-                </div>
-
-                <div className="mt-5 space-y-3">
-                  <Link
-                    href={combinedMasterProgram.enrollHref}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition hover:scale-[1.02]"
-                  >
-                    Enroll Now <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href={combinedMasterProgram.syllabusHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#FCD7B6] bg-[linear-gradient(135deg,#FFF3E8,#FFE7CC)] px-4 py-2.5 text-sm font-semibold text-[#C65A0D] shadow-[0_10px_24px_rgba(229,111,18,0.14)] transition hover:-translate-y-0.5 hover:border-[#F4A261] hover:bg-[linear-gradient(135deg,#FFE7CC,#FCD7B6)] hover:text-[#A84A07]"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download Syllabus
-                  </Link>
-                </div>
-
-                <p className="mt-3 text-center text-[11px] text-[#94A3B8]">No-cost EMI · Batch starts every month</p>
-              </aside>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
+      <section className="bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl rounded-[24px] border border-[#E2E8F0] bg-white p-8 text-center shadow-sm">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-[#F58220]">Not Sure Which to Pick?</p>
-          <h2 className="mt-2 text-2xl font-bold !text-[#0F172A]">Talk to our builder advisory team</h2>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#64748B]">
-            We&apos;ll match you to the right builder track based on your background, goals and execution timeline.
+          <p className="text-[11px] font-bold uppercase tracking-widest text-[#F58220]">Builder Story</p>
+          <h2 className="mt-2 text-2xl font-bold text-[#0F172A]">Why We Built This Program This Way</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#64748B]">
+            Teams do not hire for isolated certificates. They hire for people who can run cloud foundations,
+            ship delivery pipelines, and improve reliability in production. That is why this program is structured as one progression in three phases.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02]">
-              Talk to Builder Team <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link href="/workshops/ai-developer-launch-lab" className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold !text-[#0F172A] transition hover:border-[#C8D7EE]">
-              Join Builder Workshop
+          <div className="mt-6 flex flex-wrap justify-center gap-2.5 text-xs font-semibold">
+            <span className="rounded-full bg-[#EAF0FA] px-3 py-1 text-[#0B2E6B]">Phase 1: Admin Strength</span>
+            <span className="rounded-full bg-[#EEF6FF] px-3 py-1 text-[#1D4ED8]">Phase 2: Delivery Velocity</span>
+            <span className="rounded-full bg-[#ECFDF5] px-3 py-1 text-[#166534]">Phase 3: Reliability Intelligence</span>
+          </div>
+          <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#FED7AA] bg-[#FFF7ED] px-3 py-1 text-[12px] font-semibold text-[#9A3412]">
+            <Sparkles className="h-3.5 w-3.5" /> Build capability first. Credentials follow.
+          </p>
+          <div className="mt-6">
+            <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-bold text-white">
+              Talk to Builder Team <Award className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -462,5 +298,3 @@ export default function ProgramsPage() {
     </main>
   );
 }
-
-
