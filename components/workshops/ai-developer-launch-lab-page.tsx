@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  BarChart3,
   Bot,
   CalendarDays,
   CheckCircle2,
@@ -135,6 +136,31 @@ const faqs = [
   },
 ];
 
+const learningOutcomesGraph = [
+  {
+    label: "AI Website Build",
+    score: 92,
+    detail: "Create a complete starter website with AI-assisted workflow and production-style structure.",
+  },
+  {
+    label: "Azure Deployment",
+    score: 89,
+    detail: "Provision and configure Azure VM basics and push a live deployment from a guided flow.",
+  },
+  {
+    label: "Builder Confidence",
+    score: 95,
+    detail: "Leave with a repeatable launch framework and a roadmap for your next shipping milestone.",
+  },
+];
+
+const twoHourFeasibility = [
+  { slot: "0-25 mins", focus: "Kickoff + AI-assisted website build setup" },
+  { slot: "25-65 mins", focus: "Azure VM creation and core configuration" },
+  { slot: "65-105 mins", focus: "Deployment, validation, and live URL checks" },
+  { slot: "105-120 mins", focus: "Outcome review and next 90-day builder roadmap" },
+];
+
 function buildCountdown(nowMs: number, targetMs: number): CountdownState {
   const diff = Math.max(0, targetMs - nowMs);
   const ended = diff === 0;
@@ -152,6 +178,24 @@ function CountdownTile({ label, value }: { label: string; value: number }) {
     <div className="rounded-2xl border border-white/15 bg-white/10 px-3 py-2 text-center backdrop-blur-xl sm:px-4 sm:py-3">
       <p className="text-xl font-bold tracking-tight text-white sm:text-2xl">{String(value).padStart(2, "0")}</p>
       <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-white/65">{label}</p>
+    </div>
+  );
+}
+
+function OutcomeBar({ label, score, detail }: { label: string; score: number; detail: string }) {
+  return (
+    <div className="rounded-2xl border border-white/12 bg-white/7 p-4 backdrop-blur-xl">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold text-white">{label}</p>
+        <span className="text-xs font-bold text-[#A7D0FF]">{score}%</span>
+      </div>
+      <div className="mt-2 h-2 rounded-full bg-white/10">
+        <div
+          className="h-2 rounded-full bg-[linear-gradient(90deg,#FF7A00,#1D7CFF)]"
+          style={{ width: `${score}%` }}
+        />
+      </div>
+      <p className="mt-2 text-[12px] leading-6 text-[#C8D7EE]">{detail}</p>
     </div>
   );
 }
@@ -383,6 +427,37 @@ export function AiDeveloperLaunchLabPage({
                 <p className="flex items-center gap-2 text-sm font-medium text-[#DDE6FF]"><CheckCircle2 className="h-4 w-4 text-[#22C55E]" />{reason}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mx-auto max-w-7xl rounded-3xl border border-white/14 bg-[linear-gradient(135deg,rgba(255,122,0,0.12),rgba(29,124,255,0.16))] p-6 backdrop-blur-2xl sm:p-8">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#A7D0FF]">
+            <BarChart3 className="h-4 w-4" />
+            Outcome Graph
+          </div>
+          <h2 className="mt-3 text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Can You Really Learn This in 2 Hours?</h2>
+          <p className="mt-3 max-w-3xl text-[14px] leading-7 text-[#D6E4FF]">
+            Yes, because this is not theory-heavy training. It is a mission-led execution sprint where you build, deploy, and validate a live outcome in one guided flow.
+          </p>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {learningOutcomesGraph.map((metric) => (
+              <OutcomeBar key={metric.label} label={metric.label} score={metric.score} detail={metric.detail} />
+            ))}
+          </div>
+
+          <div className="mt-7">
+            <h3 className="text-lg font-semibold text-white">2-Hour Feasibility Timeline</h3>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {twoHourFeasibility.map((item) => (
+                <div key={item.slot} className="rounded-2xl border border-white/12 bg-[#08142E]/75 p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#7EAFFF]">{item.slot}</p>
+                  <p className="mt-2 text-sm leading-6 text-[#DDE6FF]">{item.focus}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

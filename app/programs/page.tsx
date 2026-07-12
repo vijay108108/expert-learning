@@ -263,8 +263,13 @@ export default function ProgramsPage() {
               </div>
             </div>
 
-            <div id="one-time" className="scroll-mt-36 rounded-2xl border border-[#FED7AA] bg-[linear-gradient(135deg,#FFF7ED,#EEF4FB)] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-[#9A3412]">Option B</p>
+            <div id="one-time" className="scroll-mt-36 rounded-2xl border-2 border-[#F59E0B] bg-[linear-gradient(135deg,#FFF7ED,#EEF4FB)] p-5 shadow-[0_14px_34px_rgba(245,158,11,0.18)]">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-[#9A3412]">Option B</p>
+                <span className="rounded-full border border-[#F59E0B] bg-[#FEF3C7] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#92400E]">
+                  Recommended
+                </span>
+              </div>
               <h3 className="mt-2 text-xl font-bold text-[#0F172A]">Pay Once for Full Journey</h3>
               <p className="mt-2 text-[13px] leading-6 text-[#64748B]">Best for builders who want one committed, end-to-end transformation plan.</p>
               <p className="mt-4 text-3xl font-extrabold text-[#0F172A]">{masterProgram.oneTimePrice}</p>
