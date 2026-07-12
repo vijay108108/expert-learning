@@ -269,6 +269,23 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   pointer-events: none;
 }
 
+.workshop-trend-fill {
+  transform-origin: left center;
+  animation: workshopTrendGrow 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.22);
+}
+
+@keyframes workshopTrendGrow {
+  from {
+    transform: scaleX(0.06);
+    opacity: 0.65;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
 .hero-home::after {
   content: "";
   position: absolute;

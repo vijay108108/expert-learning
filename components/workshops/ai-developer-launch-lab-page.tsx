@@ -182,6 +182,13 @@ const sectionNavItems = [
   { id: "workshop-faqs", label: "FAQs" },
 ] as const;
 
+type SectionNavId = (typeof sectionNavItems)[number]["id"];
+const sectionNavIdSet = new Set<SectionNavId>(sectionNavItems.map((item) => item.id));
+
+function isSectionNavId(value: string): value is SectionNavId {
+  return sectionNavIdSet.has(value as SectionNavId);
+}
+
 function buildCountdown(nowMs: number, targetMs: number): CountdownState {
   const diff = Math.max(0, targetMs - nowMs);
   const ended = diff === 0;
@@ -255,16 +262,15 @@ export function AiDeveloperLaunchLabPage({
   const trackedViewRef = useRef(false);
   const [now, setNow] = useState<number | null>(null);
   const [workshopConfig, setWorkshopConfig] = useState<WorkshopConfig | null>(initialWorkshopConfig);
-  const [activeSection, setActiveSection] = useState<(typeof sectionNavItems)[number]["id"]>(() => {
+  const [activeSection, setActiveSection] = useState<SectionNavId>(() => {
     if (typeof window === "undefined") {
       return "outcome-graph";
     }
 
-    const sectionIds = sectionNavItems.map((item) => item.id);
     const hashId = window.location.hash.replace("#", "");
 
-    if (sectionIds.includes(hashId)) {
-      return hashId as (typeof sectionNavItems)[number]["id"];
+    if (isSectionNavId(hashId)) {
+      return hashId;
     }
 
     return "outcome-graph";
@@ -313,7 +319,7 @@ export function AiDeveloperLaunchLabPage({
   }, []);
 
   useEffect(() => {
-    const sectionIds = sectionNavItems.map((item) => item.id);
+    const sectionIds: SectionNavId[] = sectionNavItems.map((item) => item.id);
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -321,8 +327,8 @@ export function AiDeveloperLaunchLabPage({
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-        if (visible?.target?.id && sectionIds.includes(visible.target.id)) {
-          setActiveSection(visible.target.id as (typeof sectionNavItems)[number]["id"]);
+        if (visible?.target?.id && isSectionNavId(visible.target.id)) {
+          setActiveSection(visible.target.id);
         }
       },
       {
