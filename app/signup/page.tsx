@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { AuthForm } from "@/components/forms/auth-form";
-import { PageHero } from "@/components/ui/page-hero";
 
 type SignupPageProps = {
   searchParams: Promise<{
@@ -14,11 +13,6 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
   return (
     <>
-      <PageHero
-        eyebrow="Sign Up"
-        title="Create your student account"
-        description="Create your account with mobile OTP verification to unlock enrollments, dashboard access, and learner updates."
-      />
       <section className="px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-xl">
           <AuthForm mode="signup" redirectTo={redirectTo} />

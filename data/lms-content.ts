@@ -345,6 +345,9 @@ export function getLmsProgramBySlug(courseSlug: string) {
 
   const resolvedFallbackCourse = courseMap.get(normalized) || fallbackCourse;
   const fallbackLinks = buildProgramLinks(resolvedFallbackCourse.title);
+  const workshopWhatsappUrl = process.env.NEXT_PUBLIC_WORKSHOP_WHATSAPP_URL || fallbackLinks.whatsappGroupUrl;
+  const workshopMeetingUrl = process.env.NEXT_PUBLIC_WORKSHOP_MEETING_URL || fallbackLinks.liveClassUrl;
+  const isWorkshopLaunchLab = normalized === "ai-developer-launch-lab";
 
   const fallbackProgram = {
     courseSlug,
@@ -358,8 +361,8 @@ export function getLmsProgramBySlug(courseSlug: string) {
     totalResources: 0,
     classTimeLabel: "TBA",
     classPlatform: "TBA",
-    whatsappGroupUrl: fallbackLinks.whatsappGroupUrl,
-    liveClassUrl: fallbackLinks.liveClassUrl,
+    whatsappGroupUrl: isWorkshopLaunchLab ? workshopWhatsappUrl : fallbackLinks.whatsappGroupUrl,
+    liveClassUrl: isWorkshopLaunchLab ? workshopMeetingUrl : fallbackLinks.liveClassUrl,
     modules: [],
   } satisfies LmsProgram;
 

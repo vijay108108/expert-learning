@@ -73,6 +73,7 @@ export function CourseEnrollmentAction({
   const enrollmentTarget = checkoutHref || `/checkout/${encodeURIComponent(courseSlug)}`;
   const shouldPromptAuthChoice = !isEnrolled && !user;
   const isWorkshopLaunchLab = courseSlug === "ai-developer-launch-lab";
+  const workshopSignupHref = `/signup?redirect=${encodeURIComponent(enrollmentTarget)}`;
 
   function handleRegisterClick() {
     if (!isWorkshopLaunchLab) {
@@ -86,7 +87,7 @@ export function CourseEnrollmentAction({
     handleRegisterClick();
 
     if (isWorkshopLaunchLab) {
-      router.push(enrollmentTarget);
+      router.push(workshopSignupHref);
       return;
     }
 

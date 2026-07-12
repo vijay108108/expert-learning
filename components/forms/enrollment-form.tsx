@@ -1,19 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { getCouponPricing, normalizeCouponCode } from "@/lib/coupons";
 import {
   findExistingEnrollmentCourseIds,
   getFirebaseAuth,
+  getUserProfile,
   logFirestoreIssue,
   saveInvoiceEnrollments,
   saveUserWhatsappNumber,
+  type AppUserProfile,
   upsertUserProfileFromPurchase,
 } from "@/lib/firebase";
 import { syncMyLearningFromInvoice } from "@/lib/my-learning";
 import {
+  getInvoiceDashboardPath,
   latestOrderStorageKey,
   type StoredOrderSuccess,
 } from "@/lib/order-success";
@@ -26,6 +29,8 @@ const initialState = {
   email: "",
   phone: "",
 };
+
+type CheckoutProfile = AppUserProfile;
 
 function formatPrice(value: number) {
   return `Rs. ${value.toLocaleString("en-IN")}`;
@@ -53,17 +58,15 @@ function formatPhoneForProfile(value: string) {
 
 async function getPaymentAuthHeaders() {
   const token = await getFirebaseAuth()?.currentUser?.getIdToken();
-
-  if (!token) {
-    return {
-      "Content-Type": "application/json",
-    };
-  }
-
-  return {
-    Authorization: `Bearer ${token}`,
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
 }
 
 async function persistVerifiedInvoiceRecord(invoice: StoredOrderSuccess) {
@@ -124,6 +127,70 @@ export function EnrollmentForm({
     () => getCouponPricing(course.priceValue * 100, appliedCouponCode),
     [appliedCouponCode, course.priceValue],
   );
+  const isWorkshopLaunchLab = course.slug === "ai-developer-launch-lab";
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    let active = true;
+    const authName = user.displayName?.trim() || "";
+    const authEmail = user.email?.trim() || "";
+    const authPhone = user.phoneNumber?.trim() || "";
+    const frame = window.requestAnimationFrame(() => {
+      if (!active) {
+        return;
+      }
+
+      setForm((current) => ({
+        ...current,
+        name: current.name || authName,
+        email: current.email || authEmail,
+        phone: current.phone || authPhone,
+      }));
+    });
+
+    void (async () => {
+      try {
+        const profile = await getUserProfile(user.uid) as CheckoutProfile | null;
+
+        if (!active || !profile) {
+          return;
+        }
+
+        setForm((current) => ({
+          ...current,
+          name: current.name || profile.name?.trim() || authName,
+          email: current.email || profile.email?.trim() || authEmail,
+          phone: current.phone || profile.phone?.trim() || authPhone,
+        }));
+      } catch (error) {
+        if (active) {
+          logFirestoreIssue("[Enrollment] Unable to load user profile for checkout prefill", error);
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+      window.cancelAnimationFrame(frame);
+    };
+  }, [user]);
+
+  function getSuccessPath(invoice: StoredOrderSuccess, needsRegistration?: boolean) {
+    if (!user || needsRegistration) {
+      return `/payment/success?orderId=${encodeURIComponent(invoice.orderId)}&register=1`;
+    }
+
+    if (isWorkshopLaunchLab) {
+      return getInvoiceDashboardPath(invoice, {
+        paymentCompleted: true,
+      });
+    }
+
+    return `/payment/success?orderId=${encodeURIComponent(invoice.orderId)}`;
+  }
 
   async function syncVerifiedPurchase(invoice: StoredOrderSuccess, profilePhone: string, mustAwaitEnrollmentSync: boolean) {
     if (!user) {
@@ -266,7 +333,7 @@ export function EnrollmentForm({
       }
 
       if (createPayload.freeEnrollment && createPayload.invoice) {
-        const successPath = `/payment/success?orderId=${encodeURIComponent(createPayload.invoice.orderId)}${!user || createPayload.needsRegistration ? "&register=1" : ""}`;
+        const successPath = getSuccessPath(createPayload.invoice, createPayload.needsRegistration);
 
         window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(createPayload.invoice));
         syncMyLearningFromInvoice(createPayload.invoice);
@@ -353,7 +420,7 @@ export function EnrollmentForm({
             }
 
             const profilePhone = formatPhoneForProfile(form.phone);
-            const successPath = `/payment/success?orderId=${encodeURIComponent(verifyPayload.invoice.orderId)}${!user || verifyPayload.needsRegistration ? "&register=1" : ""}`;
+            const successPath = getSuccessPath(verifyPayload.invoice, verifyPayload.needsRegistration);
 
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             syncMyLearningFromInvoice(verifyPayload.invoice);

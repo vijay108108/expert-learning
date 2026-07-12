@@ -55,7 +55,12 @@ export function getInvoiceDashboardPath(
     paymentCompleted?: boolean;
   },
 ) {
-  const basePath = "/dashboard/courses";
+  const isWorkshopEnrollment = Boolean(
+    invoice?.courses.some((course) => course.slug === "ai-developer-launch-lab"),
+  );
+  const basePath = isWorkshopEnrollment
+    ? "/dashboard/ai-developer-launch-lab"
+    : "/dashboard/courses";
   return options?.paymentCompleted ? `${basePath}?payment=success` : basePath;
 }
 

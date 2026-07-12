@@ -365,6 +365,7 @@ export function LmsPortal({
   onSelectCourse,
   onResetCourseSelection,
   enrollments,
+  paymentCompleted,
   userInfo,
 }: DashboardLmsPortalProps) {
   const firstEnrollment = enrollments[0];
@@ -431,6 +432,7 @@ export function LmsPortal({
   const moduleProgressLabel = allModulesCompleted
     ? `${modules.length} of ${modules.length} modules`
     : `${Math.min(completedModuleCount + 1, modules.length)} of ${modules.length} modules`;
+  const isWorkshopLaunchLab = selectedProgram.courseSlug === "ai-developer-launch-lab";
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -1339,6 +1341,38 @@ export function LmsPortal({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
+          {paymentCompleted && isWorkshopLaunchLab ? (
+            <div className="border-b border-[#E2E8F0] bg-[linear-gradient(135deg,#ECFDF5,#EFF6FF)] px-5 py-4">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#15803D]">
+                    Workshop Seat Confirmed
+                  </p>
+                  <p className="mt-1 text-sm text-[#334155]">
+                    Your LMS access is ready. Join the WhatsApp group now to receive updates and workshop joining instructions.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href={selectedProgram.whatsappGroupUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-[10px] bg-[#16A34A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#15803D]"
+                  >
+                    Join WhatsApp Group
+                  </Link>
+                  <Link
+                    href={selectedProgram.liveClassUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-[10px] border border-[#BFDBFE] bg-white px-4 py-2.5 text-sm font-semibold text-[#1D4ED8] transition hover:bg-[#EFF6FF]"
+                  >
+                    Open Workshop Link
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : null}
           {renderVideoArea()}
 
           <div className="sticky top-0 z-10 flex overflow-x-auto border-b border-[#e2e8f0] bg-white">
