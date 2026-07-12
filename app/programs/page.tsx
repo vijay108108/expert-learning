@@ -146,6 +146,26 @@ export default function ProgramsPage() {
         </div>
       </section>
 
+      <section className="sticky top-16 z-30 border-y border-[#E2E8F0] bg-white/95 px-4 py-3 backdrop-blur-sm sm:top-[74px] sm:px-6 lg:top-[82px] lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#0B2E6B]">Choose Payment Mode</p>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="#phase-wise"
+              className="inline-flex items-center gap-2 rounded-lg border border-[#C8D7EE] bg-[#EAF0FA] px-4 py-2 text-xs font-semibold text-[#0B2E6B] transition hover:border-[#0B2E6B]/30"
+            >
+              Pay Phase-by-Phase
+            </a>
+            <a
+              href="#one-time"
+              className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-4 py-2 text-xs font-semibold text-white transition hover:brightness-105"
+            >
+              Pay Once (Full Journey)
+            </a>
+          </div>
+        </div>
+      </section>
+
       <section className="border-t border-[#E2E8F0] px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <p className="text-xs font-bold uppercase tracking-widest text-[#F58220]">Journey Graph</p>
@@ -169,7 +189,7 @@ export default function ProgramsPage() {
         </div>
       </section>
 
-      <section className="bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
+      <section id="phase-wise" className="scroll-mt-36 bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-6">
           {phases.map((phase) => (
             <article key={phase.id} className="rounded-[24px] border border-[#E2E8F0] bg-white p-6 shadow-sm">
@@ -243,7 +263,7 @@ export default function ProgramsPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#FED7AA] bg-[linear-gradient(135deg,#FFF7ED,#EEF4FB)] p-5">
+            <div id="one-time" className="scroll-mt-36 rounded-2xl border border-[#FED7AA] bg-[linear-gradient(135deg,#FFF7ED,#EEF4FB)] p-5">
               <p className="text-[11px] font-bold uppercase tracking-widest text-[#9A3412]">Option B</p>
               <h3 className="mt-2 text-xl font-bold text-[#0F172A]">Pay Once for Full Journey</h3>
               <p className="mt-2 text-[13px] leading-6 text-[#64748B]">Best for builders who want one committed, end-to-end transformation plan.</p>
