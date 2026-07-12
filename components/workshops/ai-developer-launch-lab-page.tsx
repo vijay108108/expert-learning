@@ -161,6 +161,12 @@ const twoHourFeasibility = [
   { slot: "105-120 mins", focus: "Outcome review and next 90-day builder roadmap" },
 ];
 
+const sectionNavItems = [
+  { id: "outcome-graph", label: "Outcome Graph" },
+  { id: "workshop-journey", label: "Agenda" },
+  { id: "workshop-faqs", label: "FAQs" },
+] as const;
+
 function buildCountdown(nowMs: number, targetMs: number): CountdownState {
   const diff = Math.max(0, targetMs - nowMs);
   const ended = diff === 0;
@@ -212,6 +218,20 @@ export function AiDeveloperLaunchLabPage({
   const trackedViewRef = useRef(false);
   const [now, setNow] = useState<number | null>(null);
   const [workshopConfig, setWorkshopConfig] = useState<WorkshopConfig | null>(initialWorkshopConfig);
+  const [activeSection, setActiveSection] = useState<(typeof sectionNavItems)[number]["id"]>(() => {
+    if (typeof window === "undefined") {
+      return "outcome-graph";
+    }
+
+    const sectionIds = sectionNavItems.map((item) => item.id);
+    const hashId = window.location.hash.replace("#", "");
+
+    if (sectionIds.includes(hashId)) {
+      return hashId as (typeof sectionNavItems)[number]["id"];
+    }
+
+    return "outcome-graph";
+  });
 
   useEffect(() => {
     const timer = window.setTimeout(async () => {
@@ -252,6 +272,38 @@ export function AiDeveloperLaunchLabPage({
     return () => {
       window.clearTimeout(kickoff);
       window.clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    const sectionIds = sectionNavItems.map((item) => item.id);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target?.id && sectionIds.includes(visible.target.id)) {
+          setActiveSection(visible.target.id as (typeof sectionNavItems)[number]["id"]);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-35% 0px -45% 0px",
+        threshold: [0.2, 0.5, 0.8],
+      },
+    );
+
+    sectionIds.forEach((id) => {
+      const node = document.getElementById(id);
+      if (node) {
+        observer.observe(node);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
     };
   }, []);
 
@@ -422,24 +474,24 @@ export function AiDeveloperLaunchLabPage({
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CB4E8]">Jump To</p>
           <div className="flex flex-wrap gap-2">
-            <a
-              href="#outcome-graph"
-              className="inline-flex items-center rounded-full border border-[#1D7CFF]/45 bg-[#1D7CFF]/12 px-3 py-1.5 text-[11px] font-semibold text-[#B6D6FF] transition hover:bg-[#1D7CFF]/20"
-            >
-              Outcome Graph
-            </a>
-            <a
-              href="#workshop-journey"
-              className="inline-flex items-center rounded-full border border-[#1D7CFF]/45 bg-[#1D7CFF]/12 px-3 py-1.5 text-[11px] font-semibold text-[#B6D6FF] transition hover:bg-[#1D7CFF]/20"
-            >
-              Agenda
-            </a>
-            <a
-              href="#workshop-faqs"
-              className="inline-flex items-center rounded-full border border-[#1D7CFF]/45 bg-[#1D7CFF]/12 px-3 py-1.5 text-[11px] font-semibold text-[#B6D6FF] transition hover:bg-[#1D7CFF]/20"
-            >
-              FAQs
-            </a>
+            {sectionNavItems.map((item) => {
+              const active = activeSection === item.id;
+
+              return (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className={`inline-flex items-center rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
+                    active
+                      ? "border-[#FF7A00]/50 bg-[#FF7A00]/18 text-[#FFD4AA]"
+                      : "border-[#1D7CFF]/45 bg-[#1D7CFF]/12 text-[#B6D6FF] hover:bg-[#1D7CFF]/20"
+                  }`}
+                  aria-current={active ? "location" : undefined}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -488,7 +540,7 @@ export function AiDeveloperLaunchLabPage({
         </div>
       </section>
 
-      <section id="workshop-journey" className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <section id="workshop-journey" className="scroll-mt-36 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Your 2-Hour Execution Plan</h2>
           <div className="mt-7 rounded-3xl border border-white/12 bg-white/6 p-5 backdrop-blur-xl sm:p-7">
