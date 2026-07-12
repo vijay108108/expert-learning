@@ -418,6 +418,32 @@ export function AiDeveloperLaunchLabPage({
         </div>
       </section>
 
+      <section className="sticky top-16 z-20 border-y border-white/12 bg-[#050816]/92 px-4 py-3 backdrop-blur-md sm:top-[74px] sm:px-6 lg:top-[82px] lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CB4E8]">Jump To</p>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="#outcome-graph"
+              className="inline-flex items-center rounded-full border border-[#1D7CFF]/45 bg-[#1D7CFF]/12 px-3 py-1.5 text-[11px] font-semibold text-[#B6D6FF] transition hover:bg-[#1D7CFF]/20"
+            >
+              Outcome Graph
+            </a>
+            <a
+              href="#workshop-journey"
+              className="inline-flex items-center rounded-full border border-[#1D7CFF]/45 bg-[#1D7CFF]/12 px-3 py-1.5 text-[11px] font-semibold text-[#B6D6FF] transition hover:bg-[#1D7CFF]/20"
+            >
+              Agenda
+            </a>
+            <a
+              href="#workshop-faqs"
+              className="inline-flex items-center rounded-full border border-[#1D7CFF]/45 bg-[#1D7CFF]/12 px-3 py-1.5 text-[11px] font-semibold text-[#B6D6FF] transition hover:bg-[#1D7CFF]/20"
+            >
+              FAQs
+            </a>
+          </div>
+        </div>
+      </section>
+
       <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Why This Workshop Turns Learning Into Builder Outcomes</h2>
@@ -431,7 +457,7 @@ export function AiDeveloperLaunchLabPage({
         </div>
       </section>
 
-      <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <section id="outcome-graph" className="scroll-mt-36 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl rounded-3xl border border-white/14 bg-[linear-gradient(135deg,rgba(255,122,0,0.12),rgba(29,124,255,0.16))] p-6 backdrop-blur-2xl sm:p-8">
           <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#A7D0FF]">
             <BarChart3 className="h-4 w-4" />
@@ -560,7 +586,7 @@ export function AiDeveloperLaunchLabPage({
         </div>
       </section>
 
-      <section className="px-4 pb-20 pt-12 sm:px-6 lg:px-8 lg:pb-24 lg:pt-16">
+      <section id="workshop-faqs" className="scroll-mt-36 px-4 pb-20 pt-12 sm:px-6 lg:px-8 lg:pb-24 lg:pt-16">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">FAQs</h2>
           <div className="mt-6 space-y-3">
