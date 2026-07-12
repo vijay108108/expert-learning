@@ -39,10 +39,7 @@ function resolveEnrollmentMetaForOffering(offering: CheckoutOffering): {
 export async function POST(request: Request) {
   try {
     const authUser = await verifyFirebaseBearerToken(request);
-
-    if (!authUser) {
-      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
-    }
+    const isGuestCheckout = !authUser;
 
     const body = paymentCreateSchema.parse(await request.json());
     const razorpay = getRazorpayClient();
@@ -53,7 +50,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "One or more selected courses were not found." }, { status: 404 });
     }
 
-    if (authUser.uid) {
+    if (authUser?.uid) {
       try {
         const duplicateCourses = await findExistingEnrollmentCourseIds(
           authUser.uid,
@@ -100,7 +97,7 @@ export async function POST(request: Request) {
         offerings.map((offering) => offering.priceValue * 100),
       );
       const paidAtIso = new Date().toISOString();
-      const invoiceOrderId = `FREE-${Date.now()}-${authUser.uid.slice(-6)}`;
+      const invoiceOrderId = `FREE-${Date.now()}-${(authUser?.uid || body.phone).slice(-6)}`;
       const invoiceNumber = createInvoiceNumber(invoiceOrderId, paidAtIso);
       const paymentMethod = "Coupon";
       const enrolledAt = paidAtIso;
@@ -153,76 +150,79 @@ export async function POST(request: Request) {
       };
 
       let clientSyncRequired = false;
-      let enrollmentSaved = false;
 
-      try {
-        await Promise.all(
-          offerings.map((offering, index) => {
-            const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
-            const allocatedAmountPaise = lineItemPaise[index] || 0;
+      if (!isGuestCheckout && authUser) {
+        let enrollmentSaved = false;
 
-            return saveEnrollmentRecordAdmin({
-              userId: authUser.uid,
-              userName: body.name,
-              userPhone: body.phone,
-              userEmail: body.email,
-              courseId: getCourseSlugByCourseId(enrollmentMeta.primaryCourseSlug),
-              canonicalCourseId: getCanonicalCourseIdBySlug(enrollmentMeta.primaryCourseSlug),
-              enrollmentType: enrollmentMeta.enrollmentType,
-              purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
-              programSlug: enrollmentMeta.programSlug,
-              programName: enrollmentMeta.programName,
-              programCourseSlugs: enrollmentMeta.programCourseSlugs,
-              primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
-              courseName: offering.title,
-              amountPaid: Math.round(allocatedAmountPaise / 100),
-              couponCode: pricing.appliedCouponCode,
-              discountPercentage: pricing.discountPercent,
-              originalAmount: Math.round((offering.priceValue * 100) / 100),
-              discountAmount: Math.round(((offering.priceValue * 100) - allocatedAmountPaise) / 100),
-              finalPaidAmount: Math.round(allocatedAmountPaise / 100),
-              paymentStatus: "free",
-              razorpayOrderId: invoiceOrderId,
-              razorpayPaymentId: "",
-              invoiceNumber,
-              enrolledAt,
-              status: "active",
-              duration: offering.duration,
-              level: offering.level,
-              companyName: body.companyName?.trim() || "",
-              gstNumber: body.gstNumber?.trim() || "",
-            });
-          }),
-        );
-        enrollmentSaved = true;
-      } catch (error) {
-        clientSyncRequired = true;
-        logFirestoreIssue("[Payment Create] Free coupon enrollment save failed; client sync required", error);
-      }
+        try {
+          await Promise.all(
+            offerings.map((offering, index) => {
+              const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
+              const allocatedAmountPaise = lineItemPaise[index] || 0;
 
-      try {
-        await upsertUserProfileAdminFromPayment({
-          uid: authUser.uid,
-          name: body.name,
-          email: body.email,
-          phone: body.phone,
-          createdAt: paidAtIso,
-        });
-      } catch (error) {
-        logFirestoreIssue("[Payment Create] Free coupon profile sync failed", error);
-      }
+              return saveEnrollmentRecordAdmin({
+                userId: authUser.uid,
+                userName: body.name,
+                userPhone: body.phone,
+                userEmail: body.email,
+                courseId: getCourseSlugByCourseId(enrollmentMeta.primaryCourseSlug),
+                canonicalCourseId: getCanonicalCourseIdBySlug(enrollmentMeta.primaryCourseSlug),
+                enrollmentType: enrollmentMeta.enrollmentType,
+                purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
+                programSlug: enrollmentMeta.programSlug,
+                programName: enrollmentMeta.programName,
+                programCourseSlugs: enrollmentMeta.programCourseSlugs,
+                primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
+                courseName: offering.title,
+                amountPaid: Math.round(allocatedAmountPaise / 100),
+                couponCode: pricing.appliedCouponCode,
+                discountPercentage: pricing.discountPercent,
+                originalAmount: Math.round((offering.priceValue * 100) / 100),
+                discountAmount: Math.round(((offering.priceValue * 100) - allocatedAmountPaise) / 100),
+                finalPaidAmount: Math.round(allocatedAmountPaise / 100),
+                paymentStatus: "free",
+                razorpayOrderId: invoiceOrderId,
+                razorpayPaymentId: "",
+                invoiceNumber,
+                enrolledAt,
+                status: "active",
+                duration: offering.duration,
+                level: offering.level,
+                companyName: body.companyName?.trim() || "",
+                gstNumber: body.gstNumber?.trim() || "",
+              });
+            }),
+          );
+          enrollmentSaved = true;
+        } catch (error) {
+          clientSyncRequired = true;
+          logFirestoreIssue("[Payment Create] Free coupon enrollment save failed; client sync required", error);
+        }
 
-      try {
-        await saveInvoiceRecordAdmin({
-          ...invoice,
-          userId: authUser.uid,
-          paymentStatus: "free",
-        } satisfies PersistedInvoiceRecord);
-      } catch (error) {
-        if (enrollmentSaved) {
-          logFirestoreIssue("[Payment Create] Free coupon invoice persistence failed", error);
-        } else {
-          logFirestoreIssue("[Payment Create] Free coupon invoice persistence skipped because enrollment save failed", error);
+        try {
+          await upsertUserProfileAdminFromPayment({
+            uid: authUser.uid,
+            name: body.name,
+            email: body.email,
+            phone: body.phone,
+            createdAt: paidAtIso,
+          });
+        } catch (error) {
+          logFirestoreIssue("[Payment Create] Free coupon profile sync failed", error);
+        }
+
+        try {
+          await saveInvoiceRecordAdmin({
+            ...invoice,
+            userId: authUser.uid,
+            paymentStatus: "free",
+          } satisfies PersistedInvoiceRecord);
+        } catch (error) {
+          if (enrollmentSaved) {
+            logFirestoreIssue("[Payment Create] Free coupon invoice persistence failed", error);
+          } else {
+            logFirestoreIssue("[Payment Create] Free coupon invoice persistence skipped because enrollment save failed", error);
+          }
         }
       }
 
@@ -276,6 +276,7 @@ export async function POST(request: Request) {
         invoice,
         pricing,
         clientSyncRequired,
+        needsRegistration: isGuestCheckout,
         amountLabel: formatPaiseToPrice(totalPaidPaise),
       });
     }
@@ -292,7 +293,8 @@ export async function POST(request: Request) {
       currency: "INR",
       receipt: `${requestedSlugs[0]?.slice(0, 18) || "cart"}-${requestedSlugs.length}-${Date.now()}`.slice(0, 40),
       notes: {
-        userId: authUser.uid,
+        userId: authUser?.uid || "",
+        guestCheckout: isGuestCheckout ? "1" : "0",
         name: body.name,
         email: body.email,
         phone: body.phone,

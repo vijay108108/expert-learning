@@ -48,7 +48,7 @@ export const paymentVerifySchema = z
     razorpay_order_id: z.string().min(2),
     razorpay_payment_id: z.string().min(2),
     razorpay_signature: z.string().min(2),
-    userId: z.string().min(2),
+    userId: z.string().min(2).optional(),
     courseSlug: z.string().min(2).optional(),
     courseSlugs: z.array(z.string().min(2)).min(1).optional(),
     name: z.string().min(2),

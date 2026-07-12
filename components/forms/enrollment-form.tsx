@@ -55,7 +55,9 @@ async function getPaymentAuthHeaders() {
   const token = await getFirebaseAuth()?.currentUser?.getIdToken();
 
   if (!token) {
-    throw new Error("Your session expired. Please sign in again.");
+    return {
+      "Content-Type": "application/json",
+    };
   }
 
   return {
@@ -117,15 +119,19 @@ export function EnrollmentForm({
   const [couponStatus, setCouponStatus] = useState<"success" | "error" | null>(null);
   const [couponPending, setCouponPending] = useState(false);
   const router = useRouter();
-  const { openAuthModal, user } = useAuth();
+  const { user } = useAuth();
   const pricing = useMemo(
     () => getCouponPricing(course.priceValue * 100, appliedCouponCode),
     [appliedCouponCode, course.priceValue],
   );
 
   async function syncVerifiedPurchase(invoice: StoredOrderSuccess, profilePhone: string, mustAwaitEnrollmentSync: boolean) {
+    if (!user) {
+      return;
+    }
+
     try {
-      await upsertUserProfileFromPurchase(user!, {
+      await upsertUserProfileFromPurchase(user, {
         name: invoice.customer.name,
         email: invoice.customer.email,
         phone: profilePhone || invoice.customer.phone,
@@ -137,7 +143,7 @@ export function EnrollmentForm({
 
     if (mustAwaitEnrollmentSync) {
       try {
-        await saveInvoiceEnrollments(user!, invoice);
+        await saveInvoiceEnrollments(user, invoice);
       } catch (error) {
         logFirestoreIssue("[Enrollment] Enrollment recovery sync failed after verified payment", error);
       }
@@ -150,7 +156,7 @@ export function EnrollmentForm({
       return;
     }
 
-    void saveInvoiceEnrollments(user!, invoice).catch((error) => {
+    void saveInvoiceEnrollments(user, invoice).catch((error) => {
       logFirestoreIssue("[Enrollment] Client enrollment confirmation sync failed after verified payment", error);
     });
 
@@ -216,23 +222,20 @@ export function EnrollmentForm({
       return;
     }
 
-    if (!user) {
-      openAuthModal("login", `/checkout/${encodeURIComponent(course.slug)}`);
-      return;
-    }
-
     setPending(true);
     setIsPaying(true);
     trackPaymentStarted(course.slug, Math.round(pricing.finalAmountPaise / 100));
     const profilePhone = formatPhoneForProfile(form.phone);
 
     try {
-      const duplicateCourses = await findExistingEnrollmentCourseIds(user.uid, [course.slug]);
+      if (user) {
+        const duplicateCourses = await findExistingEnrollmentCourseIds(user.uid, [course.slug]);
 
-      if (duplicateCourses.length > 0) {
-        setMessage("You are already enrolled in this course.");
-        setIsPaying(false);
-        return;
+        if (duplicateCourses.length > 0) {
+          setMessage("You are already enrolled in this course.");
+          setIsPaying(false);
+          return;
+        }
       }
 
       const createResponse = await fetch("/api/payment/create", {
@@ -240,7 +243,7 @@ export function EnrollmentForm({
         headers: await getPaymentAuthHeaders(),
         body: JSON.stringify({
           ...form,
-          userId: user.uid,
+          userId: user?.uid,
           courseSlug: course.slug,
           couponCode: appliedCouponCode,
         }),
@@ -254,6 +257,7 @@ export function EnrollmentForm({
         freeEnrollment?: boolean;
         clientSyncRequired?: boolean;
         invoice?: StoredOrderSuccess;
+        needsRegistration?: boolean;
       };
 
       if (!createResponse.ok) {
@@ -262,7 +266,7 @@ export function EnrollmentForm({
       }
 
       if (createPayload.freeEnrollment && createPayload.invoice) {
-        const successPath = `/payment/success?orderId=${encodeURIComponent(createPayload.invoice.orderId)}`;
+        const successPath = `/payment/success?orderId=${encodeURIComponent(createPayload.invoice.orderId)}${!user || createPayload.needsRegistration ? "&register=1" : ""}`;
 
         window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(createPayload.invoice));
         syncMyLearningFromInvoice(createPayload.invoice);
@@ -273,18 +277,22 @@ export function EnrollmentForm({
           orderId: createPayload.invoice.orderId,
         });
 
-        await syncVerifiedPurchase(
-          createPayload.invoice,
-          profilePhone,
-          Boolean(createPayload.clientSyncRequired),
-        );
+        if (user) {
+          await syncVerifiedPurchase(
+            createPayload.invoice,
+            profilePhone,
+            Boolean(createPayload.clientSyncRequired),
+          );
+        }
 
         setIsPaying(false);
   router.replace(successPath);
 
-        void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
-          logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
-        });
+        if (user) {
+          void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
+            logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
+          });
+        }
         return;
       }
 
@@ -322,7 +330,7 @@ export function EnrollmentForm({
               headers: await getPaymentAuthHeaders(),
               body: JSON.stringify({
                 ...response,
-                userId: user.uid,
+                userId: user?.uid,
                 ...form,
                 courseSlug: course.slug,
                 couponCode: appliedCouponCode,
@@ -334,6 +342,7 @@ export function EnrollmentForm({
               clientSyncRequired?: boolean;
               message?: string;
               invoice?: StoredOrderSuccess;
+              needsRegistration?: boolean;
             };
 
             if (!verifyResponse.ok || !verifyPayload.invoice) {
@@ -344,7 +353,7 @@ export function EnrollmentForm({
             }
 
             const profilePhone = formatPhoneForProfile(form.phone);
-            const successPath = `/payment/success?orderId=${encodeURIComponent(verifyPayload.invoice.orderId)}`;
+            const successPath = `/payment/success?orderId=${encodeURIComponent(verifyPayload.invoice.orderId)}${!user || verifyPayload.needsRegistration ? "&register=1" : ""}`;
 
             window.localStorage.setItem(latestOrderStorageKey, JSON.stringify(verifyPayload.invoice));
             syncMyLearningFromInvoice(verifyPayload.invoice);
@@ -355,18 +364,22 @@ export function EnrollmentForm({
               orderId: response.razorpay_order_id || verifyPayload.invoice.orderId,
             });
 
-            await syncVerifiedPurchase(
-              verifyPayload.invoice,
-              profilePhone,
-              Boolean(verifyPayload.clientSyncRequired),
-            );
+            if (user) {
+              await syncVerifiedPurchase(
+                verifyPayload.invoice,
+                profilePhone,
+                Boolean(verifyPayload.clientSyncRequired),
+              );
+            }
 
             setIsPaying(false);
             router.replace(successPath);
 
-            void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
-              logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
-            });
+            if (user) {
+              void saveUserWhatsappNumber(user.uid, profilePhone).catch((error) => {
+                logFirestoreIssue("[Enrollment] Unable to save phone number after payment", error);
+              });
+            }
           } catch (error) {
             setMessage(error instanceof Error ? error.message : "Unable to complete enrollment after payment.");
             trackPaymentFailed("payment_post_verify_exception");

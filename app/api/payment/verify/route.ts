@@ -33,10 +33,6 @@ export async function POST(request: Request) {
 
     const authUser = await verifyFirebaseBearerToken(request);
 
-    if (!authUser) {
-      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
-    }
-
     const signatureValid = verifyRazorpaySignature({
       orderId: body.razorpay_order_id,
       paymentId: body.razorpay_payment_id,
@@ -74,6 +70,7 @@ export async function POST(request: Request) {
     const trustedPhone = readOrderNoteValue(orderDetails.notes, "phone");
     const trustedGstNumber = readOrderNoteValue(orderDetails.notes, "gstNumber").toUpperCase();
     const trustedCompanyName = readOrderNoteValue(orderDetails.notes, "companyName");
+    const trustedGuestCheckout = readOrderNoteValue(orderDetails.notes, "guestCheckout") === "1";
     const trustedCouponCode = readOrderNoteValue(orderDetails.notes, "couponCode");
     const trustedRequestedSlugs = readOrderNoteValue(orderDetails.notes, "courseSlugs")
       .split(",")
@@ -84,8 +81,16 @@ export async function POST(request: Request) {
         ? trustedRequestedSlugs
         : [readOrderNoteValue(orderDetails.notes, "courseSlug")].filter(Boolean);
 
-    if (!trustedUserId || trustedUserId !== authUser.uid) {
-      return NextResponse.json({ success: false, message: "Payment user mismatch." }, { status: 403 });
+    const isGuestCheckout = trustedGuestCheckout || !trustedUserId;
+
+    if (!isGuestCheckout) {
+      if (!authUser) {
+        return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+      }
+
+      if (trustedUserId !== authUser.uid) {
+        return NextResponse.json({ success: false, message: "Payment user mismatch." }, { status: 403 });
+      }
     }
 
     if (!trustedName || !trustedPhone || trustedCourseSlugs.length === 0) {
@@ -233,82 +238,88 @@ export async function POST(request: Request) {
       }),
     };
 
-    let enrollmentSaved = false;
+    if (!isGuestCheckout) {
+      let enrollmentSaved = false;
 
-    try {
-      await Promise.all(
-        offerings.map((offering, index) => {
-          const display = resolveDisplayValuesForOffering(offering);
-          const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
-          const primaryCourseSlug = enrollmentMeta.primaryCourseSlug;
-          const allocatedAmountPaise = lineItemPaise[index] || 0;
+      try {
+        await Promise.all(
+          offerings.map((offering, index) => {
+            const display = resolveDisplayValuesForOffering(offering);
+            const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
+            const primaryCourseSlug = enrollmentMeta.primaryCourseSlug;
+            const allocatedAmountPaise = lineItemPaise[index] || 0;
 
-          return saveEnrollmentRecordAdmin({
-            userId: trustedUserId,
-            userName: trustedName,
-            userPhone: trustedPhone,
-            userEmail: trustedEmail,
-            courseId: getCourseSlugByCourseId(primaryCourseSlug),
-            canonicalCourseId: getCanonicalCourseIdBySlug(primaryCourseSlug),
-            enrollmentType: enrollmentMeta.enrollmentType,
-            purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
-            programSlug: enrollmentMeta.programSlug,
-            programName: enrollmentMeta.programName,
-            programCourseSlugs: enrollmentMeta.programCourseSlugs,
-            primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
-            courseName: display.title,
-            amountPaid: Math.round(allocatedAmountPaise / 100),
-            couponCode: pricing.appliedCouponCode,
-            discountPercentage: pricing.discountPercent,
-            originalAmount: Math.round((offering.priceValue * 100) / 100),
-            discountAmount: Math.round(((offering.priceValue * 100) - allocatedAmountPaise) / 100),
-            finalPaidAmount: Math.round(allocatedAmountPaise / 100),
-            paymentStatus: "captured",
-            razorpayOrderId: body.razorpay_order_id,
-            razorpayPaymentId: body.razorpay_payment_id,
-            invoiceNumber,
-            enrolledAt,
-            status: "active",
-            duration: display.duration,
-            level: display.level,
-            companyName: trustedCompanyName,
-            gstNumber: trustedGstNumber,
-          });
-        }),
-      );
-      enrollmentSaved = true;
-    } catch (error) {
-      clientSyncRequired = true;
-      logFirestoreIssue("[Payment Verify] Server enrollment save failed after verified payment; client sync required", error);
-    }
+            return saveEnrollmentRecordAdmin({
+              userId: trustedUserId,
+              userName: trustedName,
+              userPhone: trustedPhone,
+              userEmail: trustedEmail,
+              courseId: getCourseSlugByCourseId(primaryCourseSlug),
+              canonicalCourseId: getCanonicalCourseIdBySlug(primaryCourseSlug),
+              enrollmentType: enrollmentMeta.enrollmentType,
+              purchasedOfferingSlug: enrollmentMeta.purchasedOfferingSlug,
+              programSlug: enrollmentMeta.programSlug,
+              programName: enrollmentMeta.programName,
+              programCourseSlugs: enrollmentMeta.programCourseSlugs,
+              primaryCourseSlug: enrollmentMeta.primaryCourseSlug,
+              courseName: display.title,
+              amountPaid: Math.round(allocatedAmountPaise / 100),
+              couponCode: pricing.appliedCouponCode,
+              discountPercentage: pricing.discountPercent,
+              originalAmount: Math.round((offering.priceValue * 100) / 100),
+              discountAmount: Math.round(((offering.priceValue * 100) - allocatedAmountPaise) / 100),
+              finalPaidAmount: Math.round(allocatedAmountPaise / 100),
+              paymentStatus: "captured",
+              razorpayOrderId: body.razorpay_order_id,
+              razorpayPaymentId: body.razorpay_payment_id,
+              invoiceNumber,
+              enrolledAt,
+              status: "active",
+              duration: display.duration,
+              level: display.level,
+              companyName: trustedCompanyName,
+              gstNumber: trustedGstNumber,
+            });
+          }),
+        );
+        enrollmentSaved = true;
+      } catch (error) {
+        clientSyncRequired = true;
+        logFirestoreIssue("[Payment Verify] Server enrollment save failed after verified payment; client sync required", error);
+      }
 
-    try {
-      await upsertUserProfileAdminFromPayment({
-        uid: trustedUserId,
-        name: trustedName,
-        email: trustedEmail,
-        phone: trustedPhone,
-        createdAt: paidAtIso,
-      });
-    } catch (error) {
-      logFirestoreIssue("[Payment Verify] User profile sync failed after verified payment", error);
-    }
+      try {
+        await upsertUserProfileAdminFromPayment({
+          uid: trustedUserId,
+          name: trustedName,
+          email: trustedEmail,
+          phone: trustedPhone,
+          createdAt: paidAtIso,
+        });
+      } catch (error) {
+        logFirestoreIssue("[Payment Verify] User profile sync failed after verified payment", error);
+      }
 
-    try {
-      await saveInvoiceRecordAdmin({
-        ...invoice,
-        userId: trustedUserId,
-        paymentStatus: "captured",
-      } satisfies PersistedInvoiceRecord);
-    } catch (error) {
-      if (enrollmentSaved) {
-        logFirestoreIssue("[Payment Verify] Invoice persistence failed after verified payment", error);
-      } else {
-        logFirestoreIssue("[Payment Verify] Invoice persistence skipped because enrollment save failed", error);
+      try {
+        await saveInvoiceRecordAdmin({
+          ...invoice,
+          userId: trustedUserId,
+          paymentStatus: "captured",
+        } satisfies PersistedInvoiceRecord);
+      } catch (error) {
+        if (enrollmentSaved) {
+          logFirestoreIssue("[Payment Verify] Invoice persistence failed after verified payment", error);
+        } else {
+          logFirestoreIssue("[Payment Verify] Invoice persistence skipped because enrollment save failed", error);
+        }
       }
     }
 
     after(async () => {
+      if (isGuestCheckout) {
+        return;
+      }
+
       const hasWorkshop = offerings.some((offering) => offering.slug === "ai-developer-launch-lab");
       const workshopDate = new Intl.DateTimeFormat("en-IN", {
         dateStyle: "medium",
@@ -350,7 +361,7 @@ export async function POST(request: Request) {
       ]);
     });
 
-    return NextResponse.json({ success: true, invoice, clientSyncRequired });
+    return NextResponse.json({ success: true, invoice, clientSyncRequired, needsRegistration: isGuestCheckout });
   } catch (error) {
     return NextResponse.json(
       {
