@@ -34,8 +34,8 @@ type CountdownState = {
   ended: boolean;
 };
 
-const defaultWorkshopStartIso = "2026-07-18T18:00:00+05:30";
-const defaultWorkshopEndIso = "2026-07-18T20:00:00+05:30";
+const defaultWorkshopStartIso = "2026-07-19T18:00:00+05:30";
+const defaultWorkshopEndIso = "2026-07-19T20:00:00+05:30";
 const defaultWorkshopTitle = "Build, Launch & Host Your First AI-Generated Website on Microsoft Azure";
 const defaultWorkshopFeeLabel = "Rs. 999";
 
@@ -219,7 +219,7 @@ export function AiDeveloperLaunchLabPage({
   const workshopStartDate = new Date(workshopStartIso);
   const workshopEndDate = new Date(workshopEndIso);
   const workshopDateLabel = Number.isNaN(workshopStartDate.getTime())
-    ? "18 July"
+    ? "19 July"
     : new Intl.DateTimeFormat("en-IN", {
       day: "2-digit",
       month: "short",
