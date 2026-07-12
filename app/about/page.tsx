@@ -15,7 +15,7 @@ import { buildMetadata } from "@/lib/metadata";
 export const metadata = buildMetadata({
   title: "About Us | GenZNext Research & Training",
   description:
-    "GenZNext Research & Training is founded by an IIT Jodhpur alumna and enterprise practitioners with 8+ years in Cloud, AI, and modern platform engineering. Helping students and professionals build industry-ready careers across India.",
+    "GenZNext is building India&apos;s AI-native builders institution with a mission to develop creators, engineers, and founders who shape the future through Cloud, AI, and modern engineering.",
   path: "/about",
 });
 
@@ -119,13 +119,13 @@ export default function AboutPage() {
             About GenZNext Research &amp; Training
           </span>
           <h1 className="mt-5 text-[34px] font-extrabold leading-[1.12] tracking-[-0.03em] text-[#0F172A] sm:text-[46px]">
-            Built by Engineers,<br className="hidden sm:block" />
+            Built as an Institution,<br className="hidden sm:block" />
             <span className="bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] bg-clip-text text-transparent">
-              {" "}For the Next Generation
+              {" "}for the Next 50 Years
             </span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-[16px] leading-7 text-[#475569]">
-            GenZNext was founded by an IIT Jodhpur alumna and industry practitioners with 8+ years of enterprise experience — on a mission to give every ambitious learner in India access to world-class Cloud, AI and DevOps education.
+            GenZNext exists to create people who build the future, not just consume technology. We combine deep mentorship, practical execution, and institutional thinking to help learners become builders, researchers, and founders.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(147,51,234,0.28)] transition hover:scale-[1.02]">
@@ -159,7 +159,7 @@ export default function AboutPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-[#F58220]">Leadership</p>
             <h2 className="mt-2 text-3xl font-extrabold text-[#0F172A]">Meet the Founders</h2>
             <p className="mx-auto mt-3 max-w-xl text-[15px] leading-7 text-[#475569]">
-              GenZNext is built by people who&apos;ve worked in real delivery environments. Every course, lab and mentor session reflects practical enterprise experience.
+              GenZNext is led by practitioners building a long-term mission: an AI-native institution rooted in rigor, real projects, and meaningful career outcomes.
             </p>
           </div>
 

@@ -272,16 +272,16 @@ export default function Home() {
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-[#C8D7EE] bg-[#EAF0FA] px-3 py-1 text-xs font-semibold tracking-wide text-[#0B2E6B]">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#0B2E6B]" />
-              Trusted Cloud, DevOps &amp; AI Training in India
+              India&apos;s AI Builders Movement
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.18] tracking-[-0.02em] text-[#0F172A] sm:text-5xl lg:text-[52px]">
-              Master AI, Cloud &amp; DevOps —<br className="hidden sm:block" />
+              Build AI Products, Cloud Systems &amp; Real Careers —<br className="hidden sm:block" />
               <span className="bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] bg-clip-text text-transparent">
-                {" "}Build a Career That Scales
+                {" "}Not Just Certificates
               </span>
             </h1>
             <p className="mt-5 max-w-xl text-[17px] leading-7 text-[#475569]">
-              Structured learning paths, live mentorship, real-world projects, and LMS access for students, working professionals, and enterprise teams.
+              GenZNext is building an AI-native institution for India where learners become builders through live mentorship, shipping real projects, and career-linked execution tracks.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]">
@@ -298,7 +298,7 @@ export default function Home() {
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#EA580C]">AI + Cloud Quick Learning</p>
                 <p className="mt-1 text-sm font-semibold text-[#0F172A]">
-                  Live Workshop: Build, Launch &amp; Host Your First AI Website on Azure
+                  Builder Workshop: Launch Your First AI Website on Azure
                 </p>
                 <p className="mt-1 text-[12px] text-[#475569]">18 July • 6 PM - 8 PM • Fee: Rs. 99</p>
               </div>
