@@ -45,7 +45,7 @@ const attendReasons = [
   "Deploy and publish a live URL during the session",
   "Follow a real AI-assisted developer workflow",
   "Understand cloud deployment decisions that matter in interviews",
-  "Leave with a repeatable launch framework you can reuse",
+  "Leave with a repeatable builder launch framework you can reuse",
 ];
 
 const journeySteps = [
@@ -59,13 +59,13 @@ const journeySteps = [
 ];
 
 const workshopPerks = [
-  "2-hour live implementation workshop",
+  "2-hour live builder implementation sprint",
   "Full recording access",
   "Participation certificate",
   "Starter source code pack",
   "Step-by-step Azure setup guide",
   "Community Q&A access",
-  "90-day learning roadmap",
+  "90-day builder roadmap",
 ];
 
 const audience = [
@@ -76,7 +76,7 @@ const audience = [
   "Freshers",
   "Software developers",
   "Working professionals",
-  "Career switchers",
+  "Transitioning professionals",
   "Founders and freelancers",
 ];
 
@@ -312,7 +312,7 @@ export function AiDeveloperLaunchLabPage({
               {isWorkshopPublished ? (
                 <CourseEnrollmentAction
                   courseSlug="ai-developer-launch-lab"
-                  checkoutLabel={`Reserve My Seat - ${defaultWorkshopFeeLabel}`}
+                  checkoutLabel={`Reserve Builder Seat - ${defaultWorkshopFeeLabel}`}
                   checkoutButtonClassName="h-12 px-7 text-[14px] rounded-xl border border-[#FF7A00]/40 bg-[linear-gradient(135deg,#FF7A00,#FF9A3C)] text-[#1E1408] shadow-[0_16px_34px_rgba(255,122,0,0.32)]"
                   helperClassName="hidden"
                 />
@@ -444,7 +444,7 @@ export function AiDeveloperLaunchLabPage({
                   "Enterprise Cloud Architect",
                   "Microsoft Azure Expert",
                   "AI Specialist",
-                  "Real-world deployment mentor",
+                  "Builder execution mentor",
                 ].map((badge) => (
                   <span key={badge} className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-[11px] text-[#D8E3FF]">
                     {badge}

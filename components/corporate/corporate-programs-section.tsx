@@ -42,7 +42,7 @@ const badgeToneClasses: Record<BadgeTone, string> = {
 const corporatePrograms: CorporateProgram[] = [
   {
     icon: "building",
-    title: "Custom Learning Journeys",
+    title: "Custom Builder Journeys",
     description: "Customized cloud and AI training roadmaps aligned to internal business goals, roles, and transformation priorities.",
     duration: "Flexible Cohort",
     level: "Team Enablement",
@@ -56,7 +56,7 @@ const corporatePrograms: CorporateProgram[] = [
     deliveryModel: ["Discovery workshop", "Role mapping", "Internal training roadmap", "Hands-on labs", "Business alignment reviews"],
     tools: ["Azure", "AWS", "GitHub", "Terraform", "Power BI", "GenAI workflows"],
     supportFeatures: ["Internal roadmap alignment", "Team enablement planning", "Hands-on labs", "Assessment checkpoints", "Business alignment cadence"],
-    consultationLabel: "Schedule Consultation",
+    consultationLabel: "Book Builder Advisory",
     overviewLabel: "Program Overview",
     supportLabel: "Business Alignment",
   },
@@ -76,7 +76,7 @@ const corporatePrograms: CorporateProgram[] = [
     deliveryModel: ["Live mentor sessions", "Batch-based learning", "Team labs", "Weekly assignments", "Office hours"],
     tools: ["Azure", "AWS", "Docker", "Kubernetes", "GitHub Actions", "Monitoring stacks"],
     supportFeatures: ["Certification support", "Progress tracking", "Batch reporting", "Manager visibility", "Enablement reviews"],
-    consultationLabel: "Talk to Our Team",
+    consultationLabel: "Talk to Builder Team",
     overviewLabel: "Program Overview",
     supportLabel: "Cohort Support",
   },
@@ -95,8 +95,8 @@ const corporatePrograms: CorporateProgram[] = [
     outcomes: ["Completion tracking", "Milestone visibility", "Skills reporting", "Manager-ready snapshots"],
     deliveryModel: ["Assessment baselines", "Completion tracking", "Checkpoint reporting", "Team analytics reviews", "Leadership summary updates"],
     tools: ["Reporting dashboards", "Completion tracking", "Assessment metrics", "Team analytics", "Leadership reporting"],
-    supportFeatures: ["Program dashboards", "Learner milestone tracking", "Leadership-ready summaries", "Stakeholder review inputs", "Assessment metrics"],
-    consultationLabel: "Talk to Our Team",
+    supportFeatures: ["Program dashboards", "Builder milestone tracking", "Leadership-ready summaries", "Stakeholder review inputs", "Assessment metrics"],
+    consultationLabel: "Talk to Builder Team",
     overviewLabel: "Program Overview",
     supportLabel: "Reporting Model",
   },
@@ -116,7 +116,7 @@ const corporatePrograms: CorporateProgram[] = [
     deliveryModel: ["Advisory workshops", "Curriculum planning", "Enterprise rollout mapping", "Consulting engagement cadence", "Governance reviews"],
     tools: ["Cloud labs", "AI workflows", "Delivery playbooks", "Assessment templates", "Reporting dashboards"],
     supportFeatures: ["Advisory support", "Curriculum planning", "Transformation assistance", "Review checkpoints", "Custom delivery governance"],
-    consultationLabel: "Schedule Consultation",
+    consultationLabel: "Book Builder Advisory",
     overviewLabel: "Program Overview",
     supportLabel: "Execution Support",
   },
@@ -402,7 +402,7 @@ export function CorporateProgramsSection() {
 
                 <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="text-[13px] leading-6 text-[#94A3B8]">
-                    Need a tailored consultation around this program? Our enterprise builder team can help scope the right delivery model.
+                    Need a tailored advisory around this program? Our enterprise builder team can help scope the right delivery model.
                   </div>
                   <button
                     type="button"
@@ -455,10 +455,10 @@ export function CorporateProgramsSection() {
               </div>
 
               <div className="p-5 sm:p-6">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">Enterprise Consultation</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#E56F12]">Enterprise Builder Advisory</div>
                 <h2 className="mt-3 text-[28px] font-bold leading-[1.08] text-white sm:text-[32px]">Talk to our enterprise builder team</h2>
                 <p className="mt-3 max-w-[48ch] text-[14px] leading-7 text-[#CBD5E1]">
-                  Share a few details about your team, program interest, and goals. We will follow up with a tailored consultation.
+                  Share a few details about your team, program interest, and goals. We will follow up with a tailored builder advisory plan.
                 </p>
 
                 <form className="mt-5" onSubmit={handleInquirySubmit}>
@@ -549,7 +549,7 @@ export function CorporateProgramsSection() {
                         "justify-center rounded-[12px] px-5 py-3 text-[13px] disabled:cursor-not-allowed disabled:opacity-70",
                       )}
                     >
-                      {pending ? "Submitting..." : "Request Consultation"}
+                      {pending ? "Submitting..." : "Request Builder Advisory"}
                     </button>
                   </div>
                   {formError ? (
