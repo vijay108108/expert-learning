@@ -698,17 +698,18 @@ export function AiDeveloperLaunchLabPage({
           <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Mentor</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-[120px_1fr] sm:items-center">
             <div className="flex h-[112px] w-[112px] items-center justify-center rounded-3xl border border-white/25 bg-[#08142E] text-3xl font-bold text-[#FFB366]">
-              VV
+              CA
             </div>
             <div>
-              <p className="text-xl font-semibold text-white">Vijay Vishwakarma</p>
-              <p className="mt-1 text-sm text-[#DBE7FF]">Founder, GenZNext | Enterprise Cloud Architect | 10+ years of experience</p>
+              <p className="text-xl font-semibold text-white">Cloud AI Architect</p>
+              <p className="mt-1 text-sm text-[#DBE7FF]">10+ years of experience | IIT alumni mentorship backed | Microsoft ecosystem expertise</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {[
-                  "Enterprise Cloud Architect",
+                  "Cloud AI Architect",
+                  "10+ Years Experience",
+                  "IIT Alumni Mentorship",
                   "Microsoft Azure Expert",
-                  "AI Specialist",
-                  "Builder execution mentor",
+                  "Top Microsoft Ecosystem Projects",
                 ].map((badge) => (
                   <span key={badge} className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-[11px] text-[#D8E3FF]">
                     {badge}

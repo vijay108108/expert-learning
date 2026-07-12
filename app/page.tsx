@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   Award,
+  BarChart3,
   BookOpenCheck,
   Briefcase,
   Building2,
@@ -10,6 +11,7 @@ import {
   Code2,
   GraduationCap,
   Layers,
+  MessageCircle,
   Quote,
   Sparkles,
   Star,
@@ -18,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import { getOrganizationSchema } from "@/lib/schema";
+import { siteConfig } from "@/lib/site-config";
 
 const stats = [
   { value: "21,000+", label: "Learning Hours Delivered", icon: BookOpenCheck },
@@ -316,51 +319,56 @@ export default function Home() {
           </div>
 
           <div className="space-y-3">
-
-            {/* Summer Training Notification */}
-            <Link
-              href="/programs/microsoft-cloud-master"
-              className="group flex items-start justify-between gap-4 rounded-2xl border border-[#C8D7EE] bg-[linear-gradient(135deg,#F8FBFF_0%,#F2F8FF_42%,#EEF4FF_100%)] p-4 shadow-[0_8px_22px_rgba(37,99,235,0.10)] transition hover:shadow-[0_14px_30px_rgba(37,99,235,0.16)]"
-            >
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <div className="flex items-center gap-2">
-                    <div className="grid grid-cols-2 gap-[2px] rounded-[6px] bg-white p-1 shadow-sm">
-                      <span className="h-3 w-3 bg-[#F25022]" />
-                      <span className="h-3 w-3 bg-[#7FBA00]" />
-                      <span className="h-3 w-3 bg-[#00A4EF]" />
-                      <span className="h-3 w-3 bg-[#FFB900]" />
-                    </div>
-                    <div className="leading-none">
-                      <p className="text-[11px] font-semibold text-[#5B5B5B]">Microsoft</p>
-                      <p className="mt-0.5 text-[13px] font-semibold text-[#0078D4]">Azure</p>
-                    </div>
-                  </div>
-                  <span className="inline-flex animate-pulse items-center rounded-full bg-[#E11D48] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-white">
-                    Live
-                  </span>
+            <div className="rounded-2xl border border-[#C8D7EE] bg-[linear-gradient(135deg,#F8FBFF_0%,#EEF4FF_40%,#FFF7ED_100%)] p-5 shadow-[0_12px_28px_rgba(37,99,235,0.14)]">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#EA580C]">Workshop Momentum</p>
+                  <p className="mt-1 text-[13px] font-semibold text-[#0F172A]">Builder Workshop Demand Trend</p>
                 </div>
-                <p className="mt-2 text-[12px] font-medium leading-snug text-[#64748B]">
-                  Microsoft Certified: Azure Administrator Associate AZ-104
-                </p>
-                <p className="mt-1 text-[11.5px] text-[#5B6B84]">
-                  Identity · Compute · Networking · Storage · Monitoring · 8 Weeks
-                </p>
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
-                  <span className="font-bold text-[#DC2626]">New Batch Starts: 15 July 2026</span>
-                  <span className="text-[#94A3B8]">·</span>
-                  <span className="inline-flex items-center gap-2">
-                    <span className="font-semibold text-[#16A34A]">
-                      ₹23,600 <span className="font-normal text-[#94A3B8] line-through">₹30,000</span>
-                    </span>
-                    <span className="rounded-full bg-[#FFE4E6] px-2 py-0.5 font-bold text-[#E11D48]">33% off</span>
-                  </span>
+                <span className="rounded-full bg-[#E11D48] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">Live Focus</span>
+              </div>
+
+              <div className="mt-4 rounded-xl border border-[#E2E8F0] bg-white p-3">
+                <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold text-[#0B2E6B]">
+                  <BarChart3 className="h-4 w-4" />
+                  Interest Growth (Last 5 Days)
+                </div>
+                <div className="space-y-2.5">
+                  {[
+                    { day: "Day 1", value: 42 },
+                    { day: "Day 2", value: 56 },
+                    { day: "Day 3", value: 68 },
+                    { day: "Day 4", value: 81 },
+                    { day: "Day 5", value: 92 },
+                  ].map((point) => (
+                    <div key={point.day} className="grid grid-cols-[44px_1fr_40px] items-center gap-2 text-[11px] text-[#475569]">
+                      <span>{point.day}</span>
+                      <div className="h-2 rounded-full bg-[#E2E8F0]">
+                        <div className="h-2 rounded-full bg-[linear-gradient(90deg,#F97316,#1D4ED8)]" style={{ width: `${point.value}%` }} />
+                      </div>
+                      <span className="text-right font-semibold">{point.value}%</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <span className="mt-0.5 shrink-0 rounded-xl bg-[linear-gradient(135deg,#0078D4,#15407E)] px-3 py-2 text-[11px] font-bold text-white transition group-hover:brightness-95">
-                Register →
-              </span>
-            </Link>
+
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                <a
+                  href={`https://wa.me/${siteConfig.whatsapp}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#BBF7D0] bg-[#F0FDF4] px-3 py-2 text-[12px] font-semibold text-[#166534] transition hover:border-[#22C55E]/40"
+                >
+                  <MessageCircle className="h-4 w-4" /> Join Builder Chat
+                </a>
+                <Link
+                  href="/workshops/ai-developer-launch-lab"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F97316,#1D4ED8)] px-3 py-2 text-[12px] font-semibold text-white"
+                >
+                  Reserve Workshop Seat <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
 
             <div className="rounded-2xl border border-[#E2E8F0] bg-white/95 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.07)] backdrop-blur">
               <p className="text-sm font-semibold text-[#15407E]">What you get in every builder journey</p>
