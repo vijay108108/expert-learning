@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   ChevronRight,
   Cloud,
-  Code2,
   GraduationCap,
   Layers,
   MessageCircle,
@@ -17,7 +16,6 @@ import {
   Star,
   TrendingUp,
   Users2,
-  Zap,
 } from "lucide-react";
 import { getOrganizationSchema } from "@/lib/schema";
 import { siteConfig } from "@/lib/site-config";
@@ -248,12 +246,24 @@ function ReviewCard({ review }: { review: Review }) {
 }
 
 const tracks = [
-  { icon: Cloud, label: "Cloud (AWS & Azure)", color: "text-[#15407E]", bg: "bg-[#EEF4FB]" },
-  { icon: Zap, label: "DevSecOps & SRE", color: "text-[#E56F12]", bg: "bg-[#F5F3FF]" },
-  { icon: Sparkles, label: "Generative & Agentic AI", color: "text-[#D97706]", bg: "bg-[#FFFBEB]" },
-  { icon: Code2, label: "Data Engineering", color: "text-[#059669]", bg: "bg-[#ECFDF5]" },
-  { icon: Briefcase, label: "Corporate Training (B2B)", color: "text-[#DC2626]", bg: "bg-[#FEF2F2]" },
-  { icon: Building2, label: "Summer / Internship", color: "text-[#0891B2]", bg: "bg-[#ECFEFF]" },
+  {
+    icon: Cloud,
+    label: "Azure Admin -> DevOps -> AIOps Journey",
+    desc: "One integrated roadmap with phase-wise or one-time enrollment.",
+    cta: "Explore journey",
+    href: "/programs",
+    color: "text-[#15407E]",
+    bg: "bg-[#EEF4FB]",
+  },
+  {
+    icon: Sparkles,
+    label: "AI Developer Launch Lab",
+    desc: "2-hour live workshop to ship your first AI website on Azure.",
+    cta: "Reserve workshop seat",
+    href: "/workshops/ai-developer-launch-lab",
+    color: "text-[#D97706]",
+    bg: "bg-[#FFFBEB]",
+  },
 ];
 
 export default function Home() {
@@ -427,21 +437,22 @@ export default function Home() {
       <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Builder Tracks</p>
-            <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">6 High-Execution Tracks for Real Builders</h2>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0B2E6B]">Builder Pathways</p>
+            <h2 className="mt-2 text-3xl font-bold text-[#0F172A]">Start with the Right Path</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#64748B]">
-              From students entering tech to enterprise teams scaling capability, every track is designed for practical outcomes and real project delivery.
+              Start with the AI workshop for momentum, then continue into the Azure Admin -&gt; DevOps -&gt; AIOps master journey.
             </p>
           </div>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto mt-10 grid max-w-4xl gap-4 sm:grid-cols-2">
             {tracks.map((track) => (
-              <Link key={track.label} href="/programs" className="group flex items-center gap-4 rounded-[18px] border border-[#E2E8F0] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:shadow-[0_12px_24px_rgba(79,70,229,0.1)]">
+              <Link key={track.label} href={track.href} className="group flex items-center gap-4 rounded-[18px] border border-[#E2E8F0] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:shadow-[0_12px_24px_rgba(79,70,229,0.1)]">
                 <div className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${track.bg}`}>
                   <track.icon className={`h-5 w-5 ${track.color}`} />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[#0F172A]">{track.label}</p>
-                  <p className="mt-0.5 text-[12px] text-[#64748B] group-hover:text-[#0B2E6B]">View curriculum →</p>
+                  <p className="mt-0.5 text-[12px] text-[#64748B]">{track.desc}</p>
+                  <p className="mt-1 text-[12px] font-medium text-[#0B2E6B] group-hover:text-[#1D4ED8]">{track.cta} →</p>
                 </div>
               </Link>
             ))}
