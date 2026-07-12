@@ -135,7 +135,7 @@ const combinedMasterProgram = {
     "Azure Monitor + KQL",
     "Automation Playbooks",
     "LMS Access with Updates",
-    "Placement Support",
+    "Career Outcomes Support",
   ],
   stats: [
     { icon: Clock3, label: "24 Weeks" },
@@ -158,7 +158,7 @@ const combinedMasterProgram = {
 
 export const metadata = buildMetadata({
   title: "Builder Programs | AI, Cloud, DevOps, AIOps",
-  description: "Mission-driven builder programs designed to help learners ship real systems, earn high-trust credentials, and become industry-ready AI, Cloud, and DevOps practitioners.",
+  description: "Mission-driven builder programs designed to help builders ship real systems, earn high-trust credentials, and become industry-ready AI, Cloud, and DevOps practitioners.",
   path: "/programs",
 });
 
@@ -287,7 +287,7 @@ export default function ProgramsPage() {
             Builder Programs
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#64748B]">
-            Mission-driven programs designed to help builders ship real AI, Cloud, DevOps and AIOps systems with mentorship, capstones, and career outcomes.
+            Mission-led builder tracks designed to help you ship real AI, Cloud, DevOps and AIOps systems through structured mentorship, capstones, and career outcomes.
           </p>
           <div className="mt-5 flex flex-wrap gap-4 text-sm text-[#475569]">
             {[
@@ -319,7 +319,7 @@ export default function ProgramsPage() {
                   Combined Master Program
                 </span>
                 <p className="mt-2 text-sm font-medium text-[#64748B]">
-                  Want one integrated institution-style journey? This master program combines all three tracks into one high-execution progression.
+                  Want one integrated institution-style journey? This master track combines all three phases into one high-execution progression.
                 </p>
               </div>
             </div>
@@ -414,7 +414,7 @@ export default function ProgramsPage() {
                   <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#0B2E6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m10-4H9a2 2 0 00-2 2v0a2 2 0 002 2h6a2 2 0 002-2v0a2 2 0 00-2-2z" />
                   </svg>
-                  <p className="text-[12px] font-medium leading-5 text-[#3730A3]">1-on-1 support available after every live class session</p>
+                  <p className="text-[12px] font-medium leading-5 text-[#3730A3]">1-on-1 builder support available after every live session</p>
                 </div>
 
                 <div className="mt-5 space-y-3">
@@ -445,13 +445,13 @@ export default function ProgramsPage() {
       <section className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl rounded-[24px] border border-[#E2E8F0] bg-white p-8 text-center shadow-sm">
           <p className="text-[11px] font-bold uppercase tracking-widest text-[#F58220]">Not Sure Which to Pick?</p>
-          <h2 className="mt-2 text-2xl font-bold !text-[#0F172A]">Talk to our admissions team</h2>
+          <h2 className="mt-2 text-2xl font-bold !text-[#0F172A]">Talk to our builder advisory team</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#64748B]">
-            We&apos;ll match you to the right program based on your background, goals and timeline.
+            We&apos;ll match you to the right builder track based on your background, goals and execution timeline.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-[1.02]">
-              Talk to Admissions <ArrowRight className="h-4 w-4" />
+              Talk to Builder Team <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/workshops/ai-developer-launch-lab" className="inline-flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-5 py-2.5 text-sm font-semibold !text-[#0F172A] transition hover:border-[#C8D7EE]">
               Join Builder Workshop
