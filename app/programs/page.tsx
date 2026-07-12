@@ -157,6 +157,7 @@ const combinedMasterProgram = {
 };
 
 export const metadata = buildMetadata({
+  title: "Cloud, AI and DevOps Training Programs",
   description: "Cloud, AI, DevOps and AIOps career programs with certifications, live mentorship, projects and placement support.",
   path: "/programs",
 });

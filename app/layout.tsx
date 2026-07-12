@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Sora } from "next/font/google";
 import Script from "next/script";
+import { Suspense } from "react";
 import { ClientAnalyticsProvider } from "@/components/analytics/client-analytics-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { CartProvider } from "@/components/cart/cart-provider";
@@ -110,7 +111,9 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
         <AuthProvider>
           <CartProvider>
             <div className="relative min-h-screen overflow-x-clip">
-              <ClientAnalyticsProvider />
+              <Suspense fallback={null}>
+                <ClientAnalyticsProvider />
+              </Suspense>
               <AppChrome>{children}</AppChrome>
               <DemoModalRoot />
               <PwaProvider />
