@@ -1,15 +1,15 @@
 import type { IconKey } from "@/lib/icon-map";
 
 export const heroStats = [
-  { value: 10, suffix: "K+", label: "learners upskilled" },
+  { value: 10, suffix: "K+", label: "builders upskilled" },
   { value: 94, suffix: "%", label: "program completion rate" },
   { value: 180, suffix: "+", label: "guided cloud labs" },
-  { value: 4.8, suffix: "/5", label: "average learner rating" },
+  { value: 4.8, suffix: "/5", label: "average builder rating" },
 ];
 
 export const trustHighlights = [
   "Live mentor-led cohorts",
-  "Interview and placement support",
+  "Interview and career outcomes support",
   "Hands-on project portfolio",
   "EMI payment options available",
 ];
@@ -30,7 +30,7 @@ export const whyChooseUs: {
     icon: "code",
   },
   {
-    title: "Placement assistance",
+    title: "Career outcomes assistance",
     description: "Get resume reviews, mock interviews, hiring guidance, and role mapping support.",
     icon: "briefcase",
   },
@@ -46,7 +46,7 @@ export const whyChooseUs: {
   },
   {
     title: "Live classes",
-    description: "Join interactive sessions designed for working professionals and fast-moving learners.",
+    description: "Join interactive sessions designed for working professionals and fast-moving builders.",
     icon: "devices",
   },
   {
@@ -98,12 +98,12 @@ export const socialLinks = [
 export const blogHighlights = [
   {
     title: "How to choose between AWS, Azure, and AI in 2026",
-    excerpt: "A role-first guide for students and professionals deciding where to invest their learning time.",
+    excerpt: "A role-first guide for students and professionals deciding where to invest their builder time.",
     category: "Career Advice",
   },
   {
     title: "What hiring managers expect from cloud portfolios",
-    excerpt: "The portfolio patterns that help learners stand out beyond certification scores.",
+    excerpt: "The portfolio patterns that help builders stand out beyond certification scores.",
     category: "Cloud Careers",
   },
   {

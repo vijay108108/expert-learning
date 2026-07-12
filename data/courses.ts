@@ -183,7 +183,7 @@ function buildFaqs(certification: string): CourseFaq[] {
   return [
     {
       question: "Is this course suitable for working professionals?",
-      answer: "Yes. The learning flow is structured for both students and working professionals, with guided modules, assignment checkpoints, and mentor support.",
+      answer: "Yes. The builder journey is structured for both students and working professionals, with guided modules, assignment checkpoints, and mentor support.",
     },
     {
       question: "Do I get certification preparation support?",
@@ -205,7 +205,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       category: "ai",
       shortDescription: "Build, launch, and host your first AI-generated website on Microsoft Azure in a live 2-hour workshop.",
       longDescription:
-        "A fast-track live workshop focused on real execution: AI-assisted website creation, Azure VM provisioning, deployment workflow, and publishing a public URL. Built for learners who want practical cloud + AI confidence in one session.",
+        "A fast-track live workshop focused on real execution: AI-assisted website creation, Azure VM provisioning, deployment workflow, and publishing a public URL. Built for future builders who want practical cloud + AI confidence in one session.",
       level: "Beginner",
       duration: "2 Hours",
       mode: "live",
@@ -223,7 +223,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
         "Understand Azure-based deployment flow",
         "Follow real industry developer workflow",
       ],
-      targetAudience: ["Students", "Freshers", "Developers", "Working professionals", "Career switchers"],
+      targetAudience: ["Students", "Freshers", "Developers", "Working professionals", "Transitioning professionals"],
       prerequisites: ["Basic computer usage", "No prior cloud experience required"],
       syllabusModules: [
         "Introduction and workflow overview",
@@ -255,7 +255,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       category: "ai",
       shortDescription: "Build practical AI foundations for real-world workflows and product use-cases.",
       longDescription:
-        "Applied AI Foundations helps learners understand AI concepts, problem framing, and implementation patterns through guided examples and practical assignments.",
+        "Applied AI Foundations helps builders understand AI concepts, problem framing, and implementation patterns through guided examples and practical assignments.",
       level: "Beginner",
       duration: "6 Weeks",
       mode: "self-paced",
@@ -264,7 +264,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       toolsCovered: ["Python", "Pandas", "Scikit-learn", "Jupyter", "Google Colab"],
       skillsYouWillLearn: ["AI problem framing", "Data preparation basics", "Model evaluation", "Practical AI workflow design"],
       learningOutcomes: ["Understand applied AI lifecycle", "Build beginner AI workflows", "Present project outcomes clearly"],
-      targetAudience: ["Students entering AI", "Career switchers", "Junior developers"],
+      targetAudience: ["Students entering AI", "Transitioning professionals", "Junior developers"],
       prerequisites: ["Basic computer literacy", "Optional Python basics"],
       syllabusModules: ["Module 1: AI Landscape 2026 - LLMs, multimodal models, and where AI fits in business","Module 2: Problem Framing - turning a business need into an AI-solvable task","Module 3: Data Handling Basics with Python, Pandas, and Google Colab","Module 4: Intro to Models - classification, regression, and using pre-trained APIs (OpenAI, Gemini)","Module 5: Model Evaluation - accuracy, precision/recall, and avoiding common pitfalls","Module 6: Responsible AI - bias, hallucination awareness, and data privacy basics","Module 7: Capstone - build and present an end-to-end applied AI mini-project"],
       projects: ["Customer churn predictor", "Lead scoring mini-project"],
@@ -550,7 +550,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       toolsCovered: ["OpenAI APIs", "Workflow engines", "Vector stores", "Webhook connectors", "Policy controls"],
       skillsYouWillLearn: ["Enterprise agent patterns", "System integration", "Policy-aware automation", "ROI-driven design"],
       learningOutcomes: ["Automate internal operations with agents", "Integrate agents with enterprise tools", "Design measurable automation outcomes"],
-      targetAudience: ["Working professionals", "Automation leads", "AI adopters"],
+      targetAudience: ["Working professionals", "Automation leads", "AI implementation teams"],
       prerequisites: ["Basic AI familiarity"],
       syllabusModules: ["Module 1: Enterprise Agent Patterns - governance, compliance, and ROI framing","Module 2: System Integration - connecting agents to internal tools via webhooks/APIs","Module 3: Vector Store Integration for enterprise knowledge retrieval","Module 4: Policy-Aware Automation - access control and audit trails","Module 5: Workflow Engines - orchestrating multi-step enterprise processes","Module 6: Measuring Automation ROI and rollout planning","Module 7: Capstone - build an internal helpdesk or SOP execution copilot"],
       projects: ["Internal helpdesk copilot", "SOP execution assistant"],
@@ -687,7 +687,7 @@ function buildCourseData(): Record<CourseCategoryKey, Course[]> {
       category: "aws",
       shortDescription: "Beginner-friendly AWS cloud fundamentals aligned to CLF-C02.",
       longDescription:
-        "This certification-focused course covers AWS core services, pricing, security, and cloud concepts to prepare learners for the AWS Cloud Practitioner exam.",
+        "This certification-focused course covers AWS core services, pricing, security, and cloud concepts to prepare builders for the AWS Cloud Practitioner exam.",
       level: "Beginner",
       duration: "5 Weeks",
       mode: "self-paced",
