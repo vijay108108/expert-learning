@@ -161,6 +161,21 @@ const twoHourFeasibility = [
   { slot: "105-120 mins", focus: "Outcome review and next 90-day builder roadmap" },
 ];
 
+const readinessComparison = [
+  { label: "Day 0", guided: 20, unguided: 20 },
+  { label: "Week 1", guided: 58, unguided: 28 },
+  { label: "Week 2", guided: 74, unguided: 35 },
+  { label: "Week 4", guided: 86, unguided: 42 },
+  { label: "Week 8", guided: 93, unguided: 51 },
+];
+
+const skillDepthGraph = [
+  { label: "AI Build Workflow", confidence: 88, minutes: 35 },
+  { label: "Azure Deploy Basics", confidence: 84, minutes: 45 },
+  { label: "Live URL Validation", confidence: 91, minutes: 25 },
+  { label: "Next-Step Roadmap", confidence: 86, minutes: 15 },
+];
+
 const sectionNavItems = [
   { id: "outcome-graph", label: "Outcome Graph" },
   { id: "workshop-journey", label: "Agenda" },
@@ -204,6 +219,28 @@ function OutcomeBar({ label, score, detail }: { label: string; score: number; de
       <p className="mt-2 text-[12px] leading-6 text-[#C8D7EE]">{detail}</p>
     </div>
   );
+}
+
+function buildGraphPath(points: Array<{ guided: number; unguided: number }>, key: "guided" | "unguided") {
+  const width = 560;
+  const height = 180;
+  const xStep = points.length > 1 ? width / (points.length - 1) : width;
+
+  return points
+    .map((point, index) => {
+      const x = index * xStep;
+      const y = height - (point[key] / 100) * 140 - 20;
+      return `${index === 0 ? "M" : "L"}${x},${y}`;
+    })
+    .join(" ");
+}
+
+function pointPosition(index: number, value: number, total: number) {
+  const width = 560;
+  const xStep = total > 1 ? width / (total - 1) : width;
+  const x = index * xStep;
+  const y = 180 - (value / 100) * 140 - 20;
+  return { x, y };
 }
 
 export function AiDeveloperLaunchLabPage({
@@ -536,6 +573,80 @@ export function AiDeveloperLaunchLabPage({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mx-auto max-w-7xl rounded-3xl border border-white/14 bg-[linear-gradient(135deg,rgba(2,6,23,0.84),rgba(15,23,42,0.86))] p-6 backdrop-blur-2xl sm:p-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CB4E8]">Builder Intelligence Graph</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Why This Workshop Is Worth Your Time</h2>
+          <p className="mt-3 max-w-3xl text-[14px] leading-7 text-[#C8D7EE]">
+            This is a guided execution sprint. The graph below compares readiness growth for builders who follow a structured 2-hour launch model
+            versus trial-and-error learning with no guided framework.
+          </p>
+
+          <div className="mt-6 rounded-2xl border border-white/12 bg-white/7 p-4 sm:p-5">
+            <div className="mb-4 flex flex-wrap items-center gap-3 text-[12px]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/12 px-3 py-1 text-[#FFD1A8]">
+                <span className="h-2 w-2 rounded-full bg-[#FF7A00]" />Guided Builder Path
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#1D7CFF]/40 bg-[#1D7CFF]/12 px-3 py-1 text-[#B6D6FF]">
+                <span className="h-2 w-2 rounded-full bg-[#1D7CFF]" />Unguided Trial Path
+              </span>
+            </div>
+
+            <svg viewBox="0 0 560 200" className="w-full">
+              {[20, 40, 60, 80, 100].map((tick) => {
+                const y = 180 - (tick / 100) * 140 - 20;
+                return (
+                  <g key={tick}>
+                    <line x1="0" y1={y} x2="560" y2={y} stroke="rgba(148,163,184,0.2)" strokeDasharray="4 6" />
+                    <text x="0" y={y - 4} fill="rgba(148,163,184,0.85)" fontSize="10">{tick}%</text>
+                  </g>
+                );
+              })}
+
+              <path d={buildGraphPath(readinessComparison, "unguided")} fill="none" stroke="#60A5FA" strokeWidth="2.5" strokeLinecap="round" />
+              <path d={buildGraphPath(readinessComparison, "guided")} fill="none" stroke="#FB923C" strokeWidth="3" strokeLinecap="round" />
+
+              {readinessComparison.map((point, index) => {
+                const guided = pointPosition(index, point.guided, readinessComparison.length);
+                const unguided = pointPosition(index, point.unguided, readinessComparison.length);
+
+                return (
+                  <g key={point.label}>
+                    <circle cx={guided.x} cy={guided.y} r="4" fill="#FB923C" />
+                    <circle cx={unguided.x} cy={unguided.y} r="4" fill="#60A5FA" />
+                  </g>
+                );
+              })}
+            </svg>
+
+            <div className="mt-4 grid grid-cols-5 gap-2 text-center text-[11px] font-semibold text-[#A7B5D4]">
+              {readinessComparison.map((point) => (
+                <p key={point.label}>{point.label}</p>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {skillDepthGraph.map((skill) => (
+              <div key={skill.label} className="rounded-2xl border border-white/12 bg-white/8 p-4 text-center backdrop-blur-xl">
+                <div
+                  className="mx-auto grid h-24 w-24 place-items-center rounded-full"
+                  style={{
+                    background: `conic-gradient(#FF7A00 ${skill.confidence * 3.6}deg, rgba(255,255,255,0.12) 0deg)`,
+                  }}
+                >
+                  <div className="grid h-[74px] w-[74px] place-items-center rounded-full bg-[#08142E] text-[14px] font-bold text-white">
+                    {skill.confidence}%
+                  </div>
+                </div>
+                <p className="mt-3 text-sm font-semibold text-white">{skill.label}</p>
+                <p className="mt-1 text-[12px] text-[#A7B5D4]">~{skill.minutes} mins guided depth</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
