@@ -13,8 +13,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
   return (
     <>
-      <section className="px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-xl">
+      <section className="flex min-h-[calc(100dvh-170px)] items-center px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-md">
           <AuthForm mode="signup" redirectTo={redirectTo} />
           <p className="mt-4 text-center text-sm text-brand-muted">
             Already registered?{" "}
