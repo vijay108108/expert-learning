@@ -236,7 +236,7 @@ export function EnrollmentForm({
   }, [user]);
 
   useEffect(() => {
-    if (!autoCheckoutIntentReady || autoCheckoutAttemptedRef.current || pending || isPaying) {
+    if (!autoCheckoutIntentReady || autoCheckoutAttemptedRef.current) {
       return;
     }
 
@@ -244,10 +244,14 @@ export function EnrollmentForm({
       return;
     }
 
+    /* Prefill only — do not auto-submit payment. Auto-submitting here
+       skipped the coupon step entirely, and could misfire whenever the
+       user's Firebase auth state changed for an unrelated reason (e.g.
+       confirming an OTP during forgot-password) while a stale intent
+       from an earlier signup was still within its 10-minute window. */
     autoCheckoutAttemptedRef.current = true;
     window.sessionStorage.removeItem(checkoutAutoPayIntentKey);
-    formRef.current?.requestSubmit();
-  }, [autoCheckoutIntentReady, form.email, form.name, form.phone, isPaying, pending]);
+  }, [autoCheckoutIntentReady, form.email, form.name, form.phone]);
 
   function getSuccessPath(invoice: StoredOrderSuccess, needsRegistration?: boolean) {
     if (!user || needsRegistration) {
