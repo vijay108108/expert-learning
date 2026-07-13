@@ -24,6 +24,17 @@ function readCsvEnvValues(value: string | undefined) {
     .filter(Boolean);
 }
 
+function readFirstDefinedEnvValue(...values: Array<string | undefined>) {
+  for (const value of values) {
+    const normalized = readEnvValue(value);
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  return undefined;
+}
+
 export const env = {
   nextPublicSiteUrl: process.env.NEXT_PUBLIC_SITE_URL || siteConfig.url,
   nextPublicGaMeasurementId: readEnvValue(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID)
@@ -32,17 +43,41 @@ export const env = {
   nextPublicMetaPixelId: readEnvValue(process.env.NEXT_PUBLIC_META_PIXEL_ID) || "",
   nextPublicWorkshopWhatsappUrl: readEnvValue(process.env.NEXT_PUBLIC_WORKSHOP_WHATSAPP_URL) || "",
   nextPublicWorkshopMeetingUrl: readEnvValue(process.env.NEXT_PUBLIC_WORKSHOP_MEETING_URL) || "",
-  nextPublicFirebaseApiKey: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
-  nextPublicFirebaseAuthDomain: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN),
-  nextPublicFirebaseProjectId: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
-  nextPublicFirebaseStorageBucket: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET),
-  nextPublicFirebaseMessagingSenderId: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID),
-  nextPublicFirebaseAppId: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_APP_ID),
-  nextPublicFirebaseMeasurementId: readEnvValue(process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID),
+  nextPublicFirebaseApiKey: readFirstDefinedEnvValue(
+    process.env.NEXT_PUBLIC_APP_FIREBASE_API_KEY,
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  ),
+  nextPublicFirebaseAuthDomain: readFirstDefinedEnvValue(
+    process.env.NEXT_PUBLIC_APP_FIREBASE_AUTH_DOMAIN,
+    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  ),
+  nextPublicFirebaseProjectId: readFirstDefinedEnvValue(
+    process.env.NEXT_PUBLIC_APP_FIREBASE_PROJECT_ID,
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  ),
+  nextPublicFirebaseStorageBucket: readFirstDefinedEnvValue(
+    process.env.NEXT_PUBLIC_APP_FIREBASE_STORAGE_BUCKET,
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  ),
+  nextPublicFirebaseMessagingSenderId: readFirstDefinedEnvValue(
+    process.env.NEXT_PUBLIC_APP_FIREBASE_MESSAGING_SENDER_ID,
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  ),
+  nextPublicFirebaseAppId: readFirstDefinedEnvValue(
+    process.env.NEXT_PUBLIC_APP_FIREBASE_APP_ID,
+    process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  ),
+  nextPublicFirebaseMeasurementId: readFirstDefinedEnvValue(
+    process.env.NEXT_PUBLIC_APP_FIREBASE_MEASUREMENT_ID,
+    process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  ),
   nextPublicFirebasePhoneAuthTestMode: readBooleanEnvValue(
     process.env.NEXT_PUBLIC_FIREBASE_PHONE_AUTH_TEST_MODE,
   ),
-  firebaseServiceAccountKey: process.env.FIREBASE_SERVICE_ACCOUNT_KEY || "",
+  firebaseServiceAccountKey:
+    process.env.APP_FIREBASE_SERVICE_ACCOUNT_KEY
+    || process.env.FIREBASE_SERVICE_ACCOUNT_KEY
+    || "",
   nextPublicSupabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   nextPublicSupabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",

@@ -34,3 +34,29 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Firebase Project Separation
+
+This codebase supports dedicated Firebase credentials for this app, independent of any other app sharing older keys.
+
+Preferred variables for this app:
+
+- NEXT_PUBLIC_APP_FIREBASE_API_KEY
+- NEXT_PUBLIC_APP_FIREBASE_AUTH_DOMAIN
+- NEXT_PUBLIC_APP_FIREBASE_PROJECT_ID
+- NEXT_PUBLIC_APP_FIREBASE_STORAGE_BUCKET
+- NEXT_PUBLIC_APP_FIREBASE_MESSAGING_SENDER_ID
+- NEXT_PUBLIC_APP_FIREBASE_APP_ID
+- NEXT_PUBLIC_APP_FIREBASE_MEASUREMENT_ID (optional)
+- APP_FIREBASE_SERVICE_ACCOUNT_KEY (server/admin SDK)
+
+Backward compatibility:
+
+- If APP-prefixed variables are missing, the app automatically falls back to existing NEXT_PUBLIC_FIREBASE_* and FIREBASE_SERVICE_ACCOUNT_KEY values.
+
+Recommended migration:
+
+1. Create a new Firebase project for this app.
+2. Add all APP-prefixed client variables and APP_FIREBASE_SERVICE_ACCOUNT_KEY in your server environment.
+3. Keep old variables unchanged until you verify login, admin, enrollments, and payments.
+4. Remove old shared Firebase variables only after successful verification.
