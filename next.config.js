@@ -8,9 +8,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: ignoreBuildTypecheck,
   },
-  eslint: {
-    ignoreDuringBuilds: ignoreBuildTypecheck,
-  },
 
   async headers() {
     return [
