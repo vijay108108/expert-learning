@@ -30,7 +30,7 @@ export function initMetaPixel() {
     return;
   }
 
-  if (!hasMetaPixel() || typeof window.fbq !== "function") {
+  if (!hasMetaPixel()) {
     return;
   }
 
@@ -38,8 +38,28 @@ export function initMetaPixel() {
     return;
   }
 
-  window.fbq("init", getMetaPixelId());
-  window._metaPixelInitialized = true;
+  const tryInit = () => {
+    if (typeof window.fbq !== "function") {
+      return false;
+    }
+
+    window.fbq("init", getMetaPixelId());
+    window._metaPixelInitialized = true;
+    return true;
+  };
+
+  if (tryInit()) {
+    return;
+  }
+
+  let attempts = 0;
+  const interval = window.setInterval(() => {
+    attempts += 1;
+
+    if (window._metaPixelInitialized || tryInit() || attempts >= 20) {
+      window.clearInterval(interval);
+    }
+  }, 250);
 }
 
 export function trackMetaEvent(event: MetaStandardEvent, params?: MetaEventParams) {

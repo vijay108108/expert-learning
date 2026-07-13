@@ -93,7 +93,9 @@ if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
 n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');`}
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '${env.nextPublicMetaPixelId}');
+fbq('track', 'PageView');`}
           </Script>
         ) : null}
         {/* PWA / Apple icons */}
@@ -108,6 +110,18 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
         <meta name="msapplication-TileImage" content="/icon-512.png" />
       </head>
       <body className="min-h-full bg-background text-foreground">
+        {env.nextPublicMetaPixelId ? (
+          <noscript>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              height="1"
+              width="1"
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${env.nextPublicMetaPixelId}&ev=PageView&noscript=1`}
+              alt=""
+            />
+          </noscript>
+        ) : null}
         <AuthProvider>
           <CartProvider>
             <div className="relative min-h-screen overflow-x-clip">
