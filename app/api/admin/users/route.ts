@@ -14,6 +14,14 @@ type AdminListUser = {
   createdAt?: string;
 };
 
+type EnrollmentUserHint = {
+  userId: string;
+  userName?: string;
+  userPhone?: string;
+  userEmail?: string;
+  enrolledAt?: string;
+};
+
 function normalizePhoneForDisplay(phone: string | undefined) {
   if (!phone) {
     return "";
@@ -45,12 +53,13 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [profileSnapshot, listedUsers] = await Promise.all([
+    const [profileSnapshot, enrollmentSnapshot] = await Promise.all([
       db.collection("users").get(),
-      auth.listUsers(1000),
+      db.collection("enrollments").get(),
     ]);
 
     const byUid = new Map<string, AdminListUser>();
+    const enrollmentHints = new Map<string, EnrollmentUserHint>();
 
     for (const doc of profileSnapshot.docs) {
       const data = doc.data() as Partial<AdminListUser>;
@@ -67,34 +76,89 @@ export async function GET(request: Request) {
       });
     }
 
-    for (const userRecord of listedUsers.users) {
-      const uid = userRecord.uid;
-      const existing = byUid.get(uid);
-      const providerIds = new Set((userRecord.providerData || []).map((provider) => provider.providerId));
-
-      let authMethod: AdminListUser["authMethod"] = existing?.authMethod;
-      if (!authMethod) {
-        if (providerIds.has("google.com")) {
-          authMethod = "google";
-        } else if (providerIds.has("password")) {
-          authMethod = "password";
-        } else if (providerIds.has("phone")) {
-          authMethod = "otp";
-        }
+    for (const doc of enrollmentSnapshot.docs) {
+      const data = doc.data() as Partial<EnrollmentUserHint>;
+      const userId = typeof data.userId === "string" ? data.userId : "";
+      if (!userId) {
+        continue;
       }
 
-      const merged: AdminListUser = {
-        id: uid,
-        uid,
-        name: existing?.name || userRecord.displayName || "",
-        phone: existing?.phone || normalizePhoneForDisplay(userRecord.phoneNumber || undefined),
-        email: existing?.email || userRecord.email || "",
-        role: existing?.role || "student",
-        authMethod,
-        createdAt: existing?.createdAt || userRecord.metadata.creationTime || "",
-      };
+      const current = enrollmentHints.get(userId);
+      const currentTs = new Date(current?.enrolledAt || 0).getTime();
+      const nextTs = new Date(data.enrolledAt || 0).getTime();
 
-      byUid.set(uid, merged);
+      if (!current || nextTs >= currentTs) {
+        enrollmentHints.set(userId, {
+          userId,
+          userName: typeof data.userName === "string" ? data.userName : "",
+          userPhone: typeof data.userPhone === "string" ? data.userPhone : "",
+          userEmail: typeof data.userEmail === "string" ? data.userEmail : "",
+          enrolledAt: typeof data.enrolledAt === "string" ? data.enrolledAt : "",
+        });
+      }
+
+      if (!byUid.has(userId)) {
+        byUid.set(userId, {
+          id: userId,
+          uid: userId,
+          name: "",
+          phone: "",
+          email: "",
+          role: "student",
+          createdAt: "",
+        });
+      }
+    }
+
+    const scopedUids = Array.from(byUid.keys());
+
+    for (let index = 0; index < scopedUids.length; index += 100) {
+      const chunk = scopedUids.slice(index, index + 100);
+      const authUsers = await auth.getUsers(chunk.map((uid) => ({ uid })));
+
+      for (const userRecord of authUsers.users) {
+        const uid = userRecord.uid;
+        const existing = byUid.get(uid);
+        if (!existing) {
+          continue;
+        }
+
+        const providerIds = new Set((userRecord.providerData || []).map((provider) => provider.providerId));
+        let authMethod: AdminListUser["authMethod"] = existing.authMethod;
+        if (!authMethod) {
+          if (providerIds.has("google.com")) {
+            authMethod = "google";
+          } else if (providerIds.has("password")) {
+            authMethod = "password";
+          } else if (providerIds.has("phone")) {
+            authMethod = "otp";
+          }
+        }
+
+        byUid.set(uid, {
+          ...existing,
+          name: existing.name || userRecord.displayName || "",
+          phone: existing.phone || normalizePhoneForDisplay(userRecord.phoneNumber || undefined),
+          email: existing.email || userRecord.email || "",
+          authMethod,
+          createdAt: existing.createdAt || userRecord.metadata.creationTime || "",
+        });
+      }
+    }
+
+    for (const [uid, hint] of enrollmentHints.entries()) {
+      const existing = byUid.get(uid);
+      if (!existing) {
+        continue;
+      }
+
+      byUid.set(uid, {
+        ...existing,
+        name: existing.name || hint.userName || "",
+        phone: existing.phone || normalizePhoneForDisplay(hint.userPhone),
+        email: existing.email || hint.userEmail || "",
+        createdAt: existing.createdAt || hint.enrolledAt || "",
+      });
     }
 
     const users = Array.from(byUid.values()).sort(

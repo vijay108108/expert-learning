@@ -41,6 +41,18 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
+    const [userDocSnapshot, enrollmentSnapshot] = await Promise.all([
+      db.collection("users").doc(uid).get(),
+      db.collection("enrollments").where("userId", "==", uid).limit(1).get(),
+    ]);
+
+    if (!userDocSnapshot.exists && enrollmentSnapshot.empty) {
+      return NextResponse.json(
+        { success: false, message: "This user does not belong to this app." },
+        { status: 404 },
+      );
+    }
+
     await auth.updateUser(uid, { password });
     await db.collection("users").doc(uid).set(
       { passwordUpdatedAt: new Date().toISOString() },

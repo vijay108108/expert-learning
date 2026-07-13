@@ -38,13 +38,20 @@ export async function DELETE(request: Request, context: RouteContext) {
     const userDocSnapshot = await userDocRef.get();
     const userData = userDocSnapshot.exists ? userDocSnapshot.data() as { phone?: string } : null;
 
+    const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).get();
+    if (!userDocSnapshot.exists && enrollmentsSnapshot.empty) {
+      return NextResponse.json(
+        { success: false, message: "This user does not belong to this app." },
+        { status: 404 },
+      );
+    }
+
     await auth.deleteUser(uid).catch((error) => {
       if (error?.code !== "auth/user-not-found") {
         throw error;
       }
     });
 
-    const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).get();
     const phoneClaimByUidSnapshot = await db
       .collection("phone-signup-claims")
       .where("uid", "==", uid)
