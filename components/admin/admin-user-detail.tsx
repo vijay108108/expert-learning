@@ -2,17 +2,26 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, CreditCard, FileText, GraduationCap, Phone, RefreshCw, UserRound } from "lucide-react";
-import { listAllEnrollments, listUserProfiles, type AppUserProfile, type FirestoreEnrollment } from "@/lib/firebase";
+import { ArrowLeft, CreditCard, Edit2, FileText, GraduationCap, LoaderCircle, Phone, RefreshCw, Save, UserRound } from "lucide-react";
+import { getFirebaseAuth, listAllEnrollments, listUserProfiles, type AppUserProfile, type FirestoreEnrollment } from "@/lib/firebase";
 import { formatAdminCurrency, formatAdminDate } from "@/lib/admin/reporting";
 
-type UserRecord = AppUserProfile & { id: string };
+type UserRecord = AppUserProfile & { id: string; companyName?: string; gstNumber?: string; billingAddress?: string };
 type EnrollmentRecord = FirestoreEnrollment & { id: string };
 
 export function AdminUserDetail({ uid }: { uid: string }) {
   const [user, setUser] = useState<UserRecord | null>(null);
   const [enrollments, setEnrollments] = useState<EnrollmentRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editCompanyName, setEditCompanyName] = useState("");
+  const [editGstNumber, setEditGstNumber] = useState("");
+  const [editBillingAddress, setEditBillingAddress] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -58,6 +67,79 @@ export function AdminUserDetail({ uid }: { uid: string }) {
 
     return () => window.clearTimeout(timer);
   }, [load]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    setEditName(user.name || "");
+    setEditEmail(user.email || "");
+    setEditPhone(user.phone || "");
+    setEditCompanyName(user.companyName || "");
+    setEditGstNumber(user.gstNumber || "");
+    setEditBillingAddress(user.billingAddress || "");
+  }, [user]);
+
+  async function saveUserDetails() {
+    const authToken = await getFirebaseAuth()?.currentUser?.getIdToken();
+    if (!authToken || !user) {
+      setSaveMsg("You are not signed in as admin.");
+      return;
+    }
+
+    if (!editName.trim()) {
+      setSaveMsg("Name is required.");
+      return;
+    }
+
+    setSaving(true);
+    setSaveMsg(null);
+
+    try {
+      const response = await fetch(`/api/admin/users/${encodeURIComponent(user.uid || user.id)}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: editName.trim(),
+          email: editEmail.trim(),
+          phone: editPhone.trim(),
+          companyName: editCompanyName.trim(),
+          gstNumber: editGstNumber.trim().toUpperCase(),
+          billingAddress: editBillingAddress.trim(),
+        }),
+      });
+
+      const payload = (await response.json().catch(() => null)) as { success?: boolean; message?: string } | null;
+      if (!response.ok || !payload?.success) {
+        setSaveMsg(payload?.message || "Unable to update user details.");
+        return;
+      }
+
+      setSaveMsg("User details updated successfully.");
+      setEditing(false);
+      setUser((current) =>
+        current
+          ? {
+              ...current,
+              name: editName.trim(),
+              email: editEmail.trim(),
+              phone: editPhone.trim(),
+              companyName: editCompanyName.trim(),
+              gstNumber: editGstNumber.trim().toUpperCase(),
+              billingAddress: editBillingAddress.trim(),
+            }
+          : current,
+      );
+    } catch {
+      setSaveMsg("Unable to update user details.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const summary = useMemo(() => {
     const totalPaid = enrollments.reduce((sum, item) => sum + (item.amountPaid || 0), 0);
@@ -141,6 +223,81 @@ export function AdminUserDetail({ uid }: { uid: string }) {
               <p className="text-xs uppercase tracking-[0.2em] text-[#64748B]">User ID</p>
               <p className="mt-2 break-all text-sm text-white">{user.uid || user.id}</p>
             </div>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-white/8 bg-white/5 p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-sm font-semibold text-white">Edit customer details</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditing((current) => !current);
+                  setSaveMsg(null);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-[#94A3B8] transition hover:text-white"
+              >
+                <Edit2 className="h-3.5 w-3.5" />
+                {editing ? "Close" : "Edit"}
+              </button>
+            </div>
+
+            {editing ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <input
+                  value={editName}
+                  onChange={(event) => setEditName(event.target.value)}
+                  placeholder="Full name"
+                  className="h-10 rounded-xl border border-white/10 bg-[#0B1220] px-3 text-sm text-white placeholder:text-[#475569] outline-none"
+                />
+                <input
+                  value={editEmail}
+                  onChange={(event) => setEditEmail(event.target.value)}
+                  placeholder="Email"
+                  className="h-10 rounded-xl border border-white/10 bg-[#0B1220] px-3 text-sm text-white placeholder:text-[#475569] outline-none"
+                />
+                <input
+                  value={editPhone}
+                  onChange={(event) => setEditPhone(event.target.value)}
+                  placeholder="Phone (+91XXXXXXXXXX)"
+                  className="h-10 rounded-xl border border-white/10 bg-[#0B1220] px-3 text-sm text-white placeholder:text-[#475569] outline-none"
+                />
+                <input
+                  value={editCompanyName}
+                  onChange={(event) => setEditCompanyName(event.target.value)}
+                  placeholder="Company name"
+                  className="h-10 rounded-xl border border-white/10 bg-[#0B1220] px-3 text-sm text-white placeholder:text-[#475569] outline-none"
+                />
+                <input
+                  value={editGstNumber}
+                  onChange={(event) => setEditGstNumber(event.target.value.toUpperCase())}
+                  placeholder="GST Number"
+                  className="h-10 rounded-xl border border-white/10 bg-[#0B1220] px-3 text-sm text-white placeholder:text-[#475569] outline-none"
+                />
+                <input
+                  value={editBillingAddress}
+                  onChange={(event) => setEditBillingAddress(event.target.value)}
+                  placeholder="Billing address"
+                  className="h-10 rounded-xl border border-white/10 bg-[#0B1220] px-3 text-sm text-white placeholder:text-[#475569] outline-none"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => void saveUserDetails()}
+                  disabled={saving}
+                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-3 text-sm font-semibold text-white disabled:opacity-60"
+                >
+                  {saving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-2 text-xs text-[#94A3B8] sm:grid-cols-2">
+                <p>Company: <span className="text-white">{user.companyName || "-"}</span></p>
+                <p>GST: <span className="text-white">{user.gstNumber || "-"}</span></p>
+                <p className="sm:col-span-2">Billing: <span className="text-white">{user.billingAddress || "-"}</span></p>
+              </div>
+            )}
+
+            {saveMsg ? <p className="mt-3 text-xs text-[#94A3B8]">{saveMsg}</p> : null}
           </div>
         </div>
 

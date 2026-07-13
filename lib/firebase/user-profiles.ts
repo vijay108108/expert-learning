@@ -11,6 +11,10 @@ export type AppUserProfile = {
   email?: string;
   photo?: string;
   phone?: string;
+  companyName?: string;
+  gstNumber?: string;
+  billingAddress?: string;
+  passwordUpdatedAt?: string;
   createdAt?: string;
   updatedAt?: string;
   authMethod?: "google" | "otp" | "password";

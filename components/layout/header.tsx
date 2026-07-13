@@ -53,28 +53,39 @@ export function Header() {
         <Brand className="items-center" />
 
         {/* Desktop nav */}
-        <nav className="hidden items-center justify-center gap-1 pl-4 md:flex" aria-label="Main navigation">
-          {navItems.map((item) => {
-            const active = isActive(pathname, item.prefixes);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "relative rounded-lg px-3 py-2 text-[16px] font-semibold transition-colors duration-200 ease-out lg:text-[17px]",
-                  active
-                    ? "text-[#0B2E6B]"
-                    : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]",
-                )}
-              >
-                {item.label}
-                {active && (
-                  <span className="absolute bottom-0.5 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-[#0B2E6B]" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+        {isAuthed ? (
+          <div className="hidden items-center justify-center md:flex">
+            <Link
+              href="/dashboard/courses"
+              className="rounded-lg border border-[#D7E2F3] bg-[#EAF0FA] px-4 py-2 text-[13px] font-semibold text-[#0B2E6B] transition hover:border-[#0B2E6B]/40"
+            >
+              Go to LMS
+            </Link>
+          </div>
+        ) : (
+          <nav className="hidden items-center justify-center gap-1 pl-4 md:flex" aria-label="Main navigation">
+            {navItems.map((item) => {
+              const active = isActive(pathname, item.prefixes);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "relative rounded-lg px-3 py-2 text-[16px] font-semibold transition-colors duration-200 ease-out lg:text-[17px]",
+                    active
+                      ? "text-[#0B2E6B]"
+                      : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]",
+                  )}
+                >
+                  {item.label}
+                  {active && (
+                    <span className="absolute bottom-0.5 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-[#0B2E6B]" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
 
         {/* Desktop right */}
         <div className="hidden items-center justify-end gap-2.5 md:flex">
@@ -138,24 +149,34 @@ export function Header() {
         aria-hidden={!isMobileMenuOpen}
       >
         <div className="space-y-0.5 px-4 pb-4 pt-2">
-          {navItems.map((item) => {
-            const active = isActive(pathname, item.prefixes);
-            return (
+          {!isAuthed
+            ? navItems.map((item) => {
+                const active = isActive(pathname, item.prefixes);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "flex items-center rounded-xl px-3 py-2.5 text-sm transition-all",
+                      active
+                        ? "bg-[#EAF0FA] font-semibold text-[#0B2E6B]"
+                        : "font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })
+            : (
               <Link
-                key={item.href}
-                href={item.href}
+                href="/dashboard/courses"
                 onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "flex items-center rounded-xl px-3 py-2.5 text-sm transition-all",
-                  active
-                    ? "bg-[#EAF0FA] font-semibold text-[#0B2E6B]"
-                    : "font-medium text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]",
-                )}
+                className="mb-2 flex items-center justify-center rounded-xl border border-[#D7E2F3] bg-[#EAF0FA] px-3 py-2.5 text-sm font-semibold text-[#0B2E6B]"
               >
-                {item.label}
+                Open LMS Dashboard
               </Link>
-            );
-          })}
+            )}
 
           <div className="mt-3 border-t border-[#F1F5F9] pt-3">
             <a

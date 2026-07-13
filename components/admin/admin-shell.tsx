@@ -39,12 +39,12 @@ const nav = [
     ],
   },
   {
-    section: "Content (CMS)",
+    section: "Program Delivery",
     items: [
-      { label: "Course Catalog",href: "/admin/catalog",      icon: BookOpenCheck },
-      { label: "Workshops",     href: "/admin/workshops",    icon: Megaphone },
-      { label: "LMS Courses",   href: "/admin/courses",      icon: BookOpenCheck },
-      { label: "LMS Content",   href: "/admin/lms",          icon: Layers },
+      { label: "Program Catalog", href: "/admin/catalog",      icon: BookOpenCheck },
+      { label: "Program Builder", href: "/admin/courses",      icon: BookOpenCheck },
+      { label: "Workshop Builder",href: "/admin/workshops",    icon: Megaphone },
+      { label: "LMS Builder",     href: "/admin/lms",          icon: Layers },
     ],
   },
   {

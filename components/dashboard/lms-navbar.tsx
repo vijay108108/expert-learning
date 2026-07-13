@@ -7,7 +7,6 @@ import {
   ChevronRight,
   GraduationCap,
   LayoutDashboard,
-  LibraryBig,
   LogOut,
   PlayCircle,
   User,
@@ -22,7 +21,6 @@ const navLinks = [
   { label: "My Courses",   href: "/dashboard/courses",  icon: LayoutDashboard },
   { label: "My Learning",  href: "/lms/my-learning",    icon: BookOpenCheck },
   { label: "Player",       href: "/lms/player",         icon: PlayCircle },
-  { label: "Resources",    href: "/lms/resources",      icon: LibraryBig },
 ] as const;
 
 function LmsBrand() {
@@ -188,13 +186,6 @@ export function LmsNavbar() {
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => router.push("/")}
-            className="hidden items-center gap-1.5 rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-[12px] text-[#64748B] transition hover:bg-[#F8FAFC] hover:text-[#0F172A] sm:flex"
-          >
-            ← Main Site
-          </button>
         </div>
       </div>
 

@@ -69,8 +69,8 @@ export function LmsFoundation({ title, subtitle }: LmsFoundationProps) {
                     <Link href={`/lms/course/${course.id}`} className="inline-flex h-12 items-center rounded-[14px] bg-[linear-gradient(135deg,#1B4C92,#0B2E6B)] px-4 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.18)] transition hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(99,102,241,0.24)]">
                       Continue Learning
                     </Link>
-                    <Link href="/lms/resources" className="inline-flex h-12 items-center rounded-[14px] border border-[#E2E8F0] bg-white px-4 text-sm font-medium text-[#0F172A] transition hover:bg-[#F8FAFC]">
-                      View Syllabus
+                        <Link href="/lms/my-learning" className="inline-flex h-12 items-center rounded-[14px] border border-[#E2E8F0] bg-white px-4 text-sm font-medium text-[#0F172A] transition hover:bg-[#F8FAFC]">
+                          Open My Learning
                     </Link>
                   </div>
                 </article>

@@ -1155,6 +1155,12 @@ export function PhoneAuthFlow({
         // Firestore profile sync is best-effort; auth success must not be blocked.
       }
 
+      try {
+        await saveUserWhatsappNumber(linked.user.uid, verifiedPhone);
+      } catch {
+        // WhatsApp number save is best-effort and should not block signup.
+      }
+
       const checkoutPath = redirectTo.split("?")[0] || "";
       if (checkoutPath.startsWith("/checkout/")) {
         const courseSlug = decodeURIComponent(checkoutPath.replace("/checkout/", "").trim());

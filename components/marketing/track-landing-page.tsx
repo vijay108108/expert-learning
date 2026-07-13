@@ -100,8 +100,8 @@ export function TrackLandingPage({
         <article className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.78)] p-5">
           <h2 className="text-xl font-semibold">LMS Learning Resources Preview</h2>
           <p className="mt-2 text-sm text-[#B7C3D9]">{lmsPreviewLabel}</p>
-          <Link href="/lms/resources" className="mt-3 inline-flex rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-[#D8E1F0]">
-            Open LMS Resources
+          <Link href="/lms/my-learning" className="mt-3 inline-flex rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-[#D8E1F0]">
+            Open My Learning
           </Link>
         </article>
 
