@@ -76,7 +76,7 @@ function isActive(pathname: string, href: string, exact?: boolean) {
 }
 
 function Sidebar({ onClose }: { onClose?: () => void }) {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const router   = useRouter();
   const { user, signOutUser } = useAuth();
 
@@ -177,7 +177,7 @@ export function AdminShell({
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const { signOutUser } = useAuth();
 
   // Build breadcrumb
