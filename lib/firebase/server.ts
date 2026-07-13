@@ -59,11 +59,18 @@ export async function checkSignupPhoneExists(phone: string) {
   if (auth && normalizedPhoneWithPlus) {
     try {
       const user = await auth.getUserByPhoneNumber(normalizedPhoneWithPlus);
+      const hasPasswordProvider = user.providerData.some((provider) => provider.providerId === "password");
+      const hasPhoneAliasEmail =
+        !!fakeEmail &&
+        typeof user.email === "string" &&
+        user.email.trim().toLowerCase() === fakeEmail.toLowerCase();
+      const hasPasswordHash = typeof user.passwordHash === "string" && user.passwordHash.length > 0;
+
       return {
         exists: true,
         source: "auth-phone" as const,
         normalizedPhone,
-        passwordEnabled: user.providerData.some((provider) => provider.providerId === "password"),
+        passwordEnabled: hasPasswordProvider || hasPhoneAliasEmail || hasPasswordHash,
         uid: user.uid,
       };
     } catch (error) {
