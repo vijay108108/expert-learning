@@ -231,6 +231,9 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
             <Link href="/about"   className="transition hover:text-white">About</Link>
             <Link href="/contact" className="transition hover:text-white">Contact</Link>
             <Link href="/programs" className="transition hover:text-white">Programs</Link>
+            <Link href="/privacy-policy" className="transition hover:text-white">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="transition hover:text-white">Terms of Service</Link>
+            <Link href="/refund-policy" className="transition hover:text-white">Refund Policy</Link>
           </div>
         </div>
       </div>

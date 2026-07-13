@@ -785,8 +785,10 @@ export function PhoneAuthFlow({
           return;
         }
       } catch {
-        await finishAuthSuccess("Login successful!");
-        return;
+        /* Profile lookup failed (e.g. transient network error) — fall through
+           to the phone-collection step rather than assuming a phone is on
+           file. Skipping straight to finishAuthSuccess here would let a
+           Google account through with no phone number ever captured. */
       }
 
       googleUserIdRef.current = signedInUser.uid;
@@ -832,10 +834,6 @@ export function PhoneAuthFlow({
     } finally {
       setPending(false);
     }
-  }
-
-  async function handleGooglePhoneSkip() {
-    await finishAuthSuccess("Login successful!");
   }
 
   async function handlePasswordLogin() {
@@ -2380,18 +2378,6 @@ export function PhoneAuthFlow({
                     {isModal ? <ArrowRight className="h-4 w-4" /> : null}
                   </>
                 )}
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleGooglePhoneSkip()}
-                disabled={pending}
-                className={cn(
-                  isModal
-                    ? "inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border border-[#CBD5E1] bg-white px-4 text-[13px] text-[#475569] transition hover:bg-[#F8FAFC] hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-70"
-                    : buttonLinkClasses("outline", "w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"),
-                )}
-              >
-                Skip for now
               </button>
             </div>
           </>

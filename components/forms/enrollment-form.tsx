@@ -675,6 +675,17 @@ export function EnrollmentForm({
         >
           {pending || isPaying ? "Processing..." : submitLabel}
         </button>
+        <p className="mt-3 text-center text-[11px] leading-5 text-brand-muted">
+          By proceeding, you agree to our{" "}
+          <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-blue-light">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href="/refund-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-blue-light">
+            Refund &amp; Cancellation Policy
+          </a>
+          .
+        </p>
       </form>
       {message && <p className="mt-4 text-sm text-brand-muted">{message}</p>}
     </div>

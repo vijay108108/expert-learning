@@ -4,7 +4,25 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 import { CART_STORAGE_KEY } from "@/lib/cart";
+import { getFirebaseAuth } from "@/lib/firebase";
 import { latestOrderStorageKey } from "@/lib/order-success";
+
+async function revokeServerSession() {
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+
+  if (!token) {
+    return;
+  }
+
+  try {
+    await fetch("/api/auth/revoke", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error) {
+    console.error("Session revocation failed:", error);
+  }
+}
 
 export const logoutToastSessionKey = "genznext-logout-toast";
 
@@ -26,6 +44,8 @@ export function useSecureLogout() {
   const { clearCart } = useCart();
 
   return async function secureLogout() {
+    await revokeServerSession();
+
     try {
       await signOutUser();
     } catch (error) {

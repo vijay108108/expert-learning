@@ -43,7 +43,7 @@ export async function verifyFirebaseBearerToken(request: Request) {
   }
 
   try {
-    const decoded = await auth.verifyIdToken(idToken);
+    const decoded = await auth.verifyIdToken(idToken, true);
     const role = await fetchUserProfileRole(decoded.uid);
 
     return {

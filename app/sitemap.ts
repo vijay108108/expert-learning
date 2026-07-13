@@ -12,6 +12,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog",
     "/career",
     "/corporate-training",
+    "/privacy-policy",
+    "/terms-of-service",
+    "/refund-policy",
   ];
 
   return [

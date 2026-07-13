@@ -27,7 +27,10 @@ service cloud.firestore {
       allow create: if request.auth != null
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.canonicalCourseId is string
-        && enrollmentId == request.auth.uid + "__" + request.resource.data.canonicalCourseId;
+        && enrollmentId == request.auth.uid + "__" + request.resource.data.canonicalCourseId
+        && request.resource.data.invoiceNumber is string
+        && exists(/databases/$(database)/documents/invoices/$(request.resource.data.invoiceNumber))
+        && get(/databases/$(database)/documents/invoices/$(request.resource.data.invoiceNumber)).data.userId == request.auth.uid;
       allow update, delete: if false;
     }
 
