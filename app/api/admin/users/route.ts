@@ -3,6 +3,116 @@ import { requireAdmin } from "@/lib/server/firebase-auth";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { normalizePhoneForAuth } from "@/lib/firebase/phone-utils";
 
+type AdminListUser = {
+  id: string;
+  uid: string;
+  name?: string;
+  phone?: string;
+  email?: string;
+  role?: "admin" | "student";
+  authMethod?: "google" | "otp" | "password";
+  createdAt?: string;
+};
+
+function normalizePhoneForDisplay(phone: string | undefined) {
+  if (!phone) {
+    return "";
+  }
+
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("91") && digits.length === 12) {
+    return digits;
+  }
+
+  return normalizePhoneForAuth(phone);
+}
+
+export async function GET(request: Request) {
+  const authUser = await requireAdmin(request);
+
+  if (!authUser) {
+    return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+  }
+
+  const auth = getAdminAuth();
+  const db = getAdminDb();
+
+  if (!auth || !db) {
+    return NextResponse.json(
+      { success: false, message: "Firebase Admin is not configured." },
+      { status: 503 },
+    );
+  }
+
+  try {
+    const [profileSnapshot, listedUsers] = await Promise.all([
+      db.collection("users").get(),
+      auth.listUsers(1000),
+    ]);
+
+    const byUid = new Map<string, AdminListUser>();
+
+    for (const doc of profileSnapshot.docs) {
+      const data = doc.data() as Partial<AdminListUser>;
+      const uid = String(data.uid || doc.id);
+      byUid.set(uid, {
+        id: uid,
+        uid,
+        name: data.name || "",
+        phone: normalizePhoneForDisplay(data.phone),
+        email: data.email || "",
+        role: data.role === "admin" ? "admin" : "student",
+        authMethod: data.authMethod,
+        createdAt: data.createdAt || "",
+      });
+    }
+
+    for (const userRecord of listedUsers.users) {
+      const uid = userRecord.uid;
+      const existing = byUid.get(uid);
+      const providerIds = new Set((userRecord.providerData || []).map((provider) => provider.providerId));
+
+      let authMethod: AdminListUser["authMethod"] = existing?.authMethod;
+      if (!authMethod) {
+        if (providerIds.has("google.com")) {
+          authMethod = "google";
+        } else if (providerIds.has("password")) {
+          authMethod = "password";
+        } else if (providerIds.has("phone")) {
+          authMethod = "otp";
+        }
+      }
+
+      const merged: AdminListUser = {
+        id: uid,
+        uid,
+        name: existing?.name || userRecord.displayName || "",
+        phone: existing?.phone || normalizePhoneForDisplay(userRecord.phoneNumber || undefined),
+        email: existing?.email || userRecord.email || "",
+        role: existing?.role || "student",
+        authMethod,
+        createdAt: existing?.createdAt || userRecord.metadata.creationTime || "",
+      };
+
+      byUid.set(uid, merged);
+    }
+
+    const users = Array.from(byUid.values()).sort(
+      (left, right) => new Date(right.createdAt || 0).getTime() - new Date(left.createdAt || 0).getTime(),
+    );
+
+    return NextResponse.json({ success: true, users });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: error instanceof Error ? error.message : "Unable to load users.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(request: Request) {
   const authUser = await requireAdmin(request);
 

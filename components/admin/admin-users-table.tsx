@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Download, KeyRound, RefreshCw, Search, Trash2, UserPlus, X } from "lucide-react";
-import { getFirebaseAuth, listAllEnrollments, listUserProfiles, updateUserRole, type AppUserProfile, type FirestoreEnrollment } from "@/lib/firebase";
+import { getFirebaseAuth, listAllEnrollments, updateUserRole, type AppUserProfile, type FirestoreEnrollment } from "@/lib/firebase";
 import { downloadCsv, formatAdminDate } from "@/lib/admin/reporting";
 
 type User = AppUserProfile & { id: string; totalPaid?: number; lastPurchaseAt?: string };
@@ -233,9 +233,32 @@ export function AdminUsersTable() {
 
   async function load() {
     setLoading(true);
+    setActionError("");
     try {
-      const [nextUsers, nextEnrollments] = await Promise.all([listUserProfiles(), listAllEnrollments()]);
-      const enrollments = nextEnrollments as Enrollment[];
+      const headers = await getAdminAuthHeader();
+      const usersResponse = await fetch("/api/admin/users", {
+        method: "GET",
+        headers,
+        cache: "no-store",
+      });
+      const usersPayload = (await usersResponse.json().catch(() => null)) as
+        | { success?: boolean; users?: User[]; message?: string }
+        | null;
+
+      if (!usersResponse.ok || !usersPayload?.success) {
+        throw new Error(usersPayload?.message || "Unable to load users.");
+      }
+
+      const nextUsers = (usersPayload.users || []) as User[];
+
+      let enrollments: Enrollment[] = [];
+      try {
+        const nextEnrollments = await listAllEnrollments();
+        enrollments = nextEnrollments as Enrollment[];
+      } catch {
+        enrollments = [];
+      }
+
       const enrollmentsByUser = new Map<string, Enrollment[]>();
 
       for (const enrollment of enrollments) {
@@ -264,8 +287,9 @@ export function AdminUsersTable() {
       });
 
       setUsers(mergedUsers);
-    } catch {
-      // ignore
+    } catch (error) {
+      setUsers([]);
+      setActionError(error instanceof Error ? error.message : "Unable to load users.");
     } finally {
       setLoading(false);
     }
