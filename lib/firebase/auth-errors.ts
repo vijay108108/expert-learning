@@ -20,6 +20,8 @@ const errorMessages: Record<string, string> = {
     "This domain is not authorized for Firebase phone authentication. Add it in Firebase Authentication settings.",
   "auth/operation-not-allowed":
     "Phone authentication is not enabled for this Firebase project yet.",
+  "auth/billing-not-enabled":
+    "Phone OTP is blocked because billing is not enabled for this Firebase project. In Google Cloud Console: enable billing for this project, then retry OTP.",
   "auth/app-not-authorized":
     "This app or domain is not authorized for Firebase phone authentication. Check Firebase Auth authorized domains.",
   "auth/invalid-api-key":
