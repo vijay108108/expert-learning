@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/server/firebase-auth";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
+import { isAppOwnedUser } from "@/lib/server/app-owned-user";
 
 type RouteContext = {
   params: Promise<{ uid: string }>;
@@ -41,9 +42,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const enrollmentSnapshot = await db.collection("enrollments").where("userId", "==", uid).limit(1).get();
-
-    if (enrollmentSnapshot.empty) {
+    if (!(await isAppOwnedUser(db, uid))) {
       return NextResponse.json(
         { success: false, message: "This user does not belong to this app." },
         { status: 404 },

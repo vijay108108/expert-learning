@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/server/firebase-auth";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { getPhoneLookupCandidates, normalizePhoneForAuth } from "@/lib/firebase/phone-utils";
+import { isAppOwnedUser } from "@/lib/server/app-owned-user";
 
 type RouteContext = {
   params: Promise<{ uid: string }>;
@@ -63,9 +64,8 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   try {
     const userDocRef = db.collection("users").doc(uid);
-    const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).limit(1).get();
 
-    if (enrollmentsSnapshot.empty) {
+    if (!(await isAppOwnedUser(db, uid))) {
       return NextResponse.json(
         { success: false, message: "This user does not belong to this app." },
         { status: 404 },
@@ -157,13 +157,14 @@ export async function DELETE(request: Request, context: RouteContext) {
     const userDocSnapshot = await userDocRef.get();
     const userData = userDocSnapshot.exists ? userDocSnapshot.data() as { phone?: string } : null;
 
-    const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).get();
-    if (enrollmentsSnapshot.empty) {
+    if (!(await isAppOwnedUser(db, uid))) {
       return NextResponse.json(
         { success: false, message: "This user does not belong to this app." },
         { status: 404 },
       );
     }
+
+    const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).get();
 
     await auth.deleteUser(uid).catch((error) => {
       if (error?.code !== "auth/user-not-found") {

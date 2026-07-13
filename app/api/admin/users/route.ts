@@ -53,13 +53,25 @@ export async function GET(request: Request) {
   }
 
   try {
-    const enrollmentSnapshot = await db.collection("enrollments").get();
+    const [enrollmentSnapshot, phoneClaimSnapshot] = await Promise.all([
+      db.collection("enrollments").get(),
+      db.collection("phone-signup-claims").get(),
+    ]);
 
+    /* App ownership can't rely on enrollments alone — most users sign up
+       before ever buying anything. phone-signup-claims is written at
+       signup time by this app's phone/OTP flow, so it covers those too. */
     const appOwnedUids = new Set<string>();
     for (const doc of enrollmentSnapshot.docs) {
       const userId = doc.data()?.userId;
       if (typeof userId === "string" && userId) {
         appOwnedUids.add(userId);
+      }
+    }
+    for (const doc of phoneClaimSnapshot.docs) {
+      const uid = doc.data()?.uid;
+      if (typeof uid === "string" && uid) {
+        appOwnedUids.add(uid);
       }
     }
 
