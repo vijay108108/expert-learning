@@ -31,6 +31,31 @@ export async function checkSignupPhoneExists(phone: string) {
     return { exists: false, source: "unavailable" as const, normalizedPhone, passwordEnabled: false } satisfies SignupPhoneLookupResult;
   }
 
+  const claimHasBackingAccount = async (uid: string) => {
+    if (db) {
+      const profile = await db.collection("users").doc(uid).get();
+      if (profile.exists) {
+        return true;
+      }
+    }
+
+    if (!auth) {
+      return false;
+    }
+
+    try {
+      await auth.getUser(uid);
+      return true;
+    } catch (error) {
+      const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
+      if (code === "auth/user-not-found") {
+        return false;
+      }
+
+      throw error;
+    }
+  };
+
   if (auth && normalizedPhoneWithPlus) {
     try {
       const user = await auth.getUserByPhoneNumber(normalizedPhoneWithPlus);
@@ -77,13 +102,19 @@ export async function checkSignupPhoneExists(phone: string) {
     const claimSnapshot = await db.collection("phone-signup-claims").doc(normalizedPhone).get();
 
     if (claimSnapshot.exists) {
+      const claimUid = claimSnapshot.get("uid");
+
+      if (typeof claimUid !== "string" || !(await claimHasBackingAccount(claimUid))) {
+        await claimSnapshot.ref.delete();
+      } else {
       return {
         exists: true,
         source: "phone-signup-claims" as const,
         normalizedPhone,
         passwordEnabled: true,
-        uid: claimSnapshot.id,
+        uid: claimUid,
       };
+      }
     }
   }
 
@@ -95,13 +126,20 @@ export async function checkSignupPhoneExists(phone: string) {
       .get();
 
     if (!legacyClaimSnapshot.empty) {
+      const claimDoc = legacyClaimSnapshot.docs[0];
+      const claimUid = claimDoc?.get("uid");
+
+      if (typeof claimUid !== "string" || !(await claimHasBackingAccount(claimUid))) {
+        await claimDoc?.ref.delete();
+      } else {
       return {
         exists: true,
         source: "phone-signup-claims" as const,
         normalizedPhone,
         passwordEnabled: true,
-        uid: legacyClaimSnapshot.docs[0]?.id,
+        uid: claimUid,
       };
+      }
     }
   }
 

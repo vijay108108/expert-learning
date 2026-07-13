@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/server/firebase-auth";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
+import { getPhoneLookupCandidates } from "@/lib/firebase/phone-utils";
 
 type RouteContext = {
   params: Promise<{ uid: string }>;
@@ -33,6 +34,10 @@ export async function DELETE(request: Request, context: RouteContext) {
   }
 
   try {
+    const userDocRef = db.collection("users").doc(uid);
+    const userDocSnapshot = await userDocRef.get();
+    const userData = userDocSnapshot.exists ? userDocSnapshot.data() as { phone?: string } : null;
+
     await auth.deleteUser(uid).catch((error) => {
       if (error?.code !== "auth/user-not-found") {
         throw error;
@@ -40,9 +45,22 @@ export async function DELETE(request: Request, context: RouteContext) {
     });
 
     const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).get();
+    const phoneClaimByUidSnapshot = await db
+      .collection("phone-signup-claims")
+      .where("uid", "==", uid)
+      .get();
+
     const batch = db.batch();
     enrollmentsSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-    batch.delete(db.collection("users").doc(uid));
+
+    phoneClaimByUidSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+
+    const phoneCandidates = userData?.phone ? getPhoneLookupCandidates(userData.phone) : [];
+    phoneCandidates.forEach((phoneKey) => {
+      batch.delete(db.collection("phone-signup-claims").doc(phoneKey));
+    });
+
+    batch.delete(userDocRef);
     await batch.commit();
 
     return NextResponse.json({ success: true });
