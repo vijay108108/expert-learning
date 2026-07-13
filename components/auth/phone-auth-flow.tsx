@@ -879,11 +879,8 @@ export function PhoneAuthFlow({
         setFeedback("No account found with this phone number. Please sign up first.");
         return;
       }
-
-      if (!phoneAccount.passwordEnabled) {
-        setFeedback("Password login is not set up for this phone number. Use Forgot Password to create one.");
-        return;
-      }
+      // Do not hard-block here: backend prechecks can be stale or conservative.
+      // We still attempt credential sign-in below and only fail on actual auth result.
 
       const normalizedLoginPhone = normalizePhoneForAuth(phone);
       const candidates = getLegacyPhoneAuthCandidates(normalizedLoginPhone)
