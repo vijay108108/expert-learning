@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { getCouponPricing, normalizeCouponCode } from "@/lib/coupons";
 import {
@@ -29,8 +29,18 @@ const initialState = {
   email: "",
   phone: "",
 };
+const checkoutAutoPayIntentKey = "genznext:checkout-auto-pay-intent";
+const checkoutAutoPayIntentMaxAgeMs = 10 * 60 * 1000;
 
 type CheckoutProfile = AppUserProfile;
+
+type CheckoutAutoPayIntent = {
+  courseSlug: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  createdAt: number;
+};
 
 function formatPrice(value: number) {
   return `Rs. ${value.toLocaleString("en-IN")}`;
@@ -121,6 +131,9 @@ export function EnrollmentForm({
   const [couponMessage, setCouponMessage] = useState<string | null>(null);
   const [couponStatus, setCouponStatus] = useState<"success" | "error" | null>(null);
   const [couponPending, setCouponPending] = useState(false);
+  const [autoCheckoutIntentReady, setAutoCheckoutIntentReady] = useState(false);
+  const autoCheckoutAttemptedRef = useRef(false);
+  const formRef = useRef<HTMLFormElement | null>(null);
   const router = useRouter();
   const { user } = useAuth();
   const pricing = useMemo(
@@ -128,6 +141,50 @@ export function EnrollmentForm({
     [appliedCouponCode, course.priceValue],
   );
   const isWorkshopLaunchLab = course.slug === "ai-developer-launch-lab";
+
+  useEffect(() => {
+    let active = true;
+
+    try {
+      const rawIntent = window.sessionStorage.getItem(checkoutAutoPayIntentKey);
+      if (!rawIntent) {
+        return () => {
+          active = false;
+        };
+      }
+
+      const intent = JSON.parse(rawIntent) as CheckoutAutoPayIntent;
+      const isMatchingCourse = intent.courseSlug === course.slug;
+      const isFresh = Number.isFinite(intent.createdAt) && (Date.now() - intent.createdAt) <= checkoutAutoPayIntentMaxAgeMs;
+
+      if (!isMatchingCourse || !isFresh) {
+        window.sessionStorage.removeItem(checkoutAutoPayIntentKey);
+        return () => {
+          active = false;
+        };
+      }
+
+      window.requestAnimationFrame(() => {
+        if (!active) {
+          return;
+        }
+
+        setForm((current) => ({
+          ...current,
+          name: current.name || intent.name?.trim() || "",
+          email: current.email || intent.email?.trim() || "",
+          phone: current.phone || intent.phone?.trim() || "",
+        }));
+        setAutoCheckoutIntentReady(true);
+      });
+    } catch {
+      window.sessionStorage.removeItem(checkoutAutoPayIntentKey);
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [course.slug]);
 
   useEffect(() => {
     if (!user) {
@@ -177,6 +234,20 @@ export function EnrollmentForm({
       window.cancelAnimationFrame(frame);
     };
   }, [user]);
+
+  useEffect(() => {
+    if (!autoCheckoutIntentReady || autoCheckoutAttemptedRef.current || pending || isPaying) {
+      return;
+    }
+
+    if (!form.name.trim() || !form.email.trim() || !form.phone.trim()) {
+      return;
+    }
+
+    autoCheckoutAttemptedRef.current = true;
+    window.sessionStorage.removeItem(checkoutAutoPayIntentKey);
+    formRef.current?.requestSubmit();
+  }, [autoCheckoutIntentReady, form.email, form.name, form.phone, isPaying, pending]);
 
   function getSuccessPath(invoice: StoredOrderSuccess, needsRegistration?: boolean) {
     if (!user || needsRegistration) {
@@ -480,7 +551,7 @@ export function EnrollmentForm({
         </div>
         <div className="mono-meta text-[13px] font-bold text-brand-blue-light">{formatPrice(course.priceValue)}</div>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form ref={formRef} onSubmit={handleSubmit}>
         <div>
           <label className="form-label" htmlFor="enroll-name">
             Name

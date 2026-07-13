@@ -58,6 +58,7 @@ const otpLength = 6;
 const resendWindowSeconds = 30;
 const phoneOtpRequestTimeoutMs = 30000;
 const otpValiditySeconds = 600; // 10 minutes
+const checkoutAutoPayIntentKey = "genznext:checkout-auto-pay-intent";
 
 function formatOtpCountdown(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -1155,6 +1156,28 @@ export function PhoneAuthFlow({
         }, { merge: true });
       } catch {
         // Firestore profile sync is best-effort; auth success must not be blocked.
+      }
+
+      const checkoutPath = redirectTo.split("?")[0] || "";
+      if (checkoutPath.startsWith("/checkout/")) {
+        const courseSlug = decodeURIComponent(checkoutPath.replace("/checkout/", "").trim());
+        if (courseSlug) {
+          try {
+            const phoneForCheckout = verifiedPhone.startsWith("+") ? verifiedPhone : `+${verifiedPhone}`;
+            window.sessionStorage.setItem(
+              checkoutAutoPayIntentKey,
+              JSON.stringify({
+                courseSlug,
+                name: fullName.trim(),
+                email: linked.user.email || getFakeEmail(verifiedPhone),
+                phone: phoneForCheckout,
+                createdAt: Date.now(),
+              }),
+            );
+          } catch {
+            // Ignore session storage errors in auth flow.
+          }
+        }
       }
 
       setSignupStep("form");
