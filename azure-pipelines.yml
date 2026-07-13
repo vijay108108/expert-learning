@@ -65,6 +65,25 @@ stages:
           git fetch origin main
           git reset --hard origin/main
 
+          META_PIXEL_ID="${NEXT_PUBLIC_META_PIXEL_ID:-}"
+          if [ -z "$META_PIXEL_ID" ]; then
+            for ENV_FILE in .env.production .env.local .env; do
+              if [ -f "$ENV_FILE" ]; then
+                META_PIXEL_ID="$(grep -E '^NEXT_PUBLIC_META_PIXEL_ID=' "$ENV_FILE" | tail -n1 | cut -d '=' -f2- | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//" | xargs || true)"
+                if [ -n "$META_PIXEL_ID" ]; then
+                  break
+                fi
+              fi
+            done
+          fi
+
+          if [ -z "$META_PIXEL_ID" ]; then
+            echo "ERROR: NEXT_PUBLIC_META_PIXEL_ID is missing. Aborting deployment to prevent shipping without Meta Pixel."
+            exit 1
+          fi
+
+          echo "NEXT_PUBLIC_META_PIXEL_ID detected. Continuing build and deploy."
+
           rm -rf .next
           npm ci
           npm run build
