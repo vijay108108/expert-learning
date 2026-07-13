@@ -1811,8 +1811,8 @@ export function PhoneAuthFlow({
               <div className="section-label text-[#E56F12]">
                 {activeTab === "signup" ? "Sign Up" : isForgotPasswordMode ? "Reset Password" : "Login"}
               </div>
-              <h2 className="mt-2 text-[26px] font-bold leading-[1.2] text-white">{titleText}</h2>
-              <p className="mt-3 max-w-[560px] text-sm leading-7 text-[#E2E8F0]">{subtitleText}</p>
+              <h2 className="mt-1.5 text-[26px] font-bold leading-[1.2] text-[#0F172A]">{titleText}</h2>
+              <p className="mt-2 max-w-[560px] text-sm leading-6 text-[#64748B]">{subtitleText}</p>
             </>
           )}
         </div>
@@ -1853,7 +1853,7 @@ export function PhoneAuthFlow({
       ) : null}
 
       {!showGooglePhoneState ? (
-        <div className="mt-7 flex gap-1.5 rounded-[18px] border border-[rgba(226,232,240,0.9)] bg-[rgba(248,250,252,0.92)] p-1.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
+        <div className="mt-5 flex gap-1.5 rounded-[18px] border border-[rgba(226,232,240,0.9)] bg-[rgba(248,250,252,0.92)] p-1.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
           {[
             { id: "password-login", label: "Password Login" },
             { id: "signup", label: "Sign Up" },
