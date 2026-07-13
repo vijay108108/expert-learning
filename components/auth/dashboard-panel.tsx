@@ -642,6 +642,7 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
       onSelectCourse={handleCourseSelection}
       onResetCourseSelection={handleResetCourseSelection}
       enrollments={dashboardEnrollments}
+      verifiedEnrollments={enrollments}
       paymentCompleted={paymentCompleted}
       enrollmentError={enrollmentError}
       userInfo={{

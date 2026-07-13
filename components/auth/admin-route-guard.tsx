@@ -200,7 +200,7 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
     return () => { active = false; };
   }, [isAuthReady, user]);
 
-  if (firebaseAdmin !== true) {
+  if (firebaseAdmin !== true || !user) {
     return <AdminLoginScreen />;
   }
 

@@ -73,10 +73,9 @@ export function LmsRouteGuard({ children }: { children: React.ReactNode }) {
         const allowed = targetCourseSlug
           ? enrollments.some((item) => getCourseSlugByCourseId(item.courseId) === getCourseSlugByCourseId(targetCourseSlug))
           : enrollments.length > 0;
-        const allowedWithLocalFallback = allowed || hasLocalVerifiedPurchase(targetCourseSlug);
 
-        setResult({ key: guardKey, allowed: allowedWithLocalFallback });
-        if (!allowedWithLocalFallback) {
+        setResult({ key: guardKey, allowed });
+        if (!allowed) {
           router.replace("/dashboard/courses");
         }
       } catch (error) {

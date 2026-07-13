@@ -13,8 +13,20 @@
  *     -d '{"key":"your-setup-key","email":"admin@example.com","password":"a-strong-password","name":"Admin Name"}'
  */
 
+import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { env } from "@/lib/env";
+
+function safeKeyEquals(provided: string, expected: string) {
+  const providedBuffer = Buffer.from(provided);
+  const expectedBuffer = Buffer.from(expected);
+
+  if (providedBuffer.length !== expectedBuffer.length) {
+    return false;
+  }
+
+  return timingSafeEqual(providedBuffer, expectedBuffer);
+}
 
 /* ── Firebase REST helpers ───────────────────────────────── */
 
@@ -116,7 +128,7 @@ async function handler(providedKey: string, ADMIN_EMAIL: string, ADMIN_PASSWORD:
     );
   }
 
-  if (providedKey !== setupKey) {
+  if (!safeKeyEquals(providedKey, setupKey)) {
     return NextResponse.json(
       { error: "Invalid setup key." },
       { status: 401 },

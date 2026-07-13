@@ -53,10 +53,17 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [profileSnapshot, enrollmentSnapshot] = await Promise.all([
-      db.collection("users").get(),
-      db.collection("enrollments").get(),
-    ]);
+    const enrollmentSnapshot = await db.collection("enrollments").get();
+
+    const appOwnedUids = new Set<string>();
+    for (const doc of enrollmentSnapshot.docs) {
+      const userId = doc.data()?.userId;
+      if (typeof userId === "string" && userId) {
+        appOwnedUids.add(userId);
+      }
+    }
+
+    const profileSnapshot = await db.collection("users").get();
 
     const byUid = new Map<string, AdminListUser>();
     const enrollmentHints = new Map<string, EnrollmentUserHint>();
@@ -64,6 +71,9 @@ export async function GET(request: Request) {
     for (const doc of profileSnapshot.docs) {
       const data = doc.data() as Partial<AdminListUser>;
       const uid = String(data.uid || doc.id);
+      if (!appOwnedUids.has(uid)) {
+        continue;
+      }
       byUid.set(uid, {
         id: uid,
         uid,

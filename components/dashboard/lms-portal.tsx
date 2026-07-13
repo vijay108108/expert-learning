@@ -65,6 +65,7 @@ type DashboardLmsPortalProps = {
   onSelectCourse: (courseSlug: string) => void;
   onResetCourseSelection: () => void;
   enrollments: Array<FirestoreEnrollment & { id: string }>;
+  verifiedEnrollments: Array<FirestoreEnrollment & { id: string }>;
   paymentCompleted: boolean;
   enrollmentError: string | null;
   userInfo: DashboardUserInfo;
@@ -365,6 +366,7 @@ export function LmsPortal({
   onSelectCourse,
   onResetCourseSelection,
   enrollments,
+  verifiedEnrollments,
   paymentCompleted,
   userInfo,
 }: DashboardLmsPortalProps) {
@@ -1237,6 +1239,24 @@ export function LmsPortal({
     }
 
     return renderOverviewTab();
+  }
+
+  const requestedCourseNotEnrolled =
+    Boolean(activeCourseSlug) && !verifiedEnrollments.some((enrollment) => enrollment.courseId === selectedProgram.courseSlug);
+
+  if (requestedCourseNotEnrolled) {
+    return (
+      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-3 bg-[#f8fafc] p-8 text-center">
+        <p className="text-[15px] font-medium text-[#1e293b]">You are not enrolled in this course.</p>
+        <button
+          type="button"
+          onClick={onResetCourseSelection}
+          className="rounded-[8px] border border-[#e2e8f0] bg-white px-4 py-2 text-[13px] text-[#475569] transition hover:border-[#94a3b8]"
+        >
+          View your enrolled courses
+        </button>
+      </div>
+    );
   }
 
   return (

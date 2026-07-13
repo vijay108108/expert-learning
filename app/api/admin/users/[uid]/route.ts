@@ -63,12 +63,9 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   try {
     const userDocRef = db.collection("users").doc(uid);
-    const [userDocSnapshot, enrollmentsSnapshot] = await Promise.all([
-      userDocRef.get(),
-      db.collection("enrollments").where("userId", "==", uid).limit(1).get(),
-    ]);
+    const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).limit(1).get();
 
-    if (!userDocSnapshot.exists && enrollmentsSnapshot.empty) {
+    if (enrollmentsSnapshot.empty) {
       return NextResponse.json(
         { success: false, message: "This user does not belong to this app." },
         { status: 404 },
@@ -161,7 +158,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     const userData = userDocSnapshot.exists ? userDocSnapshot.data() as { phone?: string } : null;
 
     const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).get();
-    if (!userDocSnapshot.exists && enrollmentsSnapshot.empty) {
+    if (enrollmentsSnapshot.empty) {
       return NextResponse.json(
         { success: false, message: "This user does not belong to this app." },
         { status: 404 },

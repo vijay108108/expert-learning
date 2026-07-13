@@ -1,23 +1,5 @@
 import { env } from "@/lib/env";
-
-type FirebaseLookupResponse = {
-  users?: Array<{
-    localId?: string;
-    email?: string;
-    phoneNumber?: string;
-  }>;
-  error?: {
-    message?: string;
-  };
-};
-
-type FirestoreValue = {
-  stringValue?: string;
-};
-
-type FirestoreDocument = {
-  fields?: Record<string, FirestoreValue>;
-};
+import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 
 export type VerifiedFirebaseUser = {
   uid: string;
@@ -37,32 +19,15 @@ export function getBearerToken(request: Request) {
   return token.trim();
 }
 
-function readFirestoreString(document: FirestoreDocument | null, key: string) {
-  return document?.fields?.[key]?.stringValue || "";
-}
-
-async function fetchUserProfileRole(uid: string, idToken: string) {
-  if (!env.nextPublicFirebaseProjectId) {
+async function fetchUserProfileRole(uid: string) {
+  const db = getAdminDb();
+  if (!db) {
     return undefined;
   }
 
   try {
-    const response = await fetch(
-      `https://firestore.googleapis.com/v1/projects/${env.nextPublicFirebaseProjectId}/databases/(default)/documents/users/${encodeURIComponent(uid)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-        cache: "no-store",
-      },
-    );
-
-    if (!response.ok) {
-      return undefined;
-    }
-
-    const profile = (await response.json()) as FirestoreDocument;
-    const role = readFirestoreString(profile, "role");
+    const snapshot = await db.collection("users").doc(uid).get();
+    const role = snapshot.exists ? (snapshot.data()?.role as string | undefined) : undefined;
     return role === "admin" || role === "student" ? role : undefined;
   } catch {
     return undefined;
@@ -71,41 +36,20 @@ async function fetchUserProfileRole(uid: string, idToken: string) {
 
 export async function verifyFirebaseBearerToken(request: Request) {
   const idToken = getBearerToken(request);
+  const auth = getAdminAuth();
 
-  if (!idToken || !env.nextPublicFirebaseApiKey) {
+  if (!idToken || !auth) {
     return null;
   }
 
   try {
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(env.nextPublicFirebaseApiKey)}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idToken }),
-        cache: "no-store",
-      },
-    );
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const payload = (await response.json()) as FirebaseLookupResponse;
-    const firebaseUser = payload.users?.[0];
-
-    if (!firebaseUser?.localId) {
-      return null;
-    }
-
-    const role = await fetchUserProfileRole(firebaseUser.localId, idToken);
+    const decoded = await auth.verifyIdToken(idToken);
+    const role = await fetchUserProfileRole(decoded.uid);
 
     return {
-      uid: firebaseUser.localId,
-      email: firebaseUser.email?.trim().toLowerCase() || "",
-      phoneNumber: firebaseUser.phoneNumber?.trim() || "",
+      uid: decoded.uid,
+      email: (decoded.email || "").trim().toLowerCase(),
+      phoneNumber: (decoded.phone_number || "").trim(),
       role,
     } satisfies VerifiedFirebaseUser;
   } catch {

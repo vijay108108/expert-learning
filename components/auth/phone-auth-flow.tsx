@@ -1307,14 +1307,6 @@ export function PhoneAuthFlow({
 
     try {
       const result = await confirmationResult.confirm(otpCode);
-      if (forgotPasswordStep === "otp") {
-        setResetUser(result.user);
-        setForgotPasswordStep("reset");
-        setStep("phone");
-        resetOtpInputs();
-        setSuccessMessage("OTP verified. Set your new password.");
-        return;
-      }
       const normalizedVerifiedPhone = normalizePhoneForAuth(result.user.phoneNumber || phone);
       const existingProfile = await getUserProfile(result.user.uid).catch(() => null);
       const hasPasswordProvider = isPhonePasswordAccount(result.user, normalizedVerifiedPhone, existingProfile);
