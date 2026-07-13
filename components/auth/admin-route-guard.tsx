@@ -58,7 +58,13 @@ function AdminLoginScreen() {
     setError("");
     try {
       const result = await signInWithEmailAndPassword(auth, email.trim(), password);
-      const profile = await getUserProfile(result.user.uid);
+      let profile: AppUserProfile | null = null;
+      try {
+        profile = await getUserProfile(result.user.uid);
+      } catch {
+        profile = null;
+      }
+
       const allowedByServer = isAdminProfile(profile) ? true : await hasServerAdminAccess(result.user);
       if (!allowedByServer) {
         fail("This account does not have admin access.");
@@ -185,7 +191,10 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
           setFirebaseAdmin(allowedByServer);
         }
       } catch {
-        if (active) setFirebaseAdmin(false);
+        const allowedByServer = await hasServerAdminAccess(user);
+        if (active) {
+          setFirebaseAdmin(allowedByServer);
+        }
       }
     })();
     return () => { active = false; };
