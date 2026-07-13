@@ -3,11 +3,29 @@
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { type User } from "firebase/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { getFirebaseAuth, getFirebaseAuthErrorMessage, getUserProfile, type AppUserProfile } from "@/lib/firebase";
 
 function isAdminProfile(profile: AppUserProfile | null) {
   return profile?.role === "admin";
+}
+
+async function hasServerAdminAccess(user: User) {
+  try {
+    const idToken = await user.getIdToken();
+    const response = await fetch("/api/admin/access", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+      cache: "no-store",
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 /* ── Admin email/password login screen ──────────────────── */
@@ -41,7 +59,8 @@ function AdminLoginScreen() {
     try {
       const result = await signInWithEmailAndPassword(auth, email.trim(), password);
       const profile = await getUserProfile(result.user.uid);
-      if (!isAdminProfile(profile)) {
+      const allowedByServer = isAdminProfile(profile) ? true : await hasServerAdminAccess(result.user);
+      if (!allowedByServer) {
         fail("This account does not have admin access.");
         return;
       }
@@ -152,7 +171,19 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
     void (async () => {
       try {
         const profile = await getUserProfile(user.uid);
-        if (active) setFirebaseAdmin(isAdminProfile(profile));
+        if (!active) {
+          return;
+        }
+
+        if (isAdminProfile(profile)) {
+          setFirebaseAdmin(true);
+          return;
+        }
+
+        const allowedByServer = await hasServerAdminAccess(user);
+        if (active) {
+          setFirebaseAdmin(allowedByServer);
+        }
       } catch {
         if (active) setFirebaseAdmin(false);
       }
