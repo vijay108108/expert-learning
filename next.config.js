@@ -1,8 +1,16 @@
 /** @type {import('next').NextConfig} */
+const ignoreBuildTypecheck = process.env.NEXT_IGNORE_BUILD_TYPECHECK === "1";
+
 const nextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   devIndicators: false,
   reactStrictMode: false,
+  typescript: {
+    ignoreBuildErrors: ignoreBuildTypecheck,
+  },
+  eslint: {
+    ignoreDuringBuilds: ignoreBuildTypecheck,
+  },
 
   async headers() {
     return [
