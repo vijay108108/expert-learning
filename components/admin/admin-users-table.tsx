@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Download, KeyRound, RefreshCw, Search, Trash2, UserPlus, X } from "lucide-react";
-import { getFirebaseAuth, listAllEnrollments, updateUserRole, type AppUserProfile, type FirestoreEnrollment } from "@/lib/firebase";
+import { getFirebaseAuth, updateUserRole, type AppUserProfile, type FirestoreEnrollment } from "@/lib/firebase";
 import { downloadCsv, formatAdminDate } from "@/lib/admin/reporting";
 
 type User = AppUserProfile & { id: string; totalPaid?: number; lastPurchaseAt?: string };
@@ -253,8 +253,18 @@ export function AdminUsersTable() {
 
       let enrollments: Enrollment[] = [];
       try {
-        const nextEnrollments = await listAllEnrollments();
-        enrollments = nextEnrollments as Enrollment[];
+        const enrollmentsResponse = await fetch("/api/admin/enrollments", {
+          method: "GET",
+          headers,
+          cache: "no-store",
+        });
+        const enrollmentsPayload = (await enrollmentsResponse.json().catch(() => null)) as
+          | { success?: boolean; enrollments?: Enrollment[]; message?: string }
+          | null;
+
+        if (enrollmentsResponse.ok && enrollmentsPayload?.success) {
+          enrollments = enrollmentsPayload.enrollments || [];
+        }
       } catch {
         enrollments = [];
       }

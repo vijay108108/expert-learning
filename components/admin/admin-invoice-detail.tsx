@@ -3,10 +3,18 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Download, Printer, RefreshCw, UserRound } from "lucide-react";
-import { listAllEnrollments, type FirestoreEnrollment } from "@/lib/firebase";
+import { getFirebaseAuth, type FirestoreEnrollment } from "@/lib/firebase";
 import { buildInvoiceRecords, downloadCsv, formatAdminCurrency, formatAdminDate } from "@/lib/admin/reporting";
 
 type EnrollmentRecord = FirestoreEnrollment & { id: string };
+
+async function getAdminAuthHeader() {
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+  if (!token) {
+    throw new Error("Not signed in.");
+  }
+  return { Authorization: `Bearer ${token}` };
+}
 
 export function AdminInvoiceDetail({ invoiceNumber }: { invoiceNumber: string }) {
   const [rows, setRows] = useState<EnrollmentRecord[]>([]);
@@ -15,8 +23,23 @@ export function AdminInvoiceDetail({ invoiceNumber }: { invoiceNumber: string })
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const allEnrollments = await listAllEnrollments();
-      setRows(allEnrollments as EnrollmentRecord[]);
+      const headers = await getAdminAuthHeader();
+      const response = await fetch("/api/admin/enrollments", {
+        method: "GET",
+        headers,
+        cache: "no-store",
+      });
+      const payload = (await response.json().catch(() => null)) as
+        | { success?: boolean; enrollments?: EnrollmentRecord[]; message?: string }
+        | null;
+
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.message || "Unable to load invoice details.");
+      }
+
+      setRows(payload.enrollments || []);
+    } catch {
+      setRows([]);
     } finally {
       setLoading(false);
     }

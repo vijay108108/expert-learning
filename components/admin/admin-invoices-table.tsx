@@ -3,10 +3,18 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Download, FileText, RefreshCw, Search } from "lucide-react";
-import { listAllEnrollments, type FirestoreEnrollment } from "@/lib/firebase";
+import { getFirebaseAuth, type FirestoreEnrollment } from "@/lib/firebase";
 import { buildInvoiceRecords, downloadCsv, formatAdminCurrency, formatAdminDate } from "@/lib/admin/reporting";
 
 type EnrollmentRecord = FirestoreEnrollment & { id: string };
+
+async function getAdminAuthHeader() {
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+  if (!token) {
+    throw new Error("Not signed in.");
+  }
+  return { Authorization: `Bearer ${token}` };
+}
 
 export function AdminInvoicesTable() {
   const [rows, setRows] = useState<EnrollmentRecord[]>([]);
@@ -16,9 +24,24 @@ export function AdminInvoicesTable() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const allEnrollments = await listAllEnrollments();
-      const paid = (allEnrollments as EnrollmentRecord[]).filter((item) => item.amountPaid || item.invoiceNumber);
+      const headers = await getAdminAuthHeader();
+      const response = await fetch("/api/admin/enrollments", {
+        method: "GET",
+        headers,
+        cache: "no-store",
+      });
+      const payload = (await response.json().catch(() => null)) as
+        | { success?: boolean; enrollments?: EnrollmentRecord[]; message?: string }
+        | null;
+
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.message || "Unable to load invoices.");
+      }
+
+      const paid = (payload.enrollments || []).filter((item) => item.amountPaid || item.invoiceNumber);
       setRows(paid);
+    } catch {
+      setRows([]);
     } finally {
       setLoading(false);
     }
@@ -68,6 +91,29 @@ export function AdminInvoicesTable() {
         item.lineItems.map((line) => line.courseName || line.courseId).join(" | "),
         item.paidAt,
       ]),
+    );
+  }
+
+  function downloadSingleInvoice(invoiceNumber: string) {
+    const item = filtered.find((entry) => entry.invoiceNumber === invoiceNumber);
+    if (!item) {
+      return;
+    }
+
+    downloadCsv(
+      `${item.invoiceNumber}.csv`,
+      ["Invoice Number", "Learner", "Phone", "Email", "Payment ID", "Order ID", "Amount", "Line Items", "Paid At"],
+      [[
+        item.invoiceNumber,
+        item.userName,
+        item.userPhone,
+        item.userEmail || "",
+        item.razorpayPaymentId,
+        item.razorpayOrderId,
+        item.totalAmount,
+        item.lineItems.map((line) => line.courseName || line.courseId).join(" | "),
+        item.paidAt,
+      ]],
     );
   }
 
@@ -121,13 +167,14 @@ export function AdminInvoicesTable() {
               <th className="px-4 py-3">Amount</th>
               <th className="px-4 py-3">Items</th>
               <th className="px-4 py-3">Paid on</th>
+              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               [...Array(5)].map((_, index) => (
                 <tr key={index} className="border-b border-white/6">
-                  {[...Array(5)].map((__, cell) => (
+                  {[...Array(6)].map((__, cell) => (
                     <td key={cell} className="px-4 py-3">
                       <div className="h-3.5 animate-pulse rounded bg-white/8 w-3/4" />
                     </td>
@@ -136,7 +183,7 @@ export function AdminInvoicesTable() {
               ))
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-[#334155]">No invoices found.</td>
+                <td colSpan={6} className="px-4 py-8 text-center text-[#334155]">No invoices found.</td>
               </tr>
             ) : (
               filtered.map((item) => (
@@ -154,6 +201,16 @@ export function AdminInvoicesTable() {
                   <td className="px-4 py-3 text-[#34D399]">{formatAdminCurrency(item.totalAmount)}</td>
                   <td className="px-4 py-3 text-[#94A3B8]">{item.lineItems.length}</td>
                   <td className="px-4 py-3 text-[#94A3B8]">{formatAdminDate(item.paidAt)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      onClick={() => downloadSingleInvoice(item.invoiceNumber)}
+                      className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[11px] text-[#94A3B8] transition hover:text-white"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Download
+                    </button>
+                  </td>
                 </tr>
               ))
             )}

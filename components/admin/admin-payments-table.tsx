@@ -3,10 +3,18 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Download, RefreshCw, Search } from "lucide-react";
-import { listAllEnrollments, type FirestoreEnrollment } from "@/lib/firebase";
+import { getFirebaseAuth, type FirestoreEnrollment } from "@/lib/firebase";
 import { downloadCsv, formatAdminCurrency, formatAdminDate } from "@/lib/admin/reporting";
 
 type Payment = FirestoreEnrollment & { id: string };
+
+async function getAdminAuthHeader() {
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+  if (!token) {
+    throw new Error("Not signed in.");
+  }
+  return { Authorization: `Bearer ${token}` };
+}
 
 export function AdminPaymentsTable() {
   const [rows, setRows] = useState<Payment[]>([]);
@@ -16,11 +24,26 @@ export function AdminPaymentsTable() {
   async function load() {
     setLoading(true);
     try {
-      const all = await listAllEnrollments();
-      const paid = (all as Payment[])
+      const headers = await getAdminAuthHeader();
+      const response = await fetch("/api/admin/enrollments", {
+        method: "GET",
+        headers,
+        cache: "no-store",
+      });
+      const payload = (await response.json().catch(() => null)) as
+        | { success?: boolean; enrollments?: Payment[]; message?: string }
+        | null;
+
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.message || "Unable to load payments.");
+      }
+
+      const paid = (payload.enrollments || [])
         .filter((r) => r.razorpayPaymentId || r.amountPaid)
         .sort((a, b) => new Date(b.enrolledAt).getTime() - new Date(a.enrolledAt).getTime());
       setRows(paid);
+    } catch {
+      setRows([]);
     } finally {
       setLoading(false);
     }
