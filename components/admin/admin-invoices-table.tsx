@@ -79,12 +79,14 @@ export function AdminInvoicesTable() {
   function exportCsv() {
     downloadCsv(
       "genznext-invoices.csv",
-      ["Invoice Number", "Learner", "Phone", "Email", "Payment ID", "Order ID", "Amount", "Line Items", "Paid At"],
+      ["Invoice Number", "Learner", "Phone", "Email", "Company Name", "GST Number", "Payment ID", "Order ID", "Amount", "Line Items", "Paid At"],
       filtered.map((item) => [
         item.invoiceNumber,
         item.userName,
         item.userPhone,
         item.userEmail || "",
+        item.companyName || "",
+        item.gstNumber || "",
         item.razorpayPaymentId,
         item.razorpayOrderId,
         item.totalAmount,
@@ -102,12 +104,14 @@ export function AdminInvoicesTable() {
 
     downloadCsv(
       `${item.invoiceNumber}.csv`,
-      ["Invoice Number", "Learner", "Phone", "Email", "Payment ID", "Order ID", "Amount", "Line Items", "Paid At"],
+      ["Invoice Number", "Learner", "Phone", "Email", "Company Name", "GST Number", "Payment ID", "Order ID", "Amount", "Line Items", "Paid At"],
       [[
         item.invoiceNumber,
         item.userName,
         item.userPhone,
         item.userEmail || "",
+        item.companyName || "",
+        item.gstNumber || "",
         item.razorpayPaymentId,
         item.razorpayOrderId,
         item.totalAmount,
