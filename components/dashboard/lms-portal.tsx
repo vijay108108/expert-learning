@@ -1222,22 +1222,6 @@ export function LmsPortal({
       );
     }
 
-    if (activeTab === "resources") {
-      return renderResourcesTab();
-    }
-
-    if (activeTab === "notes") {
-      return renderNotesTab();
-    }
-
-    if (activeTab === "qa") {
-      return renderQaTab();
-    }
-
-    if (activeTab === "assignment") {
-      return renderAssignmentTab();
-    }
-
     return renderOverviewTab();
   }
 
@@ -1332,7 +1316,7 @@ export function LmsPortal({
                 setNotesOpen((current) => !current);
                 setActiveTab("notes");
               }}
-              className="hidden items-center gap-2 rounded-[6px] border border-[#e2e8f0] bg-white px-3 py-[5px] text-[11px] text-[#64748b] sm:inline-flex"
+              className="hidden"
             >
               <NotebookPen className="h-4 w-4" />
               Notes
@@ -1340,10 +1324,7 @@ export function LmsPortal({
             <button
               type="button"
               onClick={() => void bookmarkCurrentLesson()}
-              className={cn(
-                "hidden items-center gap-2 rounded-[6px] border border-[#e2e8f0] bg-white px-3 py-[5px] text-[11px] sm:inline-flex",
-                bookmarked ? "text-[#f97316]" : "text-[#64748b]",
-              )}
+              className="hidden"
             >
               <Bookmark className="h-4 w-4" />
               Bookmark
@@ -1395,35 +1376,8 @@ export function LmsPortal({
           ) : null}
           {renderVideoArea()}
 
-          <div className="sticky top-0 z-10 flex overflow-x-auto border-b border-[#e2e8f0] bg-white">
-            {(Object.keys(tabLabels) as PlayerTab[]).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "shrink-0 border-b-2 px-4 py-[10px] text-[12px] transition hover:text-[#475569]",
-                  activeTab === tab ? "border-[#f97316] font-medium text-[#f97316]" : "border-transparent text-[#64748b]",
-                )}
-              >
-                {tabLabels[tab]}
-              </button>
-            ))}
-          </div>
-
-          <div className={cn("grid gap-5 bg-[#f8fafc] p-5", notesOpen && "lg:grid-cols-[minmax(0,1fr)_320px]")}>
+          <div className="grid gap-5 bg-[#f8fafc] p-5">
             <div>{renderTabContent()}</div>
-            {notesOpen ? (
-              <div className="rounded-[10px] border border-[#e2e8f0] bg-white p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <div className="text-[13px] font-semibold text-[#1e293b]">Lesson Notes</div>
-                  <button type="button" onClick={() => setNotesOpen(false)} className="text-[#64748b]" aria-label="Close notes">
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                {renderNotesTab()}
-              </div>
-            ) : null}
           </div>
         </div>
       </main>

@@ -310,15 +310,6 @@ export default function Home() {
                 Talk to Builder Team
               </Link>
             </div>
-            <div className="mt-3">
-              <Link
-                href="/checkout/ai-developer-launch-lab"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#0B2E6B]/15 bg-white px-4 py-2 text-[12px] font-semibold text-[#0B2E6B] transition hover:border-[#0B2E6B]/35 hover:bg-[#F8FAFC]"
-              >
-                Purchase Now (Quick Checkout)
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
             <Link
               href="/workshops/ai-developer-launch-lab"
               className="group mt-5 flex max-w-xl items-start justify-between gap-4 rounded-2xl border border-[#FFEDD5] bg-[linear-gradient(135deg,#FFF7ED_0%,#EEF4FB_100%)] p-4 shadow-[0_10px_24px_rgba(249,115,22,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(37,99,235,0.16)]"
