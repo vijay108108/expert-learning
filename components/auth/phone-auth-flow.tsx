@@ -59,6 +59,7 @@ const baseResendWindowSeconds = 60;
 const phoneOtpRequestTimeoutMs = 30000;
 const otpValiditySeconds = 600; // 10 minutes
 const checkoutAutoPayIntentKey = "genznext:checkout-auto-pay-intent";
+const forgotPasswordFlowStorageKey = "genznext-forgot-password-flow-active";
 const firebaseTemporaryOtpBlockMessage = "Firebase has temporarily blocked OTP requests due to too many attempts. Please wait a few minutes before retrying.";
 
 function formatOtpCountdown(totalSeconds: number) {
@@ -245,7 +246,21 @@ export function PhoneAuthFlow({
        "user is signed in, close modal and redirect to dashboard" effect
        before the Create New Password step gets a chance to render. */
     setSuppressAutoRedirect(isForgotPasswordMode);
-    return () => setSuppressAutoRedirect(false);
+
+    if (typeof window !== "undefined") {
+      if (isForgotPasswordMode) {
+        window.sessionStorage.setItem(forgotPasswordFlowStorageKey, "1");
+      } else {
+        window.sessionStorage.removeItem(forgotPasswordFlowStorageKey);
+      }
+    }
+
+    return () => {
+      setSuppressAutoRedirect(false);
+      if (typeof window !== "undefined") {
+        window.sessionStorage.removeItem(forgotPasswordFlowStorageKey);
+      }
+    };
   }, [isForgotPasswordMode, setSuppressAutoRedirect]);
 
   const firebaseReady = isFirebaseConfigured();

@@ -1,6 +1,6 @@
 "use client";
 
-import { updatePassword, updateProfile } from "firebase/auth";
+import { EmailAuthProvider, linkWithCredential, updatePassword, updateProfile } from "firebase/auth";
 import {
   BookOpenCheck,
   Building2,
@@ -44,6 +44,12 @@ import { readEnrolledCourses } from "@/lib/my-learning";
 import { getCanonicalCourseId } from "@/lib/offering-catalog";
 import { formatCurrencyInrFromPaise, formatInvoiceDate, latestOrderStorageKey, type StoredOrderSuccess } from "@/lib/order-success";
 import { getInitials } from "@/lib/utils";
+import { normalizePhoneForAuth } from "@/lib/firebase/phone-utils";
+
+function getPhoneAuthEmail(rawPhone: string) {
+  const normalized = normalizePhoneForAuth(rawPhone);
+  return normalized ? `${normalized}@genznext.app` : "";
+}
 
 function formatMemberSince(value: string | null) {
   if (!value) return "Recently joined";
@@ -436,13 +442,30 @@ export function ProfilePanel() {
     setPasswordMsg(null);
 
     try {
-      await updatePassword(activeUser, newPassword);
+      const currentPhone = activeUser.phoneNumber || profile?.phone || "";
+      const passwordProviderLinked = activeUser.providerData.some((provider) => provider.providerId === "password");
+
+      if (!passwordProviderLinked) {
+        const phoneAuthEmail = getPhoneAuthEmail(currentPhone);
+        if (!phoneAuthEmail) {
+          setPasswordMsg("Phone number is missing on your account. Contact support to reset password.");
+          return;
+        }
+
+        const credential = EmailAuthProvider.credential(phoneAuthEmail, newPassword);
+        await linkWithCredential(activeUser, credential);
+      } else {
+        await updatePassword(activeUser, newPassword);
+      }
+
       const db = getFirebaseDb();
       if (db) {
         await setDoc(
           doc(db, "users", activeUser.uid),
           {
             authMethod: "password",
+            ...(currentPhone ? { phone: normalizePhoneForAuth(currentPhone) } : {}),
+            ...(activeUser.email ? { email: activeUser.email } : {}),
             passwordUpdatedAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           },

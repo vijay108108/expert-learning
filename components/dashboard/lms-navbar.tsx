@@ -14,7 +14,8 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { Brand } from "@/components/layout/brand";
 import { useAuth } from "@/hooks/use-auth";
-import { getUserProfile } from "@/lib/firebase/user-profiles";
+import { getUserProfile, getUserProfileByPhone } from "@/lib/firebase/user-profiles";
+import { normalizePhoneForAuth } from "@/lib/firebase/phone-utils";
 import { cn, getInitials } from "@/lib/utils";
 
 const navLinks = [
@@ -81,7 +82,15 @@ export function LmsNavbar() {
       }
 
       try {
-        const profile = await getUserProfile(user.uid);
+        let profile = await getUserProfile(user.uid);
+
+        if (!profile?.name?.trim()) {
+          const normalizedPhone = normalizePhoneForAuth(user.phoneNumber || "");
+          if (normalizedPhone) {
+            profile = await getUserProfileByPhone(normalizedPhone);
+          }
+        }
+
         if (active) {
           setProfileName(profile?.name?.trim() || "");
         }

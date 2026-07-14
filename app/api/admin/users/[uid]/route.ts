@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { QuerySnapshot } from "firebase-admin/firestore";
 import { requireAdmin } from "@/lib/server/firebase-auth";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { getPhoneLookupCandidates, normalizePhoneForAuth } from "@/lib/firebase/phone-utils";
@@ -6,6 +7,21 @@ import { getPhoneLookupCandidates, normalizePhoneForAuth } from "@/lib/firebase/
 type RouteContext = {
   params: Promise<{ uid: string }>;
 };
+
+async function batchDeleteSnapshot(snapshot: QuerySnapshot) {
+  if (snapshot.empty) {
+    return;
+  }
+
+  const db = snapshot.docs[0]?.ref.firestore;
+  if (!db) {
+    return;
+  }
+
+  const batch = db.batch();
+  snapshot.docs.forEach((docSnapshot) => batch.delete(docSnapshot.ref));
+  await batch.commit();
+}
 
 export async function PATCH(request: Request, context: RouteContext) {
   const authUser = await requireAdmin(request);
@@ -148,8 +164,32 @@ export async function DELETE(request: Request, context: RouteContext) {
     const userDocRef = db.collection("users").doc(uid);
     const userDocSnapshot = await userDocRef.get();
     const userData = userDocSnapshot.exists ? userDocSnapshot.data() as { phone?: string } : null;
+    const normalizedUserPhone = userData?.phone ? normalizePhoneForAuth(userData.phone) : "";
 
-    const enrollmentsSnapshot = await db.collection("enrollments").where("userId", "==", uid).get();
+    const [
+      enrollmentsSnapshot,
+      phoneClaimByUidSnapshot,
+      invoicesByUserIdSnapshot,
+      paymentsByUserIdSnapshot,
+      notificationsByUidSnapshot,
+      lmsProgressSnapshot,
+      lmsLastVisitedSnapshot,
+    ] = await Promise.all([
+      db.collection("enrollments").where("userId", "==", uid).get(),
+      db.collection("phone-signup-claims").where("uid", "==", uid).get(),
+      db.collection("invoices").where("userId", "==", uid).get(),
+      db.collection("payments").where("userId", "==", uid).get(),
+      db.collection("users").doc(uid).collection("notifications").get(),
+      db.collection("lms-activity").doc(uid).collection("progress").get(),
+      db.collection("lms-activity").doc(uid).collection("lastVisited").get(),
+    ]);
+
+    const [invoicesByPhoneSnapshot, paymentsByPhoneSnapshot] = normalizedUserPhone
+      ? await Promise.all([
+          db.collection("invoices").where("userPhone", "==", normalizedUserPhone).get(),
+          db.collection("payments").where("userPhone", "==", normalizedUserPhone).get(),
+        ])
+      : [null, null];
 
     await auth.deleteUser(uid).catch((error) => {
       if (error?.code !== "auth/user-not-found") {
@@ -157,21 +197,26 @@ export async function DELETE(request: Request, context: RouteContext) {
       }
     });
 
-    const phoneClaimByUidSnapshot = await db
-      .collection("phone-signup-claims")
-      .where("uid", "==", uid)
-      .get();
+    await Promise.all([
+      batchDeleteSnapshot(enrollmentsSnapshot),
+      batchDeleteSnapshot(phoneClaimByUidSnapshot),
+      batchDeleteSnapshot(invoicesByUserIdSnapshot),
+      batchDeleteSnapshot(paymentsByUserIdSnapshot),
+      invoicesByPhoneSnapshot ? batchDeleteSnapshot(invoicesByPhoneSnapshot) : Promise.resolve(),
+      paymentsByPhoneSnapshot ? batchDeleteSnapshot(paymentsByPhoneSnapshot) : Promise.resolve(),
+      batchDeleteSnapshot(notificationsByUidSnapshot),
+      batchDeleteSnapshot(lmsProgressSnapshot),
+      batchDeleteSnapshot(lmsLastVisitedSnapshot),
+    ]);
 
     const batch = db.batch();
-    enrollmentsSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-
-    phoneClaimByUidSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
 
     const phoneCandidates = userData?.phone ? getPhoneLookupCandidates(userData.phone) : [];
     phoneCandidates.forEach((phoneKey) => {
       batch.delete(db.collection("phone-signup-claims").doc(phoneKey));
     });
 
+    batch.delete(db.collection("lms-activity").doc(uid));
     batch.delete(userDocRef);
     await batch.commit();
 

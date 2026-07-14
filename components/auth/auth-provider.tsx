@@ -7,7 +7,7 @@ import {
   signOut,
   type User,
 } from "firebase/auth";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthContext, type AuthContextValue, type AuthModalMode } from "@/components/auth/auth-context";
 import { AuthModal } from "@/components/auth/auth-modal";
@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [redirectAfterAuth, setRedirectAfterAuth] = useState("/lms/my-learning");
   const [pendingAuthAction, setPendingAuthAction] = useState<(() => void | Promise<void>) | null>(null);
   const [suppressAutoRedirect, setSuppressAutoRedirect] = useState(false);
+  const previousUserUidRef = useRef<string | null>(null);
 
   useEffect(() => {
     const auth = getFirebaseAuth();
@@ -113,6 +114,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsModalOpen(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!isAuthReady || typeof window === "undefined") {
+      return;
+    }
+
+    const previousUid = previousUserUidRef.current;
+    const nextUid = user?.uid || null;
+
+    if (previousUid !== null && previousUid !== nextUid) {
+      window.localStorage.removeItem("enrolledCourses");
+      window.localStorage.removeItem("genznext-my-learning");
+      window.localStorage.removeItem("genznext-latest-order");
+    }
+
+    previousUserUidRef.current = nextUid;
+  }, [isAuthReady, user?.uid]);
 
   useEffect(() => {
     if (!isAuthReady || !isModalOpen || suppressAutoRedirect) {
