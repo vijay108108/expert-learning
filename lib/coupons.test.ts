@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   GENZ100_COUPON_CODE,
+  LIFE99_COUPON_CODE,
   WELCOME50_COUPON_CODE,
   allocatePaiseProportionally,
   getCouponPricing,
@@ -22,6 +23,7 @@ describe("normalizeCouponCode", () => {
 describe("isValidCouponCode", () => {
   it("accepts known codes case-insensitively", () => {
     expect(isValidCouponCode("welcome50")).toBe(true);
+    expect(isValidCouponCode("life99")).toBe(true);
   });
 
   it("rejects unknown codes", () => {
@@ -48,6 +50,13 @@ describe("getCouponPricing", () => {
     expect(pricing.isApplied).toBe(true);
     expect(pricing.discountPaise).toBe(50000);
     expect(pricing.finalAmountPaise).toBe(50000);
+  });
+
+  it("applies LIFE99 as an exact 99% discount", () => {
+    const pricing = getCouponPricing(100000, LIFE99_COUPON_CODE);
+    expect(pricing.isApplied).toBe(true);
+    expect(pricing.discountPaise).toBe(99000);
+    expect(pricing.finalAmountPaise).toBe(1000);
   });
 
   it("never produces a negative final amount", () => {
