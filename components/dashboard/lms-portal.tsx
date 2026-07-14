@@ -2,21 +2,15 @@
 
 import {
   Bell,
-  Bookmark,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Download,
-  FileText,
   Maximize2,
   Menu,
-  NotebookPen,
   Pause,
   Play,
-  Upload,
   Video,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -29,20 +23,14 @@ import {
 } from "@/data/lms-content";
 import { allCourses } from "@/data/courses";
 import {
-  addCourseQuestion,
   type FirestoreEnrollment,
   getCompletedLessons,
-  getCourseQuestions,
   getLastVisitedLesson,
-  getLessonNote,
   logFirestoreIssue,
   getUserNotifications,
   markLessonCompleted,
   markNotificationRead,
   saveLastVisitedLesson,
-  saveLessonBookmark,
-  saveLessonNote,
-  type LessonQuestion,
   type LmsNotification,
 } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
@@ -73,7 +61,6 @@ type DashboardLmsPortalProps = {
 };
 
 type LessonType = "video" | "pdf" | "lab" | "live" | "quiz";
-type PlayerTab = "overview" | "resources" | "notes" | "qa" | "assignment";
 type ModuleState = "completed" | "active" | "locked";
 
 type PlayerLesson = LmsLesson & {
@@ -98,14 +85,6 @@ type PlayerLesson = LmsLesson & {
   };
 };
 
-const tabLabels: Record<PlayerTab, string> = {
-  overview: "Overview",
-  resources: "Resources",
-  notes: "Notes",
-  qa: "Q&A",
-  assignment: "Assignment",
-};
-
 const weekdayMap: Record<string, number> = {
   Sun: 0,
   Mon: 1,
@@ -118,15 +97,6 @@ const weekdayMap: Record<string, number> = {
 
 function parsePortalDate(value: string) {
   return new Date(value);
-}
-
-function formatDate(value: Date) {
-  return new Intl.DateTimeFormat("en-IN", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    timeZone: "Asia/Kolkata",
-  }).format(value);
 }
 
 function formatEnrollmentDate(value: string) {
@@ -397,19 +367,9 @@ export function LmsPortal({
   );
   const [expandedModuleIds, setExpandedModuleIds] = useState<Set<string>>(() => new Set([modules[0]?.id || ""]));
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<PlayerTab>("overview");
-  const [notesOpen, setNotesOpen] = useState(false);
-  const [noteText, setNoteText] = useState("");
-  const [noteDirty, setNoteDirty] = useState(false);
-  const [noteSaved, setNoteSaved] = useState(false);
-  const [noteSaving, setNoteSaving] = useState(false);
-  const [noteError, setNoteError] = useState<string | null>(null);
-  const [questions, setQuestions] = useState<LessonQuestion[]>([]);
-  const [questionText, setQuestionText] = useState("");
   const [notifications, setNotifications] = useState<LmsNotification[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
   const [countdown, setCountdown] = useState("00:00:00");
   const [lastVisitedReady, setLastVisitedReady] = useState(false);
 
@@ -452,9 +412,8 @@ export function LmsPortal({
     const frame = window.requestAnimationFrame(() => {
       void (async () => {
         try {
-          const [nextCompleted, nextQuestions, nextNotifications] = await Promise.all([
+          const [nextCompleted, nextNotifications] = await Promise.all([
             getCompletedLessons(userInfo.uid),
-            getCourseQuestions(selectedProgram.courseSlug),
             getUserNotifications(userInfo.uid),
           ]);
 
@@ -463,7 +422,6 @@ export function LmsPortal({
           }
 
           setCompletedLessons(nextCompleted);
-          setQuestions(nextQuestions);
           setNotifications(
             nextNotifications.length
               ? nextNotifications
@@ -556,68 +514,6 @@ export function LmsPortal({
   }, [activeLesson, lastVisitedReady, selectedProgram.courseSlug, userInfo.uid]);
 
   useEffect(() => {
-    if (!activeLesson) {
-      return;
-    }
-
-    let active = true;
-    const localKey = `lms-note-${userInfo.uid}-${activeLesson.id}`;
-    const frame = window.requestAnimationFrame(() => {
-      void (async () => {
-        /* Try Firestore first, fall back to localStorage */
-        let nextNote = "";
-        try {
-          nextNote = await getLessonNote(userInfo.uid, activeLesson.id);
-        } catch {
-          /* Firestore failed — try localStorage */
-          nextNote = window.localStorage.getItem(localKey) || "";
-        }
-        /* If Firestore returned empty but localStorage has content, use localStorage */
-        if (!nextNote) {
-          nextNote = window.localStorage.getItem(localKey) || "";
-        }
-        if (!active) return;
-        setNoteText(nextNote);
-        setNoteDirty(false);
-        setNoteSaved(false);
-        setNoteError(null);
-      })();
-    });
-
-    return () => {
-      active = false;
-      window.cancelAnimationFrame(frame);
-    };
-  }, [activeLesson, userInfo.uid]);
-
-  useEffect(() => {
-    if (!activeLesson || !noteDirty) return;
-
-    const localKey = `lms-note-${userInfo.uid}-${activeLesson.id}`;
-
-    /* Save to localStorage immediately (always works, survives offline) */
-    try { window.localStorage.setItem(localKey, noteText); } catch { /* ignore */ }
-
-    /* Debounce Firestore save by 1.2s */
-    const timeout = window.setTimeout(async () => {
-      setNoteSaving(true);
-      setNoteError(null);
-      try {
-        await saveLessonNote(userInfo.uid, activeLesson.id, noteText);
-        setNoteSaved(true);
-        setNoteDirty(false);
-      } catch {
-        /* Firestore failed — note is still in localStorage */
-        setNoteError("Could not sync to cloud. Note saved locally — will retry.");
-      } finally {
-        setNoteSaving(false);
-      }
-    }, 1200);
-
-    return () => window.clearTimeout(timeout);
-  }, [activeLesson, noteDirty, noteText, userInfo.uid]);
-
-  useEffect(() => {
     if (!isLiveToday || !activeLesson) {
       return;
     }
@@ -649,7 +545,6 @@ export function LmsPortal({
     }
 
     setSelectedLessonId(lesson.id);
-    setActiveTab("overview");
     setMobileSidebarOpen(false);
   }
 
@@ -686,30 +581,6 @@ export function LmsPortal({
     navigateLesson("next");
   }
 
-  async function bookmarkCurrentLesson() {
-    if (!activeLesson) {
-      return;
-    }
-
-    await saveLessonBookmark(userInfo.uid, activeLesson.id);
-    setBookmarked(true);
-  }
-
-  async function submitQuestion() {
-    const trimmed = questionText.trim();
-
-    if (!trimmed) {
-      return;
-    }
-
-    const saved = await addCourseQuestion(selectedProgram.courseSlug, userInfo.uid, trimmed);
-    setQuestionText("");
-
-    if (saved) {
-      setQuestions((current) => [saved, ...current]);
-    }
-  }
-
   async function handleNotificationClick(notification: LmsNotification) {
     if (!notification.id.startsWith("local-")) {
       await markNotificationRead(userInfo.uid, notification.id);
@@ -718,14 +589,6 @@ export function LmsPortal({
     setNotifications((current) =>
       current.map((item) => (item.id === notification.id ? { ...item, read: true } : item)),
     );
-
-    if (notification.target === "resources") {
-      setActiveTab("resources");
-    } else if (notification.target === "assignment") {
-      setActiveTab("assignment");
-    } else {
-      setActiveTab("overview");
-    }
   }
 
   function renderLessonSidebar() {
@@ -742,135 +605,60 @@ export function LmsPortal({
               ← View all courses
             </button>
           </div>
-
-          {enrollments.length > 1 ? (
-            <>
-              <div className="border-b border-[#f1f5f9] px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94a3b8]">
-                My Courses
-              </div>
-              <div className="space-y-2 border-b border-[#f1f5f9] px-4 py-3">
-                {enrollments.map((enrollment) => {
-                  const activeCourse = enrollment.courseId === selectedProgram.courseSlug;
-
-                  return (
-                    <button
-                      key={enrollment.id}
-                      type="button"
-                      onClick={() => {
-                        onSelectCourse(enrollment.courseId);
-                        setMobileSidebarOpen(false);
-                      }}
-                      className={cn(
-                        "w-full rounded-[10px] border px-3 py-2 text-left transition",
-                        activeCourse
-                          ? "border-[#fed7aa] bg-[#fff7ed]"
-                          : "border-[#e2e8f0] bg-white hover:border-[#fed7aa] hover:bg-[#fffaf5]",
-                      )}
-                    >
-                      <div className={cn("text-[12px] font-semibold", activeCourse ? "text-[#ea580c]" : "text-[#1e293b]")}>
-                        {enrollment.courseName}
-                      </div>
-                      <div className="mt-1 text-[10px] text-[#94a3b8]">
-                        Purchased on {formatEnrollmentDate(enrollment.enrolledAt)}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          ) : null}
-
-          <div className="mt-3 px-4 text-[13px] font-bold text-[#1e293b]">{selectedCourseTitle}</div>
-          <div className="mt-1 px-4 text-[11px] text-[#94a3b8]">
-            {selectedCourseDuration} · {selectedCourseLevel}
-          </div>
-
-          <div className="border-b border-[#f1f5f9] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94a3b8]">
-            Progress Summary
-          </div>
-
-          <div className="border-b border-[#f1f5f9] px-4 py-4">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-[#64748b]">Progress</span>
-              <span className="font-medium text-[#f97316]">{moduleProgressLabel}</span>
-            </div>
-            <div className="mt-2 h-[5px] rounded-full bg-[#e2e8f0]">
-              <div
-                className="h-[5px] rounded-full bg-[linear-gradient(90deg,#f97316,#fb923c)]"
-                style={{ width: `${moduleProgressPercent || progressPercent}%` }}
-              />
+          <div className="border-b border-[#f1f5f9] px-4 py-3">
+            <div className="text-[11px] font-semibold text-[#1e293b]">{selectedCourseTitle}</div>
+            <div className="mt-1 text-[10px] text-[#94a3b8]">{moduleProgressLabel} complete</div>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e2e8f0]">
+              <div className="h-full rounded-full bg-[#f97316]" style={{ width: `${moduleProgressPercent}%` }} />
             </div>
           </div>
 
-          <div className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94a3b8]">
-            Course Modules
-          </div>
-
-          <div className="min-h-0 flex-1 overflow-y-auto pb-2">
+          <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2">
             {modules.map((module, moduleIndex) => {
               const moduleState = moduleStates[moduleIndex] || "locked";
               const expanded = expandedModuleIds.has(module.id);
-              const activeModule = activeLesson?.moduleId === module.id;
 
               return (
-                <div key={module.id} className="border-b border-[#f1f5f9]">
+                <div key={module.id} className="mb-2 overflow-hidden rounded-[10px] border border-[#e2e8f0] bg-white">
                   <button
                     type="button"
                     onClick={() => toggleModule(module.id)}
-                    className={cn(
-                      "flex w-full items-center gap-2 px-4 py-[10px] text-left transition hover:bg-[#f8fafc]",
-                      (expanded || activeModule) && "bg-[#f8fafc]",
-                    )}
+                    className="flex w-full items-center justify-between px-3 py-2 text-left"
                   >
-                    <span
-                      className={cn(
-                        "flex h-[22px] w-[22px] items-center justify-center rounded-[6px] text-[10px] font-semibold",
-                        moduleState === "completed" && "bg-[#dcfce7] text-[#16a34a]",
-                        moduleState === "active" && "border border-[#fed7aa] bg-[#fff7ed] text-[#ea580c]",
-                        moduleState === "locked" && "bg-[#f1f5f9] text-[#94a3b8]",
-                      )}
-                    >
-                      {moduleState === "completed" ? "✓" : moduleState === "locked" ? "🔒" : moduleIndex + 1}
-                    </span>
-                    <span className={cn("min-w-0 flex-1 text-[12px] font-medium", activeModule ? "text-[#1e293b]" : "text-[#475569]")}>
-                      {module.title}
-                    </span>
-                    <ChevronDown className={cn("h-3.5 w-3.5 text-[#94a3b8] transition", expanded && "rotate-180")} />
+                    <div className="min-w-0">
+                      <div className="truncate text-[11px] font-semibold text-[#1e293b]">Module {moduleIndex + 1}</div>
+                      <div className="truncate text-[10px] text-[#64748b]">{module.title}</div>
+                    </div>
+                    <ChevronDown className={cn("h-4 w-4 text-[#94a3b8] transition-transform", expanded ? "rotate-180" : "rotate-0")} />
                   </button>
 
                   {expanded ? (
-                    <div className="space-y-1 px-4 pb-2 pl-[46px]">
+                    <div className="border-t border-[#f1f5f9]">
                       {module.lessons.map((lesson) => {
-                        const active = activeLesson?.id === lesson.id;
-                        const complete = completedLessons.has(lesson.id);
-                        const locked = moduleState === "locked";
+                        const isSelected = selectedLessonId === lesson.id;
+                        const isDone = completedLessons.has(lesson.id);
 
                         return (
                           <button
                             key={lesson.id}
                             type="button"
                             onClick={() => selectLesson(lesson, moduleState)}
+                            disabled={moduleState === "locked"}
                             className={cn(
-                              "flex w-full items-start gap-2 rounded-[7px] border px-[10px] py-[6px] text-left transition",
-                              active && "border-[#fed7aa] bg-[#fff7ed]",
-                              !active && "border-transparent",
-                              !active && !locked && "hover:bg-[#f1f5f9]",
+                              "flex w-full items-center gap-2 px-3 py-2 text-left text-[11px] transition",
+                              moduleState === "locked" ? "cursor-not-allowed opacity-50" : "hover:bg-[#f8fafc]",
+                              isSelected ? "bg-[#fff7ed] text-[#c2410c]" : "text-[#475569]",
                             )}
                           >
-                            <span className={cn("mt-0.5 text-[11px]", active ? "text-[#f97316]" : "text-[#cbd5e1]")}>
-                              {getLessonIcon(lesson.type)}
+                            <span
+                              className={cn(
+                                "inline-flex h-4 w-4 items-center justify-center rounded-full border text-[9px]",
+                                isDone ? "border-[#86efac] bg-[#dcfce7] text-[#15803d]" : "border-[#cbd5e1] text-[#94a3b8]",
+                              )}
+                            >
+                              {isDone ? "✓" : lesson.lessonIndex + 1}
                             </span>
-                            <span className="min-w-0 flex-1">
-                              <span className={cn("block text-[11px]", active ? "font-medium text-[#ea580c]" : "text-[#64748b]")}>
-                                {lesson.title}
-                              </span>
-                              <span className="mt-0.5 block text-[10px] text-[#94a3b8]">{lesson.duration}</span>
-                            </span>
-                            {complete ? (
-                              <span className="mt-0.5 flex h-[14px] w-[14px] items-center justify-center rounded-full border border-[#bbf7d0] bg-[#dcfce7] text-[9px] text-[#16a34a]">
-                                ✓
-                              </span>
-                            ) : null}
+                            <span className="truncate">{lesson.title}</span>
                           </button>
                         );
                       })}
@@ -891,64 +679,30 @@ export function LmsPortal({
     }
 
     return (
-      <div className="relative h-[260px] bg-[#0f172a]">
-        {isLiveToday ? (
-          <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-2 rounded-[6px] bg-[#ef4444] px-2.5 py-[4px] text-[10px] font-semibold text-white">
-            <span className="h-1.5 w-1.5 animate-[pulse_1.4s_ease-in-out_infinite] rounded-full bg-white" />
-            LIVE CLASS TODAY 7PM
-          </div>
-        ) : null}
-
-        {isLiveToday ? (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="text-[11px] text-[rgba(255,255,255,0.6)]">Starts in:</div>
-            <div className="mt-2 text-[20px] font-bold text-[#f97316]">{countdown}</div>
-            <Link
-              href={selectedProgram.liveClassUrl}
-              target="_blank"
-              className="mt-5 rounded-[8px] bg-[#f97316] px-6 py-2.5 text-[14px] font-semibold text-white"
-            >
-              Join Live Class
-            </Link>
-          </div>
-        ) : activeLesson.embedUrl ? (
-          <>
-            <iframe
-              src={activeLesson.embedUrl}
-              title={activeLesson.title}
-              className="h-full w-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
-            <div className="absolute right-0 bottom-0 left-0 flex items-center gap-3 bg-[rgba(0,0,0,0.82)] px-4 py-3 text-[11px] text-[rgba(255,255,255,0.6)]">
-              <button type="button" className="text-[#f1f5f9]">
-                <Play className="h-4 w-4" />
-              </button>
-              <button type="button" className="text-[rgba(255,255,255,0.6)]">
-                <Pause className="h-4 w-4" />
-              </button>
-              <div className="h-1 flex-1 rounded-full bg-[rgba(255,255,255,0.12)]">
-                <div className="h-1 w-1/3 rounded-full bg-[#f97316]" />
-              </div>
-              <span>03:21 / {activeLesson.duration}</span>
-              <select className="rounded bg-[rgba(255,255,255,0.08)] px-2 py-1 text-[#f1f5f9] outline-none">
-                {["0.75x", "1x", "1.25x", "1.5x", "2x"].map((speed) => (
-                  <option key={speed}>{speed}</option>
-                ))}
-              </select>
-              <button type="button" className="text-[#f1f5f9]">
-                <Maximize2 className="h-4 w-4" />
-              </button>
+      <section className="border-b border-[#e2e8f0] bg-white p-5">
+        <div className="aspect-video overflow-hidden rounded-[12px] border border-[#e2e8f0] bg-[#0f172a]">
+          {activeLesson.type === "live" ? (
+            <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
+              <Video className="h-10 w-10 text-[#e2e8f0]" />
+              <p className="text-sm text-[#cbd5e1]">Live session link for this lesson</p>
+              <Link
+                href={selectedProgram.liveClassUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center rounded-[8px] bg-[#f97316] px-4 py-2 text-[12px] font-semibold text-white"
+              >
+                Join Live Class
+              </Link>
+              {isLiveToday ? <p className="text-[11px] text-[#fdba74]">Starts in {countdown}</p> : null}
             </div>
-          </>
-        ) : (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <Video className="h-10 w-10 text-[#475569]" />
-            <div className="mt-3 text-[13px] text-[#cbd5e1]">Recording will appear after live class</div>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <Video className="h-10 w-10 text-[#475569]" />
+              <div className="mt-3 text-[13px] text-[#cbd5e1]">Recording will appear after live class</div>
+            </div>
+          )}
+        </div>
+      </section>
     );
   }
 
@@ -988,205 +742,6 @@ export function LmsPortal({
                 <span className={cn("rounded-full border px-2 py-1 text-[10px]", item.color)}>{item.badge}</span>
               </div>
             ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  function renderResourcesTab() {
-    if (!activeLesson) {
-      return null;
-    }
-
-    return (
-      <div className="space-y-3">
-        {activeLesson.resources.map((resource) => (
-          <a
-            key={resource.name}
-            href={resource.url}
-            className="flex items-center gap-3 rounded-[10px] border border-[#e2e8f0] bg-white p-4 transition hover:border-[#fed7aa]"
-          >
-            <FileText
-              className={cn(
-                "h-5 w-5",
-                resource.type === "PDF" && "text-[#ef4444]",
-                resource.type === "LAB" && "text-[#60a5fa]",
-                resource.type === "PPT" && "text-[#f97316]",
-              )}
-            />
-            <div className="min-w-0 flex-1">
-              <div className="text-[13px] text-[#1e293b]">{resource.name}</div>
-              <div className="mt-1 text-[11px] text-[#94a3b8]">{resource.size}</div>
-            </div>
-            <span className="inline-flex items-center gap-1 text-[12px] text-[#f97316]">
-              <Download className="h-4 w-4" />
-              Download
-            </span>
-          </a>
-        ))}
-      </div>
-    );
-  }
-
-  function renderNotesTab() {
-    const localKey = `lms-note-${userInfo.uid}-${activeLesson?.id}`;
-
-    async function handleManualSave() {
-      if (!activeLesson) return;
-      /* Always save to localStorage first */
-      try { window.localStorage.setItem(localKey, noteText); } catch { /* ignore */ }
-      setNoteSaving(true);
-      setNoteError(null);
-      try {
-        await saveLessonNote(userInfo.uid, activeLesson.id, noteText);
-        setNoteSaved(true);
-        setNoteDirty(false);
-      } catch {
-        setNoteError("Cloud sync failed. Your note is saved locally on this device.");
-      } finally {
-        setNoteSaving(false);
-      }
-    }
-
-    return (
-      <div className="space-y-3">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[11px] text-[#64748B]">
-            Notes are saved per lesson. They stay when you return.
-          </p>
-          <button
-            type="button"
-            onClick={handleManualSave}
-            disabled={noteSaving || (!noteDirty && noteSaved)}
-            className={cn(
-              "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition",
-              noteSaved && !noteDirty
-                ? "border border-[#BBF7D0] bg-[#F0FDF4] text-[#16A34A]"
-                : noteSaving
-                  ? "border border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B]"
-                  : "border border-[#C8D7EE] bg-[#EAF0FA] text-[#0B2E6B] hover:bg-[#DCE7F7]",
-            )}
-          >
-            {noteSaving ? (
-              <><NotebookPen className="h-3.5 w-3.5 animate-pulse" />Saving…</>
-            ) : noteSaved && !noteDirty ? (
-              <><Check className="h-3.5 w-3.5" />Saved</>
-            ) : (
-              <><NotebookPen className="h-3.5 w-3.5" />Save Note</>
-            )}
-          </button>
-        </div>
-
-        {/* Textarea */}
-        <textarea
-          value={noteText}
-          onChange={(event) => {
-            setNoteText(event.target.value);
-            setNoteDirty(true);
-            setNoteSaved(false);
-            setNoteError(null);
-          }}
-          placeholder="Write your notes for this lesson… (auto-saved as you type)"
-          className="min-h-[260px] w-full resize-y rounded-xl border border-[#E2E8F0] bg-white p-4 text-[13px] leading-6 text-[#1E293B] outline-none placeholder:text-[#94A3B8] focus:border-[#0B2E6B] focus:ring-2 focus:ring-[#0B2E6B]/10"
-        />
-
-        {/* Status */}
-        <div className="flex items-center justify-between text-[11px]">
-          {noteSaving && (
-            <span className="text-[#64748B]">⟳ Syncing to cloud…</span>
-          )}
-          {noteSaved && !noteDirty && !noteSaving && (
-            <span className="text-[#16A34A]">✓ Saved to your account</span>
-          )}
-          {noteDirty && !noteSaving && (
-            <span className="text-[#F59E0B]">● Unsaved changes</span>
-          )}
-          {noteError && (
-            <span className="text-[#EF4444]">{noteError}</span>
-          )}
-          {!noteDirty && !noteSaved && !noteSaving && !noteError && (
-            <span className="text-[#94A3B8]">Start typing to add notes…</span>
-          )}
-          <span className="text-[#CBD5E1]">{noteText.length} chars</span>
-        </div>
-      </div>
-    );
-  }
-
-  function renderQaTab() {
-    return (
-      <div className="space-y-4">
-        <div className="flex gap-2">
-          <input
-            value={questionText}
-            onChange={(event) => setQuestionText(event.target.value)}
-            placeholder="Ask your mentor a question..."
-            className="min-w-0 flex-1 rounded-[8px] border border-[#e2e8f0] bg-white px-3 py-2.5 text-[13px] text-[#1e293b] outline-none placeholder:text-[#94a3b8]"
-          />
-          <button
-            type="button"
-            onClick={() => void submitQuestion()}
-            className="rounded-[8px] bg-[#f97316] px-4 py-2 text-[12px] font-semibold text-white"
-          >
-            Ask
-          </button>
-        </div>
-
-        {questions.length ? (
-          questions.map((question) => (
-            <div key={question.id} className="rounded-[10px] border border-[#e2e8f0] bg-white p-4">
-              <div className="flex gap-3">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(139,92,246,0.15)] text-[11px] font-bold text-[#a78bfa]">
-                  {userInfo.name.slice(0, 2).toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[13px] text-[#1e293b]">{question.question}</div>
-                  <div className="mt-1 text-[10px] text-[#94a3b8]">{question.createdAt || "Just now"}</div>
-                  {question.answer ? (
-                    <div className="mt-3 rounded-[8px] bg-[#dcfce7] p-3 text-[12px] text-[#166534]">
-                      {question.answer}
-                    </div>
-                  ) : (
-                    <span className="mt-3 inline-flex rounded-full border border-[#fed7aa] bg-[#fff7ed] px-3 py-1 text-[10px] text-[#f97316]">
-                      Awaiting mentor response
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="rounded-[10px] border border-[#e2e8f0] bg-white p-5 text-[12px] text-[#64748b]">
-            No questions yet for this lesson.
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  function renderAssignmentTab() {
-    if (!activeLesson) {
-      return null;
-    }
-
-    return (
-      <div className="rounded-[10px] border border-[#e2e8f0] bg-white p-5">
-        <div className="text-[14px] font-semibold text-[#1e293b]">Assignment</div>
-        <p className="mt-3 text-[12px] leading-6 text-[#64748b]">{activeLesson.assignment.description}</p>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <InfoTile label="Deadline" value={formatDate(activeLesson.assignment.deadline)} />
-          <InfoTile label="Status" value={activeLesson.assignment.status} />
-          <InfoTile label="Score" value={activeLesson.assignment.score || "Pending"} />
-        </div>
-        <div className="mt-5 rounded-[8px] border border-[#e2e8f0] bg-[#f8fafc] p-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="text-[12px] text-[#64748b]">Upload your file or add a text submission from this area.</div>
-            <button type="button" className="inline-flex items-center gap-2 rounded-[8px] bg-[#f97316] px-4 py-2 text-[12px] font-semibold text-white">
-              <Upload className="h-4 w-4" />
-              Submit Assignment
-            </button>
           </div>
         </div>
       </div>
@@ -1312,25 +867,6 @@ export function LmsPortal({
             </div>
             <button
               type="button"
-              onClick={() => {
-                setNotesOpen((current) => !current);
-                setActiveTab("notes");
-              }}
-              className="hidden"
-            >
-              <NotebookPen className="h-4 w-4" />
-              Notes
-            </button>
-            <button
-              type="button"
-              onClick={() => void bookmarkCurrentLesson()}
-              className="hidden"
-            >
-              <Bookmark className="h-4 w-4" />
-              Bookmark
-            </button>
-            <button
-              type="button"
               onClick={() => void completeCurrentLesson()}
               disabled={activeLessonCompleted || currentModuleState === "locked"}
               className="inline-flex items-center gap-2 rounded-[6px] border border-[#f97316] bg-[#f97316] px-4 py-[5px] text-[11px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
@@ -1391,11 +927,3 @@ export function LmsPortal({
   );
 }
 
-function InfoTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[8px] border border-[#e2e8f0] bg-[#f8fafc] p-3">
-      <div className="text-[10px] uppercase tracking-[0.08em] text-[#94a3b8]">{label}</div>
-      <div className="mt-1 text-[12px] text-[#1e293b]">{value}</div>
-    </div>
-  );
-}
