@@ -7,8 +7,8 @@ import { siteConfig } from "@/lib/site-config";
 export const dynamic = "force-dynamic";
 
 const defaultWorkshopTitle = "AI Developer Launch Lab";
-const defaultWorkshopStartIso = "2026-07-19T18:00:00+05:30";
-const defaultWorkshopEndIso = "2026-07-19T20:00:00+05:30";
+const defaultWorkshopStartIso = "2026-07-23T19:17:00+05:30";
+const defaultWorkshopEndIso = "2026-07-23T21:17:00+05:30";
 const workshopDescription = "Build and deploy an AI-powered website on Microsoft Azure in a mission-led, hands-on workshop designed for future builders.";
 
 async function getWorkshopSeoState() {
@@ -17,8 +17,8 @@ async function getWorkshopSeoState() {
     return {
       title: config.title?.trim() || defaultWorkshopTitle,
       status: config.status || "published",
-      startDate: config.startAtIso || defaultWorkshopStartIso,
-      endDate: config.endAtIso || defaultWorkshopEndIso,
+      startDate: defaultWorkshopStartIso,
+      endDate: defaultWorkshopEndIso,
       config,
     };
   } catch {

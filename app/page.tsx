@@ -319,7 +319,7 @@ export default function Home() {
                 <p className="mt-1 text-sm font-semibold text-[#0F172A]">
                   Builder Workshop: Launch Your First AI Website on Azure
                 </p>
-                <p className="mt-1 text-[12px] text-[#475569]">19 July • 6 PM - 8 PM • Fee: Rs. 999</p>
+                <p className="mt-1 text-[12px] text-[#475569]">Thursday (Guruvar) • 23 July 2026 • 7:17 PM - 9:17 PM IST • Fee: Rs. 999</p>
               </div>
               <span className="shrink-0 rounded-lg bg-[linear-gradient(135deg,#F97316,#FB923C)] px-3 py-1.5 text-[11px] font-bold text-white group-hover:brightness-95">
                 Reserve Seat

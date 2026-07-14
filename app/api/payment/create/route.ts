@@ -269,8 +269,8 @@ export async function POST(request: Request) {
       const workshopDate = new Intl.DateTimeFormat("en-IN", {
         dateStyle: "medium",
         timeZone: "Asia/Kolkata",
-      }).format(new Date("2026-07-19T18:00:00+05:30"));
-      const workshopTime = "6:00 PM - 8:00 PM IST";
+      }).format(new Date("2026-07-23T19:17:00+05:30"));
+      const workshopTime = "7:17 PM - 9:17 PM IST";
 
       after(async () => {
         await Promise.allSettled([

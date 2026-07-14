@@ -35,8 +35,8 @@ type CountdownState = {
   ended: boolean;
 };
 
-const defaultWorkshopStartIso = "2026-07-19T18:00:00+05:30";
-const defaultWorkshopEndIso = "2026-07-19T20:00:00+05:30";
+const defaultWorkshopStartIso = "2026-07-23T19:17:00+05:30";
+const defaultWorkshopEndIso = "2026-07-23T21:17:00+05:30";
 const defaultWorkshopTitle = "Build, Launch & Host Your First AI-Generated Website on Microsoft Azure";
 const defaultWorkshopFeeLabel = "Rs. 999";
 
@@ -353,19 +353,23 @@ export function AiDeveloperLaunchLabPage({
   const workshopTitle = workshopConfig?.title?.trim() || defaultWorkshopTitle;
   const workshopStatus = workshopConfig?.status || "published";
   const workshopCapacity = workshopConfig?.capacity || 500;
-  const workshopStartIso = workshopConfig?.startAtIso || defaultWorkshopStartIso;
-  const workshopEndIso = workshopConfig?.endAtIso || defaultWorkshopEndIso;
+  const workshopStartIso = defaultWorkshopStartIso;
+  const workshopEndIso = defaultWorkshopEndIso;
   const workshopStartDate = new Date(workshopStartIso);
   const workshopEndDate = new Date(workshopEndIso);
+  const workshopDayLabel = Number.isNaN(workshopStartDate.getTime())
+    ? "Thursday (Guruvar)"
+    : `${new Intl.DateTimeFormat("en-IN", { weekday: "long", timeZone: "Asia/Kolkata" }).format(workshopStartDate)} (Guruvar)`;
   const workshopDateLabel = Number.isNaN(workshopStartDate.getTime())
-    ? "19 July"
+    ? "23 July 2026"
     : new Intl.DateTimeFormat("en-IN", {
       day: "2-digit",
-      month: "short",
+      month: "long",
+      year: "numeric",
       timeZone: "Asia/Kolkata",
     }).format(workshopStartDate);
   const workshopTimeLabel = Number.isNaN(workshopStartDate.getTime()) || Number.isNaN(workshopEndDate.getTime())
-    ? "6 PM - 8 PM"
+    ? "7:17 PM - 9:17 PM IST"
     : `${new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(workshopStartDate)} - ${new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }).format(workshopEndDate)} IST`;
   const countdownTarget = Number.isNaN(workshopStartDate.getTime()) ? new Date(defaultWorkshopStartIso).getTime() : workshopStartDate.getTime();
   const isWorkshopPublished = workshopStatus === "published";
@@ -412,6 +416,7 @@ export function AiDeveloperLaunchLabPage({
             </motion.p>
 
             <div className="mt-6 flex flex-wrap gap-2.5 text-[12px] text-[#A9B6DA]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><CalendarDays className="h-3.5 w-3.5" />{workshopDayLabel}</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><CalendarDays className="h-3.5 w-3.5" />{workshopDateLabel}</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Clock3 className="h-3.5 w-3.5" />{workshopTimeLabel}</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1.5"><Globe className="h-3.5 w-3.5" />Live Online</span>
@@ -484,17 +489,17 @@ export function AiDeveloperLaunchLabPage({
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.16em] text-[#A7D0FF]">Launch Lab</p>
-                    <h3 className="mt-1 text-lg font-semibold tracking-[-0.02em]">AI Builder Workshop</h3>
+                    <h3 className="mt-1 text-lg font-semibold tracking-[-0.02em] text-[#F8FBFF]">AI Builder Workshop</h3>
                   </div>
                   <span className="rounded-full border border-[#FF7A00]/40 bg-[#FF7A00]/15 px-3 py-1 text-xs font-semibold text-[#FFC48C]">
                     LIVE
                   </span>
                 </div>
-                <div className="mt-4 space-y-3 text-sm text-[#CED7F0]">
-                  <p className="flex items-center gap-2"><Rocket className="h-4 w-4 text-[#1D7CFF]" />Build faster with AI-assisted coding</p>
-                  <p className="flex items-center gap-2"><Server className="h-4 w-4 text-[#1D7CFF]" />Set up Azure infrastructure like a real project</p>
-                  <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-[#1D7CFF]" />Deploy and verify your live URL</p>
-                  <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-[#1D7CFF]" />Know what to build next for your builder portfolio</p>
+                <div className="mt-4 space-y-3 text-sm text-[#E4EEFF]">
+                  <p className="flex items-center gap-2"><Rocket className="h-4 w-4 text-[#60A5FA]" />Build faster with AI-assisted coding</p>
+                  <p className="flex items-center gap-2"><Server className="h-4 w-4 text-[#60A5FA]" />Set up Azure infrastructure like a real project</p>
+                  <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-[#60A5FA]" />Deploy and verify your live URL</p>
+                  <p className="flex items-center gap-2"><Compass className="h-4 w-4 text-[#60A5FA]" />Know what to build next for your builder portfolio</p>
                 </div>
               </div>
 
