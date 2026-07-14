@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Download, FileText, RefreshCw, Search } from "lucide-react";
-import { getFirebaseAuth, type FirestoreEnrollment } from "@/lib/firebase";
-import { buildInvoiceRecords, downloadCsv, formatAdminCurrency, formatAdminDate } from "@/lib/admin/reporting";
-
-type EnrollmentRecord = FirestoreEnrollment & { id: string };
+import { getFirebaseAuth } from "@/lib/firebase";
+import { buildInvoiceRecordsFromPersistedInvoices, downloadCsv, formatAdminCurrency, formatAdminDate } from "@/lib/admin/reporting";
+import type { PersistedInvoiceRecord } from "@/lib/invoices";
 
 async function getAdminAuthHeader() {
   const token = await getFirebaseAuth()?.currentUser?.getIdToken();
@@ -17,7 +16,7 @@ async function getAdminAuthHeader() {
 }
 
 export function AdminInvoicesTable() {
-  const [rows, setRows] = useState<EnrollmentRecord[]>([]);
+  const [invoicesRaw, setInvoicesRaw] = useState<PersistedInvoiceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
@@ -25,23 +24,22 @@ export function AdminInvoicesTable() {
     setLoading(true);
     try {
       const headers = await getAdminAuthHeader();
-      const response = await fetch("/api/admin/enrollments", {
+      const response = await fetch("/api/admin/invoices", {
         method: "GET",
         headers,
         cache: "no-store",
       });
       const payload = (await response.json().catch(() => null)) as
-        | { success?: boolean; enrollments?: EnrollmentRecord[]; message?: string }
+        | { success?: boolean; invoices?: PersistedInvoiceRecord[]; message?: string }
         | null;
 
       if (!response.ok || !payload?.success) {
         throw new Error(payload?.message || "Unable to load invoices.");
       }
 
-      const paid = (payload.enrollments || []).filter((item) => item.amountPaid || item.invoiceNumber);
-      setRows(paid);
+      setInvoicesRaw(payload.invoices || []);
     } catch {
-      setRows([]);
+      setInvoicesRaw([]);
     } finally {
       setLoading(false);
     }
@@ -55,7 +53,7 @@ export function AdminInvoicesTable() {
     return () => window.clearTimeout(timer);
   }, [load]);
 
-  const invoices = useMemo(() => buildInvoiceRecords(rows), [rows]);
+  const invoices = useMemo(() => buildInvoiceRecordsFromPersistedInvoices(invoicesRaw), [invoicesRaw]);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();

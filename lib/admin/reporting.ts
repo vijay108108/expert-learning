@@ -1,5 +1,6 @@
 import type { FirestoreEnrollment } from "@/lib/firebase";
 import type { AppUserProfile } from "@/lib/firebase/user-profiles";
+import type { PersistedInvoiceRecord } from "@/lib/invoices";
 
 export type AdminUserRecord = AppUserProfile & {
   id: string;
@@ -81,6 +82,68 @@ export function buildInvoiceRecords(enrollments: AdminEnrollmentRecord[]) {
   }
 
   return Array.from(grouped.values()).sort(
+    (left, right) => new Date(right.paidAt).getTime() - new Date(left.paidAt).getTime(),
+  );
+}
+
+export function buildInvoiceRecordsFromPersistedInvoices(invoices: PersistedInvoiceRecord[]) {
+  const mapped = invoices.map<AdminInvoiceRecord>((invoice) => {
+    const lineItems: AdminEnrollmentRecord[] = invoice.courses.map((course, index) => {
+      const lineAmountPaise =
+        typeof course.finalPaidAmountPaise === "number"
+          ? course.finalPaidAmountPaise
+          : typeof course.amountPaise === "number"
+            ? course.amountPaise
+            : 0;
+
+      return {
+        id: `${invoice.invoiceNumber}-${course.slug}-${index}`,
+        userId: invoice.userId,
+        userName: invoice.customer.name || "-",
+        userPhone: invoice.customer.phone || "",
+        userEmail: invoice.customer.email || "",
+        courseId: course.primaryCourseSlug || course.slug,
+        courseName: course.title,
+        amountPaid: Math.round(lineAmountPaise / 100),
+        razorpayOrderId: invoice.orderId || "",
+        razorpayPaymentId: invoice.paymentId || "",
+        invoiceNumber: invoice.invoiceNumber,
+        enrolledAt: invoice.paidAtIso,
+        status: "active",
+        duration: course.duration,
+        level: course.level,
+        enrollmentType: course.enrollmentType,
+        purchasedOfferingSlug: course.purchasedOfferingSlug,
+        programSlug: course.programSlug,
+        programName: course.programName,
+        programCourseSlugs: course.programCourseSlugs,
+        primaryCourseSlug: course.primaryCourseSlug,
+        couponCode: course.couponCode,
+        discountPercentage: course.discountPercentage,
+        originalAmount: typeof course.originalAmountPaise === "number" ? Math.round(course.originalAmountPaise / 100) : undefined,
+        discountAmount: typeof course.discountAmountPaise === "number" ? Math.round(course.discountAmountPaise / 100) : undefined,
+        finalPaidAmount: typeof course.finalPaidAmountPaise === "number" ? Math.round(course.finalPaidAmountPaise / 100) : undefined,
+        paymentStatus: course.paymentStatus,
+      };
+    });
+
+    return {
+      invoiceNumber: invoice.invoiceNumber,
+      userId: invoice.userId,
+      userName: invoice.customer.name || "-",
+      userPhone: invoice.customer.phone || "",
+      userEmail: invoice.customer.email || "",
+      companyName: invoice.customer.companyName || "",
+      gstNumber: invoice.customer.gstNumber || "",
+      razorpayOrderId: invoice.orderId || "",
+      razorpayPaymentId: invoice.paymentId || "",
+      paidAt: invoice.paidAtIso,
+      lineItems,
+      totalAmount: Math.round((invoice.totalPaidPaise || 0) / 100),
+    };
+  });
+
+  return mapped.sort(
     (left, right) => new Date(right.paidAt).getTime() - new Date(left.paidAt).getTime(),
   );
 }
