@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/server/firebase-auth";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
-import { isAppOwnedUser } from "@/lib/server/app-owned-user";
 
 type RouteContext = {
   params: Promise<{ uid: string }>;
@@ -42,13 +41,6 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    if (!(await isAppOwnedUser(db, uid))) {
-      return NextResponse.json(
-        { success: false, message: "This user does not belong to this app." },
-        { status: 404 },
-      );
-    }
-
     await auth.updateUser(uid, { password });
     await db.collection("users").doc(uid).set(
       { passwordUpdatedAt: new Date().toISOString() },
