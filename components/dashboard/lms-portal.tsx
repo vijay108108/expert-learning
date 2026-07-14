@@ -345,6 +345,10 @@ export function LmsPortal({
     const courseSlug = activeCourseSlug || firstEnrollment?.courseId || "azure-administrator";
     return getLmsProgramBySlug(courseSlug) || lmsPrograms[0];
   }, [activeCourseSlug, firstEnrollment]);
+  const workshopProgram = useMemo(
+    () => getLmsProgramBySlug("ai-developer-launch-lab"),
+    [],
+  );
   const selectedCourse = useMemo(
     () => allCourses.find((course) => course.slug === selectedProgram.courseSlug) || allCourses[0],
     [selectedProgram.courseSlug],
@@ -394,11 +398,11 @@ export function LmsPortal({
   const moduleProgressLabel = allModulesCompleted
     ? `${modules.length} of ${modules.length} modules`
     : `${Math.min(completedModuleCount + 1, modules.length)} of ${modules.length} modules`;
-  const isWorkshopLaunchLab = selectedProgram.courseSlug === "ai-developer-launch-lab";
   const hasWorkshopEnrollment = verifiedEnrollments.some(
     (enrollment) => enrollment.courseId === "ai-developer-launch-lab",
   );
   const workshopWhatsappInviteUrl = "https://chat.whatsapp.com/BWcKwVALARiDtPnlRNDewk?s=cl&p=a&ilr=1";
+  const workshopLiveClassUrl = workshopProgram?.liveClassUrl || "/workshops/ai-developer-launch-lab";
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -882,7 +886,7 @@ export function LmsPortal({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
-          {hasWorkshopEnrollment && isWorkshopLaunchLab ? (
+          {hasWorkshopEnrollment ? (
             <div className="border-b border-[#E2E8F0] bg-[linear-gradient(135deg,#ECFDF5,#EFF6FF)] px-5 py-4">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
@@ -903,7 +907,7 @@ export function LmsPortal({
                     Join WhatsApp Group
                   </Link>
                   <Link
-                    href={selectedProgram.liveClassUrl}
+                    href={workshopLiveClassUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center justify-center rounded-[10px] border border-[#BFDBFE] bg-white px-4 py-2.5 text-sm font-semibold text-[#1D4ED8] transition hover:bg-[#EFF6FF]"

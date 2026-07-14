@@ -77,7 +77,7 @@ export const socialLinks = [
   },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61590060611725",
+    href: "https://www.facebook.com/profile.php?id=61592055052262",
     icon: "facebook",
     hoverClass: "hover:border-[rgba(24,119,242,0.34)] hover:bg-[rgba(24,119,242,0.12)] hover:text-[#1877f2]",
   },

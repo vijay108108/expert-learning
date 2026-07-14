@@ -12,7 +12,7 @@ export function getOrganizationSchema() {
     telephone: siteConfig.phone,
     sameAs: [
       "https://www.instagram.com/genznextofficial/",
-      "https://www.facebook.com/profile.php?id=61590060611725",
+      "https://www.facebook.com/profile.php?id=61592055052262",
       "https://www.linkedin.com/company/genznext-research-training/",
     ],
   };
