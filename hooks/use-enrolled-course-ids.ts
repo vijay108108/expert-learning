@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyEnrollments, logFirestoreIssue } from "@/lib/firebase";
 import { getCourseSlugByCourseId } from "@/lib/offering-catalog";
-import { readEnrolledCourses } from "@/lib/my-learning";
+import { enrollmentsUpdatedEventName, readEnrolledCourses } from "@/lib/my-learning";
 
 type EnrolledMeta = {
   enrolledAt?: string;
@@ -103,11 +103,13 @@ export function useEnrolledCourseIds() {
     })();
 
     window.addEventListener("storage", syncFromLocal);
+    window.addEventListener(enrollmentsUpdatedEventName, syncFromLocal);
     syncFromLocal();
 
     return () => {
       active = false;
       window.removeEventListener("storage", syncFromLocal);
+      window.removeEventListener(enrollmentsUpdatedEventName, syncFromLocal);
     };
   }, [user]);
 

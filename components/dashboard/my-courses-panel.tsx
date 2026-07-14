@@ -10,7 +10,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { getCourseBySlug } from "@/lib/course-catalog";
 import { getMyEnrollments, logFirestoreIssue, type FirestoreEnrollment } from "@/lib/firebase";
 import { getCanonicalCourseId, getCheckoutOfferingBySlug, getCourseSlugByCourseId } from "@/lib/offering-catalog";
-import { readEnrolledCourses, type EnrolledCourse } from "@/lib/my-learning";
+import { enrollmentsUpdatedEventName, readEnrolledCourses, type EnrolledCourse } from "@/lib/my-learning";
 import { latestOrderStorageKey, type StoredOrderSuccess } from "@/lib/order-success";
 import { cn } from "@/lib/utils";
 
@@ -318,8 +318,12 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
 
     syncDeviceCourses();
     window.addEventListener("storage", syncDeviceCourses);
+    window.addEventListener(enrollmentsUpdatedEventName, syncDeviceCourses);
 
-    return () => window.removeEventListener("storage", syncDeviceCourses);
+    return () => {
+      window.removeEventListener("storage", syncDeviceCourses);
+      window.removeEventListener(enrollmentsUpdatedEventName, syncDeviceCourses);
+    };
   }, [user]);
 
   useEffect(() => {

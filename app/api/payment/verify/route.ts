@@ -308,6 +308,8 @@ export async function POST(request: Request) {
           name: trustedName,
           email: trustedEmail,
           phone: trustedPhone,
+          companyName: trustedCompanyName,
+          gstNumber: trustedGstNumber,
           createdAt: paidAtIso,
         });
       } catch (error) {

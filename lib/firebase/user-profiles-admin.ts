@@ -19,6 +19,8 @@ export async function upsertUserProfileAdminFromPayment(input: {
   name?: string;
   email?: string;
   phone?: string;
+  companyName?: string;
+  gstNumber?: string;
   createdAt?: string;
 }) {
   const db = getAdminDb();
@@ -42,6 +44,8 @@ export async function upsertUserProfileAdminFromPayment(input: {
     updatedAt: timestamp,
     authMethod: inferServerAuthMethod(existing, input),
     role: existing?.role || "student",
+    ...(input.companyName?.trim() ? { companyName: input.companyName.trim() } : existing?.companyName ? { companyName: existing.companyName } : {}),
+    ...(input.gstNumber?.trim() ? { gstNumber: input.gstNumber.trim().toUpperCase() } : existing?.gstNumber ? { gstNumber: existing.gstNumber } : {}),
   };
 
   await userRef.set(payload, { merge: true });

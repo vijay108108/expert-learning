@@ -1,6 +1,6 @@
 "use client";
 
-import { EmailAuthProvider, linkWithCredential, updatePassword, updateProfile } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
 import {
   BookOpenCheck,
   Building2,
@@ -29,7 +29,6 @@ import {
   getMyEnrollments,
   getUserProfile,
   listInvoicesByUser,
-  getFirebaseAuthErrorMessage,
   logFirestoreIssue,
   type AppUserProfile,
   type FirestoreEnrollment,
@@ -44,12 +43,6 @@ import { readEnrolledCourses } from "@/lib/my-learning";
 import { getCanonicalCourseId } from "@/lib/offering-catalog";
 import { formatCurrencyInrFromPaise, formatInvoiceDate, latestOrderStorageKey, type StoredOrderSuccess } from "@/lib/order-success";
 import { getInitials } from "@/lib/utils";
-import { normalizePhoneForAuth } from "@/lib/firebase/phone-utils";
-
-function getPhoneAuthEmail(rawPhone: string) {
-  const normalized = normalizePhoneForAuth(rawPhone);
-  return normalized ? `${normalized}@genznext.app` : "";
-}
 
 function formatMemberSince(value: string | null) {
   if (!value) return "Recently joined";
@@ -263,10 +256,6 @@ export function ProfilePanel() {
   const [editPhone, setEditPhone] = useState("");
   const [editCompany, setEditCompany] = useState("");
   const [editGst, setEditGst] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordSaving, setPasswordSaving] = useState(false);
-  const [passwordMsg, setPasswordMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -419,75 +408,6 @@ export function ProfilePanel() {
     }
   }
 
-  async function handlePasswordResetWhileLoggedIn() {
-    const auth = getFirebaseAuth();
-    const activeUser = auth?.currentUser;
-
-    if (!activeUser) {
-      setPasswordMsg("Please sign in again to reset password.");
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      setPasswordMsg("Password must be at least 8 characters.");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setPasswordMsg("Passwords do not match.");
-      return;
-    }
-
-    setPasswordSaving(true);
-    setPasswordMsg(null);
-
-    try {
-      const currentPhone = activeUser.phoneNumber || profile?.phone || "";
-      const passwordProviderLinked = activeUser.providerData.some((provider) => provider.providerId === "password");
-
-      if (!passwordProviderLinked) {
-        const phoneAuthEmail = getPhoneAuthEmail(currentPhone);
-        if (!phoneAuthEmail) {
-          setPasswordMsg("Phone number is missing on your account. Contact support to reset password.");
-          return;
-        }
-
-        const credential = EmailAuthProvider.credential(phoneAuthEmail, newPassword);
-        await linkWithCredential(activeUser, credential);
-      } else {
-        await updatePassword(activeUser, newPassword);
-      }
-
-      const db = getFirebaseDb();
-      if (db) {
-        await setDoc(
-          doc(db, "users", activeUser.uid),
-          {
-            authMethod: "password",
-            ...(currentPhone ? { phone: normalizePhoneForAuth(currentPhone) } : {}),
-            ...(activeUser.email ? { email: activeUser.email } : {}),
-            passwordUpdatedAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          { merge: true },
-        );
-      }
-
-      setNewPassword("");
-      setConfirmPassword("");
-      setPasswordMsg("Password updated successfully.");
-    } catch (error) {
-      const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";
-      if (code === "auth/requires-recent-login") {
-        setPasswordMsg("For security, please use Forgot Password from login if your session is old.");
-      } else {
-        setPasswordMsg(getFirebaseAuthErrorMessage(error));
-      }
-    } finally {
-      setPasswordSaving(false);
-    }
-  }
-
   if (!isAuthReady || (user && loading)) {
     return (
       <div className="flex min-h-full items-center justify-center bg-[#F8FAFC] px-4 py-10">
@@ -567,7 +487,7 @@ export function ProfilePanel() {
             <div className="mt-5 grid grid-cols-3 gap-3">
               {[
                 { icon: BookOpenCheck, label: "Courses", value: courseCount.toString(), color: "text-[#0B2E6B]", bg: "bg-[#EAF0FA]" },
-                { icon: ShieldCheck, label: "Status", value: learningStatus, color: "text-[#16A34A]", bg: "bg-[#F0FDF4]" },
+                  { icon: CheckCircle2, label: "Status", value: learningStatus, color: "text-[#16A34A]", bg: "bg-[#F0FDF4]" },
                 { icon: CalendarDays, label: "Member Since", value: formatMemberSince(memberSince), color: "text-[#F58220]", bg: "bg-[#FFF3E8]" },
               ].map((item) => (
                 <div key={item.label} className="rounded-xl border border-[#F1F5F9] bg-[#F8FAFC] p-3 text-center">
@@ -687,44 +607,6 @@ export function ProfilePanel() {
                 ) : null}
               </div>
             )}
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-[#E2E8F0] bg-white shadow-sm">
-          <div className="border-b border-[#F1F5F9] px-5 py-4">
-            <p className="text-[13px] font-bold !text-[#0F172A]">Security</p>
-            <p className="text-[12px] text-[#64748B]">Reset your password while logged in.</p>
-          </div>
-          <div className="space-y-3 p-5">
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(event) => setNewPassword(event.target.value)}
-              placeholder="New password (min 8 characters)"
-              className="h-11 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-[13px] !text-[#0F172A] outline-none focus:border-[#0B2E6B] focus:ring-2 focus:ring-[#0B2E6B]/10"
-            />
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              placeholder="Confirm new password"
-              className="h-11 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-[13px] !text-[#0F172A] outline-none focus:border-[#0B2E6B] focus:ring-2 focus:ring-[#0B2E6B]/10"
-            />
-
-            {passwordMsg ? (
-              <p className={`rounded-xl px-3 py-2 text-[12px] font-medium ${passwordMsg === "Password updated successfully." ? "bg-[#F0FDF4] text-[#16A34A]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
-                {passwordMsg}
-              </p>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={() => void handlePasswordResetWhileLoggedIn()}
-              disabled={passwordSaving}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] py-3 text-[13px] font-bold text-white disabled:opacity-60"
-            >
-              {passwordSaving ? <><LoaderCircle className="h-4 w-4 animate-spin" />Updating...</> : "Update Password"}
-            </button>
           </div>
         </section>
 

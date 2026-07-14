@@ -8,6 +8,7 @@ import { env } from "@/lib/env";
 import { saveEnrollmentRecordAdmin } from "@/lib/firebase/enrollments-admin";
 import { saveInvoiceRecordAdmin } from "@/lib/firebase/invoices-admin";
 import { upsertUserProfileAdminFromPayment } from "@/lib/firebase/user-profiles-admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 import type { PersistedInvoiceRecord } from "@/lib/invoices";
 import { verifyFirebaseBearerToken } from "@/lib/server/firebase-auth";
 import { captureServerEvent } from "@/lib/services/analytics";
@@ -101,6 +102,27 @@ export async function POST(request: Request) {
     }
 
     const amount = pricing.finalAmountPaise;
+    const normalizedBodyGstNumber = body.gstNumber?.trim().toUpperCase() || "";
+    const normalizedBodyCompanyName = body.companyName?.trim() || "";
+    let resolvedGstNumber = normalizedBodyGstNumber;
+    let resolvedCompanyName = normalizedBodyCompanyName;
+
+    if (authUser?.uid && (!resolvedGstNumber || !resolvedCompanyName)) {
+      try {
+        const adminDb = getAdminDb();
+        const profileSnapshot = adminDb
+          ? await adminDb.collection("users").doc(authUser.uid).get()
+          : null;
+        const profileData = profileSnapshot?.exists
+          ? (profileSnapshot.data() as { gstNumber?: string; companyName?: string })
+          : null;
+
+        resolvedGstNumber = resolvedGstNumber || profileData?.gstNumber?.trim().toUpperCase() || "";
+        resolvedCompanyName = resolvedCompanyName || profileData?.companyName?.trim() || "";
+      } catch (error) {
+        logFirestoreIssue("[Payment Create] Unable to resolve billing defaults from user profile", error);
+      }
+    }
 
     if (amount === 0) {
       if (pricing.appliedCouponCode !== GENZ100_COUPON_CODE) {
@@ -116,7 +138,7 @@ export async function POST(request: Request) {
       const invoiceNumber = createInvoiceNumber(invoiceOrderId, paidAtIso);
       const paymentMethod = "Coupon";
       const enrolledAt = paidAtIso;
-      const gstInvoiceEnabled = Boolean(body.gstNumber?.trim());
+      const gstInvoiceEnabled = Boolean(resolvedGstNumber);
       const { baseAmountPaise, gstPaise, totalPaidPaise } = getInclusiveGstBreakup(pricing.finalAmountPaise, gstInvoiceEnabled);
       const invoice: StoredOrderSuccess = {
         invoiceNumber,
@@ -137,8 +159,8 @@ export async function POST(request: Request) {
           name: body.name,
           phone: body.phone,
           email: body.email || undefined,
-          companyName: body.companyName?.trim() || undefined,
-          gstNumber: body.gstNumber?.trim() || undefined,
+          companyName: resolvedCompanyName || undefined,
+          gstNumber: resolvedGstNumber || undefined,
         },
         courses: offerings.map((offering, index) => {
           const enrollmentMeta = resolveEnrollmentMetaForOffering(offering);
@@ -203,8 +225,8 @@ export async function POST(request: Request) {
                 status: "active",
                 duration: offering.duration,
                 level: offering.level,
-                companyName: body.companyName?.trim() || "",
-                gstNumber: body.gstNumber?.trim() || "",
+                companyName: resolvedCompanyName,
+                gstNumber: resolvedGstNumber,
               });
             }),
           );
@@ -220,6 +242,8 @@ export async function POST(request: Request) {
             name: body.name,
             email: body.email,
             phone: body.phone,
+            companyName: resolvedCompanyName,
+            gstNumber: resolvedGstNumber,
             createdAt: paidAtIso,
           });
         } catch (error) {
@@ -315,8 +339,8 @@ export async function POST(request: Request) {
         phone: body.phone,
         courseSlug: requestedSlugs[0],
         courseSlugs: requestedSlugs.join(","),
-        gstNumber: body.gstNumber?.trim() || "",
-        companyName: body.companyName?.trim() || "",
+        gstNumber: resolvedGstNumber,
+        companyName: resolvedCompanyName,
         couponCode: pricing.appliedCouponCode,
         discountPercent: String(pricing.discountPercent),
         subtotalPaise: String(pricing.subtotalPaise),

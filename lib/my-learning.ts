@@ -5,6 +5,7 @@ import type { StoredOrderSuccess } from "@/lib/order-success";
 
 export const myLearningStorageKey = "genznext-my-learning";
 export const enrolledCoursesStorageKey = "enrolledCourses";
+export const enrollmentsUpdatedEventName = "genznext:enrollments-updated";
 
 export type EnrolledCourse = {
   id: string;
@@ -244,6 +245,7 @@ export function saveEnrolledCourses(courses: EnrolledCourse[]) {
 
   window.localStorage.setItem(enrolledCoursesStorageKey, JSON.stringify(normalized));
   writeLegacyMyLearningCourses(normalized);
+  window.dispatchEvent(new CustomEvent(enrollmentsUpdatedEventName));
   return normalized;
 }
 
