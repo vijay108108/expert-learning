@@ -23,6 +23,26 @@ const navLinks = [
   { label: "Player",       href: "/lms/player",         icon: PlayCircle },
 ] as const;
 
+function getFirstName(value?: string | null) {
+  const trimmed = (value || "").trim();
+  if (!trimmed) return "";
+  return trimmed.split(/\s+/)[0] || "";
+}
+
+function getIdentityFallback(user: { email?: string | null; phoneNumber?: string | null } | null | undefined) {
+  const email = (user?.email || "").trim();
+  if (email && email.includes("@")) {
+    return email.split("@")[0];
+  }
+
+  const phone = (user?.phoneNumber || "").trim();
+  if (phone) {
+    return phone;
+  }
+
+  return "Learner";
+}
+
 function LmsBrand() {
   return (
     <div className="flex shrink-0 items-center gap-2.5" aria-label="GenZNext Learning Portal">
@@ -79,7 +99,8 @@ export function LmsNavbar() {
     };
   }, [user?.uid]);
 
-  const resolvedDisplayName = profileName || user?.displayName || "";
+  const profileDisplayName = profileName || user?.displayName || "";
+  const resolvedDisplayName = getFirstName(profileDisplayName) || getIdentityFallback(user);
   const resolvedIdentity = resolvedDisplayName || user?.email || user?.phoneNumber || "";
 
   async function handleSignOut() {
@@ -139,7 +160,7 @@ export function LmsNavbar() {
                   {/* User info */}
                   <div className="border-b border-[#F1F5F9] px-4 py-3">
                     <p className="text-[13px] font-semibold text-[#0F172A] truncate">
-                      {resolvedDisplayName || "Learner"}
+                      {resolvedDisplayName}
                     </p>
                     <p className="mt-0.5 text-[11px] text-[#64748B] truncate">
                       {user.phoneNumber || user.email || ""}

@@ -17,6 +17,25 @@ const SELLER = {
   website: "expertlearning.in",
 };
 
+const INVOICE_TERMS = [
+  "This is a computer-generated invoice and does not require a physical signature.",
+  "Registration, course enrollment, workshop booking, subscription, or service activation is confirmed only after successful payment.",
+  "All payments made towards workshops, training programs, online courses, certifications, subscriptions, LMS access, memberships, digital products, consulting, or any other services offered by NetSeems Ventures Private Limited (GenZNext Research & Training) are non-refundable and non-transferable, unless otherwise specified in writing by the Company.",
+  "GenZNext reserves the right to modify course content, curriculum, trainers, schedules, workshop dates, delivery mode (online/offline), learning resources, or platform features at any time to improve the learning experience or due to operational requirements.",
+  "Access to courses, LMS, workshops, live sessions, recordings, certificates, study materials, digital resources, software, assessments, and community platforms is granted exclusively to the registered participant and must not be shared, transferred, resold, or sublicensed.",
+  "All training materials, videos, recordings, presentations, source code, templates, documents, assignments, assessments, AI prompts, datasets, software, and other intellectual property remain the exclusive property of NetSeems Ventures Private Limited. Unauthorized copying, recording, downloading, redistribution, publishing, AI model training, reverse engineering, commercial use, or resale is strictly prohibited.",
+  "The Company reserves the right to suspend or permanently terminate access to any service without refund in cases of account sharing, piracy, copyright infringement, abusive behavior, policy violations, fraudulent activities, payment disputes, chargebacks, or misuse of any platform or service.",
+  "LMS access duration, subscription validity, course availability, recordings, certificates, mentorship sessions, bonus content, and other benefits shall be provided only as applicable to the purchased plan and may vary between programs.",
+  "Completion of any course, workshop, certification, or training program does not guarantee employment, internships, promotions, salary increases, business success, certification success, client acquisition, or any specific professional outcome. Individual results depend on the participant's knowledge, effort, skills, and practical application.",
+  "Participants are responsible for arranging a compatible device, internet connection, software, and technical requirements necessary to access online services.",
+  "Workshop sessions, mentoring sessions, webinars, and online classes may be recorded for educational, quality assurance, compliance, and internal business purposes. By participating, the participant grants consent for such recordings.",
+  "GenZNext shall not be liable for any indirect, incidental, consequential, special, business, financial, or data losses arising from the use of its services, training programs, software, LMS, digital content, or educational materials.",
+  "The Company shall not be responsible for delays or failure to perform its obligations due to events beyond its reasonable control, including but not limited to natural disasters, pandemics, government actions, internet failures, cloud service outages, cyber-attacks, power failures, or other force majeure events.",
+  "The Company reserves the right to revise pricing, subscription plans, policies, platform features, and service offerings without prior notice. Such changes shall not affect completed purchases unless otherwise communicated.",
+  "By making payment or using any GenZNext service, the participant confirms that they have read, understood, and agreed to these Terms & Conditions and consent to receive service-related communications through Email, SMS, WhatsApp, phone calls, and other official communication channels.",
+  "All disputes shall be governed by the laws of India and subject to the exclusive jurisdiction of the competent courts at Pune, Maharashtra, India.",
+] as const;
+
 function InvoiceLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#64748B]">{children}</p>
@@ -245,22 +264,26 @@ export function InvoiceDocument({ invoice }: { invoice: StoredOrderSuccess | Per
       </div>
 
       <div className="border-t border-[#1E2D42] px-7 py-5 print:border-[#E2E8F0]">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-sm text-[11px] leading-5 text-[#475569]">
-            <p className="font-semibold text-[#64748B] print:text-[#334155]">Terms & Declaration</p>
-            <p className="mt-1">This is a computer-generated invoice and does not require a signature. Subject to Pune jurisdiction. All disputes subject to Pune courts only.</p>
-            <p className="mt-1">SAC Code 998313 - Online educational support services.</p>
-            {showTaxInvoice ? (
-              <p className="mt-1">We declare that this invoice shows the actual price of the services described and all particulars are true and correct.</p>
-            ) : null}
+        <div className="text-[11px] leading-5 text-[#475569]">
+          <p className="font-semibold text-[#64748B] print:text-[#334155]">TERMS & CONDITIONS</p>
+          <ol className="mt-2 list-decimal space-y-1 pl-4">
+            {INVOICE_TERMS.map((term) => (
+              <li key={term}>{term}</li>
+            ))}
+          </ol>
+
+          <div className="mt-4 rounded-xl border border-[#1E2D42] bg-[#0F172A]/30 p-3 print:border-[#E2E8F0] print:bg-[#F8FAFC]">
+            <p className="font-semibold text-[#94A3B8] print:text-[#334155]">Customer Support</p>
+            <p className="mt-1 font-semibold text-[#E2E8F0] print:text-[#0F172A]">GenZNext Research & Training</p>
+            <p className="text-[#94A3B8] print:text-[#475569]">A Division of NetSeems Ventures Private Limited</p>
+            <p className="mt-1">Email: support@netseems.com</p>
+            <p>Phone: +91 88673 59208</p>
+            <p>Website: https://genznext.com</p>
           </div>
-          <div className="text-right text-[11px] text-[#475569]">
-            <p className="font-semibold text-[#64748B] print:text-[#334155]">For {SELLER.legalName}</p>
-            <p className="mt-4 text-[10px]">Authorised Signatory</p>
-            <p className="mt-1 font-semibold text-[#94A3B8] print:text-[#334155]">{SELLER.brand}</p>
-            <p className="mt-2 text-[#475569]">{SELLER.phone} · {SELLER.email}</p>
-            <p className="text-[#475569]">{SELLER.website}</p>
-          </div>
+
+          {showTaxInvoice ? (
+            <p className="mt-3">SAC Code 998313 - Online educational support services.</p>
+          ) : null}
         </div>
       </div>
     </div>

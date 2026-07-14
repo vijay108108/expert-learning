@@ -1,6 +1,6 @@
 "use client";
 
-import { updatePassword } from "firebase/auth";
+import { updatePassword, updateProfile } from "firebase/auth";
 import {
   BookOpenCheck,
   Building2,
@@ -53,6 +53,12 @@ function formatMemberSince(value: string | null) {
     year: "numeric",
     timeZone: "Asia/Kolkata",
   }).format(new Date(value));
+}
+
+function getFirstName(value?: string | null) {
+  const trimmed = (value || "").trim();
+  if (!trimmed) return "";
+  return trimmed.split(/\s+/)[0] || "";
 }
 
 const gstPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -319,7 +325,7 @@ export function ProfilePanel() {
         setCourseCount(uniqueIds.size);
         setMemberSince(dates[0] || new Date().toISOString());
         setInvoices(mergeInvoiceRecords(savedInvoices as PersistedInvoiceRecord[], mergedRecoveredInvoices));
-        setEditName(user.displayName || nextProfile?.name || "");
+        setEditName(nextProfile?.name || user.displayName || "");
         setEditEmail(nextProfile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "") || "");
         setEditPhone(nextProfile?.phone || user.phoneNumber || "");
         const nextBillingProfile = nextProfile as ProfileRecord | null;
@@ -358,30 +364,47 @@ export function ProfilePanel() {
     const db = getFirebaseDb();
 
     try {
+      const trimmedName = editName.trim();
+      const trimmedEmail = editEmail.trim();
+      const trimmedPhone = (editPhone || displayPhone).trim();
+      const trimmedCompany = editCompany.trim();
+      const trimmedGst = editGst.trim().toUpperCase();
+
       if (db) {
+        const profilePayload: Record<string, string> = {
+          updatedAt: new Date().toISOString(),
+        };
+
+        if (trimmedName) profilePayload.name = trimmedName;
+        if (trimmedEmail) profilePayload.email = trimmedEmail;
+        if (trimmedPhone) profilePayload.phone = trimmedPhone;
+        if (trimmedCompany) profilePayload.companyName = trimmedCompany;
+        if (trimmedGst) profilePayload.gstNumber = trimmedGst;
+
         await setDoc(
           doc(db, "users", user.uid),
-          {
-            name: editName.trim() || undefined,
-            email: editEmail.trim() || undefined,
-            phone: editPhone.trim() || undefined,
-            companyName: editCompany.trim() || undefined,
-            gstNumber: editGst.trim().toUpperCase() || undefined,
-            updatedAt: new Date().toISOString(),
-          },
+          profilePayload,
           { merge: true },
         );
+      }
+
+      try {
+        await updateProfile(user, {
+          displayName: trimmedName || user.displayName || null,
+        });
+      } catch {
+        // Keep save success when auth profile sync is unavailable.
       }
 
       setSaveMsg("Profile updated successfully");
       setEditing(false);
       setProfile((current) => ({
         ...(current || { uid: user.uid }),
-        name: editName.trim() || undefined,
-        email: editEmail.trim() || undefined,
-        phone: editPhone.trim() || undefined,
-        companyName: editCompany.trim() || undefined,
-        gstNumber: editGst.trim().toUpperCase() || undefined,
+        name: trimmedName || undefined,
+        email: trimmedEmail || undefined,
+        phone: trimmedPhone || undefined,
+        companyName: trimmedCompany || undefined,
+        gstNumber: trimmedGst || undefined,
       }));
     } catch {
       setSaveMsg("Unable to save changes. Try again.");
@@ -472,7 +495,9 @@ export function ProfilePanel() {
     );
   }
 
-  const displayName = profile?.name || user.displayName || "GenZNext Learner";
+  const fullDisplayName = profile?.name || user.displayName || "GenZNext Learner";
+  const displayName = fullDisplayName;
+  const shortDisplayName = getFirstName(fullDisplayName) || "Learner";
   const displayEmail = profile?.email || (user.email && !user.email.endsWith("@genznext.app") ? user.email : "");
   const displayPhone = profile?.phone || user.phoneNumber || "";
   const displayInitials = getInitials(displayName || displayEmail || displayPhone, "GZ");
@@ -490,7 +515,7 @@ export function ProfilePanel() {
                   {displayInitials}
                 </div>
                 <div>
-                  <h1 className="text-[22px] font-extrabold !text-[#0F172A]">{displayName}</h1>
+                  <h1 className="text-[22px] font-extrabold !text-[#0F172A]">{shortDisplayName}</h1>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2.5 py-0.5 text-[11px] font-semibold text-[#166534]">
                       <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E]" />
@@ -545,7 +570,6 @@ export function ProfilePanel() {
                 {[
                   { label: "Full Name", icon: User, value: editName, set: setEditName, placeholder: "Your full name", type: "text" },
                   { label: "Email", icon: Mail, value: editEmail, set: setEditEmail, placeholder: "your@email.com", type: "email" },
-                  { label: "Phone", icon: Phone, value: editPhone, set: setEditPhone, placeholder: "+91 9876543210", type: "tel" },
                   { label: "Company Name", icon: Building2, value: editCompany, set: setEditCompany, placeholder: "For GST invoices (optional)", type: "text" },
                 ].map((field) => (
                   <div key={field.label}>
@@ -562,6 +586,22 @@ export function ProfilePanel() {
                     </div>
                   </div>
                 ))}
+
+                <div>
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#64748B]">Phone</label>
+                  <div className="relative">
+                    <Phone className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+                    <input
+                      type="tel"
+                      value={editPhone || displayPhone}
+                      disabled
+                      className="h-11 w-full cursor-not-allowed rounded-xl border border-[#E2E8F0] bg-[#EEF2F7] pl-9 pr-3 text-[13px] text-[#475569]"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-[#B45309]">
+                    Mobile number cannot be changed here. Please contact admin at +91 88673 59208.
+                  </p>
+                </div>
 
                 <div>
                   <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#64748B]">
