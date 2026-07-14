@@ -2447,29 +2447,7 @@ export function PhoneAuthFlow({
           </div>
         ) : null}
 
-        {showPasswordLoginState ? (
-          <>
-            <div className="flex items-center gap-[10px]">
-              <div className="h-px flex-1 bg-[#E2E8F0]" />
-              <span className="text-[11px] text-[#64748B]">or continue with</span>
-              <div className="h-px flex-1 bg-[#E2E8F0]" />
-            </div>
-            <button
-              type="button"
-              onClick={() => void handleGoogleSignIn()}
-              disabled={pending}
-              className="inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[14px] border border-[#CBD5E1] bg-white px-4 text-[13px] text-[#475569] transition hover:bg-[#F8FAFC] hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4">
-                <path fill="#EA4335" d="M12 10.2v3.9h5.42c-.24 1.26-.95 2.32-2 3.03l3.24 2.51c1.89-1.74 2.98-4.29 2.98-7.32 0-.71-.06-1.39-.18-2.04H12Z" />
-                <path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.63-2.44l-3.24-2.51c-.9.6-2.05.95-3.39.95-2.61 0-4.82-1.77-5.61-4.14H3.04v2.6A10 10 0 0 0 12 22Z" />
-                <path fill="#4A90E2" d="M6.39 13.86A5.99 5.99 0 0 1 6.08 12c0-.64.11-1.25.31-1.86v-2.6H3.04A10 10 0 0 0 2 12c0 1.61.38 3.14 1.04 4.46l3.35-2.6Z" />
-                <path fill="#FBBC05" d="M12 5.98c1.47 0 2.79.51 3.83 1.5l2.87-2.87C16.96 2.98 14.7 2 12 2A10 10 0 0 0 3.04 7.54l3.35 2.6C7.18 7.75 9.39 5.98 12 5.98Z" />
-              </svg>
-              Continue with Google
-            </button>
-          </>
-        ) : null}
+        {null}
 
         {!showGooglePhoneState ? (
           <div className="text-center text-[12px] text-[#475569]">
