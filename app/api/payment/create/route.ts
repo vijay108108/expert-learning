@@ -42,6 +42,21 @@ export async function POST(request: Request) {
     const isGuestCheckout = !authUser;
 
     const body = paymentCreateSchema.parse(await request.json());
+
+    if (body.userId && !authUser) {
+      return NextResponse.json(
+        { success: false, message: "Please login again to continue checkout." },
+        { status: 401 },
+      );
+    }
+
+    if (body.userId && authUser && authUser.uid !== body.userId) {
+      return NextResponse.json(
+        { success: false, message: "Authenticated user mismatch. Please login again." },
+        { status: 403 },
+      );
+    }
+
     const razorpay = getRazorpayClient();
     const requestedSlugs = body.courseSlugs?.length ? body.courseSlugs : body.courseSlug ? [body.courseSlug] : [];
     const { offerings, missing } = resolveCheckoutOfferings(requestedSlugs);

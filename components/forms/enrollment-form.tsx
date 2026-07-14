@@ -77,11 +77,15 @@ function formatPhoneForProfile(value: string) {
   return trimmed.startsWith("+") ? `+${digits}` : digits;
 }
 
-async function getPaymentAuthHeaders() {
+async function getPaymentAuthHeaders(requireAuth = false) {
   const token = await getFirebaseAuth()?.currentUser?.getIdToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
+
+  if (requireAuth && !token) {
+    throw new Error("Your session expired. Please login again and retry checkout.");
+  }
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -374,6 +378,7 @@ export function EnrollmentForm({
     trackPaymentStarted(course.slug, Math.round(pricing.finalAmountPaise / 100));
     const checkoutCustomer = resolveCheckoutCustomer(form, user);
     const profilePhone = checkoutCustomer.phone;
+    const paymentHeaders = await getPaymentAuthHeaders(Boolean(user));
 
     if (checkoutCustomer.name.trim().length < 2) {
       setMessage("Please update your profile name before payment.");
@@ -402,7 +407,7 @@ export function EnrollmentForm({
 
       const createResponse = await fetch("/api/payment/create", {
         method: "POST",
-        headers: await getPaymentAuthHeaders(),
+        headers: paymentHeaders,
         body: JSON.stringify({
           name: checkoutCustomer.name,
           email: checkoutCustomer.email,
@@ -496,7 +501,7 @@ export function EnrollmentForm({
           try {
             const verifyResponse = await fetch("/api/payment/verify", {
               method: "POST",
-              headers: await getPaymentAuthHeaders(),
+              headers: await getPaymentAuthHeaders(Boolean(user)),
               body: JSON.stringify({
                 ...response,
                 userId: user?.uid,

@@ -33,6 +33,20 @@ export async function POST(request: Request) {
 
     const authUser = await verifyFirebaseBearerToken(request);
 
+    if (body.userId && !authUser) {
+      return NextResponse.json(
+        { success: false, message: "Please login again to verify payment." },
+        { status: 401 },
+      );
+    }
+
+    if (body.userId && authUser && authUser.uid !== body.userId) {
+      return NextResponse.json(
+        { success: false, message: "Authenticated user mismatch. Please login again." },
+        { status: 403 },
+      );
+    }
+
     const signatureValid = verifyRazorpaySignature({
       orderId: body.razorpay_order_id,
       paymentId: body.razorpay_payment_id,
