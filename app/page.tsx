@@ -300,8 +300,23 @@ export default function Home() {
               <Link href="/programs" className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B,#1E5AA8)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(79,70,229,0.28)] transition hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(79,70,229,0.34)]">
                 Explore Programs <ChevronRight className="h-4 w-4" />
               </Link>
+              <Link href="/courses" className="inline-flex items-center gap-2 rounded-xl border border-[#C8D7EE] bg-[#EAF0FA] px-6 py-3 text-sm font-semibold text-[#0B2E6B] shadow-sm transition hover:border-[#0B2E6B]/30 hover:bg-[#E0EAFA]">
+                Browse Courses <ChevronRight className="h-4 w-4" />
+              </Link>
+              <Link href="/signup?redirect=%2Fcourses" className="inline-flex items-center gap-2 rounded-xl border border-[#FDBA74] bg-[#FFF7ED] px-6 py-3 text-sm font-semibold text-[#9A3412] shadow-sm transition hover:border-[#FB923C] hover:bg-[#FFEDD5]">
+                Signup + Billing Profile
+              </Link>
               <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl border border-[#CBD5E1] bg-white px-6 py-3 text-sm font-semibold text-[#0F172A] shadow-sm transition hover:border-[#A5B4FC] hover:bg-[#F8FAFC]">
                 Talk to Builder Team
+              </Link>
+            </div>
+            <div className="mt-3">
+              <Link
+                href="/checkout/ai-developer-launch-lab"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#0B2E6B]/15 bg-white px-4 py-2 text-[12px] font-semibold text-[#0B2E6B] transition hover:border-[#0B2E6B]/35 hover:bg-[#F8FAFC]"
+              >
+                Purchase Now (Quick Checkout)
+                <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
             <Link

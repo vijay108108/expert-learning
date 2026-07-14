@@ -15,7 +15,6 @@ const columns = [
       { label: "Cloud -> DevOps -> AIOps Journey", href: "/programs" },
       { label: "MS Cloud & AI DevOps", href: "/programs/microsoft-cloud-ai-devops-master" },
       { label: "AI & Generative AI",   href: "/programs/ai-generative-ai-master" },
-      { label: "AWS Cloud Master",     href: "/programs/aws-cloud-master" },
       { label: "DevOps Master",        href: "/programs/devops-master" },
       { label: "All Programs",         href: "/programs" },
     ],

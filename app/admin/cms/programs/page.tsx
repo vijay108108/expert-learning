@@ -8,7 +8,6 @@ export const metadata = buildMetadata({ title: "CMS — Programs | GenZNext Admi
 const programs = [
   { title: "Microsoft Cloud & AI DevOps Master",  href: "/programs/microsoft-cloud-ai-devops-master", edit: "/admin/lms" },
   { title: "AI & Generative AI Master",            href: "/programs/ai-generative-ai-master",          edit: "/admin/lms" },
-  { title: "AWS Cloud Master",                     href: "/programs/aws-cloud-master",                 edit: "/admin/lms" },
   { title: "Microsoft Cloud Master",               href: "/programs/microsoft-cloud-master",           edit: "/admin/lms" },
   { title: "DevOps Master",                        href: "/programs/devops-master",                    edit: "/admin/lms" },
 ];

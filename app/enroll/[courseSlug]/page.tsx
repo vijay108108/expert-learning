@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { CourseEnrollmentAction } from "@/components/enroll/course-enrollment-action";
 import { PageHero } from "@/components/ui/page-hero";
 import { getMergedCourseBySlug } from "@/lib/firebase";
-import { AzureSummerTrainingPage } from "@/sections/enroll/azure-summer-training-page";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +18,7 @@ export default async function EnrollPage({ params }: PageProps) {
   }
 
   if (course.slug === "azure-administrator") {
-    return <AzureSummerTrainingPage course={course} />;
+    notFound();
   }
 
   return (

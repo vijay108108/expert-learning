@@ -282,7 +282,7 @@ export function CorporateProgramsSection() {
                 <Reveal key={program.title} delay={index * 0.06} className="h-full">
                   <article className="relative flex h-full flex-col gap-3 rounded-[18px] border border-[#1E2D42] bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(15,23,42,0.92))] p-[18px] shadow-[0_20px_44px_rgba(2,8,28,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-[#0B2E6B] hover:shadow-[0_28px_54px_rgba(2,8,28,0.38),0_0_24px_rgba(249,115,22,0.12)]">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-[rgba(249,115,22,0.25)] bg-[rgba(249,115,22,0.1)] text-[#0B2E6B]">
+                      <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-[rgba(249,115,22,0.25)] bg-[rgba(249,115,22,0.1)] text-[#F59E0B]">
                         <Icon className="h-[18px] w-[18px]" />
                       </div>
                       <span className={cn("whitespace-nowrap rounded-full border px-[10px] py-[3px] text-[10px] font-medium", badgeToneClasses[program.badgeTone])}>
@@ -291,17 +291,17 @@ export function CorporateProgramsSection() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-[#475569]">{program.duration}</span>
+                      <span className="text-[11px] text-[#CBD5E1]">{program.duration}</span>
                       <span className="h-[3px] w-[3px] rounded-full bg-[#334155]" />
-                      <span className="text-[11px] text-[#475569]">{program.level}</span>
+                      <span className="text-[11px] text-[#CBD5E1]">{program.level}</span>
                     </div>
 
                     <h3 className="text-[14px] font-semibold leading-[1.4] text-[#F1F5F9]">{program.title}</h3>
-                    <p className="flex-1 text-[12px] leading-[1.6] text-[#64748B]">{program.description}</p>
+                    <p className="flex-1 text-[12px] leading-[1.6] text-[#CBD5E1]">{program.description}</p>
 
                     <div className="flex flex-wrap gap-[5px]">
                       {program.tags.map((tag) => (
-                        <span key={tag} className="rounded-[6px] border border-[#2D3F55] bg-[#1E293B] px-2 py-[2px] text-[10px] text-[#94A3B8]">
+                        <span key={tag} className="rounded-[6px] border border-[#475569] bg-[#0F172A] px-2 py-[2px] text-[10px] text-[#E2E8F0]">
                           {tag}
                         </span>
                       ))}
