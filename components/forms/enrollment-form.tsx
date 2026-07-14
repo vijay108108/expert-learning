@@ -135,7 +135,7 @@ export function EnrollmentForm({
   const autoCheckoutAttemptedRef = useRef(false);
   const formRef = useRef<HTMLFormElement | null>(null);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAuthReady, openAuthModal } = useAuth();
   const pricing = useMemo(
     () => getCouponPricing(course.priceValue * 100, appliedCouponCode),
     [appliedCouponCode, course.priceValue],
@@ -546,6 +546,30 @@ export function EnrollmentForm({
     }
   }
 
+  if (!isAuthReady || !user) {
+    return (
+      <div id={sectionId} className={cn("surface-form p-5 sm:p-7", className)}>
+        <div className={cn("flex items-end justify-between gap-4 border-b border-brand-blue/10", compact ? "mb-5 pb-4" : "mb-6 pb-5")}>
+          <div>
+            <div className="section-label">{eyebrow}</div>
+            <h3 className="mt-2 text-[22px] font-bold text-brand-text">{heading || course.title}</h3>
+          </div>
+          <div className="mono-meta text-[13px] font-bold text-brand-blue-light">{formatPrice(course.priceValue)}</div>
+        </div>
+        <p className="mt-2 text-sm leading-6 text-brand-muted">
+          Sign in or create an account first — this attaches your enrollment, invoice, and course access to the right profile.
+        </p>
+        <button
+          type="button"
+          onClick={() => openAuthModal("login", typeof window !== "undefined" ? window.location.pathname : undefined)}
+          className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-5 py-[13px] text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.28)] transition hover:-translate-y-0.5"
+        >
+          Sign In / Sign Up to Continue
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div id={sectionId} className={cn("surface-form p-5 sm:p-7", className)}>
       <div className={cn("flex items-end justify-between gap-4 border-b border-brand-blue/10", compact ? "mb-5 pb-4" : "mb-6 pb-5")}>
@@ -556,47 +580,6 @@ export function EnrollmentForm({
         <div className="mono-meta text-[13px] font-bold text-brand-blue-light">{formatPrice(course.priceValue)}</div>
       </div>
       <form ref={formRef} onSubmit={handleSubmit}>
-        <div>
-          <label className="form-label" htmlFor="enroll-name">
-            Name
-          </label>
-          <input
-            id="enroll-name"
-            className="form-field"
-            placeholder="Your full name"
-            value={form.name}
-            onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-            required
-          />
-        </div>
-        <div className={compact ? "mt-3.5" : "mt-4"}>
-          <label className="form-label" htmlFor="enroll-email">
-            Email
-          </label>
-          <input
-            id="enroll-email"
-            type="email"
-            className="form-field"
-            placeholder="your@email.com"
-            value={form.email}
-            onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-            required
-          />
-        </div>
-        <div className={compact ? "mt-3.5" : "mt-4"}>
-          <label className="form-label" htmlFor="enroll-phone">
-            Phone
-          </label>
-          <input
-            id="enroll-phone"
-            type="tel"
-            className="form-field"
-            placeholder="+91"
-            value={form.phone}
-            onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-            required
-          />
-        </div>
         <div className={cn("rounded-[22px] border border-[#C8D7EE] bg-[linear-gradient(135deg,rgba(239,246,255,0.98),rgba(245,243,255,0.96)_55%,rgba(248,250,252,0.95))] shadow-[0_14px_32px_rgba(79,70,229,0.10)]", compact ? "mt-3.5 p-3.5 sm:p-4" : "mt-4 p-4 sm:p-5")}>
           <label className="form-label" htmlFor="enroll-coupon">
             🎁 Apply Coupon & Save More
