@@ -49,6 +49,18 @@ function normalizePhone(value: string) {
   return value.replace(/\D/g, "");
 }
 
+function resolveCheckoutCustomer(form: typeof initialState, user: { displayName?: string | null; email?: string | null; phoneNumber?: string | null } | null) {
+  const resolvedName = form.name.trim() || user?.displayName?.trim() || "Learner";
+  const resolvedEmail = form.email.trim() || user?.email?.trim() || "";
+  const resolvedPhone = formatPhoneForProfile(form.phone) || formatPhoneForProfile(user?.phoneNumber || "");
+
+  return {
+    name: resolvedName,
+    email: resolvedEmail,
+    phone: resolvedPhone,
+  };
+}
+
 function formatPhoneForProfile(value: string) {
   const trimmed = value.trim();
 
@@ -360,7 +372,22 @@ export function EnrollmentForm({
     setPending(true);
     setIsPaying(true);
     trackPaymentStarted(course.slug, Math.round(pricing.finalAmountPaise / 100));
-    const profilePhone = formatPhoneForProfile(form.phone);
+    const checkoutCustomer = resolveCheckoutCustomer(form, user);
+    const profilePhone = checkoutCustomer.phone;
+
+    if (checkoutCustomer.name.trim().length < 2) {
+      setMessage("Please update your profile name before payment.");
+      setPending(false);
+      setIsPaying(false);
+      return;
+    }
+
+    if (normalizePhone(checkoutCustomer.phone).length < 8) {
+      setMessage("Please update your phone number before payment.");
+      setPending(false);
+      setIsPaying(false);
+      return;
+    }
 
     try {
       if (user) {
@@ -377,7 +404,9 @@ export function EnrollmentForm({
         method: "POST",
         headers: await getPaymentAuthHeaders(),
         body: JSON.stringify({
-          ...form,
+          name: checkoutCustomer.name,
+          email: checkoutCustomer.email,
+          phone: checkoutCustomer.phone,
           userId: user?.uid,
           courseSlug: course.slug,
           couponCode: appliedCouponCode,
@@ -397,7 +426,12 @@ export function EnrollmentForm({
 
       if (!createResponse.ok) {
         trackPaymentFailed("payment_order_create_failed");
-        throw new Error(createPayload.message || "Unable to start payment.");
+        const serverMessage = createPayload.message || "Unable to start payment.";
+        throw new Error(
+          serverMessage.includes("Invalid input")
+            ? "Please complete your profile details (name and phone) before payment."
+            : serverMessage,
+        );
       }
 
       if (createPayload.freeEnrollment && createPayload.invoice) {
@@ -451,9 +485,9 @@ export function EnrollmentForm({
         description: course.title,
         order_id: createPayload.order.id,
         prefill: {
-          name: form.name,
-          email: form.email,
-          contact: form.phone,
+          name: checkoutCustomer.name,
+          email: checkoutCustomer.email,
+          contact: checkoutCustomer.phone,
         },
         theme: {
           color: "#0B2E6B",
@@ -466,7 +500,9 @@ export function EnrollmentForm({
               body: JSON.stringify({
                 ...response,
                 userId: user?.uid,
-                ...form,
+                name: checkoutCustomer.name,
+                email: checkoutCustomer.email,
+                phone: checkoutCustomer.phone,
                 courseSlug: course.slug,
                 couponCode: appliedCouponCode,
               }),

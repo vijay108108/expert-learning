@@ -318,6 +318,12 @@ export async function POST(request: Request) {
       pricing,
     });
   } catch (error) {
+    const isValidationError = Boolean(
+      error
+      && typeof error === "object"
+      && "name" in error
+      && (error as { name?: unknown }).name === "ZodError",
+    );
     const statusCode =
       error && typeof error === "object" && "statusCode" in error && typeof error.statusCode === "number"
         ? error.statusCode
@@ -333,6 +339,9 @@ export async function POST(request: Request) {
         ? error.error.description
         : "";
     const message =
+      isValidationError
+        ? "Please complete required checkout details (name and phone) and try again."
+        :
       statusCode === 401
         ? "Razorpay authentication failed. Check NEXT_PUBLIC_RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET."
         : razorpayDescription || (error instanceof Error ? error.message : "Unable to create payment order.");
