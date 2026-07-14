@@ -78,7 +78,16 @@ const audience = [
   "Software developers",
   "Working professionals",
   "Transitioning professionals",
-  "Founders and freelancers",
+  "Non-technical learners",
+  "Career switchers from non-IT fields",
+  "Sales and marketing professionals",
+  "Operations and support professionals",
+  "Business analysts and project coordinators",
+  "Startup founders and solo creators",
+  "Freelancers and consultants",
+  "Teachers and trainers",
+  "Job seekers preparing for digital roles",
+  "Homemakers returning to work",
 ];
 
 const stack = [
@@ -693,6 +702,9 @@ export function AiDeveloperLaunchLabPage({
 
           <div>
             <h2 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">Who This Is Perfect For</h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-[#C8D7EE]">
+              No coding background is required. This workshop is designed for both technical and non-technical participants who want to build and launch with AI tools.
+            </p>
             <div className="mt-6 flex flex-wrap gap-2.5">
               {audience.map((item) => (
                 <span key={item} className="rounded-full border border-[#1D7CFF]/35 bg-[#1D7CFF]/12 px-3 py-1.5 text-xs font-semibold text-[#B6D6FF]">
