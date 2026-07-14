@@ -55,10 +55,11 @@ import { trackLoginEvent } from "@/lib/client-analytics";
 import { cn } from "@/lib/utils";
 
 const otpLength = 6;
-const resendWindowSeconds = 30;
+const baseResendWindowSeconds = 60;
 const phoneOtpRequestTimeoutMs = 30000;
 const otpValiditySeconds = 600; // 10 minutes
 const checkoutAutoPayIntentKey = "genznext:checkout-auto-pay-intent";
+const firebaseTemporaryOtpBlockMessage = "Firebase has temporarily blocked OTP requests due to too many attempts. Please wait a few minutes before retrying.";
 
 function formatOtpCountdown(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -225,6 +226,7 @@ export function PhoneAuthFlow({
   const [otpError, setOtpError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
+  const [otpRequestCount, setOtpRequestCount] = useState(0);
   const [otpExpiresAt, setOtpExpiresAt] = useState<number | null>(null);
   const [otpRemainingSeconds, setOtpRemainingSeconds] = useState(0);
   const [rateLimitSeconds, setRateLimitSeconds] = useState(0);
@@ -544,6 +546,12 @@ export function PhoneAuthFlow({
       return;
     }
 
+    if (isResend && (resendTimer > 0 || rateLimitSeconds > 0)) {
+      const waitSeconds = Math.max(resendTimer, rateLimitSeconds);
+      setStepError(`Please wait ${waitSeconds}s before requesting another OTP.`, "otp");
+      return;
+    }
+
     const validationMessage = validatePhone();
 
     if (validationMessage) {
@@ -622,7 +630,12 @@ export function PhoneAuthFlow({
           setOtpError(null);
           resetOtpInputs();
           setRateLimitSeconds(0);
-          setResendTimer(resendWindowSeconds);
+          setOtpRequestCount((current) => {
+            const next = current + 1;
+            const dynamicCooldown = Math.min(180, baseResendWindowSeconds + Math.max(0, next - 1) * 30);
+            setResendTimer(dynamicCooldown);
+            return next;
+          });
           setOtpExpiresAt(Date.now() + otpValiditySeconds * 1000);
           setSuccessMessage(isResend ? "A fresh OTP has been sent." : "OTP sent successfully.");
           window.setTimeout(() => {
@@ -643,7 +656,8 @@ export function PhoneAuthFlow({
                not seconds — this is just a client-side guard against
                immediately re-triggering the same throttle, not a guarantee
                Firebase will accept a retry once it expires. */
-            setRateLimitSeconds(120);
+            setRateLimitSeconds(180);
+            setResendTimer((current) => Math.max(current, 180));
           }
 
           clearRecaptcha(recaptchaHostRef.current);
@@ -653,8 +667,8 @@ export function PhoneAuthFlow({
 
           if (code === "auth/invalid-phone-number") {
             setStepError("Invalid phone number. Use a valid 10-digit mobile number.", isResend ? "otp" : "phone");
-          } else if (code === "auth/too-many-requests") {
-            setStepError("Too many attempts. Please wait a few minutes and try again.", isResend ? "otp" : "phone");
+          } else if (code === "auth/too-many-requests" || code === "auth/quota-exceeded") {
+            setStepError(firebaseTemporaryOtpBlockMessage, isResend ? "otp" : "phone");
           } else if (
             (code === "auth/captcha-check-failed" || code === "auth/unauthorized-domain" || code === "auth/invalid-app-credential")
             && isLocalhost
@@ -716,6 +730,7 @@ export function PhoneAuthFlow({
     clearStepErrors();
     setSuccessMessage(null);
     setResendTimer(0);
+    setOtpRequestCount(0);
     setRateLimitSeconds(0);
   }
 
@@ -1684,6 +1699,27 @@ export function PhoneAuthFlow({
                 Change number
               </button>
             </div>
+            {showTemporaryOtpBlockActions ? (
+              <div className="rounded-[12px] border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
+                <p className="font-medium">Temporary OTP block detected.</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleTabChange("password-login")}
+                    className="rounded-md border border-amber-300 bg-white px-2.5 py-1 font-medium text-amber-800 transition hover:bg-amber-100"
+                  >
+                    Use Password Login
+                  </button>
+                  <button
+                    type="button"
+                    onClick={beginForgotPassword}
+                    className="rounded-md border border-amber-300 bg-white px-2.5 py-1 font-medium text-amber-800 transition hover:bg-amber-100"
+                  >
+                    Forgot Password
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -1726,6 +1762,10 @@ export function PhoneAuthFlow({
   }
 
   const showGooglePhoneState = step === "google-phone";
+  const showTemporaryOtpBlockActions = useMemo(() => {
+    const combinedMessage = `${feedback || ""} ${otpError || ""}`.toLowerCase();
+    return combinedMessage.includes("temporarily blocked") || combinedMessage.includes("too many attempts");
+  }, [feedback, otpError]);
   const showPasswordLoginState = activeTab === "password-login" && !isForgotPasswordMode;
   const showSignupState = activeTab === "signup";
   const showSignupOtpState = showSignupState && signupStep === "otp";
@@ -2369,6 +2409,25 @@ export function PhoneAuthFlow({
             )}
           >
             {feedback}
+          </div>
+        ) : null}
+
+        {feedback && showTemporaryOtpBlockActions ? (
+          <div className="-mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => handleTabChange("password-login")}
+              className="rounded-md border border-[#CBD5E1] bg-white px-3 py-1.5 text-[12px] font-medium text-[#0B2E6B] transition hover:bg-[#F8FAFC]"
+            >
+              Use Password Login
+            </button>
+            <button
+              type="button"
+              onClick={beginForgotPassword}
+              className="rounded-md border border-[#CBD5E1] bg-white px-3 py-1.5 text-[12px] font-medium text-[#0B2E6B] transition hover:bg-[#F8FAFC]"
+            >
+              Forgot Password
+            </button>
           </div>
         ) : null}
 
