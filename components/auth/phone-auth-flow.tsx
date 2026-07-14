@@ -889,11 +889,9 @@ export function PhoneAuthFlow({
          which is broken when Firebase email enumeration protection is ON) ── */
       const phoneAccount = await lookupPhoneAccount(formattedPhone);
       if (!phoneAccount.exists) {
-        setFeedback("No account found with this phone number. Please sign up first.");
-        return;
+        /* Do not hard-block here: backend prechecks can be stale or conservative.
+           We still attempt credential sign-in below and only fail on actual auth result. */
       }
-      // Do not hard-block here: backend prechecks can be stale or conservative.
-      // We still attempt credential sign-in below and only fail on actual auth result.
 
       const normalizedLoginPhone = normalizePhoneForAuth(phone);
       const candidates = getLegacyPhoneAuthCandidates(normalizedLoginPhone)
@@ -1296,28 +1294,6 @@ export function PhoneAuthFlow({
 
     try {
       const result = await confirmationResult.confirm(otpCode);
-      const normalizedVerifiedPhone = normalizePhoneForAuth(result.user.phoneNumber || phone);
-      const existingProfile = await getUserProfile(result.user.uid).catch(() => null);
-      const hasPasswordProvider = isPhonePasswordAccount(result.user, normalizedVerifiedPhone, existingProfile);
-      if (!hasPasswordProvider) {
-        /* This phone number has no password credential on it, which means
-           confirming the OTP either created a brand-new disconnected
-           account or resolved to a phone-only/Google account. Letting the
-           flow continue would call updatePassword() on an account with no
-           email, producing a password that no login attempt can ever
-           reach. (fetchSignInMethodsForEmail can't help distinguish this —
-           it's a no-op under email-enumeration protection.) */
-        try {
-          await signOut(getFirebaseAuth()!);
-        } catch {
-          // Best-effort cleanup of the orphan/disconnected session.
-        }
-        setOtpError(
-          "This number isn't set up for password login. If you signed up with Google, use \"Continue with Google\" instead, or contact support.",
-        );
-        setResetUser(null);
-        return;
-      }
       setResetUser(result.user);
       setForgotPasswordStep("reset");
       setStep("phone");

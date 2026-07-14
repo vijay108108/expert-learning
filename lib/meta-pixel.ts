@@ -43,7 +43,8 @@ export function initMetaPixel() {
       return false;
     }
 
-    window.fbq("init", getMetaPixelId());
+    // fbq is bootstrapped and initialized in app/layout.tsx.
+    // Mark it ready here to avoid duplicate Pixel ID init warnings.
     window._metaPixelInitialized = true;
     return true;
   };
