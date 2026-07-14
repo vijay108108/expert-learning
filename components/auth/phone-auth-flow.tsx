@@ -178,7 +178,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: 
 export function PhoneAuthFlow({
   mode,
   variant = "modal",
-  redirectTo = "/",
+  redirectTo = "/lms/my-learning",
   onSuccess,
   onClose,
   onPendingChange,
@@ -1095,34 +1095,10 @@ export function PhoneAuthFlow({
         return;
       }
 
-      try {
-        const phoneCheck = await checkSignupPhoneAvailability(verifiedPhone);
-        if (!phoneCheck.canProceed) {
-          try {
-            await signOut(auth);
-          } catch {
-            // If sign-out fails, the auth session will still be replaced by the next login attempt.
-          }
-
-          clearRecaptcha(recaptchaHostRef.current);
-          recaptchaVerifierRef.current = null;
-          setSignupStep("form");
-          setStep("phone");
-          resetOtpInputs();
-          confirmationResultRef.current = null;
-          setFeedback("An account already exists with this number. Please log in instead.");
-          setShowSignupGoToLogin(true);
-          return;
-        }
-      } catch (lookupError) {
-        try {
-          await signOut(auth);
-        } catch {
-          // Keep going only if we can safely validate the signup path.
-        }
-
-        throw lookupError;
-      }
+      // Do not call checkSignupPhoneAvailability() after OTP verification.
+      // confirmationResult.confirm() signs the user in with phone auth, so an
+      // additional server-side "exists" lookup would always see this phone as
+      // existing and falsely block valid new signups.
 
       reservedPhone = await reservePhoneSignup(verifiedPhone, verified.user.uid);
       const signupEmail = getFakeEmail(verifiedPhone);

@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthReady, setIsAuthReady] = useState(() => !isFirebaseConfigured());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<AuthModalMode>("choice");
-  const [redirectAfterAuth, setRedirectAfterAuth] = useState("/");
+  const [redirectAfterAuth, setRedirectAfterAuth] = useState("/lms/my-learning");
   const [pendingAuthAction, setPendingAuthAction] = useState<(() => void | Promise<void>) | null>(null);
   const [suppressAutoRedirect, setSuppressAutoRedirect] = useState(false);
 
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const openAuthModal = useCallback((
     mode: AuthModalMode,
-    redirectTo = "/",
+    redirectTo = "/lms/my-learning",
     onAuthenticated?: (() => void | Promise<void>) | null,
   ) => {
     const auth = getFirebaseAuth();

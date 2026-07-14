@@ -16,7 +16,6 @@ import {
 } from "@/lib/firebase";
 import { syncMyLearningFromInvoice } from "@/lib/my-learning";
 import {
-  getInvoiceDashboardPath,
   latestOrderStorageKey,
   type StoredOrderSuccess,
 } from "@/lib/order-success";
@@ -140,7 +139,6 @@ export function EnrollmentForm({
     () => getCouponPricing(course.priceValue * 100, appliedCouponCode),
     [appliedCouponCode, course.priceValue],
   );
-  const isWorkshopLaunchLab = course.slug === "ai-developer-launch-lab";
 
   useEffect(() => {
     let active = true;
@@ -258,13 +256,8 @@ export function EnrollmentForm({
       return `/payment/success?orderId=${encodeURIComponent(invoice.orderId)}&register=1`;
     }
 
-    if (isWorkshopLaunchLab) {
-      return getInvoiceDashboardPath(invoice, {
-        paymentCompleted: true,
-      });
-    }
-
-    return `/payment/success?orderId=${encodeURIComponent(invoice.orderId)}`;
+    const firstCourseSlug = invoice.courses[0]?.slug || course.slug;
+    return `/lms/my-learning?payment=success&course=${encodeURIComponent(firstCourseSlug)}`;
   }
 
   async function syncVerifiedPurchase(invoice: StoredOrderSuccess, profilePhone: string, mustAwaitEnrollmentSync: boolean) {

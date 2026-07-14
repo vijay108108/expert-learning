@@ -1,18 +1,13 @@
-import { LmsFoundation } from "@/components/lms/lms-foundation";
+import { redirect } from "next/navigation";
 import { buildMetadata } from "@/lib/metadata";
 
 export const metadata = buildMetadata({
   title: "LMS Portal | GenZNext Research & Training",
   description:
-    "Access LMS portal previews with prerecorded lessons, progress tracking, and official learning resources.",
+    "Access your enrolled courses and workshops with progress tracking in the LMS portal.",
   path: "/lms",
 });
 
 export default function LmsPage() {
-  return (
-    <LmsFoundation
-      title="LMS Portal"
-      subtitle="Learn through prerecorded YouTube lessons, official references, notes, assignments, and guided module progress."
-    />
-  );
+  redirect("/lms/my-learning");
 }
