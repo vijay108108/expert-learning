@@ -9,6 +9,18 @@ import { downloadCsv, formatAdminDate } from "@/lib/admin/reporting";
 type User = AppUserProfile & { id: string; totalPaid?: number; lastPurchaseAt?: string };
 type Enrollment = FirestoreEnrollment & { id: string };
 
+const placeholderNames = new Set(["learner", "genznext learner", "student", "user"]);
+
+function sanitizeName(value?: string | null) {
+  const normalized = (value || "").trim();
+
+  if (normalized.length < 2) {
+    return "";
+  }
+
+  return placeholderNames.has(normalized.toLowerCase()) ? "" : normalized;
+}
+
 async function getAdminAuthHeader() {
   const token = await getFirebaseAuth()?.currentUser?.getIdToken();
   if (!token) {
@@ -287,7 +299,7 @@ export function AdminUsersTable() {
 
         return {
           ...user,
-          name: user.name || latestEnrollment?.userName || "",
+          name: sanitizeName(user.name) || sanitizeName(latestEnrollment?.userName) || "",
           phone: user.phone || latestEnrollment?.userPhone || "",
           email: user.email || latestEnrollment?.userEmail || "",
           createdAt: user.createdAt || earliestEnrollment?.enrolledAt || "",
@@ -315,7 +327,8 @@ export function AdminUsersTable() {
 
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
-    return !q || (u.name || "").toLowerCase().includes(q) || (u.phone || "").includes(q) || (u.email || "").toLowerCase().includes(q);
+    const normalizedName = sanitizeName(u.name);
+    return !q || normalizedName.toLowerCase().includes(q) || (u.phone || "").includes(q) || (u.email || "").toLowerCase().includes(q);
   });
 
   function exportCsv() {
@@ -323,7 +336,7 @@ export function AdminUsersTable() {
       "genznext-users.csv",
       ["Name", "Phone", "Email", "Role", "Auth Method", "Created At", "User ID"],
       filtered.map((user) => [
-        user.name || "",
+        sanitizeName(user.name) || "",
         user.phone || "",
         user.email || "",
         user.role || "student",
@@ -346,7 +359,7 @@ export function AdminUsersTable() {
 
   async function deleteUser(user: User) {
     const uid = user.uid || user.id;
-    if (!window.confirm(`Delete ${user.name || user.phone || user.email || uid}? This cannot be undone.`)) {
+    if (!window.confirm(`Delete ${sanitizeName(user.name) || user.phone || user.email || uid}? This cannot be undone.`)) {
       return;
     }
 
@@ -435,7 +448,7 @@ export function AdminUsersTable() {
                   <tr key={user.id} className="border-b border-white/6 bg-[#0D1117] transition hover:bg-white/3">
                     <td className="px-4 py-3">
                       <Link href={`/admin/users/${uid}`} className="font-medium text-white hover:text-[#818CF8]">
-                        {user.name || "-"}
+                        {sanitizeName(user.name) || "-"}
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-[#64748B]">{user.phone || user.email || user.uid}</td>

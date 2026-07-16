@@ -22,6 +22,18 @@ type EnrollmentUserHint = {
   enrolledAt?: string;
 };
 
+const placeholderNames = new Set(["learner", "genznext learner", "student", "user"]);
+
+function sanitizeName(value: string | undefined) {
+  const normalized = (value || "").trim();
+
+  if (normalized.length < 2) {
+    return "";
+  }
+
+  return placeholderNames.has(normalized.toLowerCase()) ? "" : normalized;
+}
+
 function normalizePhoneForDisplay(phone: string | undefined) {
   if (!phone) {
     return "";
@@ -67,7 +79,7 @@ export async function GET(request: Request) {
       byUid.set(uid, {
         id: uid,
         uid,
-        name: data.name || "",
+        name: sanitizeName(data.name),
         phone: normalizePhoneForDisplay(data.phone),
         email: data.email || "",
         role: data.role === "admin" ? "admin" : "student",
@@ -137,7 +149,7 @@ export async function GET(request: Request) {
 
         byUid.set(uid, {
           ...existing,
-          name: existing.name || userRecord.displayName || "",
+          name: existing.name || sanitizeName(userRecord.displayName || ""),
           phone: existing.phone || normalizePhoneForDisplay(userRecord.phoneNumber || undefined),
           email: existing.email || userRecord.email || "",
           authMethod,
@@ -154,7 +166,7 @@ export async function GET(request: Request) {
 
       byUid.set(uid, {
         ...existing,
-        name: existing.name || hint.userName || "",
+        name: existing.name || sanitizeName(hint.userName),
         phone: existing.phone || normalizePhoneForDisplay(hint.userPhone),
         email: existing.email || hint.userEmail || "",
         createdAt: existing.createdAt || hint.enrolledAt || "",

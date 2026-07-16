@@ -50,6 +50,35 @@ function normalizePhoneNumber(value: string | null | undefined) {
   return digits.length > 10 ? digits.slice(-10) : digits;
 }
 
+const placeholderNames = new Set(["learner", "genznext learner", "student", "user"]);
+
+function sanitizeName(value?: string | null) {
+  const normalized = (value || "").trim();
+  if (normalized.length < 2) {
+    return "";
+  }
+
+  return placeholderNames.has(normalized.toLowerCase()) ? "" : normalized;
+}
+
+function resolveDisplayName(profileName?: string | null, authName?: string | null, email?: string | null, phone?: string | null) {
+  const candidate = sanitizeName(profileName) || sanitizeName(authName);
+  if (candidate) {
+    return candidate;
+  }
+
+  const emailLocal = (email || "").trim().split("@")[0] || "";
+  if (emailLocal) {
+    return emailLocal;
+  }
+
+  if ((phone || "").trim()) {
+    return (phone || "").trim();
+  }
+
+  return "Student";
+}
+
 function getCourseIcon(courseId: string) {
   if (courseId.includes("aws")) {
     return "AWS";
@@ -647,7 +676,7 @@ export function DashboardPanel({ initialCourseSlug = null, paymentCompleted = fa
       enrollmentError={enrollmentError}
       userInfo={{
         uid: user.uid,
-        name: profile?.name || user.displayName || "GenZNext Learner",
+        name: resolveDisplayName(profile?.name, user.displayName, user.email || profile?.email, user.phoneNumber || profile?.phone),
         email: user.email || profile?.email || "",
         phone: user.phoneNumber || profile?.phone || "",
         whatsappPhone: profile?.phone || user.phoneNumber || "",

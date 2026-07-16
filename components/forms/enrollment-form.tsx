@@ -28,6 +28,17 @@ const initialState = {
   email: "",
   phone: "",
 };
+
+const placeholderNames = new Set(["learner", "genznext learner", "student", "user"]);
+
+function isMeaningfulName(value?: string | null) {
+  const normalized = (value || "").trim();
+  if (normalized.length < 2) {
+    return false;
+  }
+
+  return !placeholderNames.has(normalized.toLowerCase());
+}
 const checkoutAutoPayIntentKey = "genznext:checkout-auto-pay-intent";
 const checkoutAutoPayIntentMaxAgeMs = 10 * 60 * 1000;
 
@@ -50,7 +61,11 @@ function normalizePhone(value: string) {
 }
 
 function resolveCheckoutCustomer(form: typeof initialState, user: { displayName?: string | null; email?: string | null; phoneNumber?: string | null } | null) {
-  const resolvedName = form.name.trim() || user?.displayName?.trim() || "Learner";
+  const resolvedName = isMeaningfulName(form.name)
+    ? form.name.trim()
+    : isMeaningfulName(user?.displayName)
+      ? user?.displayName?.trim() || ""
+      : "";
   const resolvedEmail = form.email.trim() || user?.email?.trim() || "";
   const resolvedPhone = formatPhoneForProfile(form.phone) || formatPhoneForProfile(user?.phoneNumber || "");
 
@@ -206,7 +221,7 @@ export function EnrollmentForm({
     }
 
     let active = true;
-    const authName = user.displayName?.trim() || "";
+    const authName = isMeaningfulName(user.displayName) ? user.displayName?.trim() || "" : "";
     const authEmail = user.email?.trim() || "";
     const authPhone = user.phoneNumber?.trim() || "";
     const frame = window.requestAnimationFrame(() => {
@@ -232,7 +247,11 @@ export function EnrollmentForm({
 
         setForm((current) => ({
           ...current,
-          name: current.name || profile.name?.trim() || authName,
+          name: isMeaningfulName(current.name)
+            ? current.name
+            : isMeaningfulName(profile.name)
+              ? profile.name?.trim() || authName
+              : authName,
           email: current.email || profile.email?.trim() || authEmail,
           phone: current.phone || profile.phone?.trim() || authPhone,
         }));

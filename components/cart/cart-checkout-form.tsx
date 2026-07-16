@@ -30,6 +30,7 @@ import { ensureRazorpayScript } from "@/lib/razorpay-browser";
 const gstPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 
 type CheckoutFormState = {
+  name: string;
   phone: string;
   email: string;
   addGstDetails: boolean;
@@ -51,12 +52,24 @@ type CouponApplyResponse = {
 };
 
 const initialState: CheckoutFormState = {
+  name: "",
   phone: "",
   email: "",
   addGstDetails: false,
   gstNumber: "",
   companyName: "",
 };
+
+const placeholderNames = new Set(["learner", "genznext learner", "student", "user"]);
+
+function isMeaningfulName(value?: string | null) {
+  const normalized = (value || "").trim();
+  if (normalized.length < 2) {
+    return false;
+  }
+
+  return !placeholderNames.has(normalized.toLowerCase());
+}
 
 function normalizePhone(value: string) {
   return value.replace(/\D/g, "");
@@ -185,7 +198,13 @@ export function CartCheckoutForm() {
   const [couponMessage, setCouponMessage] = useState<string | null>(null);
   const [couponStatus, setCouponStatus] = useState<"success" | "error" | null>(null);
   const [couponPending, setCouponPending] = useState(false);
-  const accountName = profile?.name?.trim() || user?.displayName?.trim() || "GenZNext Learner";
+  const accountName = isMeaningfulName(form.name)
+    ? form.name.trim()
+    : isMeaningfulName(profile?.name)
+      ? profile?.name?.trim() || ""
+      : isMeaningfulName(user?.displayName)
+        ? user?.displayName?.trim() || ""
+        : "";
   const accountPhone = form.phone.trim();
   const normalizedGstNumber = form.gstNumber.trim().toUpperCase();
   const gstNumberEntered = normalizedGstNumber.length > 0;
@@ -244,6 +263,7 @@ export function CartCheckoutForm() {
     let active = true;
     const authPhone = user.phoneNumber?.trim() || "";
     const authEmail = user.email?.trim() || "";
+    const authName = isMeaningfulName(user.displayName) ? user.displayName?.trim() || "" : "";
     const frame = window.requestAnimationFrame(() => {
       if (!active) {
         return;
@@ -251,6 +271,7 @@ export function CartCheckoutForm() {
 
       setForm((current) => ({
         ...current,
+        name: isMeaningfulName(current.name) ? current.name : authName,
         phone: current.phone || authPhone,
         email: current.email || authEmail,
       }));
@@ -269,6 +290,11 @@ export function CartCheckoutForm() {
         const profileCompany = nextProfile?.companyName?.trim()   || "";
         setForm((current) => ({
           ...current,
+          name: isMeaningfulName(current.name)
+            ? current.name
+            : isMeaningfulName(nextProfile?.name)
+              ? nextProfile?.name?.trim() || authName
+              : authName,
           phone:       current.phone       || nextProfile?.phone?.trim()  || authPhone,
           email:       current.email       || nextProfile?.email?.trim()  || authEmail,
           /* Pre-fill billing from profile if available */
@@ -364,8 +390,8 @@ export function CartCheckoutForm() {
     const paymentPhone = normalizePhone(accountPhone);
     const profilePhone = formatPhoneForProfile(accountPhone);
 
-    if (!accountName.trim()) {
-      setMessage("Your account name is missing. Please sign in again and retry.");
+    if (!isMeaningfulName(accountName)) {
+      setMessage("Please enter your full name to continue.");
       return;
     }
 
@@ -614,10 +640,15 @@ export function CartCheckoutForm() {
             <label className="mb-2 block text-[12px] font-medium uppercase tracking-[0.08em] text-[#64748B]">
               Full Name
             </label>
-              <input
+            <input
               value={accountName}
-              readOnly
-              className="w-full rounded-[10px] border border-[rgba(16,185,129,0.2)] bg-[rgba(16,185,129,0.03)] px-4 py-3 text-[14px] text-[#94A3B8] outline-none"
+              onChange={(event) => {
+                setForm((current) => ({ ...current, name: event.target.value }));
+                setMessage(null);
+              }}
+              placeholder="Enter your full name"
+              autoComplete="name"
+              className="w-full rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-[14px] text-[#F1F5F9] outline-none transition placeholder:text-[#334155] focus:border-[rgba(249,115,22,0.35)] focus:bg-[rgba(249,115,22,0.03)]"
             />
           </div>
 

@@ -24,8 +24,16 @@ const navLinks = [
   { label: "Player",       href: "/lms/player",         icon: PlayCircle },
 ] as const;
 
+const placeholderNames = new Set(["learner", "genznext learner", "student", "user"]);
+
+function sanitizeName(value?: string | null) {
+  const normalized = (value || "").trim();
+  if (normalized.length < 2) return "";
+  return placeholderNames.has(normalized.toLowerCase()) ? "" : normalized;
+}
+
 function getFirstName(value?: string | null) {
-  const trimmed = (value || "").trim();
+  const trimmed = sanitizeName(value);
   if (!trimmed) return "";
   return trimmed.split(/\s+/)[0] || "";
 }
@@ -41,7 +49,7 @@ function getIdentityFallback(user: { email?: string | null; phoneNumber?: string
     return phone;
   }
 
-  return "Learner";
+  return "Student";
 }
 
 function LmsBrand() {
@@ -92,7 +100,7 @@ export function LmsNavbar() {
         }
 
         if (active) {
-          setProfileName(profile?.name?.trim() || "");
+          setProfileName(sanitizeName(profile?.name) || "");
         }
       } catch {
         if (active) {
@@ -108,7 +116,7 @@ export function LmsNavbar() {
     };
   }, [user?.uid]);
 
-  const profileDisplayName = profileName || user?.displayName || "";
+  const profileDisplayName = profileName || sanitizeName(user?.displayName) || "";
   const resolvedDisplayName = getFirstName(profileDisplayName) || getIdentityFallback(user);
   const resolvedIdentity = resolvedDisplayName || user?.email || user?.phoneNumber || "";
 
