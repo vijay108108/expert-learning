@@ -19,6 +19,7 @@ import {
   Layers,
   Lightbulb,
   Monitor,
+  MessageCircle,
   Rocket,
   Server,
   Sparkles,
@@ -148,6 +149,8 @@ const architectureFlow = [
   { label: "Live Website", icon: Globe },
 ];
 
+const workshopWhatsappInviteUrl = "https://chat.whatsapp.com/BWcKwVALARiDtPnlRNDewk?s=cl&p=a&ilr=1";
+
 function SectionCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <section className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-[0_14px_40px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-900 sm:p-8">
@@ -248,6 +251,29 @@ export function LaunchLabWorkshopExperience({
             </div>
           </div>
         </header>
+
+        <section className="rounded-2xl border border-[#25D366]/30 bg-[linear-gradient(135deg,#ecfdf5,#ffffff)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.08)] dark:border-[#25D366]/50 dark:bg-[linear-gradient(135deg,#052e1f,#0f172a)]">
+          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-white">
+                <MessageCircle className="h-5 w-5 text-[#25D366]" />
+                Workshop WhatsApp Group
+              </h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                Join the official group to receive class updates, joining instructions, and workshop support.
+              </p>
+            </div>
+            <a
+              href={workshopWhatsappInviteUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#25D366,#1FA855)] px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_22px_rgba(37,211,102,0.35)] transition hover:-translate-y-0.5"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Join WhatsApp Group
+            </a>
+          </div>
+        </section>
 
         <SectionCard title="Before You Join" subtitle="Get your setup ready before the workshop begins.">
           <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">

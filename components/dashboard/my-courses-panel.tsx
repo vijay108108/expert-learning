@@ -473,14 +473,23 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                     (course.primaryCourseSlug || course.courseSlug) === "ai-developer-launch-lab" ? "sm:grid-cols-1" : "sm:grid-cols-2",
                   )}
                 >
+                  {(() => {
+                    const targetSlug = course.primaryCourseSlug || course.courseSlug;
+                    const continueHref = targetSlug === "ai-developer-launch-lab"
+                      ? "/lms/course/ai-developer-launch-lab"
+                      : `/dashboard/${encodeURIComponent(targetSlug)}`;
+
+                    return (
                   <button
                     type="button"
-                    onClick={() => router.push(`/dashboard/${encodeURIComponent(course.primaryCourseSlug || course.courseSlug)}`)}
+                    onClick={() => router.push(continueHref)}
                     className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] bg-[linear-gradient(135deg,#0B2E6B,#15407E)] px-3.5 py-2.5 text-[14px] font-semibold text-white shadow-[0_10px_20px_rgba(79,70,229,0.20)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_rgba(79,70,229,0.28)]"
                   >
                     Continue Learning
                     <ArrowRight className="h-3.5 w-3.5" />
                   </button>
+                    );
+                  })()}
                   {(course.primaryCourseSlug || course.courseSlug) !== "ai-developer-launch-lab" ? (
                     <button
                       type="button"

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   GENZ100_COUPON_CODE,
+  LEFE50_COUPON_CODE,
   LIFE99_COUPON_CODE,
   WELCOME50_COUPON_CODE,
   allocatePaiseProportionally,
@@ -23,6 +24,7 @@ describe("normalizeCouponCode", () => {
 describe("isValidCouponCode", () => {
   it("accepts known codes case-insensitively", () => {
     expect(isValidCouponCode("welcome50")).toBe(true);
+    expect(isValidCouponCode("lefe50")).toBe(true);
     expect(isValidCouponCode("life99")).toBe(true);
   });
 
@@ -47,6 +49,13 @@ describe("getCouponPricing", () => {
 
   it("computes a partial discount correctly", () => {
     const pricing = getCouponPricing(100000, WELCOME50_COUPON_CODE);
+    expect(pricing.isApplied).toBe(true);
+    expect(pricing.discountPaise).toBe(50000);
+    expect(pricing.finalAmountPaise).toBe(50000);
+  });
+
+  it("applies LEFE50 as an exact 50% discount", () => {
+    const pricing = getCouponPricing(100000, LEFE50_COUPON_CODE);
     expect(pricing.isApplied).toBe(true);
     expect(pricing.discountPaise).toBe(50000);
     expect(pricing.finalAmountPaise).toBe(50000);
