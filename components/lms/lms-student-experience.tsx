@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { LaunchLabWorkshopExperience } from "@/components/lms/launch-lab-workshop-experience";
 import { getCourseBySlug } from "@/lib/course-catalog";
 import {
   getMyEnrollments,
@@ -374,6 +375,24 @@ export function LmsCourseDetailClient({ courseId }: { courseId: string }) {
 
   if (loading) return <section className="bg-[#F8FAFC] px-4 py-8 text-[#0F172A]">Loading course content...</section>;
   if (error || !bundle) return <section className="bg-[#F8FAFC] px-4 py-8 text-rose-600">{error || "Course not found."}</section>;
+
+  const normalizedCourseId = getCourseSlugByCourseId(courseId);
+
+  if (normalizedCourseId === "ai-developer-launch-lab") {
+    return (
+      <LaunchLabWorkshopExperience
+        courseName={bundle.enrollment.courseName}
+        completedLessons={bundle.completedLessons}
+        totalLessons={bundle.totalLessons}
+        progressPercent={bundle.progressPercent}
+        resources={bundle.resources.map((resource) => ({
+          id: resource.id,
+          title: resource.title,
+          url: resource.url,
+        }))}
+      />
+    );
+  }
 
   const completedIds = new Set(bundle.progressRows.filter((item) => item.completed).map((item) => item.lessonId));
   const assignments = bundle.resources.filter((item) => item.resourceType === "assignments");
