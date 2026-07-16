@@ -22,6 +22,12 @@ type EnrollmentUserHint = {
   enrolledAt?: string;
 };
 
+type FinanceUserHint = {
+  userId: string;
+  userName?: string;
+  at?: string;
+};
+
 const placeholderNames = new Set(["learner", "genznext learner", "student", "user"]);
 
 function sanitizeName(value: string | undefined) {
@@ -65,13 +71,16 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [enrollmentSnapshot, profileSnapshot] = await Promise.all([
+    const [enrollmentSnapshot, profileSnapshot, invoiceSnapshot, paymentSnapshot] = await Promise.all([
       db.collection("enrollments").get(),
       db.collection("users").get(),
+      db.collection("invoices").get(),
+      db.collection("payments").get(),
     ]);
 
     const byUid = new Map<string, AdminListUser>();
     const enrollmentHints = new Map<string, EnrollmentUserHint>();
+    const financeHints = new Map<string, FinanceUserHint>();
 
     for (const doc of profileSnapshot.docs) {
       const data = doc.data() as Partial<AdminListUser>;
@@ -118,6 +127,89 @@ export async function GET(request: Request) {
           email: "",
           role: "student",
           createdAt: "",
+        });
+      }
+    }
+
+    for (const doc of invoiceSnapshot.docs) {
+      const data = doc.data() as {
+        userId?: string;
+        userName?: string;
+        customer?: { name?: string };
+        paidAtIso?: string;
+      };
+      const userId = typeof data.userId === "string" ? data.userId : "";
+      if (!userId) {
+        continue;
+      }
+
+      const nextName = sanitizeName(data.customer?.name) || sanitizeName(data.userName);
+      if (!nextName) {
+        continue;
+      }
+
+      const current = financeHints.get(userId);
+      const currentTs = new Date(current?.at || 0).getTime();
+      const nextTs = new Date(data.paidAtIso || 0).getTime();
+
+      if (!current || nextTs >= currentTs) {
+        financeHints.set(userId, {
+          userId,
+          userName: nextName,
+          at: data.paidAtIso || "",
+        });
+      }
+
+      if (!byUid.has(userId)) {
+        byUid.set(userId, {
+          id: userId,
+          uid: userId,
+          name: "",
+          phone: "",
+          email: "",
+          role: "student",
+          createdAt: data.paidAtIso || "",
+        });
+      }
+    }
+
+    for (const doc of paymentSnapshot.docs) {
+      const data = doc.data() as {
+        userId?: string;
+        userName?: string;
+        paidAt?: string;
+      };
+      const userId = typeof data.userId === "string" ? data.userId : "";
+      if (!userId) {
+        continue;
+      }
+
+      const nextName = sanitizeName(data.userName);
+      if (!nextName) {
+        continue;
+      }
+
+      const current = financeHints.get(userId);
+      const currentTs = new Date(current?.at || 0).getTime();
+      const nextTs = new Date(data.paidAt || 0).getTime();
+
+      if (!current || nextTs >= currentTs) {
+        financeHints.set(userId, {
+          userId,
+          userName: nextName,
+          at: data.paidAt || "",
+        });
+      }
+
+      if (!byUid.has(userId)) {
+        byUid.set(userId, {
+          id: userId,
+          uid: userId,
+          name: "",
+          phone: "",
+          email: "",
+          role: "student",
+          createdAt: data.paidAt || "",
         });
       }
     }
@@ -171,6 +263,54 @@ export async function GET(request: Request) {
         email: existing.email || hint.userEmail || "",
         createdAt: existing.createdAt || hint.enrolledAt || "",
       });
+    }
+
+    for (const [uid, hint] of financeHints.entries()) {
+      const existing = byUid.get(uid);
+      if (!existing) {
+        continue;
+      }
+
+      byUid.set(uid, {
+        ...existing,
+        name: existing.name || sanitizeName(hint.userName),
+        createdAt: existing.createdAt || hint.at || "",
+      });
+    }
+
+    const profileByUid = new Map<string, { name?: string }>();
+    for (const doc of profileSnapshot.docs) {
+      const data = doc.data() as { uid?: string; name?: string };
+      const uid = String(data.uid || doc.id);
+      profileByUid.set(uid, { name: data.name });
+    }
+
+    const nameBackfills = Array.from(byUid.values())
+      .filter((item) => {
+        const existingProfile = profileByUid.get(item.uid);
+        const existingName = sanitizeName(existingProfile?.name);
+        return !existingName && Boolean(sanitizeName(item.name));
+      })
+      .map((item) => ({ uid: item.uid, name: sanitizeName(item.name) }))
+      .filter((item) => item.name);
+
+    if (nameBackfills.length) {
+      const nowIso = new Date().toISOString();
+      const writeBatch = db.batch();
+
+      for (const backfill of nameBackfills) {
+        writeBatch.set(
+          db.collection("users").doc(backfill.uid),
+          {
+            uid: backfill.uid,
+            name: backfill.name,
+            updatedAt: nowIso,
+          },
+          { merge: true },
+        );
+      }
+
+      await writeBatch.commit();
     }
 
     const users = Array.from(byUid.values()).sort(
