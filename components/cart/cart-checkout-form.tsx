@@ -718,6 +718,9 @@ export function CartCheckoutForm() {
             <label className="mb-2 block text-[12px] font-medium uppercase tracking-[0.08em] text-[#64748B]">
               Coupon Code
             </label>
+            <div className="mb-2 inline-flex items-center rounded-full border border-[rgba(251,146,60,0.45)] bg-[rgba(251,146,60,0.14)] px-3 py-1 text-[11px] font-semibold text-[#FDBA74]">
+              Try LEFE50 for 50% off
+            </div>
             <div className="flex gap-3">
               <input
                 value={couponCode}

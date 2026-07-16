@@ -621,6 +621,9 @@ export function EnrollmentForm({
           <p className={cn("text-[12.5px] font-medium leading-5 text-[#0B2E6B] sm:text-[13px]", compact ? "mb-3" : "mb-4")}>
             Have a coupon code? Enter below to unlock your discount.
           </p>
+          <div className={cn("inline-flex items-center rounded-full border border-[#FDBA74] bg-[#FFF7ED] px-3 py-1 text-[11px] font-semibold text-[#9A3412]", compact ? "mb-3" : "mb-4")}>
+            Try LEFE50 for 50% off
+          </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
               id="enroll-coupon"
