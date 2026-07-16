@@ -40,6 +40,9 @@ type LaunchLabWorkshopExperienceProps = {
   totalLessons: number;
   progressPercent: number;
   resources: WorkshopResource[];
+  showProgress?: boolean;
+  finalCtaHref?: string;
+  finalCtaLabel?: string;
 };
 
 type Module = {
@@ -187,6 +190,9 @@ export function LaunchLabWorkshopExperience({
   totalLessons,
   progressPercent,
   resources,
+  showProgress = true,
+  finalCtaHref = "/lms/my-learning",
+  finalCtaLabel = "Continue My Learning",
 }: LaunchLabWorkshopExperienceProps) {
   const [openModuleId, setOpenModuleId] = useState<string>(modules[0]?.id || "");
 
@@ -224,16 +230,20 @@ export function LaunchLabWorkshopExperience({
               By the end of this workshop, you will have a production-ready AI web application running in the cloud.
             </p>
 
-            <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/25">
-              <div
-                className="h-full rounded-full bg-[linear-gradient(90deg,#FFFFFF,#FFDDB6)] shadow-[0_0_18px_rgba(255,255,255,0.6)] transition-all duration-700"
-                style={{ width: `${normalizedProgress}%` }}
-                aria-label={`Progress ${normalizedProgress}%`}
-              />
-            </div>
-            <p className="mt-2 text-xs text-blue-100/90">
-              {completedLessons}/{Math.max(totalLessons, 1)} lessons complete ({normalizedProgress}%)
-            </p>
+            {showProgress ? (
+              <>
+                <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/25">
+                  <div
+                    className="h-full rounded-full bg-[linear-gradient(90deg,#FFFFFF,#FFDDB6)] shadow-[0_0_18px_rgba(255,255,255,0.6)] transition-all duration-700"
+                    style={{ width: `${normalizedProgress}%` }}
+                    aria-label={`Progress ${normalizedProgress}%`}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-blue-100/90">
+                  {completedLessons}/{Math.max(totalLessons, 1)} lessons complete ({normalizedProgress}%)
+                </p>
+              </>
+            ) : null}
 
             <div className="mt-5 grid gap-2 text-xs sm:grid-cols-3 lg:grid-cols-6">
               {[
@@ -500,11 +510,11 @@ export function LaunchLabWorkshopExperience({
           <p className="mt-5 text-sm font-semibold tracking-wide text-orange-200 sm:text-base">Learn. Build. Deploy. Launch.</p>
           <p className="mt-1 text-sm text-blue-100">Welcome to the GenZNext AI Developer Community.</p>
           <a
-            href="/lms/my-learning"
+            href={finalCtaHref}
             className="mt-6 inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:bg-white/20"
           >
             <BookOpen className="h-4 w-4" />
-            Continue My Learning
+            {finalCtaLabel}
             <ExternalLink className="h-4 w-4" />
           </a>
         </section>
