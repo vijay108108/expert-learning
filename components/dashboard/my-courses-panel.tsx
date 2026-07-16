@@ -467,7 +467,12 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                   <span className="rounded-full border border-[#E5E7EB] bg-[#F9FAFB] px-2.5 py-1">{course.level}</span>
                 </div>
 
-                <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                <div
+                  className={cn(
+                    "mt-6 grid gap-2",
+                    (course.primaryCourseSlug || course.courseSlug) === "ai-developer-launch-lab" ? "sm:grid-cols-1" : "sm:grid-cols-2",
+                  )}
+                >
                   <button
                     type="button"
                     onClick={() => router.push(`/dashboard/${encodeURIComponent(course.primaryCourseSlug || course.courseSlug)}`)}
@@ -476,14 +481,16 @@ export function MyCoursesPanel({ paymentCompleted = false }: MyCoursesPanelProps
                     Continue Learning
                     <ArrowRight className="h-3.5 w-3.5" />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedSyllabusSlug(course.primaryCourseSlug || course.courseSlug)}
-                    className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] border border-[#E5E7EB] bg-white px-3.5 py-2.5 text-[14px] font-semibold text-[#111827] transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:bg-[#F9FAFB] hover:shadow-[0_8px_16px_rgba(99,102,241,0.12)]"
-                  >
-                    📖 Syllabus
-                    <BookOpen className="h-3.5 w-3.5" />
-                  </button>
+                  {(course.primaryCourseSlug || course.courseSlug) !== "ai-developer-launch-lab" ? (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSyllabusSlug(course.primaryCourseSlug || course.courseSlug)}
+                      className="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] border border-[#E5E7EB] bg-white px-3.5 py-2.5 text-[14px] font-semibold text-[#111827] transition hover:-translate-y-0.5 hover:border-[#C8D7EE] hover:bg-[#F9FAFB] hover:shadow-[0_8px_16px_rgba(99,102,241,0.12)]"
+                    >
+                      📖 Syllabus
+                      <BookOpen className="h-3.5 w-3.5" />
+                    </button>
+                  ) : null}
                 </div>
 
                 <div className="mt-3 text-[11px] text-[#6B7280]">
