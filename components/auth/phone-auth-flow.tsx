@@ -947,7 +947,13 @@ export function PhoneAuthFlow({
       const code = getErrorCode(lastError);
 
       if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
-        setFeedback("Incorrect password. Please try again.");
+        if (!phoneAccount.exists) {
+          setFeedback("No account found with this phone number. Please sign up first.");
+        } else if (!phoneAccount.passwordEnabled) {
+          setFeedback("This account does not have password login enabled yet. Please use Forgot Password to set a password.");
+        } else {
+          setFeedback("Incorrect password. Please try again.");
+        }
       } else if (code === "auth/user-not-found" || code === "auth/invalid-email") {
         setFeedback("No account found with this phone number. Please sign up first.");
       } else {
