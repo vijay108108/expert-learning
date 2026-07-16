@@ -448,7 +448,7 @@ export function AdminUsersTable() {
                   <tr key={user.id} className="border-b border-white/6 bg-[#0D1117] transition hover:bg-white/3">
                     <td className="px-4 py-3">
                       <Link href={`/admin/users/${uid}`} className="font-medium text-white hover:text-[#818CF8]">
-                        {sanitizeName(user.name) || user.phone || user.email || uid}
+                        {sanitizeName(user.name) || "-"}
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-[#64748B]">{user.phone || user.email || user.uid}</td>

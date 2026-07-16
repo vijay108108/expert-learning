@@ -8,6 +8,17 @@ import { downloadCsv, formatAdminCurrency, formatAdminDate } from "@/lib/admin/r
 
 type Payment = FirestoreEnrollment & { id: string };
 
+const placeholderNames = new Set(["learner", "genznext learner", "student", "user", "-"]);
+
+function sanitizeName(value?: string | null) {
+  const normalized = (value || "").trim();
+  if (normalized.length < 2) {
+    return "";
+  }
+
+  return placeholderNames.has(normalized.toLowerCase()) ? "" : normalized;
+}
+
 async function getAdminAuthHeader() {
   const token = await getFirebaseAuth()?.currentUser?.getIdToken();
   if (!token) {
@@ -59,7 +70,8 @@ export function AdminPaymentsTable() {
 
   const filtered = rows.filter((r) => {
     const q = search.toLowerCase();
-    return !q || r.userName?.toLowerCase().includes(q) || r.courseName?.toLowerCase().includes(q) || r.razorpayPaymentId?.includes(q);
+    const name = sanitizeName(r.userName);
+    return !q || name.toLowerCase().includes(q) || r.courseName?.toLowerCase().includes(q) || r.razorpayPaymentId?.includes(q);
   });
 
   const totalRevenue = filtered.reduce((sum, r) => sum + (r.amountPaid || 0), 0);
@@ -69,7 +81,7 @@ export function AdminPaymentsTable() {
       "genznext-payments.csv",
       ["Learner", "Phone", "Email", "Course", "Amount", "Payment ID", "Order ID", "Invoice Number", "Paid At"],
       filtered.map((item) => [
-        item.userName || "",
+        sanitizeName(item.userName) || "",
         item.userPhone || "",
         item.userEmail || "",
         item.courseName || item.courseId || "",
@@ -151,7 +163,7 @@ export function AdminPaymentsTable() {
                 <tr key={r.id} className="border-b border-white/6 bg-[#0D1117] transition hover:bg-white/3">
                   <td className="px-4 py-3">
                     <Link href={`/admin/users/${r.userId}`} className="font-medium text-white hover:text-[#818CF8]">
-                      {r.userName || "-"}
+                      {sanitizeName(r.userName) || "-"}
                     </Link>
                     <p className="text-[11px] text-[#475569]">{r.userPhone || r.userEmail || "-"}</p>
                   </td>
