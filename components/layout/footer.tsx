@@ -20,17 +20,6 @@ const columns = [
     ],
   },
   {
-    heading: "Workshops",
-    links: [
-      { label: "AI Developer Launch Lab", href: "/workshops/ai-developer-launch-lab" },
-      { label: "Workshop Outcome Graph",  href: "/workshops/ai-developer-launch-lab#outcome-graph" },
-      { label: "Reserve My Seat",         href: "/checkout/ai-developer-launch-lab" },
-      { label: "Workshop FAQs",           href: "/workshops/ai-developer-launch-lab#workshop-faqs" },
-      { label: "Corporate Training",      href: "/corporate-training" },
-      { label: "Talk to Team",            href: "/contact" },
-    ],
-  },
-  {
     heading: "Company",
     links: [
       { label: "About Us",           href: "/about" },
@@ -94,7 +83,7 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#F59E0B]">Ready to start?</p>
             <p className="mt-1 text-xl font-bold text-white sm:text-2xl">Build your Cloud -&gt; DevOps -&gt; AIOps edge with one clear roadmap.</p>
-            <p className="mt-2 text-sm text-[#CBD5E1]">Start with the 2-hour AI workshop, then scale into job-focused execution programs.</p>
+            <p className="mt-2 text-sm text-[#CBD5E1]">Start with a job-focused execution program built for real careers.</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {trustHighlights.map((item) => (
                 <span
@@ -108,10 +97,10 @@ export function Footer({ reserveMobileCtaSpace = false }: { reserveMobileCtaSpac
           </div>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
             <Link
-              href="/workshops/ai-developer-launch-lab"
+              href="/programs"
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F58220,#0B2E6B)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#092552] sm:w-auto"
             >
-              Start With Workshop <ArrowRight className="h-4 w-4" />
+              Explore Programs <ArrowRight className="h-4 w-4" />
             </Link>
             <a
               href={`https://wa.me/${siteConfig.whatsapp}`}

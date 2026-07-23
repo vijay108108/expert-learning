@@ -257,10 +257,10 @@ const tracks = [
   },
   {
     icon: Sparkles,
-    label: "AI Developer Launch Lab",
-    desc: "2-hour live workshop to ship your first AI website on Azure.",
-    cta: "Reserve workshop seat",
-    href: "/workshops/ai-developer-launch-lab",
+    label: "AI & Generative AI",
+    desc: "Master applied AI, GenAI, and agentic engineering tracks.",
+    cta: "Explore AI programs",
+    href: "/programs/ai-generative-ai-master",
     color: "text-[#D97706]",
     bg: "bg-[#FFFBEB]",
   },
@@ -310,21 +310,6 @@ export default function Home() {
                 Talk to Builder Team
               </Link>
             </div>
-            <Link
-              href="/workshops/ai-developer-launch-lab"
-              className="group mt-5 flex max-w-xl items-start justify-between gap-4 rounded-2xl border border-[#FFEDD5] bg-[linear-gradient(135deg,#FFF7ED_0%,#EEF4FB_100%)] p-4 shadow-[0_10px_24px_rgba(249,115,22,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(37,99,235,0.16)]"
-            >
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#EA580C]">AI + Cloud Quick Learning</p>
-                <p className="mt-1 text-sm font-semibold text-[#0F172A]">
-                  Builder Workshop: Launch Your First AI Website on Azure
-                </p>
-                <p className="mt-1 text-[12px] text-[#475569]">Thursday (Guruvar) • 23 July 2026 • 7:17 PM - 9:17 PM IST • Fee: Rs. 999</p>
-              </div>
-              <span className="shrink-0 rounded-lg bg-[linear-gradient(135deg,#F97316,#FB923C)] px-3 py-1.5 text-[11px] font-bold text-white group-hover:brightness-95">
-                Reserve Seat
-              </span>
-            </Link>
             <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-[#64748B]">
               {["AWS & Azure Certified Mentors", "Live Batches Every Month", "LMS Access with Continuous Updates"].map((item) => (
                 <span key={item} className="flex items-center gap-1.5">
@@ -338,8 +323,8 @@ export default function Home() {
             <div className="rounded-2xl border border-[#C8D7EE] bg-[linear-gradient(135deg,#F8FBFF_0%,#EEF4FF_40%,#FFF7ED_100%)] p-5 shadow-[0_12px_28px_rgba(37,99,235,0.14)]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#EA580C]">Workshop Momentum</p>
-                  <p className="mt-1 text-[13px] font-semibold text-[#0F172A]">Builder Workshop Demand Trend</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#EA580C]">Builder Momentum</p>
+                  <p className="mt-1 text-[13px] font-semibold text-[#0F172A]">Program Enrollment Trend</p>
                 </div>
                 <span className="rounded-full bg-[#E11D48] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">Live Focus</span>
               </div>
@@ -384,10 +369,10 @@ export default function Home() {
                   <MessageCircle className="h-4 w-4" /> Join Builder Chat
                 </a>
                 <Link
-                  href="/workshops/ai-developer-launch-lab"
+                  href="/programs"
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#F97316,#1D4ED8)] px-3 py-2 text-[12px] font-semibold text-white"
                 >
-                  Reserve Workshop Seat <ChevronRight className="h-4 w-4" />
+                  Explore Programs <ChevronRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
